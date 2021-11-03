@@ -1,0 +1,11 @@
+import { constructSameAddressMap } from '~/utils/constructSameAddressMap';
+
+export const MULTICALL_ADDRESS = constructSameAddressMap(
+  '0x1F98415757620B543A52E61c46B32eB19261F984',
+);
+export const ENS_REGISTRAR_ADDRESSES = {
+  [1]: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+  [5]: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+  [4]: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+  [3]: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+};
