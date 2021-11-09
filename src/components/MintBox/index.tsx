@@ -1,7 +1,7 @@
 import {
-  Box,
   Button,
   ButtonGroup,
+  CloseButton,
   Collapse,
   HStack,
   Icon,
@@ -10,12 +10,12 @@ import {
   InputGroup,
   InputRightElement,
   Text,
-  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { BigintIsh, CurrencyAmount } from '@uniswap/sdk-core';
+import { CurrencyAmount } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
+import { useRouter } from 'next/router';
 import React, { useMemo, useState } from 'react';
 import { IoArrowForward } from 'react-icons/io5';
 
@@ -28,25 +28,26 @@ import { useWalletModalToggle } from '~/state/application/hooks';
 import { useTransactionAdder } from '~/state/transactions/hooks';
 import { useTokenBalance } from '~/state/wallet/hooks';
 import { calculateGasMargin } from '~/utils/calculateGasMargin';
+import { toHex } from '~/utils/toHex';
 import { tryParseAmount } from '~/utils/tryParseAmount';
 
-/**
- * Converts a big int to a hex string
- * @param bigintIsh
- * @returns The hex encoded calldata
- */
-export function toHex(bigintIsh: BigintIsh) {
-  const bigInt = JSBI.BigInt(bigintIsh);
-  let hex = bigInt.toString(16);
-  if (hex.length % 2 !== 0) {
-    hex = `0${hex}`;
-  }
-  return `0x${hex}`;
-}
+import GlobalMintInfo from './GlobalMintInfo';
 
 export default function MintBox() {
   const { library, chainId, account } = useActiveWeb3React();
-  const { isOpen, onOpen } = useDisclosure();
+  const router = useRouter();
+  const isOpen = router.pathname === '/' && router.query.mint === 'true';
+
+  function onOpen() {
+    if (isOpen) return;
+    router.push('/?mint=true');
+  }
+
+  function onClose(event: React.MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    router.push('/');
+  }
+
   const toggleWalletModal = useWalletModalToggle();
   const addTransaction = useTransactionAdder();
   const accessKeyContract = useAccessKeyContract();
@@ -159,6 +160,7 @@ export default function MintBox() {
   return (
     <VStack
       w={isOpen ? 'container.md' : 'md'}
+      position="relative"
       px="8"
       py={isOpen ? 16 : 8}
       bg="white"
@@ -177,6 +179,9 @@ export default function MintBox() {
       transitionDuration="normal"
       onClick={onOpen}
     >
+      {isOpen && (
+        <CloseButton onClick={onClose} position="absolute" top="4" right="4" />
+      )}
       <HStack spacing="4">
         <Collapse in={isOpen}>
           <HStack spacing="4">
@@ -332,60 +337,7 @@ export default function MintBox() {
               </Button>
             </VStack>
           )}
-          <Box whiteSpace="nowrap" w="100%">
-            <HStack my="2">
-              <Text
-                flex="1"
-                textAlign="right"
-                color="purple.500"
-                fontWeight="300"
-              >
-                Staking APY
-              </Text>
-              <Text flex="1" color="purple.500" fontWeight="700">
-                123.12%
-              </Text>
-            </HStack>
-            <HStack my="2">
-              <Text
-                flex="1"
-                textAlign="right"
-                color="purple.500"
-                fontWeight="300"
-              >
-                Total Value Deposited
-              </Text>
-              <Text flex="1" color="purple.500" fontWeight="700">
-                $123,456.78
-              </Text>
-            </HStack>
-            <HStack my="2">
-              <Text
-                flex="1"
-                textAlign="right"
-                color="purple.500"
-                fontWeight="300"
-              >
-                % of CMK Staked
-              </Text>
-              <Text flex="1" color="purple.500" fontWeight="700">
-                12.23%
-              </Text>
-            </HStack>
-            <HStack my="2">
-              <Text
-                flex="1"
-                textAlign="right"
-                color="purple.500"
-                fontWeight="300"
-              >
-                Total Keys Minted
-              </Text>
-              <Text flex="1" color="purple.500" fontWeight="700">
-                67
-              </Text>
-            </HStack>
-          </Box>
+          <GlobalMintInfo />
         </VStack>
       </Collapse>
     </VStack>
