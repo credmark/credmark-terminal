@@ -1,36 +1,42 @@
 import { Img } from '@chakra-ui/image';
-import { Box, VStack, Text, Link } from '@chakra-ui/layout';
+import { Box, VStack, Link } from '@chakra-ui/layout';
 import { Icon, useDisclosure } from '@chakra-ui/react';
 import { Collapse } from '@chakra-ui/transition';
 import NextLink from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IoMenuOutline, IoLogoTwitter, IoLogoDiscord } from 'react-icons/io5';
 
-export default function Sidebar() {
-  const { isOpen, onToggle } = useDisclosure();
+import { useOnClickOutside } from '~/hooks/useOnClickOutside';
 
+export default function Sidebar() {
+  const ref = useRef(null);
+  const { isOpen, onToggle, onClose } = useDisclosure();
   const [scrolled, setScrolled] = useState(false);
 
-  const handleScroll = () => {
-    const offset = window.scrollY;
-    if (offset > 80) {
-      setScrolled(true);
-    } else {
-      setScrolled(false);
-    }
-  };
-
   useEffect(() => {
+    const handleScroll = () => {
+      const offset = window.scrollY;
+      if (offset > 80) {
+        setScrolled(true);
+        onClose();
+      } else {
+        setScrolled(false);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [onClose]);
+
+  useOnClickOutside(ref, onClose);
 
   const expanded = !scrolled || isOpen;
 
   return (
     <Box
+      ref={ref}
       zIndex="9999"
       position="fixed"
       left="0"
