@@ -13,16 +13,148 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React from 'react';
+import { TransactionResponse } from '@ethersproject/providers';
+import { BigintIsh, CurrencyAmount } from '@uniswap/sdk-core';
+import JSBI from 'jsbi';
+import React, { useMemo, useState } from 'react';
 import { IoArrowForward } from 'react-icons/io5';
 
+import { ACCESS_KEY_ADDRESSES } from '~/constants/addresses';
+import { CMK } from '~/constants/tokens';
+import { ApprovalState, useApproveCallback } from '~/hooks/useApproveCallback';
+import { useAccessKeyContract } from '~/hooks/useContract';
 import { useActiveWeb3React } from '~/hooks/web3';
 import { useWalletModalToggle } from '~/state/application/hooks';
+import { useTransactionAdder } from '~/state/transactions/hooks';
+import { useTokenBalance } from '~/state/wallet/hooks';
+import { calculateGasMargin } from '~/utils/calculateGasMargin';
+import { tryParseAmount } from '~/utils/tryParseAmount';
+
+/**
+ * Converts a big int to a hex string
+ * @param bigintIsh
+ * @returns The hex encoded calldata
+ */
+export function toHex(bigintIsh: BigintIsh) {
+  const bigInt = JSBI.BigInt(bigintIsh);
+  let hex = bigInt.toString(16);
+  if (hex.length % 2 !== 0) {
+    hex = `0${hex}`;
+  }
+  return `0x${hex}`;
+}
 
 export default function MintBox() {
+  const { library, chainId, account } = useActiveWeb3React();
   const { isOpen, onOpen } = useDisclosure();
-  const { account } = useActiveWeb3React();
   const toggleWalletModal = useWalletModalToggle();
+  const addTransaction = useTransactionAdder();
+  const accessKeyContract = useAccessKeyContract();
+
+  const [attemptingTxn, setAttemptingTxn] = useState(false);
+  const currency = chainId ? CMK[chainId] : undefined;
+  const maxAmount = useTokenBalance(account ?? undefined, currency);
+
+  const [amount, setAmount] = useState('');
+  const parsedAmount = tryParseAmount(amount, currency);
+
+  // check whether the user has approved the router on the tokens
+  const [approval, approveCallback] = useApproveCallback(
+    parsedAmount,
+    chainId ? ACCESS_KEY_ADDRESSES[chainId] : undefined,
+  );
+
+  const showApproval = approval !== ApprovalState.APPROVED && !!parsedAmount;
+
+  const errorMessage: string | undefined = useMemo(() => {
+    if (!account) {
+      return 'Wallet not connected';
+    }
+
+    if (!parsedAmount) {
+      return 'Enter an amount';
+    }
+
+    if (parsedAmount && maxAmount && maxAmount.lessThan(parsedAmount)) {
+      return 'Insufficient balance';
+    }
+
+    if (
+      currency &&
+      parsedAmount.lessThan(
+        CurrencyAmount.fromRawAmount(
+          currency,
+          JSBI.multiply(
+            JSBI.BigInt(100),
+            JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(18)),
+          ),
+        ),
+      )
+    ) {
+      return 'Minimum 100 CMK';
+    }
+
+    return undefined;
+  }, [account, currency, maxAmount, parsedAmount]);
+
+  const isValid = !errorMessage;
+
+  function onMax(): void {
+    if (maxAmount) {
+      setAmount(maxAmount.toExact());
+    }
+  }
+
+  const atMax = maxAmount && parsedAmount && maxAmount.equalTo(parsedAmount);
+
+  async function onMint() {
+    if (!chainId || !library || !account) return;
+
+    if (!accessKeyContract || !parsedAmount) {
+      return;
+    }
+
+    const data = accessKeyContract.interface.encodeFunctionData('mint', [
+      toHex(parsedAmount.quotient),
+    ]);
+
+    const txn: { to: string; data: string } = {
+      to: ACCESS_KEY_ADDRESSES[chainId],
+      data,
+    };
+
+    setAttemptingTxn(true);
+
+    library
+      .getSigner()
+      .estimateGas(txn)
+      .then((estimate) => {
+        const newTxn = {
+          ...txn,
+          gasLimit: calculateGasMargin(chainId, estimate),
+        };
+
+        return library
+          .getSigner()
+          .sendTransaction(newTxn)
+          .then((response: TransactionResponse) => {
+            setAmount('');
+            addTransaction(response, {
+              summary: `Mint access key`,
+            });
+          });
+      })
+      .catch((error) => {
+        console.error('Failed to send transaction', error);
+        // we only care if the error is something _other_ than the user rejected the tx
+        if (error?.code !== 4001) {
+          console.error(error);
+        }
+      })
+      .finally(() => {
+        setAttemptingTxn(false);
+      });
+  }
 
   return (
     <VStack
@@ -77,7 +209,7 @@ export default function MintBox() {
         <VStack spacing="8">
           <Text color="purple.500" textAlign="center" maxW="sm">
             Stake at least <strong>100 CMK</strong> to mint an{' '}
-            <strong>Access Key</strong>. Earn rewards on your
+            <strong>Access Key</strong>. Earn rewards on your{' '}
             <strong>staked CMK</strong> (sCMK) and receive access to the{' '}
             <strong>Terminal</strong>
           </Text>
@@ -106,15 +238,78 @@ export default function MintBox() {
                   borderWidth="0"
                   placeholder="999.99"
                   textAlign="center"
+                  isDisabled={attemptingTxn}
+                  value={amount}
+                  onChange={(event) => setAmount(event.target.value)}
                 />
                 <InputRightElement>
                   <ButtonGroup pr="4">
-                    <Button size="sm" variant="ghost" color="gray.400">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      color="gray.400"
+                      onClick={onMax}
+                      isDisabled={atMax || attemptingTxn}
+                    >
                       MAX
                     </Button>
                   </ButtonGroup>
                 </InputRightElement>
               </InputGroup>
+
+              {(!account ||
+                ((approval === ApprovalState.NOT_APPROVED ||
+                  approval === ApprovalState.PENDING) &&
+                  isValid)) && (
+                <>
+                  {!account ? (
+                    <Button
+                      colorScheme="purple"
+                      size="lg"
+                      w="200px"
+                      rounded="2xl"
+                      _hover={{
+                        transform: 'translateY(-2px)',
+                        boxShadow: 'lg',
+                      }}
+                      _active={{
+                        transform: 'scale(0.98)',
+                        boxShadow: 'inner',
+                      }}
+                      onClick={toggleWalletModal}
+                    >
+                      Connect wallet
+                    </Button>
+                  ) : (
+                    <>
+                      {(approval === ApprovalState.NOT_APPROVED ||
+                        approval === ApprovalState.PENDING) &&
+                        isValid &&
+                        showApproval && (
+                          <Button
+                            colorScheme="purple"
+                            size="lg"
+                            w="200px"
+                            rounded="2xl"
+                            _hover={{
+                              transform: 'translateY(-2px)',
+                              boxShadow: 'lg',
+                            }}
+                            _active={{
+                              transform: 'scale(0.98)',
+                              boxShadow: 'inner',
+                            }}
+                            onClick={approveCallback}
+                            isLoading={approval === ApprovalState.PENDING}
+                            loadingText={`Approving ${currency?.symbol}`}
+                          >
+                            Approve {currency?.symbol}
+                          </Button>
+                        )}
+                    </>
+                  )}
+                </>
+              )}
 
               <Button
                 colorScheme="purple"
@@ -129,25 +324,11 @@ export default function MintBox() {
                   transform: 'scale(0.98)',
                   boxShadow: 'inner',
                 }}
+                isLoading={attemptingTxn}
+                onClick={onMint}
+                disabled={!isValid || approval !== ApprovalState.APPROVED}
               >
-                STAKE CMK
-              </Button>
-              <Button
-                isDisabled
-                colorScheme="purple"
-                size="lg"
-                w="200px"
-                rounded="2xl"
-                _hover={{
-                  transform: 'translateY(-2px)',
-                  boxShadow: 'lg',
-                }}
-                _active={{
-                  transform: 'scale(0.98)',
-                  boxShadow: 'inner',
-                }}
-              >
-                UNSTAKE
+                {errorMessage ? errorMessage : 'Mint Access Key'}
               </Button>
             </VStack>
           )}

@@ -1,10 +1,20 @@
 import { Contract } from '@ethersproject/contracts';
 import { useMemo } from 'react';
 
+import CREDMARK_ACCESS_KEY_ABI from '~/abis/credmark-access-key.json';
+import CREDMARK_ACCESS_PROVIDER_ABI from '~/abis/credmark-access-provider.json';
 import ENS_PUBLIC_RESOLVER_ABI from '~/abis/ens-public-resolver.json';
 import ENS_ABI from '~/abis/ens-registrar.json';
 import ERC20_BYTES32_ABI from '~/abis/erc20-bytes32.json';
 import ERC20_ABI from '~/abis/erc20.json';
+import REWARDS_POOL_ABI from '~/abis/rewards-pool.json';
+import STAKED_CREDMARK_ABI from '~/abis/staked-credmark.json';
+import {
+  CredmarkAccessKey,
+  CredmarkAccessProvider,
+  RewardsPool,
+  StakedCredmark,
+} from '~/abis/types';
 import { EnsPublicResolver } from '~/abis/types/EnsPublicResolver';
 import { EnsRegistrar } from '~/abis/types/EnsRegistrar';
 import { Erc20 } from '~/abis/types/Erc20';
@@ -13,6 +23,10 @@ import MulticallABI from '~/abis/uniswap-interface-multicall.json';
 import {
   ENS_REGISTRAR_ADDRESSES,
   MULTICALL_ADDRESS,
+  STAKED_CMK_ADDRESSES,
+  REWARDS_POOL_ADDRESSES,
+  ACCESS_KEY_ADDRESSES,
+  ACCESS_PROVIDER_ADDRESSES,
 } from '~/constants/addresses';
 import getContract from '~/utils/getContract';
 
@@ -93,5 +107,30 @@ export function useENSResolverContract(
     address,
     ENS_PUBLIC_RESOLVER_ABI,
     withSignerIfPossible,
+  );
+}
+
+export function useStakedCredmarkContract(): StakedCredmark | null {
+  return useContract<StakedCredmark>(
+    STAKED_CMK_ADDRESSES,
+    STAKED_CREDMARK_ABI.abi,
+  );
+}
+
+export function useRewardsPoolContract(): RewardsPool | null {
+  return useContract<RewardsPool>(REWARDS_POOL_ADDRESSES, REWARDS_POOL_ABI.abi);
+}
+
+export function useAccessKeyContract(): CredmarkAccessKey | null {
+  return useContract<CredmarkAccessKey>(
+    ACCESS_KEY_ADDRESSES,
+    CREDMARK_ACCESS_KEY_ABI.abi,
+  );
+}
+
+export function useAccessProviderContract(): CredmarkAccessProvider | null {
+  return useContract<CredmarkAccessProvider>(
+    ACCESS_PROVIDER_ADDRESSES,
+    CREDMARK_ACCESS_PROVIDER_ABI.abi,
   );
 }
