@@ -29,8 +29,9 @@ export default function AccessKeyListItem({ tokenId }: AccessKeyListItemProps) {
   const addTransaction = useTransactionAdder();
 
   const accessKeyContract = useAccessKeyContract();
-  const [attemptingTxn, setAttemptingTxn] = useState(false);
+  const [burning, setBurning] = useState(false);
   const [burned, setBurned] = useState(false);
+  const [addingCmk, setAddingCmk] = useState(false);
 
   const currency = chainId ? CMK[chainId] : undefined;
 
@@ -117,7 +118,7 @@ export default function AccessKeyListItem({ tokenId }: AccessKeyListItemProps) {
       data,
     };
 
-    setAttemptingTxn(true);
+    setAddingCmk(true);
 
     library
       .getSigner()
@@ -146,7 +147,7 @@ export default function AccessKeyListItem({ tokenId }: AccessKeyListItemProps) {
         }
       })
       .finally(() => {
-        setAttemptingTxn(false);
+        setAddingCmk(false);
       });
   }
 
@@ -166,7 +167,7 @@ export default function AccessKeyListItem({ tokenId }: AccessKeyListItemProps) {
       data,
     };
 
-    setAttemptingTxn(true);
+    setBurning(true);
 
     library
       .getSigner()
@@ -195,7 +196,7 @@ export default function AccessKeyListItem({ tokenId }: AccessKeyListItemProps) {
         }
       })
       .finally(() => {
-        setAttemptingTxn(false);
+        setBurning(false);
       });
   }
 
@@ -215,7 +216,7 @@ export default function AccessKeyListItem({ tokenId }: AccessKeyListItemProps) {
               borderWidth="0"
               placeholder="999.99"
               textAlign="center"
-              isDisabled={attemptingTxn}
+              isDisabled={burning || addingCmk}
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
             />
@@ -226,7 +227,7 @@ export default function AccessKeyListItem({ tokenId }: AccessKeyListItemProps) {
                   variant="ghost"
                   color="gray.400"
                   onClick={onMax}
-                  isDisabled={atMax || attemptingTxn}
+                  isDisabled={atMax || burning || addingCmk}
                 >
                   MAX
                 </Button>
@@ -301,9 +302,11 @@ export default function AccessKeyListItem({ tokenId }: AccessKeyListItemProps) {
               transform: 'scale(0.98)',
               boxShadow: 'inner',
             }}
-            isLoading={attemptingTxn}
+            isLoading={addingCmk}
             onClick={onAddCmk}
-            disabled={!isValid || approval !== ApprovalState.APPROVED}
+            isDisabled={
+              !isValid || approval !== ApprovalState.APPROVED || burning
+            }
           >
             {errorMessage ? errorMessage : 'Add CMK'}
           </Button>
@@ -314,8 +317,19 @@ export default function AccessKeyListItem({ tokenId }: AccessKeyListItemProps) {
           <Button
             colorScheme="red"
             onClick={onBurn}
-            isLoading={attemptingTxn}
-            isDisabled={burned}
+            size="lg"
+            w="200px"
+            rounded="2xl"
+            _hover={{
+              transform: 'translateY(-2px)',
+              boxShadow: 'lg',
+            }}
+            _active={{
+              transform: 'scale(0.98)',
+              boxShadow: 'inner',
+            }}
+            isLoading={burning}
+            isDisabled={burned || addingCmk}
           >
             {burned ? 'Burned' : 'Burn'}
           </Button>

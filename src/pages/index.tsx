@@ -89,7 +89,7 @@ export default function IndexPage(): JSX.Element {
                 color="purple.500"
                 fontWeight="300"
               >
-                MArket Cap
+                Market Cap
               </Text>
               <Text flex="1" color="purple.500" fontWeight="700">
                 $XXX,XXX.XX

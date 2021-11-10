@@ -13,17 +13,15 @@ import {
 import { useAccessKeys } from './useAccessKeys';
 import {
   useAccessKeyContract,
+  useRewardsPoolContract,
   useStakedCredmarkContract,
   useTokenContract,
 } from './useContract';
 import { useActiveWeb3React } from './web3';
 
-interface UseAccessKeyTotalSupply {
-  loading: boolean;
-  value: BigNumber | undefined;
-}
+const BN_ZERO = BigNumber.from(0);
 
-export function useAccessKeyTotalSupply(): UseAccessKeyTotalSupply {
+export function useAccessKeyTotalSupply() {
   const accessKeyContract = useAccessKeyContract();
 
   const { loading, result: totalSupplyResult } = useSingleCallResult(
@@ -36,9 +34,7 @@ export function useAccessKeyTotalSupply(): UseAccessKeyTotalSupply {
   return { loading, value: totalSupply };
 }
 
-export function useAccessKeyBalance(
-  account: string | null | undefined,
-): UseAccessKeyTotalSupply {
+export function useAccessKeyBalance(account: string | null | undefined) {
   const accessKeyContract = useAccessKeyContract();
 
   const { loading, result: balanceResult } = useSingleCallResult(
@@ -52,17 +48,59 @@ export function useAccessKeyBalance(
   return { loading, value: balance };
 }
 
+export function useSCmkTotalSupply() {
+  const sCmkContract = useStakedCredmarkContract();
+
+  const { loading, result: totalSupplyResult } = useSingleCallResult(
+    sCmkContract,
+    'totalSupply',
+  );
+
+  const totalSupply = totalSupplyResult?.[0] as BigNumber | undefined;
+
+  return { loading, value: totalSupply };
+}
+
+export function useCmkToSCmk(cmkAmount: BigNumber) {
+  const sCmkContract = useStakedCredmarkContract();
+
+  const { loading, result: cmkToSharesResult } = useSingleCallResult(
+    sCmkContract,
+    'cmkToShares',
+    [cmkAmount],
+  );
+
+  return {
+    loading,
+    value: cmkToSharesResult?.[0] as BigNumber | undefined,
+  };
+}
+
+export function useSCmkToCmk(sCmkAmount: BigNumber) {
+  const sCmkContract = useStakedCredmarkContract();
+
+  const { loading, result: sharesToCmkResult } = useSingleCallResult(
+    sCmkContract,
+    'sCmkAmount',
+    [sCmkAmount],
+  );
+
+  return {
+    loading,
+    value: sharesToCmkResult?.[0] as BigNumber | undefined,
+  };
+}
+
 export function useSCmkBalance(account: string | null | undefined) {
   const { chainId } = useActiveWeb3React();
   const accessKeyContract = useAccessKeyContract();
-  const sCmkContract = useStakedCredmarkContract();
 
-  const { tokenIds } = useAccessKeys(account);
+  const accessKeys = useAccessKeys(account);
 
   const result = useSingleContractMultipleData(
     accessKeyContract,
     'cmkValue',
-    (tokenIds ?? []).map((tokenId) => [tokenId]),
+    (accessKeys.tokenIds ?? []).map((tokenId) => [tokenId]),
   );
 
   const totalCmkValue = useMemo(() => {
@@ -73,18 +111,19 @@ export function useSCmkBalance(account: string | null | undefined) {
       .reduce((prev, curr) => prev.add(curr), BigNumber.from(0));
   }, [result]);
 
-  const { loading: sCmkBalanceLoading, result: sCmkBalanceResult } =
-    useSingleCallResult(sCmkContract, 'cmkToShares', [totalCmkValue]);
+  const sCmkBalance = useCmkToSCmk(totalCmkValue);
 
   const sCMK = chainId ? SCMK[chainId] : undefined;
-  const sCmkBalance =
-    sCmkBalanceResult && sCMK
-      ? CurrencyAmount.fromRawAmount(sCMK, sCmkBalanceResult?.[0].toString())
-      : undefined;
 
   return {
-    loading: sCmkBalanceLoading || result.find((r) => r.loading),
-    value: sCmkBalance,
+    loading:
+      accessKeys.loading ||
+      sCmkBalance.loading ||
+      !!result.find((r) => r.loading),
+    value:
+      sCmkBalance.value && sCMK
+        ? CurrencyAmount.fromRawAmount(sCMK, sCmkBalance?.value?.toString())
+        : undefined,
   };
 }
 
@@ -114,6 +153,58 @@ export function usePercentCmkStaked() {
             sCmkBalance.mul(100).toString(),
             cmkTotalSupply.toString(),
           )
+        : undefined,
+  };
+}
+
+export function useUnissuedRewards() {
+  const rewardsPoolContract = useRewardsPoolContract();
+
+  const { loading, result: unissuedRewardsResult } = useSingleCallResult(
+    rewardsPoolContract,
+    'unissuedRewards',
+  );
+
+  const unissuedRewards = unissuedRewardsResult?.[0] as BigNumber | undefined;
+
+  return { loading, value: unissuedRewards };
+}
+
+export function useNextRewardAmount(account: string | null | undefined) {
+  const { chainId } = useActiveWeb3React();
+
+  const { loading: sCmkTotalSupplyLoading, value: sCmkTotalSupply } =
+    useSCmkTotalSupply();
+  const { loading: unissuedRewardsCmkLoading, value: unissuedRewardsCmk } =
+    useUnissuedRewards();
+  const { loading: sCmkBalanceLoading, value: sCmkBalance } =
+    useSCmkBalance(account);
+
+  const { loading: unissuedRewardsSCmkLoading, value: unissuedRewardsSCmk } =
+    useCmkToSCmk(
+      sCmkTotalSupply &&
+        unissuedRewardsCmk &&
+        sCmkBalance &&
+        !sCmkTotalSupply.eq(BN_ZERO)
+        ? BigNumber.from(sCmkBalance.quotient.toString())
+            .mul(unissuedRewardsCmk)
+            .div(sCmkTotalSupply)
+        : BN_ZERO,
+    );
+
+  const loading =
+    sCmkBalanceLoading ||
+    sCmkTotalSupplyLoading ||
+    unissuedRewardsCmkLoading ||
+    unissuedRewardsSCmkLoading;
+
+  const sCMK = chainId ? SCMK[chainId] : undefined;
+
+  return {
+    loading,
+    value:
+      unissuedRewardsSCmk && sCMK
+        ? CurrencyAmount.fromRawAmount(sCMK, unissuedRewardsSCmk.toString())
         : undefined,
   };
 }

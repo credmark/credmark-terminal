@@ -9,14 +9,22 @@ import {
   VStack,
 } from '@chakra-ui/layout';
 import { LinkOverlay } from '@chakra-ui/react';
+import { Fraction } from '@uniswap/sdk-core';
+import JSBI from 'jsbi';
 import NextLink from 'next/link';
 import React from 'react';
 
 import { CMK } from '~/constants/tokens';
-import { useAccessKeyBalance, useSCmkBalance } from '~/hooks/stats';
+import {
+  useAccessKeyBalance,
+  useSCmkBalance,
+  useNextRewardAmount,
+} from '~/hooks/stats';
 import { useActiveWeb3React } from '~/hooks/web3';
 import { useTokenBalance } from '~/state/wallet/hooks';
 import { formatTokenAmount } from '~/utils/formatTokenAmount';
+
+const ZERO = JSBI.BigInt(0);
 
 export default function WalletStatus() {
   const { chainId, account } = useActiveWeb3React();
@@ -29,6 +37,7 @@ export default function WalletStatus() {
   );
 
   const sCmkBalance = useSCmkBalance(account);
+  const nextRewardAmount = useNextRewardAmount(account);
 
   return (
     <Container
@@ -114,10 +123,15 @@ export default function WalletStatus() {
               fontWeight="300"
               whiteSpace="nowrap"
             >
-              Net Reward Amount
+              Next Reward Amount
             </Text>
             <Text flex="1" color="purple.500" fontWeight="700">
-              X.XXX sCMK
+              {nextRewardAmount.loading || !nextRewardAmount.value
+                ? '??'
+                : formatTokenAmount(nextRewardAmount.value, 2, {
+                    shorten: true,
+                  })}{' '}
+              sCMK
             </Text>
           </HStack>
           <HStack>
@@ -129,10 +143,24 @@ export default function WalletStatus() {
               fontWeight="300"
               whiteSpace="nowrap"
             >
-              Net Reward Yield
+              Next Reward Yield
             </Text>
             <Text flex="1" color="purple.500" fontWeight="700">
-              X.XX%
+              {nextRewardAmount.loading ||
+              !nextRewardAmount.value ||
+              sCmkBalance.loading ||
+              !sCmkBalance.value
+                ? '??'
+                : JSBI.EQ(sCmkBalance.value.quotient, ZERO)
+                ? '0.00'
+                : new Fraction(
+                    JSBI.multiply(
+                      nextRewardAmount.value.quotient,
+                      JSBI.BigInt(100),
+                    ),
+                    sCmkBalance.value.quotient,
+                  ).toFixed(2)}
+              %
             </Text>
           </HStack>
           <HStack>
