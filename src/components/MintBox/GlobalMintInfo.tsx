@@ -1,45 +1,11 @@
 import { Box, HStack, Text } from '@chakra-ui/react';
-import { BigNumber } from '@ethersproject/bignumber';
 import React from 'react';
 
-import { CMK_ADDRESSES, STAKED_CMK_ADDRESSES } from '~/constants/addresses';
-import { useAccessKeyContract, useTokenContract } from '~/hooks/useContract';
-import { useActiveWeb3React } from '~/hooks/web3';
-import { useSingleCallResult } from '~/state/multicall/hooks';
+import { useAccessKeyTotalSupply, usePercentCmkStaked } from '~/hooks/stats';
 
 export default function GlobalMintInfo() {
-  const { chainId } = useActiveWeb3React();
-  const accessKeyContract = useAccessKeyContract();
-  const cmkContract = useTokenContract(
-    chainId ? CMK_ADDRESSES[chainId] : undefined,
-  );
-
-  const { result: totalSupplyResult } = useSingleCallResult(
-    accessKeyContract,
-    'totalSupply',
-  );
-
-  const totalSupply = totalSupplyResult?.[0]?.toString();
-
-  const { result: cmkTotalSupplyResult } = useSingleCallResult(
-    cmkContract,
-    'totalSupply',
-  );
-
-  const cmkTotalSupply = cmkTotalSupplyResult?.[0] as BigNumber | undefined;
-
-  const { result: sCmkBalanceResult } = useSingleCallResult(
-    cmkContract,
-    'balanceOf',
-    [chainId ? STAKED_CMK_ADDRESSES[chainId] : undefined],
-  );
-
-  const sCmkBalance = sCmkBalanceResult?.[0] as BigNumber | undefined;
-
-  const percCmkStaked =
-    sCmkBalance && cmkTotalSupply
-      ? sCmkBalance.mul(1000000).div(cmkTotalSupply).toNumber() / 10000
-      : undefined;
+  const accessKeyTotalSupply = useAccessKeyTotalSupply();
+  const percentCmkStaked = usePercentCmkStaked();
 
   return (
     <Box whiteSpace="nowrap" w="100%">
@@ -64,7 +30,9 @@ export default function GlobalMintInfo() {
           % of CMK Staked
         </Text>
         <Text flex="1" color="purple.500" fontWeight="700">
-          {percCmkStaked?.toFixed(2)}%
+          {percentCmkStaked.loading || !percentCmkStaked.value
+            ? '??'
+            : percentCmkStaked.value.toFixed(2) + '%'}
         </Text>
       </HStack>
       <HStack my="2">
@@ -72,7 +40,9 @@ export default function GlobalMintInfo() {
           Total Keys Minted
         </Text>
         <Text flex="1" color="purple.500" fontWeight="700">
-          {totalSupply}
+          {accessKeyTotalSupply.loading
+            ? '??'
+            : accessKeyTotalSupply.value?.toString() ?? '??'}
         </Text>
       </HStack>
     </Box>

@@ -6,8 +6,12 @@ import AreaChart from '~/components/Charts/AreaChart';
 import MintBox from '~/components/MintBox';
 import Navbar from '~/components/Navbar';
 import TerminalBox from '~/components/TerminalBox';
+import { useAccessKeyTotalSupply, usePercentCmkStaked } from '~/hooks/stats';
 
 export default function IndexPage(): JSX.Element {
+  const accessKeyTotalSupply = useAccessKeyTotalSupply();
+  const percentCmkStaked = usePercentCmkStaked();
+
   return (
     <VStack
       minH="100vh"
@@ -157,7 +161,9 @@ export default function IndexPage(): JSX.Element {
                 % CMK STAKED
               </Text>
               <Text flex="1" color="purple.500" fontWeight="700">
-                XX.XX%
+                {percentCmkStaked.loading || !percentCmkStaked.value
+                  ? '??'
+                  : percentCmkStaked.value.toFixed(2) + '%'}
               </Text>
             </HStack>
           </Box>
@@ -174,7 +180,9 @@ export default function IndexPage(): JSX.Element {
                 color="#38508C"
                 fontFamily="Credmark Regular"
               >
-                XX
+                {accessKeyTotalSupply.loading
+                  ? '??'
+                  : accessKeyTotalSupply.value?.toString() ?? '??'}
               </Text>
               <Text fontSize="sm" color="purple.500">
                 Minted
