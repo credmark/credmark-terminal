@@ -1,4 +1,4 @@
-import { Container, HStack, Img, Text } from '@chakra-ui/react';
+import { Badge, Container, HStack, Img, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 
 import { useActiveWeb3React } from '~/hooks/web3';
@@ -7,8 +7,15 @@ import Sidebar from './Sidebar';
 import WalletStatus from './WalletStatus';
 import Web3Status from './Web3Status';
 
+const NETWORK_LABELS: { [chainId: number]: string } = {
+  [4]: 'Rinkeby',
+  [3]: 'Ropsten',
+  [5]: 'Göerli',
+  [42]: 'Kovan',
+};
+
 export default function Navbar(): JSX.Element {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   return (
     <>
@@ -42,7 +49,21 @@ export default function Navbar(): JSX.Element {
               </Text>
             </Text>
           </HStack>
-          <Web3Status />
+          <HStack>
+            {chainId && NETWORK_LABELS[chainId] && (
+              <Badge
+                px="2"
+                variant="subtle"
+                bg="purple.50"
+                fontSize="xs"
+                colorScheme="purple"
+                rounded="md"
+              >
+                {NETWORK_LABELS[chainId]}
+              </Badge>
+            )}
+            <Web3Status />
+          </HStack>
         </HStack>
         <Sidebar />
       </Container>
