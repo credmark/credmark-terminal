@@ -1,9 +1,10 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { CurrencyAmount, Fraction } from '@uniswap/sdk-core';
+import { BigintIsh, CurrencyAmount, Fraction } from '@uniswap/sdk-core';
+import JSBI from 'jsbi';
 import { useMemo } from 'react';
 
 import { CMK_ADDRESSES, STAKED_CMK_ADDRESSES } from '~/constants/addresses';
-import { SCMK } from '~/constants/tokens';
+import { CMK, SCMK } from '~/constants/tokens';
 import {
   Result,
   useSingleCallResult,
@@ -17,6 +18,7 @@ import {
   useStakedCredmarkContract,
   useTokenContract,
 } from './useContract';
+import { useUSDCValue } from './useUSDCPrice';
 import { useActiveWeb3React } from './web3';
 
 const BN_ZERO = BigNumber.from(0);
@@ -207,4 +209,20 @@ export function useNextRewardAmount(account: string | null | undefined) {
         ? CurrencyAmount.fromRawAmount(sCMK, unissuedRewardsSCmk.toString())
         : undefined,
   };
+}
+
+export function useCmkToUsdcPrice(rawAmount?: BigintIsh) {
+  const { chainId } = useActiveWeb3React();
+
+  const currency = chainId ? CMK[chainId] : undefined;
+
+  const amount = currency
+    ? CurrencyAmount.fromRawAmount(
+        currency,
+        rawAmount ??
+          JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(currency.decimals)),
+      )
+    : undefined;
+
+  return useUSDCValue(amount);
 }

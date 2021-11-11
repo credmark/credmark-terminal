@@ -1,4 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
+import QuoterABI from '@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json';
 import { useMemo } from 'react';
 
 import CREDMARK_ACCESS_KEY_ABI from '~/abis/credmark-access-key.json';
@@ -18,6 +19,7 @@ import {
 import { EnsPublicResolver } from '~/abis/types/EnsPublicResolver';
 import { EnsRegistrar } from '~/abis/types/EnsRegistrar';
 import { Erc20 } from '~/abis/types/Erc20';
+import { Quoter } from '~/abis/types/Quoter';
 import { UniswapInterfaceMulticall } from '~/abis/types/UniswapInterfaceMulticall';
 import MulticallABI from '~/abis/uniswap-interface-multicall.json';
 import {
@@ -27,6 +29,7 @@ import {
   REWARDS_POOL_ADDRESSES,
   ACCESS_KEY_ADDRESSES,
   ACCESS_PROVIDER_ADDRESSES,
+  QUOTER_ADDRESSES,
 } from '~/constants/addresses';
 import getContract from '~/utils/getContract';
 
@@ -108,6 +111,10 @@ export function useENSResolverContract(
     ENS_PUBLIC_RESOLVER_ABI,
     withSignerIfPossible,
   );
+}
+
+export function useV3Quoter(): Quoter | null {
+  return useContract<Quoter>(QUOTER_ADDRESSES, QuoterABI.abi);
 }
 
 export function useStakedCredmarkContract(): StakedCredmark | null {

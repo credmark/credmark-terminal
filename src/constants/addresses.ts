@@ -1,3 +1,5 @@
+import { FACTORY_ADDRESS as V3_FACTORY_ADDRESS } from '@uniswap/v3-sdk';
+
 import { constructSameAddressMap } from '~/utils/constructSameAddressMap';
 
 export const MULTICALL_ADDRESS = constructSameAddressMap(
@@ -10,6 +12,17 @@ export const ENS_REGISTRAR_ADDRESSES: { [chainId: number]: string } = {
   [4]: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
   [3]: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
 };
+
+export const QUOTER_ADDRESSES = constructSameAddressMap(
+  '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6',
+);
+
+export const V3_CORE_FACTORY_ADDRESSES =
+  constructSameAddressMap(V3_FACTORY_ADDRESS);
+
+export const UNI_ADDRESS = constructSameAddressMap(
+  '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+);
 
 export const CMK_ADDRESSES: { [chainId: number]: string } = {
   [1]: '0x68CFb82Eacb9f198d508B514d898a403c449533E',

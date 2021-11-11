@@ -6,11 +6,18 @@ import AreaChart from '~/components/Charts/AreaChart';
 import MintBox from '~/components/MintBox';
 import Navbar from '~/components/Navbar';
 import TerminalBox from '~/components/TerminalBox';
-import { useAccessKeyTotalSupply, usePercentCmkStaked } from '~/hooks/stats';
+import {
+  useAccessKeyTotalSupply,
+  useCmkToUsdcPrice,
+  usePercentCmkStaked,
+} from '~/hooks/stats';
+import { formatTokenAmount } from '~/utils/formatTokenAmount';
 
 export default function IndexPage(): JSX.Element {
   const accessKeyTotalSupply = useAccessKeyTotalSupply();
   const percentCmkStaked = usePercentCmkStaked();
+
+  const cmkToUsdc = useCmkToUsdcPrice();
 
   return (
     <VStack
@@ -78,7 +85,9 @@ export default function IndexPage(): JSX.Element {
                 Token Price
               </Text>
               <Text flex="1" color="purple.500" fontWeight="700">
-                $XX.XX
+                {cmkToUsdc
+                  ? '$' + formatTokenAmount(cmkToUsdc, 4, { shorten: true })
+                  : '??'}
               </Text>
             </HStack>
             <HStack>
