@@ -381,5 +381,5 @@ export function useTotalValueDeposited() {
     | BigNumber
     | undefined;
 
-  return useCmkToUsdcPrice(stakedCmkCmkBalance?.toString());
+  return useCmkToUsdcPrice(stakedCmkCmkBalance?.toString() ?? '0');
 }

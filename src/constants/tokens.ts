@@ -1,6 +1,11 @@
 import { Token } from '@uniswap/sdk-core';
 
-import { CMK_ADDRESSES, STAKED_CMK_ADDRESSES, UNI_ADDRESS } from './addresses';
+import {
+  CMK_ADDRESSES,
+  STAKED_CMK_ADDRESSES,
+  UNI_ADDRESS,
+  USDC_ADDRESSES,
+} from './addresses';
 
 export const CMK: { [chainId: number]: Token } = {
   [1]: new Token(1, CMK_ADDRESSES[1], 18, 'CMK', 'Credmark'),
@@ -31,13 +36,15 @@ export const DAI = new Token(
   'DAI',
   'Dai Stablecoin',
 );
-export const USDC = new Token(
-  1,
-  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-  6,
-  'USDC',
-  'USD//C',
-);
+
+export const USDC: { [chainId: number]: Token } = {
+  [1]: new Token(1, USDC_ADDRESSES[1], 6, 'USDC', 'USD//C'),
+  [4]: new Token(4, USDC_ADDRESSES[4], 6, 'USDC', 'USD//C'),
+  [3]: new Token(3, USDC_ADDRESSES[3], 6, 'USDC', 'USD//C'),
+  [5]: new Token(5, USDC_ADDRESSES[5], 6, 'USDC', 'USD//C'),
+  [42]: new Token(42, USDC_ADDRESSES[42], 6, 'USDC', 'USD//C'),
+};
+
 export const USDT = new Token(
   1,
   '0xdAC17F958D2ee523a2206206994597C13D831ec7',

@@ -34,8 +34,8 @@ export default function GlobalMintInfo() {
         <Text flex="1" color="purple.500" fontWeight="700">
           {totalValueDeposited
             ? '$' +
-              formatTokenAmount(totalValueDeposited, 4, {
-                shorten: true,
+              formatTokenAmount(totalValueDeposited, 2, {
+                withComma: true,
               })
             : '??'}
         </Text>

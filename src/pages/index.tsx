@@ -11,6 +11,7 @@ import {
   useCmkCirculatingSupply,
   useCmkToUsdcPrice,
   usePercentCmkStaked,
+  useTotalValueDeposited,
 } from '~/hooks/stats';
 import { formatTokenAmount } from '~/utils/formatTokenAmount';
 
@@ -23,6 +24,7 @@ export default function IndexPage(): JSX.Element {
   const marketCap = useCmkToUsdcPrice(
     circulatingSupply.loading ? undefined : circulatingSupply.value?.quotient,
   );
+  const totalValueDeposited = useTotalValueDeposited();
 
   return (
     <VStack
@@ -108,8 +110,8 @@ export default function IndexPage(): JSX.Element {
               <Text flex="1" color="purple.500" fontWeight="700">
                 {marketCap
                   ? '$' +
-                    formatTokenAmount(marketCap, 4, {
-                      shorten: true,
+                    formatTokenAmount(marketCap, 2, {
+                      withComma: true,
                     })
                   : '??'}
               </Text>
@@ -156,7 +158,12 @@ export default function IndexPage(): JSX.Element {
                 Amount Staked
               </Text>
               <Text flex="1" color="purple.500" fontWeight="700">
-                $XXX,XXX.XX
+                {totalValueDeposited
+                  ? '$' +
+                    formatTokenAmount(totalValueDeposited, 2, {
+                      withComma: true,
+                    })
+                  : '??'}
               </Text>
             </HStack>
             <HStack>

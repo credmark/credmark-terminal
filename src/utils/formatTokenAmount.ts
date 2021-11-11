@@ -3,8 +3,11 @@ import JSBI from 'jsbi';
 
 export function formatTokenAmount(
   amount: CurrencyAmount<Currency> | undefined,
-  sigFigs: number,
-  { shorten } = { shorten: false },
+  fixedFigs: number,
+  { shorten, withComma }: { shorten?: boolean; withComma?: boolean } = {
+    shorten: false,
+    withComma: false,
+  },
 ): string {
   if (!amount) {
     return '-';
@@ -18,20 +21,28 @@ export function formatTokenAmount(
     return '<0.00001';
   }
 
-  if (!shorten) {
-    return amount.toSignificant(sigFigs);
+  let formatted: string;
+
+  if (shorten) {
+    const num = Number(amount.toSignificant(fixedFigs + 3));
+    if (num > 1e9) {
+      formatted = `${(num / 1e9).toFixed(fixedFigs)}B`;
+    } else if (num > 1e6) {
+      formatted = `${(num / 1e6).toFixed(fixedFigs)}M`;
+    } else if (num > 1e3) {
+      formatted = `${(num / 1e3).toFixed(fixedFigs)}K`;
+    } else {
+      formatted = num.toFixed(fixedFigs);
+    }
+  } else {
+    formatted = amount.toFixed(fixedFigs);
   }
 
-  const num = Number(amount.toSignificant(sigFigs + 3));
-  if (num > 1e9) {
-    return `${(num / 1e9).toFixed(sigFigs)}B`;
-  } else if (num > 1e6) {
-    return `${(num / 1e6).toFixed(sigFigs)}M`;
-  } else if (num > 1e3) {
-    return `${(num / 1e3).toFixed(sigFigs)}K`;
-  } else {
-    return num.toFixed(sigFigs);
+  if (withComma) {
+    formatted = formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
+
+  return formatted;
 }
 
 export function formatPrice(

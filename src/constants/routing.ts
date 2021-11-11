@@ -57,7 +57,7 @@ const WETH_ONLY: ChainTokenList = {
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
-  [1]: [...WETH_ONLY[1], DAI, USDC, USDT, WBTC],
+  [1]: [...WETH_ONLY[1], DAI, USDC[1], USDT, WBTC],
 };
 export const ADDITIONAL_BASES: {
   [chainId: number]: { [tokenAddress: string]: Token[] };
@@ -92,9 +92,9 @@ export const CUSTOM_BASES: {
  * Shows up in the currency select for swap and add liquidity
  */
 export const COMMON_BASES: ChainCurrencyList = {
-  [1]: [Ether.onChain(1), DAI, USDC, USDT, WBTC, WETH9[1]],
+  [1]: [Ether.onChain(1), DAI, USDC[1], USDT, WBTC, WETH9[1]],
   [3]: [Ether.onChain(3), WETH9[3]],
-  [4]: [Ether.onChain(4), WETH9[4]],
+  [4]: [Ether.onChain(4), WETH9[4], USDC[4]],
   [5]: [Ether.onChain(5), WETH9[5]],
   [42]: [Ether.onChain(42), WETH9[42]],
 };
@@ -102,7 +102,7 @@ export const COMMON_BASES: ChainCurrencyList = {
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ...WETH_ONLY,
-  [1]: [...WETH_ONLY[1], DAI, USDC, USDT, WBTC],
+  [1]: [...WETH_ONLY[1], DAI, USDC[1], USDT, WBTC],
 };
 export const PINNED_PAIRS: { readonly [chainId: number]: [Token, Token][] } = {
   [1]: [
@@ -122,7 +122,7 @@ export const PINNED_PAIRS: { readonly [chainId: number]: [Token, Token][] } = {
         'Compound USD Coin',
       ),
     ],
-    [USDC, USDT],
+    [USDC[1], USDT],
     [DAI, USDT],
   ],
 };

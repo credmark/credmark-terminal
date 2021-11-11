@@ -1,15 +1,25 @@
-import { Currency, CurrencyAmount, Price, Token } from '@uniswap/sdk-core';
+import {
+  Currency,
+  CurrencyAmount,
+  Price,
+  Token,
+  TradeType,
+} from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 
 import { USDC } from '~/constants/tokens';
 
-import { useBestV3TradeExactOut } from './useBestV3Trade';
+import { useClientSideV3Trade } from './useClientSideV3Trade';
 import { useActiveWeb3React } from './web3';
 
 // Stablecoin amounts used when calculating spot price for a given currency.
-// The amount is large enough to filter low liquidity pairs.
+// The amount is large enough for mainnet to filter low liquidity pairs.
 const STABLECOIN_AMOUNT_OUT: { [chainId: number]: CurrencyAmount<Token> } = {
-  [1]: CurrencyAmount.fromRawAmount(USDC, 100_000e6),
+  [1]: CurrencyAmount.fromRawAmount(USDC[1], 100_000e6),
+  [4]: CurrencyAmount.fromRawAmount(USDC[4], 1e6),
+  [3]: CurrencyAmount.fromRawAmount(USDC[3], 1e6),
+  [5]: CurrencyAmount.fromRawAmount(USDC[5], 1e6),
+  [42]: CurrencyAmount.fromRawAmount(USDC[42], 1e6),
 };
 
 /**
@@ -24,7 +34,11 @@ export default function useUSDCPrice(
   const amountOut = chainId ? STABLECOIN_AMOUNT_OUT[chainId] : undefined;
   const stablecoin = amountOut?.currency;
 
-  const v3USDCTrade = useBestV3TradeExactOut(currency, amountOut);
+  const v3USDCTrade = useClientSideV3Trade(
+    TradeType.EXACT_OUTPUT,
+    amountOut,
+    currency,
+  );
 
   return useMemo(() => {
     if (!currency || !stablecoin) {
@@ -36,6 +50,7 @@ export default function useUSDCPrice(
       return new Price(stablecoin, stablecoin, '1', '1');
     }
 
+    // use v2 price if available, v3 as fallback
     if (v3USDCTrade.trade) {
       const { numerator, denominator } = v3USDCTrade.trade.route.midPrice;
       return new Price(currency, stablecoin, denominator, numerator);
@@ -47,7 +62,7 @@ export default function useUSDCPrice(
 
 export function useUSDCValue(
   currencyAmount: CurrencyAmount<Currency> | undefined | null,
-): CurrencyAmount<Token> | null {
+) {
   const price = useUSDCPrice(currencyAmount?.currency);
 
   return useMemo(() => {
