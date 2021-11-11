@@ -54,18 +54,21 @@ export default function IndexPage(): JSX.Element {
             titleImg="/img/scmk.png"
             yLabel="AMOUNT STAKED"
             xLabel="DATE"
+            gradient={['#DE1A60', '#3B0065']}
           />
           <AreaChart
             title="PRICE OF CMK ($)"
             titleImg="/img/cmk.png"
             yLabel="CMK TOKEN PRICE"
             xLabel="DATE"
+            gradient={['#3B0065', '#08538C']}
           />
           <AreaChart
             title="ACCESS KEYS"
             titleImg="/img/key.png"
             yLabel="ACCESS KEYS MINTED"
             xLabel="DATE"
+            gradient={['#08538C', '#DE1A60']}
           />
         </VStack>
         <HStack p="4" spacing="8">

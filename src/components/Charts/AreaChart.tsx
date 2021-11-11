@@ -2,7 +2,7 @@ import { Box, HStack, Text } from '@chakra-ui/layout';
 import { Img } from '@chakra-ui/react';
 import * as echarts from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 type ChartData = Array<{
   timestamp: string;
@@ -50,17 +50,22 @@ interface AreaChartProps {
 
   height?: number;
   padding?: number;
+  gradient: string[];
 }
 
 export default function AreaChart({
-  data = dummyData(),
   title,
   titleImg,
   xLabel,
   yLabel,
   height = 300,
   padding = 40,
+  gradient,
 }: AreaChartProps) {
+  const data = useMemo(() => {
+    return dummyData();
+  }, []);
+
   const option = {
     grid: {
       top: 40,
@@ -73,7 +78,9 @@ export default function AreaChart({
       axisPointer: {
         type: 'cross',
       },
-      renderMode: 'richText',
+      formatter: ([params]) => {
+        return `<div style="line-height: 1"><div style="text-align: center; margin-bottom: 12px; font-size: 12px;">${params.data[0]}</div><div><span style="margin-right: 16px">${params.seriesName}</span><strong>${params.data[1]}</strong></div></div>`;
+      },
     },
     title: {
       left: 'center',
@@ -147,7 +154,8 @@ export default function AreaChart({
       {
         name: yLabel,
         type: 'line',
-        symbol: 'none',
+        symbol: 'circle',
+        symbolSize: 8,
         itemStyle: {
           color: '#3b0065',
         },
@@ -158,20 +166,14 @@ export default function AreaChart({
           fontWeight: 800,
         },
         areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: '#DE1B60',
-            },
-            {
-              offset: 0.3,
-              color: '#850D63',
-            },
-            {
-              offset: 1,
-              color: '#3D0166',
-            },
-          ]),
+          opacity: 1,
+          color: new echarts.graphic.LinearGradient(
+            0,
+            0,
+            0,
+            1,
+            gradient.map((color, index) => ({ color, offset: index })),
+          ),
         },
         data: data.map(({ timestamp, value }) => [
           // new Date(timestamp).toLocaleDateString(),
