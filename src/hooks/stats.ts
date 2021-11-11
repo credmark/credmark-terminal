@@ -7,6 +7,7 @@ import {
   CMK_ADDRESSES,
   STAKED_CMK_ADDRESSES,
   LOCKED_CMK_ADDRESSES,
+  REWARDS_POOL_ADDRESSES,
 } from '~/constants/addresses';
 import { CMK, SCMK } from '~/constants/tokens';
 import {
@@ -26,6 +27,7 @@ import { useUSDCValue } from './useUSDCPrice';
 import { useActiveWeb3React } from './web3';
 
 const BN_ZERO = BigNumber.from(0);
+const SEC_IN_YEAR = BigNumber.from(365 * 24 * 3600);
 
 export function useAccessKeyTotalSupply() {
   const accessKeyContract = useAccessKeyContract();
@@ -294,4 +296,90 @@ export function useCmkToUsdcPrice(rawAmount?: BigintIsh) {
     : undefined;
 
   return useUSDCValue(amount);
+}
+
+export function useStakingApyPercent() {
+  const { chainId } = useActiveWeb3React();
+
+  const cmkContract = useTokenContract(
+    chainId ? CMK_ADDRESSES[chainId] : undefined,
+  );
+
+  const rewardsPoolContract = useRewardsPoolContract();
+
+  const {
+    loading: rewardsPoolEndTimeLoading,
+    result: rewardsPoolEndTimeResult,
+  } = useSingleCallResult(rewardsPoolContract, 'endTime');
+
+  const {
+    loading: rewardsPoolCmkBalanceLoading,
+    result: rewardsPoolCmkBalanceResult,
+  } = useSingleCallResult(cmkContract, 'balanceOf', [
+    chainId ? REWARDS_POOL_ADDRESSES[chainId] : undefined,
+  ]);
+
+  const {
+    loading: stakedCmkCmkBalanceLoading,
+    result: stakedCmkCmkBalanceResult,
+  } = useSingleCallResult(cmkContract, 'balanceOf', [
+    chainId ? STAKED_CMK_ADDRESSES[chainId] : undefined,
+  ]);
+
+  const rewardsPoolEndTime = rewardsPoolEndTimeResult?.[0] as
+    | BigNumber
+    | undefined;
+
+  const rewardsPoolCmkBalance = rewardsPoolCmkBalanceResult?.[0] as
+    | BigNumber
+    | undefined;
+
+  const stakedCmkCmkBalance = stakedCmkCmkBalanceResult?.[0] as
+    | BigNumber
+    | undefined;
+
+  const nowInSec = BigNumber.from(Date.now()).div(1000);
+  const timeLeftInSec =
+    rewardsPoolEndTime && rewardsPoolEndTime.gt(nowInSec)
+      ? rewardsPoolEndTime.sub(nowInSec)
+      : undefined;
+
+  return {
+    loading:
+      rewardsPoolEndTimeLoading ||
+      rewardsPoolCmkBalanceLoading ||
+      stakedCmkCmkBalanceLoading,
+    value:
+      rewardsPoolCmkBalance &&
+      timeLeftInSec &&
+      stakedCmkCmkBalance &&
+      !stakedCmkCmkBalance.eq(BN_ZERO) &&
+      !timeLeftInSec.eq(BN_ZERO)
+        ? new Fraction(
+            JSBI.BigInt(
+              rewardsPoolCmkBalance.mul(100).mul(SEC_IN_YEAR).toString(),
+            ),
+            JSBI.BigInt(timeLeftInSec.mul(stakedCmkCmkBalance).toString()),
+          )
+        : undefined,
+  };
+}
+
+export function useTotalValueDeposited() {
+  const { chainId } = useActiveWeb3React();
+
+  const cmkContract = useTokenContract(
+    chainId ? CMK_ADDRESSES[chainId] : undefined,
+  );
+
+  const { result: stakedCmkCmkBalanceResult } = useSingleCallResult(
+    cmkContract,
+    'balanceOf',
+    [chainId ? STAKED_CMK_ADDRESSES[chainId] : undefined],
+  );
+  const stakedCmkCmkBalance = stakedCmkCmkBalanceResult?.[0] as
+    | BigNumber
+    | undefined;
+
+  return useCmkToUsdcPrice(stakedCmkCmkBalance?.toString());
 }

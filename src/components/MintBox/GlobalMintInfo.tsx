@@ -1,11 +1,19 @@
 import { Box, HStack, Text } from '@chakra-ui/react';
 import React from 'react';
 
-import { useAccessKeyTotalSupply, usePercentCmkStaked } from '~/hooks/stats';
+import {
+  useAccessKeyTotalSupply,
+  usePercentCmkStaked,
+  useStakingApyPercent,
+  useTotalValueDeposited,
+} from '~/hooks/stats';
+import { formatTokenAmount } from '~/utils/formatTokenAmount';
 
 export default function GlobalMintInfo() {
   const accessKeyTotalSupply = useAccessKeyTotalSupply();
   const percentCmkStaked = usePercentCmkStaked();
+  const stakingApyPercent = useStakingApyPercent();
+  const totalValueDeposited = useTotalValueDeposited();
 
   return (
     <Box whiteSpace="nowrap" w="100%">
@@ -14,7 +22,9 @@ export default function GlobalMintInfo() {
           Staking APY
         </Text>
         <Text flex="1" color="purple.500" fontWeight="700">
-          XXX.XX%
+          {stakingApyPercent.loading || !stakingApyPercent.value
+            ? '??'
+            : stakingApyPercent.value.toFixed(2) + '%'}
         </Text>
       </HStack>
       <HStack my="2">
@@ -22,7 +32,12 @@ export default function GlobalMintInfo() {
           Total Value Deposited
         </Text>
         <Text flex="1" color="purple.500" fontWeight="700">
-          $XXX,XXX.XX
+          {totalValueDeposited
+            ? '$' +
+              formatTokenAmount(totalValueDeposited, 4, {
+                shorten: true,
+              })
+            : '??'}
         </Text>
       </HStack>
       <HStack my="2">
