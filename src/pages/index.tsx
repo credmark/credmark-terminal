@@ -8,6 +8,7 @@ import Navbar from '~/components/Navbar';
 import TerminalBox from '~/components/TerminalBox';
 import {
   useAccessKeyTotalSupply,
+  useCmkCirculatingSupply,
   useCmkToUsdcPrice,
   usePercentCmkStaked,
 } from '~/hooks/stats';
@@ -18,6 +19,10 @@ export default function IndexPage(): JSX.Element {
   const percentCmkStaked = usePercentCmkStaked();
 
   const cmkToUsdc = useCmkToUsdcPrice();
+  const circulatingSupply = useCmkCirculatingSupply();
+  const marketCap = useCmkToUsdcPrice(
+    circulatingSupply.loading ? undefined : circulatingSupply.value?.quotient,
+  );
 
   return (
     <VStack
@@ -101,7 +106,12 @@ export default function IndexPage(): JSX.Element {
                 Market Cap
               </Text>
               <Text flex="1" color="purple.500" fontWeight="700">
-                $XXX,XXX.XX
+                {marketCap
+                  ? '$' +
+                    formatTokenAmount(marketCap, 4, {
+                      shorten: true,
+                    })
+                  : '??'}
               </Text>
             </HStack>
             <HStack>
@@ -115,7 +125,11 @@ export default function IndexPage(): JSX.Element {
                 Circulating Supply
               </Text>
               <Text flex="1" color="purple.500" fontWeight="700">
-                $XXX,XXX.XX
+                {circulatingSupply.loading
+                  ? '??'
+                  : circulatingSupply.value
+                      ?.toFixed(0)
+                      ?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
               </Text>
             </HStack>
           </Box>

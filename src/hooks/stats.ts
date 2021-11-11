@@ -3,7 +3,11 @@ import { BigintIsh, CurrencyAmount, Fraction } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import { useMemo } from 'react';
 
-import { CMK_ADDRESSES, STAKED_CMK_ADDRESSES } from '~/constants/addresses';
+import {
+  CMK_ADDRESSES,
+  STAKED_CMK_ADDRESSES,
+  LOCKED_CMK_ADDRESSES,
+} from '~/constants/addresses';
 import { CMK, SCMK } from '~/constants/tokens';
 import {
   Result,
@@ -48,6 +52,71 @@ export function useAccessKeyBalance(account: string | null | undefined) {
   const balance = balanceResult?.[0] as BigNumber | undefined;
 
   return { loading, value: balance };
+}
+
+export function useCmkTotalSupply() {
+  const { chainId } = useActiveWeb3React();
+  const cmkContract = useTokenContract(
+    chainId ? CMK_ADDRESSES[chainId] : undefined,
+  );
+
+  const { loading, result: totalSupplyResult } = useSingleCallResult(
+    cmkContract,
+    'totalSupply',
+  );
+
+  const totalSupply = totalSupplyResult?.[0]?.toString();
+  const cmk = chainId ? CMK[chainId] : undefined;
+
+  return {
+    loading,
+    value:
+      totalSupply && cmk
+        ? CurrencyAmount.fromRawAmount(cmk, totalSupply)
+        : undefined,
+  };
+}
+
+export function useCmkCirculatingSupply() {
+  const { chainId } = useActiveWeb3React();
+  const cmkContract = useTokenContract(
+    chainId ? CMK_ADDRESSES[chainId] : undefined,
+  );
+
+  const { loading: totalSupplyLoading, result: totalSupplyResult } =
+    useSingleCallResult(cmkContract, 'totalSupply');
+
+  const totalSupply = totalSupplyResult?.[0] as BigNumber | undefined;
+
+  const lockedAddresses =
+    (chainId ? LOCKED_CMK_ADDRESSES[chainId] : undefined) ?? [];
+
+  const result = useSingleContractMultipleData(
+    cmkContract,
+    'balanceOf',
+    lockedAddresses.map((addr) => [addr]),
+  );
+
+  const totalCmkLocked = useMemo(() => {
+    return result
+      .map(({ result }) => result)
+      .filter((result): result is Result => !!result)
+      .map((result) => result[0] as BigNumber)
+      .reduce((prev, curr) => prev.add(curr), BigNumber.from(0));
+  }, [result]);
+
+  const cmk = chainId ? CMK[chainId] : undefined;
+
+  return {
+    loading: totalSupplyLoading || !!result.find((res) => res.loading),
+    value:
+      cmk && totalSupply && totalCmkLocked
+        ? CurrencyAmount.fromRawAmount(
+            cmk,
+            totalSupply.sub(totalCmkLocked).toString(),
+          )
+        : undefined,
+  };
 }
 
 export function useSCmkTotalSupply() {
