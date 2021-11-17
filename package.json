@@ -12,7 +12,7 @@
     "prod": "APP_ENV=prod next start",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "postinstall": "contracts:compile"
+    "postinstall": "npm run contracts:compile"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.6.10",

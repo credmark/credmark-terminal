@@ -61,7 +61,7 @@ export default function Sidebar() {
       <Collapse in={expanded} animateOpacity>
         <VStack spacing="8">
           <Img src="/img/cmk.png" h="8" />
-          <VStack>
+          <VStack spacing="6">
             <NextLink href="/" passHref>
               <Link
                 fontFamily="Credmark Regular"
@@ -78,6 +78,7 @@ export default function Sidebar() {
                 fontSize="sm"
                 textAlign="center"
                 color="purple.500"
+                lineHeight="1"
               >
                 THE
                 <br />

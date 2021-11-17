@@ -1,27 +1,24 @@
 import { Box, HStack, Text } from '@chakra-ui/layout';
 import { Img } from '@chakra-ui/react';
-import * as echarts from 'echarts';
+import { EChartsOption, graphic as EChartsGraphic } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
 type ChartData = Array<{
-  timestamp: string;
+  timestamp: Date;
   value: number;
 }>;
 
 function dummyData(): ChartData {
   let base = +new Date(1968, 9, 3);
   const oneDay = 24 * 3600 * 1000;
-  const date: string[] = [];
+  const date: Date[] = [];
   const data: number[] = [Math.random() * 300];
   let min: number = data[0];
   for (let i = 1; i < 20000; i++) {
     const now = new Date((base += oneDay));
-    const time = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join(
-      '/',
-    );
     const value = Math.round((Math.random() - 0.5) * 20 + data[i - 1]);
-    date.push(time);
+    date.push(now);
     data.push(value);
     if (value < min) {
       min = value;
@@ -66,7 +63,7 @@ export default function AreaChart({
     return dummyData();
   }, []);
 
-  const option = {
+  const option: EChartsOption = {
     grid: {
       top: 40,
       bottom: 40,
@@ -78,8 +75,25 @@ export default function AreaChart({
       axisPointer: {
         type: 'cross',
       },
-      formatter: ([params]) => {
-        return `<div style="line-height: 1"><div style="text-align: center; margin-bottom: 12px; font-size: 12px;">${params.data[0]}</div><div><span style="margin-right: 16px">${params.seriesName}</span><strong>${params.data[1]}</strong></div></div>`;
+      formatter: ([params]: any) => {
+        const date = new Date(params.data[0]).toLocaleDateString(undefined, {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        });
+        const series = params.seriesName;
+        const value = params.data[1];
+        return `
+          <div style="line-height: 1">
+            <div style="text-align: center; margin-bottom: 12px; font-size: 12px;">
+              ${date}
+            </div>
+            <div>
+              <span style="margin-right: 16px">${series}</span>
+              <strong>${value}</strong>
+            </div>
+          </div>
+          `;
       },
     },
     title: {
@@ -123,6 +137,7 @@ export default function AreaChart({
         show: false,
       },
       axisPointer: {
+        show: false,
         label: {
           show: false,
         },
@@ -167,7 +182,7 @@ export default function AreaChart({
         },
         areaStyle: {
           opacity: 1,
-          color: new echarts.graphic.LinearGradient(
+          color: new EChartsGraphic.LinearGradient(
             0,
             0,
             0,

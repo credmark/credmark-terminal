@@ -14,7 +14,9 @@ export default function AccessKeysPage() {
       pb="20"
     >
       <Navbar />
-      <MintBox />
+      <Container maxW="xs" p="0">
+        <MintBox />
+      </Container>
 
       <Container maxW="container.md" p="8" bg="white" shadow="xl" rounded="3xl">
         <VStack align="stretch" spacing="6">

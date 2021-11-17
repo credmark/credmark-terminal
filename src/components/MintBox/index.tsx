@@ -159,14 +159,14 @@ export default function MintBox() {
 
   return (
     <VStack
-      w={isOpen ? 'container.md' : 'md'}
+      flex="1"
       position="relative"
-      px="8"
-      py={isOpen ? 16 : 8}
+      px="4"
+      py={isOpen ? 16 : 4}
       bg="white"
       shadow={isOpen ? 'xl' : 'lg'}
       rounded="3xl"
-      spacing="6"
+      spacing="4"
       cursor={isOpen ? undefined : 'pointer'}
       _hover={
         isOpen
@@ -189,24 +189,24 @@ export default function MintBox() {
             <Icon as={IoArrowForward} boxSize={12} color="purple.500" />
           </HStack>
         </Collapse>
-        <Img src="/img/key.png" w="20" />
+        <Img src="/img/key.png" w="14" />
       </HStack>
       <Text
         fontFamily="Credmark Regular"
         textAlign="center"
         bgGradient="linear(135deg, #3D0066, #0A528C)"
         bgClip="text"
-        lineHeight="1.2"
+        lineHeight="1"
       >
-        <Text as="span" fontSize="4xl">
+        <Text as="span" fontSize="2xl">
           STAKE CMK
         </Text>
         <br />
-        <Text as="span" fontSize="xl">
+        <Text as="span" fontSize="lg">
           TO MINT
         </Text>
         <br />
-        <Text as="span" fontSize="4xl">
+        <Text as="span" fontSize="2xl">
           ACCESS KEY
         </Text>
       </Text>

@@ -1,5 +1,7 @@
 import { Img } from '@chakra-ui/image';
 import { Box, Container, Flex, HStack, Text, VStack } from '@chakra-ui/layout';
+import { Stack } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import React from 'react';
 
 import AreaChart from '~/components/Charts/AreaChart';
@@ -16,6 +18,9 @@ import {
 import { formatTokenAmount } from '~/utils/formatTokenAmount';
 
 export default function IndexPage(): JSX.Element {
+  const router = useRouter();
+  const isMinBoxOpen = router.pathname === '/' && router.query.mint === 'true';
+
   const accessKeyTotalSupply = useAccessKeyTotalSupply();
   const percentCmkStaked = usePercentCmkStaked();
 
@@ -34,8 +39,12 @@ export default function IndexPage(): JSX.Element {
       pb="20"
     >
       <Navbar />
-      <MintBox />
-      <TerminalBox />
+      <Container maxW="container.sm" p="0">
+        <Stack w="full" spacing="8" direction={isMinBoxOpen ? 'column' : 'row'}>
+          <MintBox />
+          <TerminalBox />
+        </Stack>
+      </Container>
 
       <Container maxW="container.md" p="8" bg="white" shadow="xl" rounded="3xl">
         <VStack align="stretch">
