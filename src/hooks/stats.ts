@@ -135,6 +135,7 @@ export function useSCmkTotalSupply() {
 }
 
 export function useCmkToSCmk(cmkAmount: BigNumber) {
+  const { chainId } = useActiveWeb3React();
   const sCmkContract = useStakedCredmarkContract();
 
   const { loading, result: cmkToSharesResult } = useSingleCallResult(
@@ -143,9 +144,16 @@ export function useCmkToSCmk(cmkAmount: BigNumber) {
     [cmkAmount],
   );
 
+  const sCmkShares = cmkToSharesResult?.[0] as BigNumber | undefined;
+
+  const sCMK = chainId ? SCMK[chainId] : undefined;
+
   return {
     loading,
-    value: cmkToSharesResult?.[0] as BigNumber | undefined,
+    value:
+      sCmkShares && sCMK
+        ? CurrencyAmount.fromRawAmount(sCMK, sCmkShares?.toString())
+        : undefined,
   };
 }
 
@@ -165,6 +173,32 @@ export function useSCmkToCmk(sCmkAmount: BigNumber) {
 }
 
 export function useSCmkBalance(account: string | null | undefined) {
+  const { chainId } = useActiveWeb3React();
+
+  const sCmkContract = useStakedCredmarkContract();
+
+  const { loading, result: balanceResult } = useSingleCallResult(
+    sCmkContract,
+    'balanceOf',
+    [account ?? undefined],
+  );
+
+  const balance = balanceResult?.[0] as BigNumber | undefined;
+
+  const sCMK = chainId ? SCMK[chainId] : undefined;
+
+  return {
+    loading,
+    value:
+      balance && sCMK
+        ? CurrencyAmount.fromRawAmount(sCMK, balance?.toString())
+        : undefined,
+  };
+}
+
+export function useSCmkBalanceLockedInAccessKey(
+  account: string | null | undefined,
+) {
   const { chainId } = useActiveWeb3React();
   const accessKeyContract = useAccessKeyContract();
 
@@ -186,17 +220,12 @@ export function useSCmkBalance(account: string | null | undefined) {
 
   const sCmkBalance = useCmkToSCmk(totalCmkValue);
 
-  const sCMK = chainId ? SCMK[chainId] : undefined;
-
   return {
     loading:
       accessKeys.loading ||
       sCmkBalance.loading ||
       !!result.find((r) => r.loading),
-    value:
-      sCmkBalance.value && sCMK
-        ? CurrencyAmount.fromRawAmount(sCMK, sCmkBalance?.value?.toString())
-        : undefined,
+    value: sCmkBalance,
   };
 }
 
@@ -271,14 +300,9 @@ export function useNextRewardAmount(account: string | null | undefined) {
     unissuedRewardsCmkLoading ||
     unissuedRewardsSCmkLoading;
 
-  const sCMK = chainId ? SCMK[chainId] : undefined;
-
   return {
     loading,
-    value:
-      unissuedRewardsSCmk && sCMK
-        ? CurrencyAmount.fromRawAmount(sCMK, unissuedRewardsSCmk.toString())
-        : undefined,
+    value: unissuedRewardsSCmk,
   };
 }
 

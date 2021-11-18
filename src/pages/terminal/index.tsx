@@ -1,10 +1,24 @@
 import { Img } from '@chakra-ui/image';
-import { Text, Container, VStack, Box, Flex, HStack } from '@chakra-ui/layout';
+import {
+  Text,
+  Container,
+  VStack,
+  Box,
+  Flex,
+  HStack,
+  Center,
+} from '@chakra-ui/layout';
+import { Icon } from '@chakra-ui/react';
 import { Collapse } from '@chakra-ui/transition';
+import JSBI from 'jsbi';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import { IoArrowForward } from 'react-icons/io5';
 
 import LineChart from '~/components/Charts/LineChart';
 import Navbar from '~/components/Navbar';
+import { useSCmkBalance } from '~/hooks/stats';
+import { useActiveWeb3React } from '~/hooks/web3';
 
 const ASSETS = [
   { label: 'AAVE', value: 'aave', color: '#B0539F' },
@@ -49,6 +63,15 @@ function dummyData(days: number): ChartData {
 }
 
 export default function TerminalPage() {
+  const router = useRouter();
+  const { account } = useActiveWeb3React();
+  const sCmkBalance = useSCmkBalance(account);
+
+  const hasStakedCmk =
+    !sCmkBalance.loading &&
+    sCmkBalance.value &&
+    JSBI.greaterThan(sCmkBalance.value.quotient, JSBI.BigInt(0));
+
   const [activeAssets, setActiveAssets] = useState([
     'aave',
     'compound',
@@ -73,13 +96,22 @@ export default function TerminalPage() {
       minH="100vh"
       bg="linear-gradient(135deg, #DE1A600C 0%, #3B00650C 50%, #08538C0C 100%)"
       spacing="8"
-      pb="20"
     >
       <Navbar />
       <Box></Box>
-      <Container maxW="container.xl" p="8" bg="white" shadow="lg" rounded="3xl">
+      <Container
+        maxW="100vw"
+        p="8"
+        bg="white"
+        roundedTop="3xl"
+        position="relative"
+        border="1px"
+        borderColor="gray.100"
+        pb="40"
+      >
         <VStack align="stretch" mt="-56px">
           <Box
+            zIndex="3"
             alignSelf="center"
             px="6"
             pt="2"
@@ -92,12 +124,12 @@ export default function TerminalPage() {
             <Text
               fontFamily="Credmark Regular"
               textAlign="center"
-              bgGradient="linear(135deg, #CC1662, #3B0066)"
+              bgGradient="linear(135deg, #08538C, #3B0065)"
               bgClip="text"
               lineHeight="1.2"
-              fontSize="3xl"
+              fontSize="4xl"
             >
-              TERMINAL DATA
+              RISK TERMINAL
             </Text>
           </Box>
 
@@ -389,6 +421,63 @@ export default function TerminalPage() {
             </Box>
           </Collapse>
         </VStack>
+        {!hasStakedCmk && (
+          <Center
+            bg="whiteAlpha.700"
+            rounded="3xl"
+            position="absolute"
+            top="0"
+            left="0"
+            right="0"
+            bottom="0"
+            zIndex="2"
+            backdropFilter="saturate(180%) blur(4px)"
+          >
+            <VStack
+              bg="white"
+              rounded="3xl"
+              px="24"
+              py="4"
+              border="1px"
+              borderColor="gray.100"
+              spacing="4"
+              shadow="lg"
+              cursor="pointer"
+              _hover={{
+                shadow: '2xl',
+              }}
+              _active={{
+                transform: 'scale(0.98)',
+                shadow: 'md',
+              }}
+              transitionProperty="common"
+              transitionDuration="normal"
+              onClick={() => {
+                router.push('/?stake=true');
+              }}
+            >
+              <Text
+                fontFamily="Credmark Regular"
+                color="purple.500"
+                fontSize="4xl"
+              >
+                STAKE CMK
+              </Text>
+              <HStack spacing="2" justify="center">
+                <Img src="/img/cmk.png" h="64px" />
+                <Icon as={IoArrowForward} boxSize={12} color="purple.500" />
+                <Img src="/img/scmk.png" h="64px" />
+              </HStack>
+              <Text
+                fontFamily="Credmark Regular"
+                color="purple.500"
+                fontSize="4xl"
+              >
+                TO ACCESS
+              </Text>
+            </VStack>
+          </Center>
+        )}
       </Container>
     </VStack>
   );

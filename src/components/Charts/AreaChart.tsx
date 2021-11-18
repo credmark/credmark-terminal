@@ -211,6 +211,8 @@ export default function AreaChart({
           py="1"
           px="2"
           rounded="md"
+          border="1px"
+          borderColor="gray.100"
         >
           <Img src={titleImg} h="6" />
           <Text

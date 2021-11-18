@@ -29,26 +29,11 @@ export default function Navbar(): JSX.Element {
         roundedBottom="3xl"
         shadow="lg"
         px="12"
-        py="8"
+        py="4"
         zIndex="99"
       >
         <HStack justify="space-between">
-          <HStack spacing="3">
-            <Img src="/img/terminal.png" h="12" />
-            <Text
-              lineHeight="1"
-              fontFamily="Credmark Regular"
-              fontSize="lg"
-              bgGradient="linear(to-b, #440163 0%, #8A0C64 100%)"
-              bgClip="text"
-            >
-              CREDMARK
-              <br />
-              <Text as="span" fontSize="2xl">
-                TERMINAL
-              </Text>
-            </Text>
-          </HStack>
+          <Img src="/img/cmk-logo-full.png" h="48px" />
           <HStack>
             {chainId && NETWORK_LABELS[chainId] && (
               <Badge
@@ -65,10 +50,9 @@ export default function Navbar(): JSX.Element {
             <Web3Status />
           </HStack>
         </HStack>
+        {account && <WalletStatus />}
         <Sidebar />
       </Container>
-
-      {account && <WalletStatus />}
     </>
   );
 }

@@ -1,28 +1,28 @@
 import { Img } from '@chakra-ui/image';
-import { Box, Container, Flex, HStack, Text, VStack } from '@chakra-ui/layout';
+import { Box, Container, HStack, Text, VStack } from '@chakra-ui/layout';
 import { Stack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React from 'react';
 
 import AreaChart from '~/components/Charts/AreaChart';
-import MintBox from '~/components/MintBox';
 import Navbar from '~/components/Navbar';
+import StakeBox from '~/components/StakeBox';
 import TerminalBox from '~/components/TerminalBox';
 import {
-  useAccessKeyTotalSupply,
   useCmkCirculatingSupply,
   useCmkToUsdcPrice,
   usePercentCmkStaked,
+  useStakingApyPercent,
   useTotalValueDeposited,
 } from '~/hooks/stats';
 import { formatTokenAmount } from '~/utils/formatTokenAmount';
 
 export default function IndexPage(): JSX.Element {
   const router = useRouter();
-  const isMinBoxOpen = router.pathname === '/' && router.query.mint === 'true';
+  const isStakeBoxOpen = router.query.stake === 'true';
 
-  const accessKeyTotalSupply = useAccessKeyTotalSupply();
   const percentCmkStaked = usePercentCmkStaked();
+  const stakingApyPercent = useStakingApyPercent();
 
   const cmkToUsdc = useCmkToUsdcPrice();
   const circulatingSupply = useCmkCirculatingSupply();
@@ -40,31 +40,18 @@ export default function IndexPage(): JSX.Element {
     >
       <Navbar />
       <Container maxW="container.sm" p="0">
-        <Stack w="full" spacing="8" direction={isMinBoxOpen ? 'column' : 'row'}>
-          <MintBox />
+        <Stack
+          w="full"
+          spacing="8"
+          direction={isStakeBoxOpen ? 'column' : 'row'}
+        >
+          <StakeBox />
           <TerminalBox />
         </Stack>
       </Container>
 
       <Container maxW="container.md" p="8" bg="white" shadow="xl" rounded="3xl">
         <VStack align="stretch">
-          <Text
-            fontFamily="Credmark Regular"
-            textAlign="center"
-            bgGradient="linear(135deg, #CC1662, #3B0066)"
-            bgClip="text"
-            lineHeight="1.2"
-            fontSize="3xl"
-          >
-            PLATFORM STATS
-          </Text>
-          <AreaChart
-            title="STAKED CMK ($)"
-            titleImg="/img/scmk.png"
-            yLabel="AMOUNT STAKED"
-            xLabel="DATE"
-            gradient={['#DE1A60', '#3B0065']}
-          />
           <AreaChart
             title="PRICE OF CMK ($)"
             titleImg="/img/cmk.png"
@@ -73,26 +60,40 @@ export default function IndexPage(): JSX.Element {
             gradient={['#3B0065', '#08538C']}
           />
           <AreaChart
-            title="ACCESS KEYS"
-            titleImg="/img/key.png"
-            yLabel="ACCESS KEYS MINTED"
+            title="STAKED CMK ($)"
+            titleImg="/img/scmk.png"
+            yLabel="AMOUNT STAKED"
             xLabel="DATE"
-            gradient={['#08538C', '#DE1A60']}
+            gradient={['#DE1A60', '#3B0065']}
           />
         </VStack>
-        <HStack p="4" spacing="8">
-          <Box flex="1" rounded="3xl" p="4" shadow="lg">
-            <Text
-              fontFamily="Credmark Regular"
-              textAlign="center"
-              bgGradient="linear(135deg, #CC1662, #3B0066)"
-              bgClip="text"
-              lineHeight="1.2"
-              fontSize="xl"
-              mb="2"
-            >
-              TOTAL CMK
-            </Text>
+        <Stack
+          p="4"
+          spacing="8"
+          direction={{ base: 'column', md: 'row' }}
+          mt="4"
+        >
+          <Box
+            flex="1"
+            rounded="md"
+            p="4"
+            shadow="lg"
+            border="1px"
+            borderColor="gray.100"
+          >
+            <HStack mb="4">
+              <Img src="/img/cmk.png" h="32px" />
+              <Text
+                fontFamily="Credmark Regular"
+                textAlign="center"
+                color="purple.500"
+                lineHeight="1"
+                fontSize="xl"
+                mb="2"
+              >
+                TOTAL CMK
+              </Text>
+            </HStack>
             <HStack>
               <Text
                 flex="1"
@@ -147,18 +148,27 @@ export default function IndexPage(): JSX.Element {
               </Text>
             </HStack>
           </Box>
-          <Box flex="1" rounded="3xl" p="4" shadow="lg">
-            <Text
-              fontFamily="Credmark Regular"
-              textAlign="center"
-              bgGradient="linear(135deg, #CC1662, #3B0066)"
-              bgClip="text"
-              lineHeight="1.2"
-              fontSize="xl"
-              mb="2"
-            >
-              TOTAL STAKED CMK
-            </Text>
+          <Box
+            flex="1"
+            rounded="md"
+            p="4"
+            shadow="lg"
+            border="1px"
+            borderColor="gray.100"
+          >
+            <HStack mb="4">
+              <Img src="/img/scmk.png" h="32px" />
+              <Text
+                fontFamily="Credmark Regular"
+                textAlign="center"
+                color="purple.500"
+                lineHeight="1"
+                fontSize="xl"
+                mb="2"
+              >
+                TOTAL STAKED CMK
+              </Text>
+            </HStack>
             <HStack>
               <Text
                 flex="1"
@@ -189,7 +199,9 @@ export default function IndexPage(): JSX.Element {
                 Staking APR
               </Text>
               <Text flex="1" color="purple.500" fontWeight="700">
-                XX.XX%
+                {stakingApyPercent.loading || !stakingApyPercent.value
+                  ? '??'
+                  : stakingApyPercent.value.toFixed(2) + '%'}
               </Text>
             </HStack>
             <HStack>
@@ -209,29 +221,7 @@ export default function IndexPage(): JSX.Element {
               </Text>
             </HStack>
           </Box>
-        </HStack>
-        <Flex justify="center">
-          <HStack rounded="3xl" p="4" shadow="lg">
-            <Img src="/img/key.png" h="12" />
-            <VStack spacing="0" pl="4" pr="6">
-              <Text fontSize="sm" color="purple.500">
-                Total Keys
-              </Text>
-              <Text
-                fontSize="3xl"
-                color="#38508C"
-                fontFamily="Credmark Regular"
-              >
-                {accessKeyTotalSupply.loading
-                  ? '??'
-                  : accessKeyTotalSupply.value?.toString() ?? '??'}
-              </Text>
-              <Text fontSize="sm" color="purple.500">
-                Minted
-              </Text>
-            </VStack>
-          </HStack>
-        </Flex>
+        </Stack>
       </Container>
     </VStack>
   );

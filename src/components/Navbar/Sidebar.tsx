@@ -1,10 +1,10 @@
 import { Img } from '@chakra-ui/image';
-import { Box, VStack, Link } from '@chakra-ui/layout';
+import { Box, Link, VStack } from '@chakra-ui/layout';
 import { Icon, useDisclosure } from '@chakra-ui/react';
 import { Collapse } from '@chakra-ui/transition';
 import NextLink from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
-import { IoMenuOutline, IoLogoTwitter, IoLogoDiscord } from 'react-icons/io5';
+import { IoLogoDiscord, IoLogoTwitter, IoMenuOutline } from 'react-icons/io5';
 
 import { useOnClickOutside } from '~/hooks/useOnClickOutside';
 
@@ -46,6 +46,7 @@ export default function Sidebar() {
         !expanded
           ? {
               cursor: 'pointer',
+              shadow: '2xl',
             }
           : {}
       }
@@ -54,10 +55,10 @@ export default function Sidebar() {
       bg="white"
       shadow="lg"
       roundedRight="3xl"
-      transitionProperty="width"
+      transitionProperty="width,box-shadow"
       transitionDuration="normal"
     >
-      {!expanded && <Icon as={IoMenuOutline} boxSize={8} />}
+      {!expanded && <Icon as={IoMenuOutline} boxSize={8} color="purple.500" />}
       <Collapse in={expanded} animateOpacity>
         <VStack spacing="8">
           <Img src="/img/cmk.png" h="8" />
@@ -70,6 +71,16 @@ export default function Sidebar() {
                 color="purple.500"
               >
                 HOME
+              </Link>
+            </NextLink>
+            <NextLink href="/?stake=true" passHref>
+              <Link
+                fontFamily="Credmark Regular"
+                fontSize="sm"
+                textAlign="center"
+                color="purple.500"
+              >
+                STAKE
               </Link>
             </NextLink>
             <NextLink href="/terminal" passHref>
