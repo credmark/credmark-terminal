@@ -32,8 +32,8 @@ export default function Navbar(): JSX.Element {
         py="4"
         zIndex="99"
       >
-        <HStack justify="space-between">
-          <Img src="/img/cmk-logo-full.png" h="48px" />
+        <HStack justify="space-between" py="2">
+          <Img src="/img/cmk-logo-full.png" h="40px" />
           <HStack>
             {chainId && NETWORK_LABELS[chainId] && (
               <Badge

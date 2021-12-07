@@ -3,6 +3,7 @@ import { Box, Link, VStack } from '@chakra-ui/layout';
 import { Icon, useDisclosure } from '@chakra-ui/react';
 import { Collapse } from '@chakra-ui/transition';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { IoLogoDiscord, IoLogoTwitter, IoMenuOutline } from 'react-icons/io5';
 
@@ -10,6 +11,7 @@ import { useOnClickOutside } from '~/hooks/useOnClickOutside';
 
 export default function Sidebar() {
   const ref = useRef(null);
+  const router = useRouter();
   const { isOpen, onToggle, onClose } = useDisclosure();
   const [scrolled, setScrolled] = useState(false);
 
@@ -68,7 +70,11 @@ export default function Sidebar() {
                 fontFamily="Credmark Regular"
                 fontSize="sm"
                 textAlign="center"
-                color="purple.500"
+                color={
+                  router.pathname === '/' && router.query.stake !== 'true'
+                    ? 'pink.500'
+                    : 'purple.500'
+                }
               >
                 HOME
               </Link>
@@ -78,7 +84,11 @@ export default function Sidebar() {
                 fontFamily="Credmark Regular"
                 fontSize="sm"
                 textAlign="center"
-                color="purple.500"
+                color={
+                  router.pathname === '/' && router.query.stake === 'true'
+                    ? 'pink.500'
+                    : 'purple.500'
+                }
               >
                 STAKE
               </Link>
@@ -88,10 +98,12 @@ export default function Sidebar() {
                 fontFamily="Credmark Regular"
                 fontSize="sm"
                 textAlign="center"
-                color="purple.500"
+                color={
+                  router.pathname === '/terminal' ? 'pink.500' : 'purple.500'
+                }
                 lineHeight="1"
               >
-                THE
+                RISK
                 <br />
                 TERMINAL
               </Link>
