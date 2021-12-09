@@ -15,10 +15,14 @@ import {
   useStakingApyPercent,
   useTotalValueDeposited,
 } from '~/hooks/stats';
+import { useCmkData, useStakedCmkData } from '~/hooks/usePlatformData';
+import { useActiveWeb3React } from '~/hooks/web3';
 import { formatTokenAmount } from '~/utils/formatTokenAmount';
 
 export default function IndexPage(): JSX.Element {
   const router = useRouter();
+  const { chainId } = useActiveWeb3React();
+
   const isStakeBoxOpen = router.query.stake === 'true';
 
   const percentCmkStaked = usePercentCmkStaked();
@@ -30,6 +34,11 @@ export default function IndexPage(): JSX.Element {
     circulatingSupply.loading ? undefined : circulatingSupply.value?.quotient,
   );
   const totalValueDeposited = useTotalValueDeposited();
+
+  const onMainnet = chainId === 1;
+
+  const cmkData = useCmkData(30, !onMainnet);
+  const stakedCmkData = useStakedCmkData(30, !onMainnet);
 
   return (
     <VStack
@@ -53,6 +62,11 @@ export default function IndexPage(): JSX.Element {
       <Container maxW="container.md" p="8" bg="white" shadow="xl" rounded="3xl">
         <VStack align="stretch">
           <AreaChart
+            data={cmkData.data?.map((point) => ({
+              timestamp: new Date(point.ts * 1000),
+              value: parseFloat(point.usdc_price),
+            }))}
+            loading={cmkData.loading}
             title="PRICE OF CMK ($)"
             titleImg="/img/cmk.png"
             yLabel="CMK TOKEN PRICE"
@@ -60,6 +74,11 @@ export default function IndexPage(): JSX.Element {
             gradient={['#3B0065', '#08538C']}
           />
           <AreaChart
+            data={stakedCmkData.data?.map((point) => ({
+              timestamp: new Date(point.ts * 1000),
+              value: parseFloat(point.amount_staked_usdc),
+            }))}
+            loading={stakedCmkData.loading}
             title="STAKED CMK ($)"
             titleImg="/img/scmk.png"
             yLabel="AMOUNT STAKED"

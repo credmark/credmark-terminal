@@ -1,5 +1,5 @@
-import { Box, HStack, Text } from '@chakra-ui/layout';
-import { Img } from '@chakra-ui/react';
+import { Box, Center, HStack, Text } from '@chakra-ui/layout';
+import { Img, Spinner } from '@chakra-ui/react';
 import { EChartsOption, graphic as EChartsGraphic } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo } from 'react';
@@ -9,37 +9,9 @@ type ChartData = Array<{
   value: number;
 }>;
 
-function dummyData(): ChartData {
-  let base = +new Date(1968, 9, 3);
-  const oneDay = 24 * 3600 * 1000;
-  const date: Date[] = [];
-  const data: number[] = [Math.random() * 300];
-  let min: number = data[0];
-  for (let i = 1; i < 20000; i++) {
-    const now = new Date((base += oneDay));
-    const value = Math.round((Math.random() - 0.5) * 20 + data[i - 1]);
-    date.push(now);
-    data.push(value);
-    if (value < min) {
-      min = value;
-    }
-  }
-
-  const offset = min < 0 ? 0 - min : 0;
-
-  const chartData: ChartData = [];
-  for (let i = 0; i < 20000; i++) {
-    chartData.push({
-      timestamp: date[i],
-      value: data[i] + offset,
-    });
-  }
-
-  return chartData;
-}
-
 interface AreaChartProps {
   data?: ChartData;
+  loading?: boolean;
   title: string;
   titleImg?: string;
   yLabel: string;
@@ -51,6 +23,8 @@ interface AreaChartProps {
 }
 
 export default function AreaChart({
+  data,
+  loading,
   title,
   titleImg,
   xLabel,
@@ -59,31 +33,28 @@ export default function AreaChart({
   padding = 40,
   gradient,
 }: AreaChartProps) {
-  const data = useMemo(() => {
-    return dummyData();
-  }, []);
-
-  const option: EChartsOption = {
-    grid: {
-      top: 40,
-      bottom: 40,
-      left: 40,
-      right: 40,
-    },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'cross',
+  const option: EChartsOption = useMemo(
+    () => ({
+      grid: {
+        top: 40,
+        bottom: 40,
+        left: 40,
+        right: 40,
       },
-      formatter: ([params]: any) => {
-        const date = new Date(params.data[0]).toLocaleDateString(undefined, {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric',
-        });
-        const series = params.seriesName;
-        const value = params.data[1];
-        return `
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
+        },
+        formatter: ([params]: any) => {
+          const date = new Date(params.data[0]).toLocaleDateString(undefined, {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          });
+          const series = params.seriesName;
+          const value = params.data[1];
+          return `
           <div style="line-height: 1">
             <div style="text-align: center; margin-bottom: 12px; font-size: 12px;">
               ${date}
@@ -94,110 +65,115 @@ export default function AreaChart({
             </div>
           </div>
           `;
+        },
       },
-    },
-    title: {
-      left: 'center',
-    },
-    xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      name: xLabel,
-      nameLocation: 'middle',
-      nameTextStyle: {
-        fontSize: 12,
-        color: '#3B0065',
+      title: {
+        left: 'center',
       },
-      axisLine: {
-        show: false,
-      },
-      axisPointer: {
-        label: {
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+        name: xLabel,
+        nameLocation: 'middle',
+        nameTextStyle: {
+          fontSize: 12,
+          color: '#3B0065',
+        },
+        axisLine: {
+          show: false,
+        },
+        axisPointer: {
+          label: {
+            show: false,
+          },
+        },
+        axisTick: {
+          show: false,
+        },
+        axisLabel: {
           show: false,
         },
       },
-      axisTick: {
-        show: false,
-      },
-      axisLabel: {
-        show: false,
-      },
-    },
-    yAxis: {
-      type: 'value',
-      boundaryGap: [0, '100%'],
-      name: yLabel,
-      nameLocation: 'middle',
-      nameRotate: 90,
-      nameTextStyle: {
-        fontSize: 12,
-        color: '#3B0065',
-      },
-      axisLine: {
-        show: false,
-      },
-      axisPointer: {
-        show: false,
-        label: {
-          show: false,
-        },
-      },
-      axisTick: {
-        show: false,
-      },
-      splitLine: {
-        show: false,
-      },
-      axisLabel: {
-        show: false,
-      },
-    },
-    dataZoom: [
-      {
-        type: 'inside',
-        start: 0,
-        end: 100,
-      },
-      {
-        type: 'slider',
-        show: false,
-        start: 0,
-        end: 10,
-      },
-    ],
-    series: [
-      {
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%'],
         name: yLabel,
-        type: 'line',
-        symbol: 'circle',
-        symbolSize: 8,
-        itemStyle: {
-          color: '#3b0065',
+        nameLocation: 'middle',
+        nameRotate: 90,
+        nameTextStyle: {
+          fontSize: 12,
+          color: '#3B0065',
         },
-        lineStyle: {
-          width: 0,
+        axisLine: {
+          show: false,
         },
-        label: {
-          fontWeight: 800,
+        axisPointer: {
+          show: false,
+          label: {
+            show: false,
+          },
         },
-        areaStyle: {
-          opacity: 1,
-          color: new EChartsGraphic.LinearGradient(
-            0,
-            0,
-            0,
-            1,
-            gradient.map((color, index) => ({ color, offset: index })),
-          ),
+        axisTick: {
+          show: false,
         },
-        data: data.map(({ timestamp, value }) => [
-          // new Date(timestamp).toLocaleDateString(),
-          timestamp,
-          value,
-        ]),
+        splitLine: {
+          show: false,
+        },
+        axisLabel: {
+          show: false,
+        },
       },
-    ],
-  };
+      dataZoom: [
+        {
+          type: 'inside',
+          start: 0,
+          end: 100,
+        },
+        {
+          type: 'slider',
+          show: false,
+          start: 0,
+          end: 10,
+        },
+      ],
+      series: [
+        {
+          name: yLabel,
+          smooth: 1,
+          sampling: 'max',
+          type: 'line',
+          symbol: 'none',
+          itemStyle: {
+            color: '#3b0065',
+          },
+          lineStyle: {
+            width: 0,
+          },
+          label: {
+            fontWeight: 800,
+          },
+          areaStyle: {
+            opacity: 1,
+            color: new EChartsGraphic.LinearGradient(
+              0,
+              0,
+              0,
+              1,
+              gradient.map((color, index) => ({ color, offset: index })),
+            ),
+          },
+          data: loading
+            ? []
+            : data?.map(({ timestamp, value }) => [
+                // new Date(timestamp).toLocaleDateString(),
+                timestamp,
+                value,
+              ]) ?? [],
+        },
+      ],
+    }),
+    [data, gradient, loading, xLabel, yLabel],
+  );
 
   return (
     <Box p={padding + 'px'}>
@@ -235,6 +211,11 @@ export default function AreaChart({
             }}
           />
         </Box>
+        {loading && (
+          <Center position="absolute" top="0" left="0" right="0" bottom="0">
+            <Spinner color="purple.500" />
+          </Center>
+        )}
       </Box>
     </Box>
   );

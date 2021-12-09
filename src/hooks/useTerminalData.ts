@@ -26,7 +26,6 @@ function dummyLcrData(days: number): Array<LcrDataPoint> {
     }
   }
 
-  console.log(date.length, data.length, days * 24);
   const offset = min < 0 ? 0 - min : 0;
 
   const lcrData: Array<LcrDataPoint> = [];

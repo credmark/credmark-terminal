@@ -25,11 +25,11 @@ export function formatTokenAmount(
 
   if (shorten) {
     const num = Number(amount.toSignificant(fixedFigs + 3));
-    if (num > 1e9) {
+    if (num >= 1e9) {
       formatted = `${(num / 1e9).toFixed(fixedFigs)}B`;
-    } else if (num > 1e6) {
+    } else if (num >= 1e6) {
       formatted = `${(num / 1e6).toFixed(fixedFigs)}M`;
-    } else if (num > 1e3) {
+    } else if (num >= 1e3) {
       formatted = `${(num / 1e3).toFixed(fixedFigs)}K`;
     } else {
       formatted = num.toFixed(fixedFigs);
@@ -58,11 +58,11 @@ export function formatPrice(
   }
 
   const num = Number(price.toSignificant(sigFigs + 3));
-  if (num > 1e9) {
+  if (num >= 1e9) {
     return `${(num / 1e9).toFixed(sigFigs)}B`;
-  } else if (num > 1e6) {
+  } else if (num >= 1e6) {
     return `${(num / 1e6).toFixed(sigFigs)}M`;
-  } else if (num > 1e3) {
+  } else if (num >= 1e3) {
     return `${(num / 1e3).toFixed(sigFigs)}K`;
   } else {
     return num.toFixed(sigFigs);
