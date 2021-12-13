@@ -51,7 +51,20 @@ export default function TerminalPage() {
       spacing="8"
     >
       <Navbar />
-      <Box></Box>
+      <Container
+        maxW="container.md"
+        pt="8"
+        pb="8"
+        textAlign="center"
+        fontSize="lg"
+      >
+        <Box bg="pink.50" rounded="lg" p="4" color="pink.500">
+          The Risk Terminal is the source of Credmark Data on DeFi Protocols. As
+          Credmark conducts Risk Research, the Risk Terminal is the place to
+          monitor the data. The Terminal will be updated with additional
+          information as we verify our risk reports.
+        </Box>
+      </Container>
       <Container
         maxW="100vw"
         p="8"
@@ -110,7 +123,7 @@ export default function TerminalPage() {
               <HStack spacing="2" justify="center">
                 <Img src="/img/cmk.png" h="64px" />
                 <Icon as={IoArrowForward} boxSize={12} color="purple.500" />
-                <Img src="/img/scmk.png" h="64px" />
+                <Img src="/img/xcmk.png" h="64px" />
               </HStack>
               <Text
                 fontFamily="Credmark Regular"

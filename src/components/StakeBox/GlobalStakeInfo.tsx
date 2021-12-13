@@ -3,8 +3,8 @@ import { BigNumber } from '@ethersproject/bignumber';
 import React from 'react';
 
 import {
-  useCmkToSCmk,
   usePercentCmkStaked,
+  useSCmkToCmk,
   useStakingApyPercent,
   useTotalValueDeposited,
 } from '~/hooks/stats';
@@ -14,7 +14,7 @@ export default function GlobalMintInfo() {
   const percentCmkStaked = usePercentCmkStaked();
   const stakingApyPercent = useStakingApyPercent();
   const totalValueDeposited = useTotalValueDeposited();
-  const cmkToScmk = useCmkToSCmk(BigNumber.from('1000000000000000000')); // 1 CMK
+  const scmkToCmk = useSCmkToCmk(BigNumber.from('1000000000000000000')); // 1 xCMK
 
   return (
     <Box whiteSpace="nowrap" w="100%">
@@ -30,11 +30,11 @@ export default function GlobalMintInfo() {
       </HStack>
       <HStack my="2">
         <Text flex="1" textAlign="right" color="purple.500" fontWeight="300">
-          1 CMK =
+          1 xCMK =
         </Text>
         <Text flex="1" color="purple.500" fontWeight="700">
-          {!cmkToScmk.loading
-            ? formatTokenAmount(cmkToScmk.value, 4) + ' sCMK'
+          {!scmkToCmk.loading
+            ? formatTokenAmount(scmkToCmk.value, 4) + ' CMK'
             : '??'}
         </Text>
       </HStack>

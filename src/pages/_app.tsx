@@ -69,9 +69,9 @@ const Web3ProviderNetwork = dynamic(
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   const { host } = env;
-  const title = 'Credmark Data Platform';
+  const title = 'Credmark App';
   const description = '';
-  const img = `${host}/img/smart-pool.png`;
+  // const img = `${host}/img/smart-pool.png`;
 
   return (
     <>
@@ -84,13 +84,13 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
         <meta property="og:url" content={host} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:image" content={img} />
+        {/* <meta property="og:image" content={img} /> */}
 
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content={host} />
         <meta property="twitter:title" content={title} />
         <meta property="twitter:description" content={description} />
-        <meta property="twitter:image" content={img} />
+        {/* <meta property="+twitter:image" content={img} /> */}
       </NextHead>
       <ChakraProvider resetCSS theme={theme}>
         <Web3ReactProvider getLibrary={getLibrary}>

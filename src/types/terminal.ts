@@ -1,6 +1,6 @@
 import type Color from 'color';
 
-export type AssetKey = 'AAVEV2' | 'COMP' | 'USDC';
+export type AssetKey = 'AAVEV2' | 'COMPOUND';
 export type GraphKey = 'LCR' | 'VAR';
 
 export interface AssetInfo {
@@ -8,12 +8,14 @@ export interface AssetInfo {
   name: string;
   logo: string;
   color: Color;
+  infoLink: string;
 }
 
 export interface GraphInfo {
   key: GraphKey;
   name: string;
   description: string;
+  infoLink: string;
 }
 
 export interface LcrDataPoint {

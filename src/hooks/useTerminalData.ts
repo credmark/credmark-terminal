@@ -13,12 +13,12 @@ function dummyLcrData(days: number): Array<LcrDataPoint> {
   const oneDay = 24 * oneHour;
   let base = Date.now() - (days + 1) * oneDay;
   const date: Date[] = [new Date(base)];
-  const data: number[] = [Math.random() * 300];
+  const data: number[] = [Math.random() * 3];
   let min: number = data[0];
 
-  for (let i = 1; i < days * 24; i++) {
-    const now = new Date((base += oneHour));
-    const value = Math.round((Math.random() - 0.5) * 20 + data[i - 1]);
+  for (let i = 1; i < days; i++) {
+    const now = new Date((base += oneDay));
+    const value = Math.round((Math.random() - 0.5) * 2 + data[i - 1]);
     date.push(now);
     data.push(Number(value.toFixed(0)));
     if (value < min) {
@@ -29,7 +29,7 @@ function dummyLcrData(days: number): Array<LcrDataPoint> {
   const offset = min < 0 ? 0 - min : 0;
 
   const lcrData: Array<LcrDataPoint> = [];
-  for (let i = 0; i < days * 24; i++) {
+  for (let i = 0; i < days; i++) {
     lcrData.push({
       ts: date[i].valueOf() / 1000,
       lcr: data[i] + offset,

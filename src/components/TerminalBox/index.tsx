@@ -47,7 +47,7 @@ export default function TerminalBox() {
               <Text as="span" fontFamily="Roboto">
                 *
               </Text>
-              REQUIRES STAKING TO ACCESS
+              REQUIRES xCMK TO ACCESS
               <Text as="span" fontFamily="Roboto">
                 *
               </Text>

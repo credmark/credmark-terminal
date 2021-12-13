@@ -78,7 +78,7 @@ export default function StakeBox(boxProps: BoxProps) {
             <Icon as={IoArrowForward} boxSize={12} color="purple.500" />
           </HStack>
         </Collapse>
-        <Img src="/img/scmk.png" h="72px" />
+        <Img src="/img/xcmk.png" h="72px" />
       </HStack>
       <Collapse in={!isOpen}>
         <Text
@@ -103,9 +103,11 @@ export default function StakeBox(boxProps: BoxProps) {
       </Collapse>
       <Collapse in={isOpen}>
         <VStack spacing="8" w="100%">
-          <Text color="purple.500" textAlign="center" maxW="240px">
-            Stake <strong>CMK</strong> to <strong>earn rewards</strong> and
-            access the <strong>Risk Terminal</strong>.
+          <Text color="purple.500" textAlign="center" px="2">
+            <strong>By staking, you convert CMK to xCMK.</strong>
+            <br />
+            xCMK gives staking rewards from the rewards pool, grants you access
+            to the Risk Terminal, and allows for revenue sharing.
           </Text>
           <Box bg="gray.50" rounded="xl" p="8" w="100%">
             <Tabs variant="unstyled" colorScheme="gray">
