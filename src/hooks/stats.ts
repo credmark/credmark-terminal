@@ -16,9 +16,7 @@ import {
   useSingleContractMultipleData,
 } from '~/state/multicall/hooks';
 
-import { useAccessKeys } from './useAccessKeys';
 import {
-  useAccessKeyContract,
   useRewardsPoolContract,
   useStakedCredmarkContract,
   useTokenContract,
@@ -28,33 +26,6 @@ import { useActiveWeb3React } from './web3';
 
 const BN_ZERO = BigNumber.from(0);
 const SEC_IN_YEAR = BigNumber.from(365 * 24 * 3600);
-
-export function useAccessKeyTotalSupply() {
-  const accessKeyContract = useAccessKeyContract();
-
-  const { loading, result: totalSupplyResult } = useSingleCallResult(
-    accessKeyContract,
-    'totalSupply',
-  );
-
-  const totalSupply = totalSupplyResult?.[0] as BigNumber | undefined;
-
-  return { loading, value: totalSupply };
-}
-
-export function useAccessKeyBalance(account: string | null | undefined) {
-  const accessKeyContract = useAccessKeyContract();
-
-  const { loading, result: balanceResult } = useSingleCallResult(
-    accessKeyContract,
-    'balanceOf',
-    [account ?? undefined],
-  );
-
-  const balance = balanceResult?.[0] as BigNumber | undefined;
-
-  return { loading, value: balance };
-}
 
 export function useCmkTotalSupply() {
   const { chainId } = useActiveWeb3React();
@@ -193,39 +164,6 @@ export function useSCmkBalance(account: string | null | undefined) {
       balance && sCMK
         ? CurrencyAmount.fromRawAmount(sCMK, balance?.toString())
         : undefined,
-  };
-}
-
-export function useSCmkBalanceLockedInAccessKey(
-  account: string | null | undefined,
-) {
-  const { chainId } = useActiveWeb3React();
-  const accessKeyContract = useAccessKeyContract();
-
-  const accessKeys = useAccessKeys(account);
-
-  const result = useSingleContractMultipleData(
-    accessKeyContract,
-    'cmkValue',
-    (accessKeys.tokenIds ?? []).map((tokenId) => [tokenId]),
-  );
-
-  const totalCmkValue = useMemo(() => {
-    return result
-      .map(({ result }) => result)
-      .filter((result): result is Result => !!result)
-      .map((result) => result[0] as BigNumber)
-      .reduce((prev, curr) => prev.add(curr), BigNumber.from(0));
-  }, [result]);
-
-  const sCmkBalance = useCmkToSCmk(totalCmkValue);
-
-  return {
-    loading:
-      accessKeys.loading ||
-      sCmkBalance.loading ||
-      !!result.find((r) => r.loading),
-    value: sCmkBalance,
   };
 }
 
@@ -385,7 +323,7 @@ export function useStakingApyPercent() {
             ),
             JSBI.BigInt(timeLeftInSec.mul(stakedCmkCmkBalance).toString()),
           )
-        : undefined,
+        : new Fraction(0, 1),
   };
 }
 

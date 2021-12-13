@@ -3,7 +3,6 @@ import { BigNumber } from '@ethersproject/bignumber';
 import React from 'react';
 
 import {
-  useAccessKeyTotalSupply,
   useCmkToSCmk,
   usePercentCmkStaked,
   useStakingApyPercent,
