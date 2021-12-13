@@ -129,20 +129,27 @@ export function useCmkToSCmk(cmkAmount: BigNumber) {
 }
 
 export function useSCmkToCmk(sCmkAmount: BigNumber) {
+  const { chainId } = useActiveWeb3React();
   const sCmkContract = useStakedCredmarkContract();
 
-  const { loading, result: sharesToCmkResult } = useSingleCallResult(
+  const { loading, result: cmkToSharesResult } = useSingleCallResult(
     sCmkContract,
-    'sCmkAmount',
+    'sharesToCmk',
     [sCmkAmount],
   );
 
+  const cmkAmount = cmkToSharesResult?.[0] as BigNumber | undefined;
+
+  const cmk = chainId ? CMK[chainId] : undefined;
+
   return {
     loading,
-    value: sharesToCmkResult?.[0] as BigNumber | undefined,
+    value:
+      cmkAmount && cmk
+        ? CurrencyAmount.fromRawAmount(cmk, cmkAmount?.toString())
+        : undefined,
   };
 }
-
 export function useSCmkBalance(account: string | null | undefined) {
   const { chainId } = useActiveWeb3React();
 

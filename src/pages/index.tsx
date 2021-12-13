@@ -60,32 +60,6 @@ export default function IndexPage(): JSX.Element {
       </Container>
 
       <Container maxW="container.md" p="8" bg="white" shadow="xl" rounded="3xl">
-        <VStack align="stretch">
-          <AreaChart
-            data={cmkData.data?.map((point) => ({
-              timestamp: new Date(point.ts * 1000),
-              value: parseFloat(point.usdc_price),
-            }))}
-            loading={cmkData.loading}
-            title="PRICE OF CMK ($)"
-            titleImg="/img/cmk.png"
-            yLabel="CMK TOKEN PRICE"
-            xLabel="DATE"
-            gradient={['#3B0065', '#08538C']}
-          />
-          <AreaChart
-            data={stakedCmkData.data?.map((point) => ({
-              timestamp: new Date(point.ts * 1000),
-              value: parseFloat(point.amount_staked_usdc),
-            }))}
-            loading={stakedCmkData.loading}
-            title="STAKED CMK ($)"
-            titleImg="/img/scmk.png"
-            yLabel="AMOUNT STAKED"
-            xLabel="DATE"
-            gradient={['#DE1A60', '#3B0065']}
-          />
-        </VStack>
         <Stack
           p="4"
           spacing="8"
@@ -176,7 +150,7 @@ export default function IndexPage(): JSX.Element {
             borderColor="gray.100"
           >
             <HStack mb="4">
-              <Img src="/img/scmk.png" h="32px" />
+              <Img src="/img/xcmk.png" h="32px" />
               <Text
                 fontFamily="Credmark Regular"
                 textAlign="center"
@@ -240,7 +214,33 @@ export default function IndexPage(): JSX.Element {
               </Text>
             </HStack>
           </Box>
-        </Stack>
+        </Stack>{' '}
+        <VStack align="stretch">
+          <AreaChart
+            data={cmkData.data?.map((point) => ({
+              timestamp: new Date(point.ts * 1000),
+              value: parseFloat(point.usdc_price),
+            }))}
+            loading={cmkData.loading}
+            title="PRICE OF CMK ($)"
+            titleImg="/img/cmk.png"
+            yLabel="CMK TOKEN PRICE"
+            xLabel="DATE"
+            gradient={['#3B0065', '#08538C']}
+          />
+          <AreaChart
+            data={stakedCmkData.data?.map((point) => ({
+              timestamp: new Date(point.ts * 1000),
+              value: parseFloat(point.amount_staked_usdc),
+            }))}
+            loading={stakedCmkData.loading}
+            title="STAKED CMK ($)"
+            titleImg="/img/xcmk.png"
+            yLabel="AMOUNT STAKED"
+            xLabel="DATE"
+            gradient={['#DE1A60', '#3B0065']}
+          />
+        </VStack>
       </Container>
     </VStack>
   );

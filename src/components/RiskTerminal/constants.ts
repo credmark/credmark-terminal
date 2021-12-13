@@ -8,22 +8,32 @@ export const ASSETS: Array<AssetInfo> = [
     name: 'AAVE',
     logo: '/img/assets/aave.png',
     color: Color('#B0539F'),
+    infoLink:
+      'https://docs.credmark.com/credmark-risk-library/reports/aave-and-compound-defi-risk-report/investment-metrics',
   },
   {
-    key: 'COMP',
+    key: 'COMPOUND',
     name: 'Compound',
     logo: '/img/assets/compound.png',
     color: Color('#00D395'),
-  },
-  {
-    key: 'USDC',
-    name: 'USDC',
-    logo: '/img/assets/usdc.png',
-    color: Color('#2775CA'),
+    infoLink:
+      'https://docs.credmark.com/credmark-risk-library/reports/aave-and-compound-defi-risk-report/investment-metrics',
   },
 ];
 
 export const GRAPHS: Array<GraphInfo> = [
-  { key: 'VAR', name: 'VAR', description: 'Value at Risk' },
-  { key: 'LCR', name: 'LCR', description: 'Liquidity Coverage Ratio' },
+  {
+    key: 'VAR',
+    name: 'VAR',
+    description: 'Value at Risk',
+    infoLink:
+      'https://docs.credmark.com/credmark-risk-library/risk-metrics/value-at-risk-var',
+  },
+  {
+    key: 'LCR',
+    name: 'LCR',
+    description: 'Liquidity Coverage Ratio',
+    infoLink:
+      'https://docs.credmark.com/credmark-risk-library/risk-metrics/liquidity-coverage-ratio-lcr',
+  },
 ];

@@ -12,9 +12,13 @@ export interface Line {
 
 interface LineChartProps {
   lines: Line[];
+  formatValue?: (value: any) => string;
 }
 
-export default function LineChart({ lines }: LineChartProps): JSX.Element {
+export default function LineChart({
+  lines,
+  formatValue,
+}: LineChartProps): JSX.Element {
   const option = {
     legend: {
       show: false,
@@ -30,13 +34,47 @@ export default function LineChart({ lines }: LineChartProps): JSX.Element {
       axisPointer: {
         type: 'cross',
       },
-      renderMode: 'richText',
+      formatter: (params: any[]) => {
+        if (!Array.isArray(params) || params.length === 0) {
+          return;
+        }
+        const date = new Date(params[0].data[0]).toLocaleDateString(undefined, {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        });
+
+        let lines = '';
+
+        for (const param of params) {
+          const series = param.seriesName;
+          const value = param.data[1];
+
+          lines += `
+          <div style="display: flex; margin-bottom: 2px;">
+            <div>${param.marker}</div>
+            <div style="flex: 1">${series}</div>
+            <strong style="margin-left: 16px">${
+              formatValue ? formatValue(value) : value
+            }</strong>
+          </div>
+          `;
+        }
+
+        return `
+        <div style="line-height: 1">
+          <div style="text-align: center; margin-bottom: 12px; font-size: 12px;">
+            ${date}
+          </div>
+          ${lines}
+        </div>`;
+      },
     },
     title: {
       left: 'center',
     },
     xAxis: {
-      type: 'category',
+      type: 'time',
       minorTick: {
         show: false,
       },
