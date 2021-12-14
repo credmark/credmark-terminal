@@ -3,6 +3,7 @@ import {
   Box,
   Center,
   Container,
+  Divider,
   Flex,
   HStack,
   Link,
@@ -18,6 +19,7 @@ import { IoInformationCircleOutline } from 'react-icons/io5';
 import LineChart from '~/components/Charts/LineChart';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
 import { AssetKey, GraphKey } from '~/types/terminal';
+import dayjs from '~/utils/date';
 
 import { ASSETS, GRAPHS } from './constants';
 
@@ -37,6 +39,11 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
   const lcrData: Record<AssetKey, ReturnType<typeof useLcrData>> = {
     AAVEV2: useLcrData('AAVEV2', 90, dummy),
     COMPOUND: useLcrData('COMPOUND', 90, dummy),
+  };
+
+  const varData: Record<AssetKey, ReturnType<typeof useVarData>> = {
+    AAVEV2: useVarData('AAVEV2', 90, dummy),
+    COMPOUND: useVarData('COMPOUND', 90, dummy),
   };
 
   const lcrLines = (() => {
@@ -66,7 +73,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           .filter((dp) => dp.ts > endTs)
           .map((dp) => ({
             timestamp: new Date((dp.ts - (dp.ts % 86400)) * 1000),
-            value: dp.lcr,
+            value: dp.lcr * 100,
           }))
           .reverse(),
       });
@@ -74,11 +81,6 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
 
     return lines;
   })();
-
-  const varData: Record<AssetKey, ReturnType<typeof useVarData>> = {
-    AAVEV2: useVarData('AAVEV2', 90, dummy),
-    COMPOUND: useVarData('COMPOUND', 90, dummy),
-  };
 
   const varLines = (() => {
     const lines: Array<{
@@ -107,7 +109,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           .filter((dp) => dp.ts > endTs)
           .map((dp) => ({
             timestamp: new Date((dp.ts - (dp.ts % 86400)) * 1000),
-            value: Number(dp['10_day_99p']),
+            value: Number(dp['10_day_99p']) * -1,
           }))
           .reverse(),
       });
@@ -116,28 +118,43 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
     return lines;
   })();
 
-  // const varData: Record<AssetKey, ReturnType<typeof useVarData>> = {
-  //   AAVEV2: useVarData('AAVEV2', 2, dummy),
-  //   COMPOUND: useVarData('COMPOUND', 2, dummy),
-  // };
+  const maxVars = (() => {
+    const vars: Array<{
+      name: string;
+      val: number;
+      date: Date;
+    }> = [];
 
-  // const formattedVar = (asset: AssetKey) => {
-  //   if (varData[asset].loading) return '??';
-  //   if ((varData[asset].data?.length ?? 0) === 0) return '-';
-  //   return Number(varData[asset].data?.[0]['10_day_99p']).toFixed(2);
-  // };
+    for (const asset of ASSETS) {
+      if (!activeAssets.includes(asset.key)) continue;
+      if (varData[asset.key].loading) continue;
 
-  // const formattedVarChange = (asset: AssetKey) => {
-  //   if (varData[asset].loading) return '';
-  //   const curr = varData[asset].data?.[0]?.['10_day_99p'];
-  //   const prev = varData[asset].data?.[1]?.['10_day_99p'];
-  //   if (curr === undefined) return '';
-  //   if (prev === undefined) return '-';
+      const dataPoints = varData[asset.key].data;
+      if (!dataPoints || dataPoints.length === 0) continue;
 
-  //   const percChange =
-  //     ((parseFloat(prev) - parseFloat(curr)) * 100) / parseFloat(prev);
-  //   return (percChange > 0 ? '+' : '') + percChange.toFixed(2) + '%';
-  // };
+      const maxVar = {
+        name: asset.name,
+        val: Number(dataPoints[0]['10_day_99p']) * -1,
+        date: dayjs(
+          dataPoints[0]['var_date_10_day_99p'],
+          'YYYY-MM-DD',
+        ).toDate(),
+      };
+
+      for (const dp of dataPoints) {
+        const val = Number(dp['10_day_99p']) * -1;
+        if (val > maxVar.val) {
+          const date = dayjs(dp['var_date_10_day_99p'], 'YYYY-MM-DD').toDate();
+          maxVar.val = val;
+          maxVar.date = date;
+        }
+      }
+
+      vars.push(maxVar);
+    }
+
+    return vars;
+  })();
 
   return (
     <VStack align="stretch" mt="-56px">
@@ -278,7 +295,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
         )}
       </Container>
       <Collapse in={activeGraphs.includes('VAR')}>
-        <Box
+        <HStack
           position="relative"
           mx="auto"
           mt="12"
@@ -289,6 +306,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           rounded="lg"
           w="400px"
           zIndex="2"
+          justify="center"
         >
           <Text
             fontFamily="Credmark Regular"
@@ -299,7 +317,15 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           >
             VAR (VALUE AT RISK)
           </Text>
-        </Box>
+          <Link
+            href="https://docs.credmark.com/credmark-risk-library/risk-metrics/value-at-risk-var"
+            isExternal
+            _hover={{ color: 'purple.500' }}
+            pb="1"
+          >
+            <Icon as={IoInformationCircleOutline} boxSize="20px" />
+          </Link>
+        </HStack>
         <Box
           position="relative"
           bg="gray.50"
@@ -345,67 +371,51 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
               <Spinner color="purple.500" />
             </Center>
           )}
+
+          {maxVars.length > 0 && (
+            <>
+              <Divider bg="purple.500" my="8" />
+              <Text textAlign="center" color="purple.500" fontSize="lg">
+                Max VAR over 10 days with 99% confidence
+              </Text>
+              <HStack justify="center">
+                {maxVars.map((maxVar) => {
+                  const asset = ASSETS.find((a) => a.name === maxVar.name);
+                  if (!asset) throw new Error('Invalid asset');
+                  return (
+                    <VStack
+                      key={asset.key}
+                      color={asset.color.toString()}
+                      spacing="0"
+                      m="4"
+                      px="6"
+                      py="2"
+                      shadow="md"
+                      bg="white"
+                      rounded="lg"
+                    >
+                      <Text fontFamily="Credmark Regular">{asset.name}</Text>
+                      <Text fontSize="2xl" fontWeight="bold">
+                        {maxVar.val.toFixed(2)}
+                      </Text>
+                      <Text fontSize="sm">
+                        {maxVar.date.toLocaleDateString(undefined, {
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </Text>
+                    </VStack>
+                  );
+                })}
+              </HStack>
+            </>
+          )}
         </Box>
-        {/* <Box
-          position="relative"
-          mx="auto"
-          mt="12"
-          pt="2"
-          pb="1"
-          bg="white"
-          shadow="lg"
-          rounded="lg"
-          w="400px"
-          zIndex="2"
-        >
-          <Text
-            fontFamily="Credmark Regular"
-            textAlign="center"
-            lineHeight="1.2"
-            fontSize="xl"
-            color="purple.500"
-          >
-            VAR (VALUE AT RISK)
-          </Text>
-        </Box>
-        <Box
-          position="relative"
-          bg="gray.50"
-          py="8"
-          mt="-4"
-          zIndex="1"
-          rounded="md"
-        >
-          <Flex justify="center">
-            {activeAssets.map((aa) => {
-              const asset = ASSETS.find((a) => a.key === aa);
-              if (!asset) throw new Error('Invalid asset');
-              return (
-                <VStack
-                  key={asset.key}
-                  color={asset.color.toString()}
-                  spacing="0"
-                  m="4"
-                  px="6"
-                  py="2"
-                  shadow="md"
-                  bg="white"
-                  rounded="lg"
-                >
-                  <Text fontFamily="Credmark Regular">{asset.name}</Text>
-                  <Text fontSize="2xl" fontWeight="bold">
-                    {formattedVar(asset.key)}
-                  </Text>
-                  <Text fontSize="xs">{formattedVarChange(asset.key)}</Text>
-                </VStack>
-              );
-            })}
-          </Flex>
-        </Box> */}
       </Collapse>
 
       <Collapse in={activeGraphs.includes('LCR')}>
-        <Box
+        <HStack
           position="relative"
           mx="auto"
           mt="12"
@@ -416,6 +426,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           rounded="lg"
           w="400px"
           zIndex="2"
+          justify="center"
         >
           <Text
             fontFamily="Credmark Regular"
@@ -426,7 +437,15 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           >
             LCR (LIQUIDITY COVERAGE RATIO)
           </Text>
-        </Box>
+          <Link
+            href="https://docs.credmark.com/credmark-risk-library/risk-metrics/liquidity-coverage-ratio-lcr"
+            isExternal
+            _hover={{ color: 'purple.500' }}
+            pb="1"
+          >
+            <Icon as={IoInformationCircleOutline} boxSize="20px" />
+          </Link>
+        </HStack>
         <Box
           position="relative"
           bg="gray.50"
@@ -437,7 +456,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
         >
           <LineChart
             lines={lcrLines}
-            formatValue={(val: number) => (val * 100).toFixed(1) + '%'}
+            formatValue={(val: number) => val.toFixed(1) + '%'}
           />
           <Flex pl="20" align="center">
             {[30, 60, 90].map((days) => (

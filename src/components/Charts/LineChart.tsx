@@ -24,10 +24,10 @@ export default function LineChart({
       show: false,
     },
     grid: {
-      top: 0,
-      bottom: 0,
-      left: 16,
-      right: 16,
+      top: 32,
+      bottom: 48,
+      left: 48,
+      right: 32,
     },
     tooltip: {
       trigger: 'axis',
@@ -79,7 +79,7 @@ export default function LineChart({
         show: false,
       },
       axisLine: {
-        show: false,
+        show: true,
       },
       axisPointer: {
         label: {
@@ -87,13 +87,13 @@ export default function LineChart({
         },
       },
       axisTick: {
-        show: false,
+        show: true,
       },
       splitLine: {
         show: false,
       },
       axisLabel: {
-        show: false,
+        show: true,
       },
     },
     yAxis: {
@@ -111,10 +111,10 @@ export default function LineChart({
         show: false,
       },
       splitLine: {
-        show: false,
+        show: true,
       },
       axisLabel: {
-        show: false,
+        show: true,
       },
     },
     series: lines.map((line) => ({
@@ -140,7 +140,7 @@ export default function LineChart({
       notMerge={true}
       lazyUpdate={true}
       style={{
-        height: '500px',
+        height: '360px',
       }}
     />
   );

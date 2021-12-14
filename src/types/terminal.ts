@@ -38,10 +38,8 @@ export interface LcrGatewayResponse {
 }
 
 export interface VarDataPoint {
-  '1_day_95p'?: string;
-  '1_day_99p'?: string;
-  '10_day_95p'?: string;
   '10_day_99p': string;
+  var_date_10_day_99p: string;
   ts: number;
 }
 
