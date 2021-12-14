@@ -20,8 +20,6 @@ import {
   MULTICALL_ADDRESS,
   STAKED_CMK_ADDRESSES,
   REWARDS_POOL_ADDRESSES,
-  ACCESS_KEY_ADDRESSES,
-  ACCESS_PROVIDER_ADDRESSES,
   QUOTER_ADDRESSES,
 } from '~/constants/addresses';
 import getContract from '~/utils/getContract';

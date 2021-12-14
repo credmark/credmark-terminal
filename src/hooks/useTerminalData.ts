@@ -7,10 +7,10 @@ import {
   VarDataPoint,
   VarGatewayResponse,
 } from '~/types/terminal';
+import dayjs from '~/utils/date';
 
 function dummyLcrData(days: number): Array<LcrDataPoint> {
-  const oneHour = 3600 * 1000;
-  const oneDay = 24 * oneHour;
+  const oneDay = 24 * 3600 * 1000;
   let base = Date.now() - (days + 1) * oneDay;
   const date: Date[] = [new Date(base)];
   const data: number[] = [Math.random() * 3];
@@ -40,15 +40,14 @@ function dummyLcrData(days: number): Array<LcrDataPoint> {
 }
 
 function dummyVarData(days: number): Array<VarDataPoint> {
-  const oneHour = 3600 * 1000;
-  const oneDay = 24 * oneHour;
+  const oneDay = 24 * 24 * 3600 * 1000;
   let base = Date.now() - (days + 1) * oneDay;
   const date: Date[] = [new Date(base)];
   const data: number[] = [Math.random() * 300];
   let min: number = data[0];
 
-  for (let i = 1; i < days * 24; i++) {
-    const now = new Date((base += oneHour));
+  for (let i = 1; i < days; i++) {
+    const now = new Date((base += oneDay));
     const value = Math.round((Math.random() - 0.5) * 20 + data[i - 1]);
     date.push(now);
     data.push(Number(value.toFixed(0)));
@@ -60,10 +59,11 @@ function dummyVarData(days: number): Array<VarDataPoint> {
   const offset = min < 0 ? 0 - min : 0;
 
   const varData: Array<VarDataPoint> = [];
-  for (let i = 0; i < days * 24; i++) {
+  for (let i = 0; i < days; i++) {
     varData.push({
       ts: date[i].valueOf() / 1000,
       '10_day_99p': String(data[i] + offset),
+      var_date_10_day_99p: dayjs(date[i]).format('YYYY-MM-DD'),
     });
   }
 
@@ -115,7 +115,7 @@ export function useLcrData(token: AssetKey, limit?: number, dummy = false) {
 }
 
 export function useVarData(token: AssetKey, limit?: number, dummy = false) {
-  limit = limit ?? 2;
+  limit = limit ?? 90;
 
   const [data, setData] = useState<Array<VarDataPoint>>();
   const [loading, setLoading] = useState(false);
@@ -128,10 +128,9 @@ export function useVarData(token: AssetKey, limit?: number, dummy = false) {
 
     setLoading(true);
     const abortController = new AbortController();
-    fetch(
-      `https://gateway.credmark.com/v1/models/var/data?token=${token}&limit=${limit}`,
-      { signal: abortController.signal },
-    )
+    fetch(`https://gateway.credmark.com/v1/models/var/data?token=${token}`, {
+      signal: abortController.signal,
+    })
       .then<VarGatewayResponse>((resp) => resp.json())
       .then((jsonResp) => {
         setData(jsonResp.data);
