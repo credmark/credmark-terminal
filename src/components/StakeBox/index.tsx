@@ -74,11 +74,11 @@ export default function StakeBox(boxProps: BoxProps) {
       <HStack spacing="4" justify="center">
         <Collapse in={isOpen}>
           <HStack spacing="4">
-            <Img src="/img/cmk.png" h="72px" />
+            <Img src="/img/cmk.svg" h="72px" />
             <Icon as={IoArrowForward} boxSize={12} color="purple.500" />
           </HStack>
         </Collapse>
-        <Img src="/img/xcmk.png" h="72px" />
+        <Img src="/img/xcmk.svg" h="72px" />
       </HStack>
       <Collapse in={!isOpen}>
         <Text

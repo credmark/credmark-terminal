@@ -64,7 +64,7 @@ export default function Sidebar() {
       <Collapse in={expanded} animateOpacity>
         <VStack spacing="8">
           <Link href="https://www.credmark.com/" isExternal>
-            <Img src="/img/cmk.png" h="8" />
+            <Img src="/img/logo.svg" h="8" />
           </Link>
           <VStack spacing="6">
             <NextLink href="/" passHref>

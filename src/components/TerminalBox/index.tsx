@@ -25,7 +25,7 @@ export default function TerminalBox() {
       transitionProperty="width,height,box-shadow"
       transitionDuration="normal"
     >
-      <Img src="/img/terminal.png" h="72px" />
+      <Img src="/img/terminal.svg" h="72px" />
       <NextLink href="/terminal" passHref>
         <LinkOverlay>
           <Text

@@ -52,7 +52,7 @@ export default function WalletStatus() {
           WALLET
         </Text>
         <HStack flex="1" justify="center">
-          <Img src="/img/cmk.png" h="8" />
+          <Img src="/img/cmk.svg" h="8" />
           <Text color="purple.500">
             <strong>
               {cmkBalance
@@ -88,7 +88,7 @@ export default function WalletStatus() {
           }
         >
           <HStack flex="1" justify="center">
-            <Img src="/img/xcmk.png" h="8" />
+            <Img src="/img/xcmk.svg" h="8" />
             <Text color="purple.500" lineHeight="1">
               <strong>
                 {sCmkBalance.loading || !sCmkBalance.value
@@ -116,12 +116,12 @@ export default function WalletStatus() {
           <Text textAlign="right" color="purple.500" fontWeight="700">
             1
           </Text>
-          <Img src="/img/xcmk.png" h="6" />
+          <Img src="/img/xcmk.svg" h="6" />
           <Text>=</Text>
           <Text color="purple.500" fontWeight="700">
             {!sCmkToCmk.loading ? formatTokenAmount(sCmkToCmk.value, 2) : '??'}
           </Text>
-          <Img src="/img/cmk.png" h="6" />
+          <Img src="/img/cmk.svg" h="6" />
         </HStack>
       </HStack>
     </Box>

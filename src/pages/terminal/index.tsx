@@ -132,9 +132,9 @@ export default function TerminalPage() {
                 REQUIRES XCMK
               </Text>
               <HStack spacing="2" justify="center">
-                <Img src="/img/cmk.png" h="64px" />
+                <Img src="/img/cmk.svg" h="64px" />
                 <Icon as={IoArrowForward} boxSize={12} color="purple.500" />
-                <Img src="/img/xcmk.png" h="64px" />
+                <Img src="/img/xcmk.svg" h="64px" />
               </HStack>
               <Text
                 fontFamily="Credmark Regular"
