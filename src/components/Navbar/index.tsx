@@ -1,4 +1,4 @@
-import { Badge, Container, HStack, Img, Text, VStack } from '@chakra-ui/react';
+import { Badge, Container, HStack, Img, Link } from '@chakra-ui/react';
 import React from 'react';
 
 import { useActiveWeb3React } from '~/hooks/web3';
@@ -33,7 +33,9 @@ export default function Navbar(): JSX.Element {
         zIndex="99"
       >
         <HStack justify="space-between" py="2">
-          <Img src="/img/cmk-logo-full.png" h="40px" />
+          <Link href="https://www.credmark.com/" isExternal>
+            <Img src="/img/cmk-logo-full.png" h="40px" />
+          </Link>
           <HStack>
             {chainId && NETWORK_LABELS[chainId] && (
               <Badge
