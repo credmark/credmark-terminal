@@ -2,9 +2,7 @@ import { Env } from '~/types/env';
 
 const prodEnv: Env = {
   type: 'PROD',
-  apiHost: '',
   host: 'https://app.credmark.com',
-  githubClientId: '07007c0f68d8b6cdce49',
 
   infuraKey: '8fc87de54af5476bb2623f89ab27d474',
   formaticKey: 'pk_live_A9455B1AE48BCFDC',
