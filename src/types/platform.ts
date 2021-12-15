@@ -27,11 +27,11 @@ export interface StakedCmkDataPoint {
 }
 
 export interface StakedCmkGatewayResponse {
-  name: 'cmk';
+  name: 'xcmk';
   parameters: {
     token: string;
     limit: number;
   };
   dataType: 'time-series';
-  data: Array<CmkDataPoint>;
+  data: Array<StakedCmkDataPoint>;
 }
