@@ -1,4 +1,3 @@
-declare module 'formatic';
 declare module 'fortmatic';
 
 type Listener = (...args: Array<any>) => void;
