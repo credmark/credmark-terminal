@@ -4,6 +4,7 @@ import {
   CmkDataPoint,
   CmkGatewayResponse,
   StakedCmkDataPoint,
+  StakedCmkGatewayResponse,
 } from '~/types/platform';
 
 function dummyData(days: number): Array<{ ts: number; val: number }> {
@@ -95,19 +96,47 @@ export function useStakedCmkData(days = 30, dummy = false) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setData(
-      dummyData(days).map(({ ts, val }) => ({
-        ts: ts,
-        amount_staked_usdc: String(val),
-        total_supply: '',
-        cmk_balance: '',
-        cmk_rate: '',
-        staking_apr_percent: '',
-      })),
-    );
+    if (dummy) {
+      setData(
+        dummyData(days).map(({ ts, val }) => ({
+          ts: ts,
+          amount_staked_usdc: String(val),
+          total_supply: '',
+          cmk_balance: '',
+          cmk_rate: '',
+          staking_apr_percent: '',
+        })),
+      );
 
-    return;
-  }, [days]);
+      return;
+    }
+
+    const limit = days * 24;
+    setLoading(true);
+    const abortController = new AbortController();
+    fetch(
+      `https://gateway.credmark.com/v1/models/cmk/data?token=XCMK&limit=${limit}`,
+      { signal: abortController.signal },
+    )
+      .then<StakedCmkGatewayResponse>((resp) => resp.json())
+      .then((jsonResp) => {
+        setData(jsonResp.data.sort((pointA, pointB) => pointA.ts - pointB.ts));
+      })
+      .catch((err) => {
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    return () => {
+      abortController.abort();
+    };
+  }, [days, dummy]);
 
   return {
     loading,
