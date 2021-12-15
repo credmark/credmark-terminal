@@ -16,10 +16,11 @@ export const CMK: { [chainId: number]: Token } = {
 };
 
 export const SCMK: { [chainId: number]: Token } = {
-  [4]: new Token(4, STAKED_CMK_ADDRESSES[4], 18, 'sCMK', 'StakedCredmark'),
-  [3]: new Token(3, STAKED_CMK_ADDRESSES[3], 18, 'sCMK', 'StakedCredmark'),
-  [5]: new Token(5, STAKED_CMK_ADDRESSES[5], 18, 'sCMK', 'StakedCredmark'),
-  [42]: new Token(42, STAKED_CMK_ADDRESSES[42], 18, 'sCMK', 'StakedCredmark'),
+  [1]: new Token(1, STAKED_CMK_ADDRESSES[1], 18, 'xCMK', 'StakedCredmark'),
+  [4]: new Token(4, STAKED_CMK_ADDRESSES[4], 18, 'xCMK', 'StakedCredmark'),
+  [3]: new Token(3, STAKED_CMK_ADDRESSES[3], 18, 'xCMK', 'StakedCredmark'),
+  [5]: new Token(5, STAKED_CMK_ADDRESSES[5], 18, 'xCMK', 'StakedCredmark'),
+  [42]: new Token(42, STAKED_CMK_ADDRESSES[42], 18, 'xCMK', 'StakedCredmark'),
 };
 
 export const AMPL = new Token(

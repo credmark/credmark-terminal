@@ -52,6 +52,7 @@ export const LOCKED_CMK_ADDRESSES: { [chainId: number]: string[] } = {
 };
 
 export const STAKED_CMK_ADDRESSES: { [chainId: number]: string } = {
+  [1]: '0x8588d3A5FA9f63fA150815a88FC97183104Fb6Dc',
   [4]: '0xcC3f559d68ef3726B529657D6748752A0f2bbcfF',
   [3]: '0x3413B3dbB626f340ACcE81B7433c074Cb8814BF6',
   [5]: '0x44Ce789F37A18b1519c1ACF0d5bbf6302Be5dd50',
@@ -59,6 +60,7 @@ export const STAKED_CMK_ADDRESSES: { [chainId: number]: string } = {
 };
 
 export const REWARDS_POOL_ADDRESSES: { [chainId: number]: string } = {
+  [1]: '0xB5989dce5C50414590827d83371223B94b6600b8',
   [4]: '0x76FFC8596FCE1FE90EcF8A9Be9825fe8E9eEB61a',
   [3]: '0xA9f7e5E046b6808F59384D0672A955E80E3A0149',
   [5]: '0x09b940A08cA4B494FE69A288c0dEcF9F6dc193C5',
