@@ -75,7 +75,7 @@ export default function IndexPage(): JSX.Element {
             borderColor="gray.100"
           >
             <HStack mb="4">
-              <Img src="/img/cmk.png" h="32px" />
+              <Img src="/img/cmk.svg" h="32px" />
               <Text
                 fontFamily="Credmark Regular"
                 textAlign="center"
@@ -150,7 +150,7 @@ export default function IndexPage(): JSX.Element {
             borderColor="gray.100"
           >
             <HStack mb="4">
-              <Img src="/img/xcmk.png" h="32px" />
+              <Img src="/img/xcmk.svg" h="32px" />
               <Text
                 fontFamily="Credmark Regular"
                 textAlign="center"
@@ -223,7 +223,7 @@ export default function IndexPage(): JSX.Element {
             }))}
             loading={cmkData.loading}
             title="PRICE OF CMK ($)"
-            titleImg="/img/cmk.png"
+            titleImg="/img/cmk.svg"
             yLabel="CMK TOKEN PRICE"
             xLabel="DATE"
             gradient={['#3B0065', '#08538C']}
@@ -235,7 +235,7 @@ export default function IndexPage(): JSX.Element {
             }))}
             loading={stakedCmkData.loading}
             title="STAKED CMK ($)"
-            titleImg="/img/xcmk.png"
+            titleImg="/img/xcmk.svg"
             yLabel="AMOUNT STAKED"
             xLabel="DATE"
             gradient={['#DE1A60', '#3B0065']}

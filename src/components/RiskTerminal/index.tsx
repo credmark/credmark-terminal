@@ -158,7 +158,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
 
   return (
     <VStack align="stretch" mt="-56px">
-      <Box
+      <HStack
         zIndex="3"
         alignSelf="center"
         px="6"
@@ -168,7 +168,9 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
         shadow="lg"
         rounded="lg"
         mb="8"
+        spacing="4"
       >
+        <Img src="/img/terminal.svg" h="72px" mt="-20px" />
         <Text
           fontFamily="Credmark Regular"
           textAlign="center"
@@ -179,7 +181,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
         >
           RISK TERMINAL
         </Text>
-      </Box>
+      </HStack>
 
       <Container maxW="container.md" alignSelf="center">
         <Flex align="center" fontFamily="Credmark Regular">

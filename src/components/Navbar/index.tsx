@@ -34,7 +34,7 @@ export default function Navbar(): JSX.Element {
       >
         <HStack justify="space-between" py="2">
           <Link href="https://www.credmark.com/" isExternal>
-            <Img src="/img/cmk-logo-full.png" h="40px" />
+            <Img src="/img/logo-full.svg" h="40px" />
           </Link>
           <HStack>
             {chainId && NETWORK_LABELS[chainId] && (
