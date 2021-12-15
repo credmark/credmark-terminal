@@ -103,6 +103,7 @@ export default function LineChart({
         show: false,
       },
       axisPointer: {
+        show: false,
         label: {
           show: false,
         },
