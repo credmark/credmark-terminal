@@ -63,7 +63,9 @@ export default function Sidebar() {
       {!expanded && <Icon as={IoMenuOutline} boxSize={8} color="purple.500" />}
       <Collapse in={expanded} animateOpacity>
         <VStack spacing="8">
-          <Img src="/img/cmk.png" h="8" />
+          <Link href="https://www.credmark.com/" isExternal>
+            <Img src="/img/cmk.png" h="8" />
+          </Link>
           <VStack spacing="6">
             <NextLink href="/" passHref>
               <Link
@@ -108,6 +110,32 @@ export default function Sidebar() {
                 TERMINAL
               </Link>
             </NextLink>
+            <Link
+              href="https://smartpool.credmark.com/"
+              isExternal
+              fontFamily="Credmark Regular"
+              fontSize="sm"
+              textAlign="center"
+              color={'purple.500'}
+              lineHeight="1"
+            >
+              SMART
+              <br />
+              POOL
+            </Link>
+            <Link
+              href="https://docs.credmark.com/credmark-risk-library/"
+              isExternal
+              fontFamily="Credmark Regular"
+              fontSize="sm"
+              textAlign="center"
+              color={'purple.500'}
+              lineHeight="1"
+            >
+              RISK
+              <br />
+              LIBRARY
+            </Link>
           </VStack>
           <VStack>
             <Link
