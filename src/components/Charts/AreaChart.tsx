@@ -36,7 +36,7 @@ export default function AreaChart({
   const option: EChartsOption = useMemo(
     () => ({
       grid: {
-        top: 40,
+        top: 72,
         bottom: 40,
         left: 40,
         right: 40,

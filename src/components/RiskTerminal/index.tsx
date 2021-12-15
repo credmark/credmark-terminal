@@ -234,46 +234,38 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
             GRAPHS
           </Text>
           {GRAPHS.map((graph) => (
-            <HStack key={graph.key}>
-              <VStack
-                cursor="pointer"
-                _hover={{
-                  shadow: 'xl',
-                }}
-                ml="8"
-                color="gray.700"
-                bg="gray.50"
-                px="4"
-                h="10"
-                rounded="md"
-                border={activeGraphs.includes(graph.key) ? '2px' : '1px'}
-                borderColor="#gray.700"
-                transitionProperty="box-shadow"
-                transitionDuration="normal"
-                opacity={activeGraphs.includes(graph.key) ? 1.0 : 0.5}
-                onClick={() =>
-                  activeGraphs.includes(graph.key)
-                    ? setActiveGraphs(
-                        activeGraphs.filter((aa) => aa !== graph.key),
-                      )
-                    : setActiveGraphs([...activeGraphs, graph.key])
-                }
-                spacing="0"
-                justify="center"
-              >
-                <Text lineHeight="1">{graph.name}</Text>
-                <Text fontSize="xs" lineHeight="1">
-                  {graph.description}
-                </Text>
-              </VStack>
-              <Link
-                href={graph.infoLink}
-                isExternal
-                _hover={{ color: 'purple.500' }}
-              >
-                <Icon as={IoInformationCircleOutline} boxSize="20px" />
-              </Link>
-            </HStack>
+            <VStack
+              key={graph.key}
+              cursor="pointer"
+              _hover={{
+                shadow: 'xl',
+              }}
+              ml="8"
+              color="gray.700"
+              bg="gray.50"
+              px="4"
+              h="10"
+              rounded="md"
+              border={activeGraphs.includes(graph.key) ? '2px' : '1px'}
+              borderColor="#gray.700"
+              transitionProperty="box-shadow"
+              transitionDuration="normal"
+              opacity={activeGraphs.includes(graph.key) ? 1.0 : 0.5}
+              onClick={() =>
+                activeGraphs.includes(graph.key)
+                  ? setActiveGraphs(
+                      activeGraphs.filter((aa) => aa !== graph.key),
+                    )
+                  : setActiveGraphs([...activeGraphs, graph.key])
+              }
+              spacing="0"
+              justify="center"
+            >
+              <Text lineHeight="1">{graph.name}</Text>
+              <Text fontSize="xs" lineHeight="1">
+                {graph.description}
+              </Text>
+            </VStack>
           ))}
         </Flex>
         {dummy && (
