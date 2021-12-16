@@ -28,7 +28,7 @@ export default function Navbar(): JSX.Element {
         bg="white"
         roundedBottom="3xl"
         shadow="lg"
-        px="12"
+        px={{ base: 4, md: 12 }}
         py="4"
         zIndex="99"
       >
