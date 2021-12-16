@@ -3,7 +3,6 @@ import {
   Box,
   Center,
   Container,
-  Divider,
   Flex,
   HStack,
   Link,
@@ -19,7 +18,6 @@ import { IoInformationCircleOutline } from 'react-icons/io5';
 import LineChart from '~/components/Charts/LineChart';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
 import { AssetKey, GraphKey } from '~/types/terminal';
-import dayjs from '~/utils/date';
 
 import { ASSETS, GRAPHS } from './constants';
 
@@ -118,11 +116,10 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
     return lines;
   })();
 
-  const maxVars = (() => {
+  const currentVars = (() => {
     const vars: Array<{
       name: string;
       val: number;
-      date: Date;
     }> = [];
 
     for (const asset of ASSETS) {
@@ -135,18 +132,13 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
       const maxVar = {
         name: asset.name,
         val: Number(dataPoints[0]['10_day_99p']) * -1,
-        date: dayjs(
-          dataPoints[0]['var_date_10_day_99p'],
-          'YYYY-MM-DD',
-        ).toDate(),
+        ts: dataPoints[0].ts,
       };
 
       for (const dp of dataPoints) {
-        const val = Number(dp['10_day_99p']) * -1;
-        if (val > maxVar.val) {
-          const date = dayjs(dp['var_date_10_day_99p'], 'YYYY-MM-DD').toDate();
-          maxVar.val = val;
-          maxVar.date = date;
+        if (dp.ts > maxVar.ts) {
+          maxVar.val = Number(dataPoints[0]['10_day_99p']) * -1;
+          maxVar.ts = dp.ts;
         }
       }
 
@@ -188,7 +180,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           <Text color="gray.600" lineHeight="1">
             TOGGLE
             <br />
-            ASSETS
+            PROTOCOLS
           </Text>
           {ASSETS.map((asset) => (
             <HStack key={asset.key}>
@@ -328,52 +320,20 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           zIndex="1"
           rounded="md"
         >
-          <LineChart
-            lines={varLines}
-            formatValue={(val: number) => val.toFixed(1)}
-          />
-          <Flex pl="20" align="center">
-            {[30, 60, 90].map((days) => (
-              <Box
-                key={days}
-                p="2"
-                mx="2"
-                fontWeight="bold"
-                color={varDuration === days ? 'gray.900' : 'gray.300'}
-                cursor="pointer"
-                borderBottom={varDuration === days ? '2px' : '0'}
-                borderColor="gray.700"
-                onClick={() => setVarDuration(days)}
-                _hover={
-                  varDuration === days
-                    ? {}
-                    : {
-                        color: 'gray.700',
-                      }
-                }
-              >
-                {days}D
-              </Box>
-            ))}
-            {lcrLines.length !== 0 &&
-              !!Object.values(varData).find(({ loading }) => loading) && (
+          {varLines.length === 0 &&
+            !!Object.values(varData).find(({ loading }) => loading) && (
+              <Center py="10">
                 <Spinner color="purple.500" />
-              )}
-          </Flex>
-          {lcrLines.length === 0 && (
-            <Center position="absolute" top="0" left="0" right="0" bottom="0">
-              <Spinner color="purple.500" />
-            </Center>
-          )}
-
-          {maxVars.length > 0 && (
+              </Center>
+            )}
+          {currentVars.length > 0 && (
             <>
-              <Divider bg="purple.500" my="8" />
+              {/* <Divider bg="purple.500" my="8" /> */}
               <Text textAlign="center" color="purple.500" fontSize="lg">
-                Max VAR over 10 days with 99% confidence
+                VAR over 10 days with 99% confidence
               </Text>
               <HStack justify="center">
-                {maxVars.map((maxVar) => {
+                {currentVars.map((maxVar) => {
                   const asset = ASSETS.find((a) => a.name === maxVar.name);
                   if (!asset) throw new Error('Invalid asset');
                   return (
@@ -390,14 +350,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
                     >
                       <Text fontFamily="Credmark Regular">{asset.name}</Text>
                       <Text fontSize="2xl" fontWeight="bold">
-                        {maxVar.val.toFixed(2)}
-                      </Text>
-                      <Text fontSize="sm">
-                        {maxVar.date.toLocaleDateString(undefined, {
-                          day: '2-digit',
-                          month: 'long',
-                          year: 'numeric',
-                        })}
+                        ${maxVar.val.toFixed(2)}B
                       </Text>
                     </VStack>
                   );
