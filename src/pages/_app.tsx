@@ -12,6 +12,7 @@ import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import NextHead from 'next/head';
 import { useRouter } from 'next/router';
+import NextScript from 'next/script';
 import NProgress from 'nprogress';
 import React, { useEffect } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -92,6 +93,25 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
         <meta property="twitter:description" content={description} />
         {/* <meta property="+twitter:image" content={img} /> */}
       </NextHead>
+      {env.type === 'PROD' && (
+        <>
+          <NextScript
+            src="https://www.googletagmanager.com/gtag/js?id=UA-201404361-1"
+            strategy="afterInteractive"
+          />
+          <NextScript
+            id="gtag-init"
+            dangerouslySetInnerHTML={{
+              __html: `
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', 'UA-201404361-1');
+                  `,
+            }}
+          />
+        </>
+      )}
       <ChakraProvider resetCSS theme={theme}>
         <Web3ReactProvider getLibrary={getLibrary}>
           <Web3ProviderNetwork getLibrary={getLibrary}>
