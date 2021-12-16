@@ -1,28 +1,30 @@
 import { Img } from '@chakra-ui/image';
-import { Box, Link, VStack } from '@chakra-ui/layout';
-import { Icon, useDisclosure } from '@chakra-ui/react';
+import { Box, Center, Link, VStack } from '@chakra-ui/layout';
+import { Icon, useDisclosure, useMediaQuery } from '@chakra-ui/react';
 import { Collapse } from '@chakra-ui/transition';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import { IoLogoDiscord, IoLogoTwitter, IoMenuOutline } from 'react-icons/io5';
 
-import { useOnClickOutside } from '~/hooks/useOnClickOutside';
-
 export default function Sidebar() {
   const ref = useRef(null);
   const router = useRouter();
-  const { isOpen, onToggle, onClose } = useDisclosure();
-  const [scrolled, setScrolled] = useState(false);
+  const [isMobile] = useMediaQuery('(max-width: 992px)');
+
+  const { isOpen, onToggle, onClose, onOpen } = useDisclosure({
+    defaultIsOpen: !isMobile,
+  });
+
+  const [toggleOnScroll, setToggleOnScroll] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY;
       if (offset > 80) {
-        setScrolled(true);
         onClose();
-      } else {
-        setScrolled(false);
+      } else if (!isMobile && toggleOnScroll) {
+        onOpen();
       }
     };
 
@@ -30,11 +32,7 @@ export default function Sidebar() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [onClose]);
-
-  useOnClickOutside(ref, onClose);
-
-  const expanded = !scrolled || isOpen;
+  }, [isMobile, onClose, onOpen, toggleOnScroll]);
 
   return (
     <Box
@@ -42,17 +40,22 @@ export default function Sidebar() {
       zIndex="9999"
       position="fixed"
       left="0"
-      top={{ base: 24, lg: 6 }}
-      maxW={expanded ? '120px' : '64px'}
+      top={{ base: 44, lg: 6 }}
+      maxW={isOpen ? '120px' : '64px'}
       _hover={
-        !expanded
+        !isOpen
           ? {
               cursor: 'pointer',
               shadow: '2xl',
             }
           : {}
       }
-      onClick={() => (!expanded ? onToggle() : undefined)}
+      onClick={() => {
+        if (!isOpen) {
+          setToggleOnScroll(true);
+          onOpen();
+        }
+      }}
       p="4"
       bg="white"
       shadow="lg"
@@ -60,9 +63,23 @@ export default function Sidebar() {
       transitionProperty="width,box-shadow"
       transitionDuration="normal"
     >
-      {!expanded && <Icon as={IoMenuOutline} boxSize={8} color="purple.500" />}
-      <Collapse in={expanded} animateOpacity>
-        <VStack spacing="8">
+      {(!isOpen || isMobile) && (
+        <Center>
+          <Icon
+            as={IoMenuOutline}
+            boxSize={8}
+            color="purple.500"
+            mx="auto"
+            cursor="pointer"
+            onClick={() => {
+              setToggleOnScroll(false);
+              onToggle();
+            }}
+          />
+        </Center>
+      )}
+      <Collapse in={isOpen} animateOpacity>
+        <VStack spacing="8" mt={isMobile ? 4 : 0}>
           <Link href="https://www.credmark.com/" isExternal>
             <Img src="/img/logo.svg" h="8" />
           </Link>
@@ -110,19 +127,7 @@ export default function Sidebar() {
                 TERMINAL
               </Link>
             </NextLink>
-            <Link
-              href="https://smartpool.credmark.com/"
-              isExternal
-              fontFamily="Credmark Regular"
-              fontSize="sm"
-              textAlign="center"
-              color={'purple.500'}
-              lineHeight="1"
-            >
-              SMART
-              <br />
-              POOL
-            </Link>
+            <Box bg="purple.500" w="16px" h="2px"></Box>
             <Link
               href="https://docs.credmark.com/credmark-risk-library/"
               isExternal
