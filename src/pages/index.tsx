@@ -52,14 +52,22 @@ export default function IndexPage(): JSX.Element {
         <Stack
           w="full"
           spacing="8"
-          direction={isStakeBoxOpen ? 'column' : 'row'}
+          direction={
+            isStakeBoxOpen ? { base: 'column' } : { base: 'column', md: 'row' }
+          }
         >
           <StakeBox />
           <TerminalBox />
         </Stack>
       </Container>
 
-      <Container maxW="container.md" p="8" bg="white" shadow="xl" rounded="3xl">
+      <Container
+        maxW="container.md"
+        p={{ base: 2, md: 8 }}
+        bg="white"
+        shadow="xl"
+        rounded="3xl"
+      >
         <Stack
           p="4"
           spacing="8"
@@ -221,11 +229,16 @@ export default function IndexPage(): JSX.Element {
               timestamp: new Date(point.ts * 1000),
               value: parseFloat(point.usdc_price),
             }))}
+            formatValue={(val) =>
+              new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              }).format(val)
+            }
             loading={cmkData.loading}
             title="PRICE OF CMK ($)"
             titleImg="/img/cmk.svg"
             yLabel="CMK TOKEN PRICE"
-            xLabel="DATE"
             gradient={['#3B0065', '#08538C']}
           />
           <AreaChart
@@ -233,11 +246,16 @@ export default function IndexPage(): JSX.Element {
               timestamp: new Date(point.ts * 1000),
               value: parseFloat(point.amount_staked_usdc),
             }))}
+            formatValue={(val) =>
+              new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              }).format(val)
+            }
             loading={stakedCmkData.loading}
             title="STAKED CMK ($)"
             titleImg="/img/xcmk.svg"
             yLabel="AMOUNT STAKED"
-            xLabel="DATE"
             gradient={['#DE1A60', '#3B0065']}
           />
         </VStack>

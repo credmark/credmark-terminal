@@ -15,7 +15,7 @@ interface AreaChartProps {
   title: string;
   titleImg?: string;
   yLabel: string;
-  xLabel: string;
+  formatValue?: (value: any) => string;
 
   height?: number;
   padding?: number;
@@ -26,9 +26,9 @@ export default function AreaChart({
   data,
   loading,
   title,
-  titleImg,
-  xLabel,
   yLabel,
+  formatValue,
+  titleImg,
   height = 300,
   padding = 40,
   gradient,
@@ -52,7 +52,6 @@ export default function AreaChart({
             month: 'long',
             year: 'numeric',
           });
-          const series = params.seriesName;
           const value = params.data[1];
           return `
           <div style="line-height: 1">
@@ -60,8 +59,8 @@ export default function AreaChart({
               ${date}
             </div>
             <div>
-              <span style="margin-right: 16px">${series}</span>
-              <strong>${value}</strong>
+              <span style="margin-right: 16px">${yLabel}</span>
+              <strong>${formatValue ? formatValue(value) : value}</strong>
             </div>
           </div>
           `;
@@ -73,12 +72,6 @@ export default function AreaChart({
       xAxis: {
         type: 'time',
         boundaryGap: false,
-        name: xLabel,
-        nameLocation: 'middle',
-        nameTextStyle: {
-          fontSize: 12,
-          color: '#3B0065',
-        },
         axisLine: {
           show: false,
         },
@@ -86,24 +79,20 @@ export default function AreaChart({
           label: {
             show: false,
           },
+          lineStyle: {
+            color: '#E53E3E',
+          },
         },
         axisTick: {
-          show: false,
+          show: true,
         },
         axisLabel: {
-          show: false,
+          show: true,
         },
       },
       yAxis: {
         type: 'value',
         boundaryGap: [0, '100%'],
-        name: yLabel,
-        nameLocation: 'middle',
-        nameRotate: 90,
-        nameTextStyle: {
-          fontSize: 12,
-          color: '#3B0065',
-        },
         axisLine: {
           show: false,
         },
@@ -120,7 +109,22 @@ export default function AreaChart({
           show: false,
         },
         axisLabel: {
-          show: false,
+          show: true,
+          formatter: function (value: number | string) {
+            const num = Number(value);
+            const fixedFigs = 0;
+            if (num >= 1e9) {
+              return `${(num / 1e9).toFixed(fixedFigs)}B`;
+            } else if (num >= 1e6) {
+              return `${(num / 1e6).toFixed(fixedFigs)}M`;
+            } else if (num >= 1e3) {
+              return `${(num / 1e3).toFixed(fixedFigs)}K`;
+            } else if (num > 10) {
+              return num.toFixed(fixedFigs);
+            } else {
+              return num;
+            }
+          },
         },
       },
       dataZoom: [
@@ -138,13 +142,14 @@ export default function AreaChart({
       ],
       series: [
         {
-          name: yLabel,
           smooth: 1,
           sampling: 'max',
           type: 'line',
-          symbol: 'none',
+          symbol: 'circle',
+          symbolSize: 10,
+          showSymbol: false,
           itemStyle: {
-            color: '#3b0065',
+            color: '#E53E3E',
           },
           lineStyle: {
             width: 0,
@@ -172,7 +177,7 @@ export default function AreaChart({
         },
       ],
     }),
-    [data, gradient, loading, xLabel, yLabel],
+    [data, formatValue, gradient, loading, yLabel],
   );
 
   return (

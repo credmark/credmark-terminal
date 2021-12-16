@@ -8,7 +8,7 @@
             </g>
         </g>
         <circle id="Oval" fill="#3B0065" cx="752.5" cy="3365.5" r="752.5"></circle>
-        <text id="X" font-family="Credmark-Regular, Credmark" font-size="1280" font-weight="normal" letter-spacing="43.4900787" fill="#FFFFFF">
+        <text id="X" font-family="Credmark Regular, Arial" font-size="1280" font-weight="bold" letter-spacing="43.4900787" fill="#FFFFFF">
             <tspan x="289.149921" y="3818">X</tspan>
         </text>
     </g>

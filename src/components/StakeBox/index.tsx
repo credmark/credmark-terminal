@@ -38,6 +38,7 @@ export default function StakeBox(boxProps: BoxProps) {
 
   return (
     <VStack
+      alignSelf="center"
       flex="1"
       position="relative"
       px="8"
