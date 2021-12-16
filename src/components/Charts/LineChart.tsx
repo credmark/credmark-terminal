@@ -85,6 +85,9 @@ export default function LineChart({
         label: {
           show: false,
         },
+        lineStyle: {
+          color: '#E53E3E',
+        },
       },
       axisTick: {
         show: true,
@@ -121,7 +124,9 @@ export default function LineChart({
     series: lines.map((line) => ({
       name: line.name,
       type: 'line',
-      symbol: 'none',
+      symbol: 'circle',
+      symbolSize: 10,
+      showSymbol: false,
       label: {
         fontWeight: 800,
       },
