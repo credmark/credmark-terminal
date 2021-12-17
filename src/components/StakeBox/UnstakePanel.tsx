@@ -127,7 +127,7 @@ export default function UnstakePanel() {
   return (
     <VStack spacing="4" justify="center" w="full" pt="8">
       <HStack justify="space-between" w="full" px="2">
-        <Text fontFamily="Credmark Regular" fontSize="xl" color="purple.500">
+        <Text fontFamily="Credmark Regular" fontSize="xl" color="pink.500">
           UNSTAKE CMK
         </Text>
         <Text color="pink.500">

@@ -21,6 +21,7 @@ import { IoArrowForward } from 'react-icons/io5';
 import GlobalStakeInfo from './GlobalStakeInfo';
 import StakePanel from './StakePanel';
 import UnstakePanel from './UnstakePanel';
+import XCmkFaq from './XCmkFaq';
 
 export default function StakeBox(boxProps: BoxProps) {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function StakeBox(boxProps: BoxProps) {
 
   return (
     <VStack
-      alignSelf="center"
+      alignSelf={isOpen ? undefined : 'center'}
       flex="1"
       position="relative"
       px="8"
@@ -107,10 +108,13 @@ export default function StakeBox(boxProps: BoxProps) {
           <Text color="purple.500" textAlign="center" px="2">
             <strong>By staking, you convert CMK to xCMK.</strong>
             <br />
-            xCMK gives staking rewards from the rewards pool, grants you access
-            to the Risk Terminal, and allows for revenue sharing.
+            <br />
+            xCMK gives staking rewards from the rewards pool,
+            <br /> grants you access to the Risk Terminal,
+            <br /> and allows for revenue sharing.
           </Text>
-          <Box bg="gray.50" rounded="xl" p="8" w="100%">
+          <XCmkFaq />
+          <Box bg="gray.50" p="8" w="100%" border="1px" borderColor="gray.100">
             <Tabs variant="unstyled" colorScheme="gray">
               <TabList as={HStack} spacing="2" justifyContent="center">
                 <Tab
