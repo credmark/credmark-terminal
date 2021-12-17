@@ -9,6 +9,8 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
+import { CurrencyAmount } from '@uniswap/sdk-core';
+import JSBI from 'jsbi';
 import React, { useMemo, useState } from 'react';
 
 import { STAKED_CMK_ADDRESSES } from '~/constants/addresses';
@@ -34,7 +36,53 @@ export default function StakePanel() {
 
   const [attemptingTxn, setAttemptingTxn] = useState(false);
   const currency = chainId ? CMK[chainId] : undefined;
-  const maxAmount = useTokenBalance(account ?? undefined, currency);
+  const balance = useTokenBalance(account ?? undefined, currency);
+
+  const maxAmount = useMemo(() => {
+    if (!balance) {
+      return undefined;
+    }
+
+    // If balance has no decimal places (i.e. a whole number) return as it is
+    if (
+      JSBI.equal(
+        JSBI.remainder(
+          balance.quotient,
+          JSBI.exponentiate(
+            JSBI.BigInt(10),
+            JSBI.BigInt(balance.currency.decimals),
+          ),
+        ),
+        JSBI.BigInt(0),
+      )
+    ) {
+      return balance;
+    }
+
+    // If balance <= 0.00001
+    if (
+      JSBI.lessThanOrEqual(
+        balance.quotient,
+        JSBI.exponentiate(
+          JSBI.BigInt(10),
+          JSBI.BigInt(balance.currency.decimals - 5),
+        ),
+      )
+    ) {
+      return balance;
+    }
+
+    // Reduce 0.00001 from balance
+    return balance.subtract(
+      CurrencyAmount.fromRawAmount(
+        balance.currency,
+        JSBI.exponentiate(
+          JSBI.BigInt(10),
+          JSBI.BigInt(balance.currency.decimals - 5),
+        ),
+      ),
+    );
+  }, [balance]);
 
   const [amount, setAmount] = useState('');
   const parsedAmount = tryParseAmount(amount, currency);
@@ -56,12 +104,12 @@ export default function StakePanel() {
       return 'Enter an amount';
     }
 
-    if (parsedAmount && maxAmount && maxAmount.lessThan(parsedAmount)) {
+    if (parsedAmount && balance && balance.lessThan(parsedAmount)) {
       return 'Insufficient balance';
     }
 
     return undefined;
-  }, [account, maxAmount, parsedAmount]);
+  }, [account, balance, parsedAmount]);
 
   const isValid = !errorMessage;
 
@@ -71,7 +119,12 @@ export default function StakePanel() {
     }
   }
 
-  const atMax = maxAmount && parsedAmount && maxAmount.equalTo(parsedAmount);
+  const atMax =
+    maxAmount &&
+    parsedAmount &&
+    balance &&
+    JSBI.greaterThanOrEqual(parsedAmount.quotient, maxAmount.quotient) &&
+    JSBI.lessThanOrEqual(parsedAmount.quotient, balance.quotient);
 
   async function onStake() {
     if (!chainId || !library || !account) return;
