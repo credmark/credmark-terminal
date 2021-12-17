@@ -44,13 +44,7 @@ export default function TerminalPage() {
       spacing="8"
     >
       <Navbar />
-      <Container
-        maxW="container.md"
-        pt="8"
-        pb="8"
-        textAlign="center"
-        fontSize="lg"
-      >
+      <Container maxW="container.md" py="8" textAlign="center" fontSize="lg">
         <Box bg="blackAlpha.50" rounded="lg" p="4">
           Credmark&apos;s <strong>Risk Terminal</strong> is THE source for{' '}
           <strong>Risk Data</strong> in the DeFi world. Powered by Credmark's
@@ -70,7 +64,7 @@ export default function TerminalPage() {
       </Container>
       <Container
         maxW="100vw"
-        p="8"
+        p={{ base: 2, md: 8 }}
         bg="white"
         roundedTop="3xl"
         position="relative"
@@ -81,6 +75,7 @@ export default function TerminalPage() {
         <Container maxW="container.md">
           <RiskTerminalData
             dummy={!forceShowRealData && (!onMainnet || !hasStakedCmk)}
+            disabled={!forceShowRealData && !hasStakedCmk}
           />
         </Container>
         {!forceShowRealData && !hasStakedCmk && (

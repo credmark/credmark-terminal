@@ -6,8 +6,10 @@ import {
   Flex,
   HStack,
   Link,
+  Stack,
   Text,
   VStack,
+  Wrap,
 } from '@chakra-ui/layout';
 import {
   Icon,
@@ -30,7 +32,13 @@ import { AssetKey, GraphKey } from '~/types/terminal';
 
 import { ASSETS, GRAPHS } from './constants';
 
-export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
+export default function RiskTerminalData({
+  dummy,
+  disabled,
+}: {
+  dummy: boolean;
+  disabled: boolean;
+}) {
   const [activeAssets, setActiveAssets] = useState<AssetKey[]>([
     'AAVEV2',
     'COMPOUND',
@@ -160,7 +168,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
   return (
     <VStack align="stretch" mt="-56px">
       <HStack
-        zIndex="3"
+        zIndex={disabled ? 3 : undefined}
         alignSelf="center"
         px="6"
         pt="2"
@@ -185,107 +193,120 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
       </HStack>
 
       <Container maxW="container.md" alignSelf="center">
-        <Flex align="center">
+        <Stack direction={{ base: 'column', md: 'row' }}>
           <Text
             color="gray.600"
             lineHeight="1"
-            w="120px"
+            w={{ base: 'unset', md: '120px' }}
             fontFamily="Credmark Regular"
           >
-            TOGGLE
-            <br />
-            PROTOCOLS
+            TOGGLE PROTOCOLS
           </Text>
-          {ASSETS.map((asset) => (
-            <HStack key={asset.key}>
-              <HStack
+          <Wrap spacing="4">
+            {ASSETS.map((asset) => (
+              <HStack key={asset.key} spacing="1">
+                <HStack
+                  cursor="pointer"
+                  _hover={{
+                    shadow: 'xl',
+                  }}
+                  color={asset.color.toString()}
+                  bg={asset.color.fade(0.875).toString()}
+                  px="4"
+                  h="10"
+                  rounded="md"
+                  border={activeAssets.includes(asset.key) ? '2px' : '1px'}
+                  borderColor={asset.color.toString()}
+                  transitionProperty="box-shadow"
+                  transitionDuration="normal"
+                  opacity={activeAssets.includes(asset.key) ? 1.0 : 0.5}
+                  onClick={() =>
+                    activeAssets.includes(asset.key)
+                      ? setActiveAssets(
+                          activeAssets.filter((aa) => aa !== asset.key),
+                        )
+                      : setActiveAssets([...activeAssets, asset.key])
+                  }
+                  whiteSpace="nowrap"
+                >
+                  <Box w="6">
+                    <Img src={asset.logo} />
+                  </Box>
+                  <Text fontFamily="Credmark Regular">{asset.title}</Text>
+                  {asset.subtitle && (
+                    <Text fontSize="xs" fontWeight="500">
+                      ({asset.subtitle})
+                    </Text>
+                  )}
+                </HStack>
+                <Link href={asset.infoLink} isExternal>
+                  <Icon
+                    as={IoInformationCircleOutline}
+                    boxSize="20px"
+                    color="purple.500"
+                    transitionDuration="normal"
+                    transitionProperty="transform"
+                    _active={{
+                      transform: 'scale(0.98)',
+                    }}
+                  />
+                </Link>
+              </HStack>
+            ))}
+          </Wrap>
+        </Stack>
+        <Stack direction={{ base: 'column', md: 'row' }} mt="6">
+          <Text
+            color="gray.600"
+            lineHeight="1"
+            w={{ base: 'unset', md: '120px' }}
+            fontFamily="Credmark Regular"
+          >
+            TOGGLE GRAPHS
+          </Text>
+          <Wrap spacing="4">
+            {GRAPHS.map((graph) => (
+              <VStack
+                key={graph.key}
                 cursor="pointer"
                 _hover={{
                   shadow: 'xl',
                 }}
-                ml="8"
-                color={asset.color.toString()}
-                bg={asset.color.fade(0.875).toString()}
+                color="gray.700"
+                bg="gray.50"
                 px="4"
                 h="10"
                 rounded="md"
-                border={activeAssets.includes(asset.key) ? '2px' : '1px'}
-                borderColor={asset.color.toString()}
+                border={activeGraphs.includes(graph.key) ? '2px' : '1px'}
+                borderColor="#gray.700"
                 transitionProperty="box-shadow"
                 transitionDuration="normal"
-                opacity={activeAssets.includes(asset.key) ? 1.0 : 0.5}
+                opacity={activeGraphs.includes(graph.key) ? 1.0 : 0.5}
                 onClick={() =>
-                  activeAssets.includes(asset.key)
-                    ? setActiveAssets(
-                        activeAssets.filter((aa) => aa !== asset.key),
+                  activeGraphs.includes(graph.key)
+                    ? setActiveGraphs(
+                        activeGraphs.filter((aa) => aa !== graph.key),
                       )
-                    : setActiveAssets([...activeAssets, asset.key])
+                    : setActiveGraphs([...activeGraphs, graph.key])
                 }
+                spacing="0"
+                justify="center"
+                whiteSpace="nowrap"
               >
-                <Img src={asset.logo} w="6" />
-                <Text fontFamily="Credmark Regular">{asset.title}</Text>
-                {asset.subtitle && (
-                  <Text fontSize="xs" fontWeight="500">
-                    ({asset.subtitle})
-                  </Text>
-                )}
-              </HStack>
-              <Link href={asset.infoLink} isExternal>
-                <Icon
-                  as={IoInformationCircleOutline}
-                  boxSize="20px"
-                  color="purple.500"
-                  transitionDuration="normal"
-                  transitionProperty="transform"
-                  _active={{
-                    transform: 'scale(0.98)',
-                  }}
-                />
-              </Link>
-            </HStack>
-          ))}
-        </Flex>
-        <Flex align="center" mt="4" fontFamily="Credmark Regular">
-          <Text color="gray.600" lineHeight="1" w="120px">
-            TOGGLE
-            <br />
-            GRAPHS
-          </Text>
-          {GRAPHS.map((graph) => (
-            <VStack
-              key={graph.key}
-              cursor="pointer"
-              _hover={{
-                shadow: 'xl',
-              }}
-              ml="8"
-              color="gray.700"
-              bg="gray.50"
-              px="4"
-              h="10"
-              rounded="md"
-              border={activeGraphs.includes(graph.key) ? '2px' : '1px'}
-              borderColor="#gray.700"
-              transitionProperty="box-shadow"
-              transitionDuration="normal"
-              opacity={activeGraphs.includes(graph.key) ? 1.0 : 0.5}
-              onClick={() =>
-                activeGraphs.includes(graph.key)
-                  ? setActiveGraphs(
-                      activeGraphs.filter((aa) => aa !== graph.key),
-                    )
-                  : setActiveGraphs([...activeGraphs, graph.key])
-              }
-              spacing="0"
-              justify="center"
-            >
-              <Text lineHeight="1">{graph.title}</Text>
-              <Text fontSize="xs" lineHeight="1">
-                {graph.subtitle}
-              </Text>
-            </VStack>
-          ))}
-        </Flex>
+                <Text fontFamily="Credmark Regular" lineHeight="1">
+                  {graph.title}
+                </Text>
+                <Text
+                  fontFamily="Credmark Regular"
+                  fontSize="xs"
+                  lineHeight="1"
+                >
+                  {graph.subtitle}
+                </Text>
+              </VStack>
+            ))}
+          </Wrap>
+        </Stack>
         {dummy && (
           <Flex>
             <Text
@@ -328,7 +349,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           >
             VAR (VALUE AT RISK)
           </Text>
-          <Popover placement="right" gutter={16}>
+          <Popover placement="top-end" gutter={16} flip={false}>
             <PopoverTrigger>
               <Box>
                 <Icon
@@ -351,7 +372,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
             >
               <PopoverArrow
                 borderColor="purple.500"
-                borderLeft="1px"
+                borderRight="1px"
                 borderBottom="1px"
               />
               <PopoverCloseButton
@@ -460,7 +481,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           >
             LCR (LIQUIDITY COVERAGE RATIO)
           </Text>
-          <Popover placement="right" gutter={16}>
+          <Popover placement="top-end" gutter={16} flip={false}>
             <PopoverTrigger>
               <Box>
                 <Icon
@@ -483,7 +504,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
             >
               <PopoverArrow
                 borderColor="purple.500"
-                borderLeft="1px"
+                borderRight="1px"
                 borderBottom="1px"
               />
               <PopoverCloseButton
