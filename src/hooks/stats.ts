@@ -181,10 +181,12 @@ export function usePercentCmkStaked() {
     chainId ? CMK_ADDRESSES[chainId] : undefined,
   );
 
-  const { loading: cmkTotalSupplyLoading, result: cmkTotalSupplyResult } =
-    useSingleCallResult(cmkContract, 'totalSupply');
+  const {
+    loading: cmkCirculatingSupplyLoading,
+    value: cmkCirculatingSupplyResult,
+  } = useCmkCirculatingSupply();
 
-  const cmkTotalSupply = cmkTotalSupplyResult?.[0] as BigNumber | undefined;
+  const cmkCirculatingSupply = cmkCirculatingSupplyResult?.quotient;
 
   const { loading: cmkBalanceLoading, result: sCmkBalanceResult } =
     useSingleCallResult(cmkContract, 'balanceOf', [
@@ -193,12 +195,12 @@ export function usePercentCmkStaked() {
 
   const sCmkBalance = sCmkBalanceResult?.[0] as BigNumber | undefined;
   return {
-    loading: cmkTotalSupplyLoading || cmkBalanceLoading,
+    loading: cmkCirculatingSupplyLoading || cmkBalanceLoading,
     value:
-      sCmkBalance && cmkTotalSupply
+      sCmkBalance && cmkCirculatingSupply
         ? new Fraction(
             sCmkBalance.mul(100).toString(),
-            cmkTotalSupply.toString(),
+            cmkCirculatingSupply.toString(),
           )
         : undefined,
   };
