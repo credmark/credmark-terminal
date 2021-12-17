@@ -5,7 +5,8 @@ export type GraphKey = 'LCR' | 'VAR';
 
 export interface AssetInfo {
   key: AssetKey;
-  name: string;
+  title: string;
+  subtitle?: string;
   logo: string;
   color: Color;
   infoLink: string;
@@ -13,7 +14,8 @@ export interface AssetInfo {
 
 export interface GraphInfo {
   key: GraphKey;
-  name: string;
+  title: string;
+  subtitle: string;
   description: string;
   infoLink: string;
 }

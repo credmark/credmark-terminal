@@ -9,10 +9,19 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/layout';
-import { Icon } from '@chakra-ui/react';
+import {
+  Icon,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverTrigger,
+} from '@chakra-ui/react';
 import { Spinner } from '@chakra-ui/spinner';
 import { Collapse } from '@chakra-ui/transition';
 import React, { useState } from 'react';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 import { IoInformationCircleOutline } from 'react-icons/io5';
 
 import LineChart from '~/components/Charts/LineChart';
@@ -65,7 +74,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
       const endTs = startTs - lcrDuration * 24 * 3600;
 
       lines.push({
-        name: asset.name,
+        name: asset.title,
         color: asset.color.toString(),
         data: dataPoints
           .filter((dp) => dp.ts > endTs)
@@ -101,7 +110,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
       const endTs = startTs - varDuration * 24 * 3600;
 
       lines.push({
-        name: asset.name,
+        name: asset.title,
         color: asset.color.toString(),
         data: dataPoints
           .filter((dp) => dp.ts > endTs)
@@ -130,7 +139,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
       if (!dataPoints || dataPoints.length === 0) continue;
 
       const maxVar = {
-        name: asset.name,
+        name: asset.title,
         val: Number(dataPoints[0]['10_day_99p']) * -1,
         ts: dataPoints[0].ts,
       };
@@ -176,8 +185,13 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
       </HStack>
 
       <Container maxW="container.md" alignSelf="center">
-        <Flex align="center" fontFamily="Credmark Regular">
-          <Text color="gray.600" lineHeight="1">
+        <Flex align="center">
+          <Text
+            color="gray.600"
+            lineHeight="1"
+            w="120px"
+            fontFamily="Credmark Regular"
+          >
             TOGGLE
             <br />
             PROTOCOLS
@@ -209,20 +223,30 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
                 }
               >
                 <Img src={asset.logo} w="6" />
-                <Text>{asset.name}</Text>
+                <Text fontFamily="Credmark Regular">{asset.title}</Text>
+                {asset.subtitle && (
+                  <Text fontSize="xs" fontWeight="500">
+                    ({asset.subtitle})
+                  </Text>
+                )}
               </HStack>
-              <Link
-                href={asset.infoLink}
-                isExternal
-                _hover={{ color: 'purple.500' }}
-              >
-                <Icon as={IoInformationCircleOutline} boxSize="20px" />
+              <Link href={asset.infoLink} isExternal>
+                <Icon
+                  as={IoInformationCircleOutline}
+                  boxSize="20px"
+                  color="purple.500"
+                  transitionDuration="normal"
+                  transitionProperty="transform"
+                  _active={{
+                    transform: 'scale(0.98)',
+                  }}
+                />
               </Link>
             </HStack>
           ))}
         </Flex>
         <Flex align="center" mt="4" fontFamily="Credmark Regular">
-          <Text color="gray.600" lineHeight="1">
+          <Text color="gray.600" lineHeight="1" w="120px">
             TOGGLE
             <br />
             GRAPHS
@@ -255,9 +279,9 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
               spacing="0"
               justify="center"
             >
-              <Text lineHeight="1">{graph.name}</Text>
+              <Text lineHeight="1">{graph.title}</Text>
               <Text fontSize="xs" lineHeight="1">
-                {graph.description}
+                {graph.subtitle}
               </Text>
             </VStack>
           ))}
@@ -285,7 +309,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           position="relative"
           mx="auto"
           mt="12"
-          pt="2"
+          pt="1"
           pb="1"
           bg="white"
           shadow="lg"
@@ -296,6 +320,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
         >
           <Text
             fontFamily="Credmark Regular"
+            pt="1"
             textAlign="center"
             lineHeight="1.2"
             fontSize="xl"
@@ -303,14 +328,65 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           >
             VAR (VALUE AT RISK)
           </Text>
-          <Link
-            href="https://docs.credmark.com/credmark-risk-library/risk-metrics/value-at-risk-var"
-            isExternal
-            _hover={{ color: 'purple.500' }}
-            pb="1"
-          >
-            <Icon as={IoInformationCircleOutline} boxSize="20px" />
-          </Link>
+          <Popover placement="right" gutter={16}>
+            <PopoverTrigger>
+              <Box>
+                <Icon
+                  as={IoInformationCircleOutline}
+                  boxSize="20px"
+                  cursor="pointer"
+                  color="purple.500"
+                  transitionDuration="normal"
+                  transitionProperty="transform"
+                  _active={{
+                    transform: 'scale(0.98)',
+                  }}
+                />
+              </Box>
+            </PopoverTrigger>
+            <PopoverContent
+              color="purple.500"
+              bg="white"
+              borderColor="purple.500"
+            >
+              <PopoverArrow
+                borderColor="purple.500"
+                borderLeft="1px"
+                borderBottom="1px"
+              />
+              <PopoverCloseButton
+                top="-2"
+                right="-2"
+                bg="purple.500"
+                color="white"
+                rounded="full"
+                _hover={{
+                  bg: 'purple.500',
+                  transform: 'translateY(-2px)',
+                  shadow: 'lg',
+                }}
+                _active={{
+                  transform: 'scale(0.98)',
+                  boxShadow: 'inner',
+                }}
+              />
+              <PopoverBody p="4">
+                <Text>
+                  {GRAPHS.find((g) => g.key === 'VAR')?.description} <br />
+                  <br />
+                  <Link
+                    href="https://docs.credmark.com/credmark-risk-library/risk-metrics/value-at-risk-var"
+                    isExternal
+                    textDecoration="underline"
+                    pb="1"
+                  >
+                    Read more about VAR in our Risk Library{' '}
+                    <Icon as={FaExternalLinkAlt} />
+                  </Link>
+                </Text>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
         </HStack>
         <Box
           position="relative"
@@ -328,13 +404,12 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
             )}
           {currentVars.length > 0 && (
             <>
-              {/* <Divider bg="purple.500" my="8" /> */}
               <Text textAlign="center" color="purple.500" fontSize="lg">
                 VAR over 10 days with 99% confidence
               </Text>
               <HStack justify="center">
                 {currentVars.map((maxVar) => {
-                  const asset = ASSETS.find((a) => a.name === maxVar.name);
+                  const asset = ASSETS.find((a) => a.title === maxVar.name);
                   if (!asset) throw new Error('Invalid asset');
                   return (
                     <VStack
@@ -348,7 +423,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
                       bg="white"
                       rounded="lg"
                     >
-                      <Text fontFamily="Credmark Regular">{asset.name}</Text>
+                      <Text fontFamily="Credmark Regular">{asset.title}</Text>
                       <Text fontSize="2xl" fontWeight="bold">
                         ${maxVar.val.toFixed(2)}B
                       </Text>
@@ -366,7 +441,7 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
           position="relative"
           mx="auto"
           mt="12"
-          pt="2"
+          pt="1"
           pb="1"
           bg="white"
           shadow="lg"
@@ -381,17 +456,69 @@ export default function RiskTerminalData({ dummy }: { dummy: boolean }) {
             lineHeight="1.2"
             fontSize="xl"
             color="purple.500"
+            pt="1"
           >
             LCR (LIQUIDITY COVERAGE RATIO)
           </Text>
-          <Link
-            href="https://docs.credmark.com/credmark-risk-library/risk-metrics/liquidity-coverage-ratio-lcr"
-            isExternal
-            _hover={{ color: 'purple.500' }}
-            pb="1"
-          >
-            <Icon as={IoInformationCircleOutline} boxSize="20px" />
-          </Link>
+          <Popover placement="right" gutter={16}>
+            <PopoverTrigger>
+              <Box>
+                <Icon
+                  as={IoInformationCircleOutline}
+                  boxSize="20px"
+                  cursor="pointer"
+                  color="purple.500"
+                  transitionDuration="normal"
+                  transitionProperty="transform"
+                  _active={{
+                    transform: 'scale(0.98)',
+                  }}
+                />
+              </Box>
+            </PopoverTrigger>
+            <PopoverContent
+              color="purple.500"
+              bg="white"
+              borderColor="purple.500"
+            >
+              <PopoverArrow
+                borderColor="purple.500"
+                borderLeft="1px"
+                borderBottom="1px"
+              />
+              <PopoverCloseButton
+                top="-2"
+                right="-2"
+                bg="purple.500"
+                color="white"
+                rounded="full"
+                _hover={{
+                  bg: 'purple.500',
+                  transform: 'translateY(-2px)',
+                  shadow: 'lg',
+                }}
+                _active={{
+                  transform: 'scale(0.98)',
+                  boxShadow: 'inner',
+                }}
+              />
+              <PopoverBody p="4">
+                <Text>
+                  {GRAPHS.find((g) => g.key === 'LCR')?.description} <br />
+                  <br />
+                  <Link
+                    href="https://docs.credmark.com/credmark-risk-library/risk-metrics/liquidity-coverage-ratio-lcr"
+                    isExternal
+                    textDecoration="underline"
+                    pb="1"
+                  >
+                    Read more about LCR in our Risk Library{' '}
+                    <Icon as={FaExternalLinkAlt} />
+                  </Link>
+                </Text>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
         </HStack>
         <Box
           position="relative"

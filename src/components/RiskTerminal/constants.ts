@@ -5,7 +5,8 @@ import { AssetInfo, GraphInfo } from '~/types/terminal';
 export const ASSETS: Array<AssetInfo> = [
   {
     key: 'AAVEV2',
-    name: 'AAVE',
+    title: 'AAVE V2',
+    subtitle: 'ETH',
     logo: '/img/assets/aave.png',
     color: Color('#B0539F'),
     infoLink:
@@ -13,7 +14,7 @@ export const ASSETS: Array<AssetInfo> = [
   },
   {
     key: 'COMPOUND',
-    name: 'Compound',
+    title: 'Compound',
     logo: '/img/assets/compound.png',
     color: Color('#00D395'),
     infoLink:
@@ -24,16 +25,20 @@ export const ASSETS: Array<AssetInfo> = [
 export const GRAPHS: Array<GraphInfo> = [
   {
     key: 'VAR',
-    name: 'VAR',
-    description: 'Value at Risk',
+    title: 'VAR',
+    subtitle: 'Value at Risk',
     infoLink:
       'https://docs.credmark.com/credmark-risk-library/risk-metrics/value-at-risk-var',
+    description:
+      "VaR is a numerical measure of market risk for a given portfolio; our model's numerical output represents a worst-case loss for a given portfolio over a given holding period. We apply VaR to a platform by using total borrows minus total deposits in each token as the portfolio.",
   },
   {
     key: 'LCR',
-    name: 'LCR',
-    description: 'Liquidity Coverage Ratio',
+    title: 'LCR',
+    subtitle: 'Liquidity Coverage Ratio',
     infoLink:
       'https://docs.credmark.com/credmark-risk-library/risk-metrics/liquidity-coverage-ratio-lcr',
+    description:
+      'LCR measures liquidity risk, defined as the proportion of highly liquid assets held by an organization to ensure that they maintain an ongoing ability to meet their short-term obligations (cash outflows for 30 days) in a stress situation.',
   },
 ];
