@@ -61,10 +61,11 @@ export default function XCmkFaq() {
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        w="container.md"
         rounded="3xl"
         borderColor="purple.500"
         shadow="2xl"
+        w="90vw"
+        maxW="container.md"
       >
         <IconButton
           size="sm"
