@@ -37,8 +37,8 @@ export default function IndexPage(): JSX.Element {
 
   const onMainnet = chainId === 1;
 
-  const cmkData = useCmkData(30, !onMainnet);
-  const stakedCmkData = useStakedCmkData(30, !onMainnet);
+  const cmkData = useCmkData(365, !onMainnet);
+  const stakedCmkData = useStakedCmkData(365, !onMainnet);
 
   return (
     <VStack

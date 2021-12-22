@@ -1,8 +1,8 @@
-import { Box, Center, HStack, Text } from '@chakra-ui/layout';
+import { Box, Center, Flex, HStack, Text } from '@chakra-ui/layout';
 import { Img, Spinner } from '@chakra-ui/react';
 import { EChartsOption, graphic as EChartsGraphic } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 type ChartData = Array<{
   timestamp: Date;
@@ -33,6 +33,26 @@ export default function AreaChart({
   padding = 40,
   gradient,
 }: AreaChartProps) {
+  const [duration, setDuration] = useState<number | 'ALL'>(30); // In Days
+
+  const dataByDuration = useMemo(() => {
+    if (loading || !data || data.length === 0) {
+      return [];
+    }
+
+    if (duration === 'ALL') {
+      return data.map((dp) => [dp.timestamp, dp.value]).reverse();
+    }
+
+    const startTs = Date.now();
+    const endTs = startTs - duration * 24 * 3600 * 1000;
+
+    return data
+      .filter((dp) => dp.timestamp.valueOf() > endTs)
+      .map((dp) => [dp.timestamp, dp.value])
+      .reverse();
+  }, [data, duration, loading]);
+
   const option: EChartsOption = useMemo(
     () => ({
       grid: {
@@ -167,17 +187,11 @@ export default function AreaChart({
               gradient.map((color, index) => ({ color, offset: index })),
             ),
           },
-          data: loading
-            ? []
-            : data?.map(({ timestamp, value }) => [
-                // new Date(timestamp).toLocaleDateString(),
-                timestamp,
-                value,
-              ]) ?? [],
+          data: dataByDuration,
         },
       ],
     }),
-    [data, formatValue, gradient, loading, yLabel],
+    [dataByDuration, formatValue, gradient, yLabel],
   );
 
   return (
@@ -205,7 +219,7 @@ export default function AreaChart({
             {title}
           </Text>
         </HStack>
-        <Box position="absolute" top="0px" left="0px" bottom="0px" right="0px">
+        <Box position="absolute" top="0px" left="0px" bottom="px" right="0px">
           <ReactEChartsCore
             option={option}
             notMerge={true}
@@ -222,6 +236,31 @@ export default function AreaChart({
           </Center>
         )}
       </Box>
+      <Flex align="center" mt="8">
+        {[1, 7, 30, 'ALL'].map((days) => (
+          <Box
+            key={days}
+            p="2"
+            mx="2"
+            fontSize="sm"
+            fontWeight="bold"
+            color={duration === days ? 'purple.500' : 'gray.300'}
+            cursor="pointer"
+            borderBottom={duration === days ? '2px' : '0'}
+            borderColor="purple.500"
+            onClick={() => setDuration(days as 'ALL')}
+            _hover={
+              duration === days
+                ? {}
+                : {
+                    color: 'purple.500',
+                  }
+            }
+          >
+            {days === 'ALL' ? 'ALL' : `${days}D`}
+          </Box>
+        ))}
+      </Flex>
     </Box>
   );
 }
