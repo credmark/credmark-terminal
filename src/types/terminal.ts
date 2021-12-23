@@ -40,9 +40,19 @@ export interface LcrGatewayResponse {
 }
 
 export interface VarDataPoint {
-  '10_day_99p': string;
-  var_date_10_day_99p: string;
-  ts: number;
+  '1_day_95p': string; // -ve Billion $
+  '1_day_99p': string; // -ve Billion $
+  '10_day_95p': string; // -ve Billion $
+  '10_day_99p': string; // -ve Billion $
+  var_date_1_day_95p: string; // YYYY-MM-DD format
+  var_date_1_day_99p: string; // YYYY-MM-DD format
+  var_date_10_day_95p: string; // YYYY-MM-DD format
+  var_date_10_day_99p: string; // YYYY-MM-DD format
+  total_assets: number; // $
+  total_liabilities: number; // $
+  relative_var_assets: string; // -ve Billion $
+  relative_var_liabilities: string; // -ve Billion $
+  ts: number; // in seconds
 }
 
 export interface VarGatewayResponse {

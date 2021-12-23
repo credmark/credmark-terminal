@@ -64,7 +64,8 @@ export default function TerminalPage() {
       </Container>
       <Container
         maxW="100vw"
-        p={{ base: 2, md: 8 }}
+        px={{ base: 2, md: 8 }}
+        pt={{ base: 2, md: 8 }}
         bg="white"
         roundedTop="3xl"
         position="relative"

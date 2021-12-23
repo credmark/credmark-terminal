@@ -64,6 +64,16 @@ function dummyVarData(days: number): Array<VarDataPoint> {
       ts: date[i].valueOf() / 1000,
       '10_day_99p': String(data[i] + offset),
       var_date_10_day_99p: dayjs(date[i]).format('YYYY-MM-DD'),
+      '1_day_99p': String(data[i] + offset),
+      var_date_1_day_99p: dayjs(date[i]).format('YYYY-MM-DD'),
+      '10_day_95p': String(data[i] + offset),
+      var_date_10_day_95p: dayjs(date[i]).format('YYYY-MM-DD'),
+      '1_day_95p': String(data[i] + offset),
+      var_date_1_day_95p: dayjs(date[i]).format('YYYY-MM-DD'),
+      total_assets: 1,
+      total_liabilities: 2,
+      relative_var_assets: String(data[i] + offset),
+      relative_var_liabilities: String(data[i] + offset),
     });
   }
 
@@ -128,9 +138,12 @@ export function useVarData(token: AssetKey, limit?: number, dummy = false) {
 
     setLoading(true);
     const abortController = new AbortController();
-    fetch(`https://gateway.credmark.com/v1/models/var/data?token=${token}`, {
-      signal: abortController.signal,
-    })
+    fetch(
+      `https://gateway.credmark.com/v1/models/var/data?token=${token}&limit=${limit}`,
+      {
+        signal: abortController.signal,
+      },
+    )
       .then<VarGatewayResponse>((resp) => resp.json())
       .then((jsonResp) => {
         setData(jsonResp.data);
