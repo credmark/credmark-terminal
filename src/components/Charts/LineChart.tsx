@@ -75,9 +75,6 @@ export default function LineChart({
     },
     xAxis: {
       type: 'time',
-      minorTick: {
-        show: false,
-      },
       axisLine: {
         show: true,
       },
@@ -91,12 +88,17 @@ export default function LineChart({
       },
       axisTick: {
         show: true,
+        hideOverlap: true,
+      },
+      minorTick: {
+        show: false,
       },
       splitLine: {
         show: false,
       },
       axisLabel: {
         show: true,
+        hideOverlap: true,
       },
     },
     yAxis: {

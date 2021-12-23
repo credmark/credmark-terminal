@@ -108,6 +108,7 @@ export default function AreaChart({
         },
         axisLabel: {
           show: true,
+          hideOverlap: true,
         },
       },
       yAxis: {
