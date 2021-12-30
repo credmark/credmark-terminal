@@ -7,4 +7,6 @@ export interface Env {
   portisId: string;
   walletconnectBridgeUrl?: string;
   coinbaseLink: string;
+
+  gaTrackingId?: string;
 }
