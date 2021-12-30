@@ -12,7 +12,6 @@ import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import NextHead from 'next/head';
 import { useRouter } from 'next/router';
-import NextScript from 'next/script';
 import NProgress from 'nprogress';
 import React, { useEffect } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -45,18 +44,32 @@ function RouteBasedProviders({
   const router = useRouter();
 
   useEffect(() => {
-    const start = () => NProgress.start();
-    const stop = () => NProgress.done();
+    const onStart = () => {
+      NProgress.start();
+    };
+
+    const onError = () => {
+      NProgress.done();
+    };
+
+    const onComplete = (url: string) => {
+      NProgress.done();
+      if (window.gtag && env.gaTrackingId) {
+        window.gtag('config', env.gaTrackingId, {
+          page_path: url,
+        });
+      }
+    };
 
     NProgress.configure({ showSpinner: false });
-    router.events.on('routeChangeStart', start);
-    router.events.on('routeChangeComplete', stop);
-    router.events.on('routeChangeError', stop);
+    router.events.on('routeChangeStart', onStart);
+    router.events.on('routeChangeComplete', onComplete);
+    router.events.on('routeChangeError', onError);
 
     return () => {
-      router.events.on('routeChangeStart', start);
-      router.events.on('routeChangeComplete', stop);
-      router.events.on('routeChangeError', stop);
+      router.events.off('routeChangeStart', onStart);
+      router.events.off('routeChangeComplete', onComplete);
+      router.events.off('routeChangeError', onError);
     };
   }, [router.events]);
 
@@ -93,25 +106,6 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
         <meta property="twitter:description" content={description} />
         {/* <meta property="+twitter:image" content={img} /> */}
       </NextHead>
-      {env.type === 'PROD' && (
-        <>
-          <NextScript
-            src="https://www.googletagmanager.com/gtag/js?id=UA-201404361-1"
-            strategy="afterInteractive"
-          />
-          <NextScript
-            id="gtag-init"
-            dangerouslySetInnerHTML={{
-              __html: `
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-                    gtag('config', 'UA-201404361-1');
-                  `,
-            }}
-          />
-        </>
-      )}
       <ChakraProvider resetCSS theme={theme}>
         <Web3ReactProvider getLibrary={getLibrary}>
           <Web3ProviderNetwork getLibrary={getLibrary}>
