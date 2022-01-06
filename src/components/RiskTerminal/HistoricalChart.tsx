@@ -1,0 +1,226 @@
+import { Box, Center, Flex, Spinner } from '@chakra-ui/react';
+import ReactEChartsCore from 'echarts-for-react';
+import React, { useMemo, useState } from 'react';
+
+export interface Line {
+  name: string;
+  color: string;
+  data: Array<{
+    timestamp: Date;
+    value: number;
+  }>;
+}
+
+interface HistoricalChartProps {
+  lines: Line[];
+  loading: boolean;
+  formatValue?: (value: any) => string;
+}
+
+export default function HistoricalChart({
+  lines,
+  loading,
+  formatValue,
+}: HistoricalChartProps): JSX.Element {
+  const [duration, setDuration] = useState(30); // In Days
+
+  const series = useMemo(() => {
+    return lines.map((line) => {
+      const startTs =
+        line.data.length > 0
+          ? line.data[line.data.length - 1].timestamp.valueOf()
+          : 0;
+      const endTs = startTs > 0 ? startTs - duration * 24 * 3600 * 1000 : 0;
+
+      return {
+        name: line.name,
+        type: 'line',
+        symbol: 'circle',
+        symbolSize: 10,
+        showSymbol: false,
+        label: {
+          fontWeight: 800,
+        },
+        lineStyle: {
+          color: line.color,
+        },
+        itemStyle: {
+          color: line.color,
+        },
+        data: line.data
+          .filter((dp) => dp.timestamp.valueOf() > endTs)
+          .map(({ timestamp, value }) => [timestamp, value]),
+      };
+    });
+  }, [lines, duration]);
+
+  const option = useMemo(() => {
+    return {
+      legend: {
+        show: false,
+      },
+      grid: {
+        top: 32,
+        bottom: 48,
+        left: 48,
+        right: 32,
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
+        },
+        formatter: (params: any[]) => {
+          if (!Array.isArray(params) || params.length === 0) {
+            return;
+          }
+          const date = new Date(params[0].data[0]).toLocaleDateString(
+            undefined,
+            {
+              day: '2-digit',
+              month: 'long',
+              year: 'numeric',
+            },
+          );
+
+          let legend = '';
+
+          for (const param of params) {
+            const series = param.seriesName;
+            const value = param.data[1];
+
+            legend += `
+              <div style="display: flex; margin-bottom: 2px;">
+                <div>${param.marker}</div>
+                <div style="flex: 1">${series}</div>
+                <strong style="margin-left: 16px">${
+                  formatValue ? formatValue(value) : value
+                }</strong>
+              </div>
+              `;
+          }
+
+          return `
+            <div style="line-height: 1">
+              <div style="text-align: center; margin-bottom: 12px; font-size: 12px;">
+                ${date}
+              </div>
+              ${legend}
+            </div>`;
+        },
+      },
+      title: {
+        left: 'center',
+      },
+      xAxis: {
+        type: 'time',
+        axisLine: {
+          show: true,
+        },
+        axisPointer: {
+          label: {
+            show: false,
+          },
+          lineStyle: {
+            color: '#E53E3E',
+          },
+        },
+        axisTick: {
+          show: true,
+          hideOverlap: true,
+        },
+        minorTick: {
+          show: false,
+        },
+        splitLine: {
+          show: false,
+        },
+        axisLabel: {
+          show: true,
+          hideOverlap: true,
+        },
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: false,
+        axisLine: {
+          show: false,
+        },
+        axisPointer: {
+          show: false,
+          label: {
+            show: false,
+          },
+        },
+        axisTick: {
+          show: false,
+        },
+        splitLine: {
+          show: true,
+        },
+        axisLabel: {
+          show: true,
+          formatter: function (value: number | string) {
+            const num = Number(value);
+            const fixedFigs = 0;
+            if (num >= 1e9) {
+              return `${(num / 1e9).toFixed(fixedFigs)}B`;
+            } else if (num >= 1e6) {
+              return `${(num / 1e6).toFixed(fixedFigs)}M`;
+            } else if (num >= 1e3) {
+              return `${(num / 1e3).toFixed(fixedFigs)}K`;
+            } else if (num > 10) {
+              return num.toFixed(fixedFigs);
+            } else {
+              return num;
+            }
+          },
+        },
+      },
+      series,
+    };
+  }, [formatValue, series]);
+
+  return (
+    <>
+      <ReactEChartsCore
+        option={option}
+        notMerge={true}
+        lazyUpdate={true}
+        style={{
+          height: '360px',
+        }}
+      />
+      <Flex pl="20" align="center">
+        {[30, 60, 90].map((days) => (
+          <Box
+            key={days}
+            p="2"
+            mx="2"
+            fontWeight="bold"
+            color={duration === days ? 'gray.900' : 'gray.300'}
+            cursor="pointer"
+            borderBottom={duration === days ? '2px' : '0'}
+            borderColor="gray.700"
+            onClick={() => setDuration(days)}
+            _hover={
+              duration === days
+                ? {}
+                : {
+                    color: 'gray.700',
+                  }
+            }
+          >
+            {days}D
+          </Box>
+        ))}
+        {lines.length !== 0 && loading && <Spinner color="purple.500" />}
+      </Flex>
+      {lines.length === 0 && (
+        <Center position="absolute" top="0" left="0" right="0" bottom="0">
+          <Spinner color="purple.500" />
+        </Center>
+      )}
+    </>
+  );
+}
