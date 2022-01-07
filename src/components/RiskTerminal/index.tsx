@@ -11,8 +11,7 @@ import {
   VStack,
   Wrap,
 } from '@chakra-ui/layout';
-import { Icon } from '@chakra-ui/react';
-import { Collapse } from '@chakra-ui/transition';
+import { Collapse, Icon } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import {
   IoAlertCircleSharp,
@@ -20,21 +19,18 @@ import {
 } from 'react-icons/io5';
 
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
-import { AssetKey, GraphInfo, GraphKey } from '~/types/terminal';
+import { AssetKey, MetricGroupInfo, MetricGroupKey } from '~/types/terminal';
 
-import { ASSETS, GRAPHS, SECONDARY_GRAPHS } from './constants';
-import LcrStats from './LcrStats';
-import McStats from './McStats';
-import TaStats from './TaStats';
-import TlStats from './TlStats';
-import VarStats from './VarStats';
+import { ASSETS, METRIC_GROUPS } from './constants';
+import CoreMetrics from './CoreMetrics';
+import RiskMetrics from './RiskMetrics';
 
 function GraphToggleButton({
-  graph,
+  metricGroup,
   isSelected,
   onToggle,
 }: {
-  graph: GraphInfo;
+  metricGroup: MetricGroupInfo;
   isSelected: boolean;
   onToggle: () => void;
 }) {
@@ -47,6 +43,7 @@ function GraphToggleButton({
       color="gray.700"
       bg="gray.50"
       px="4"
+      pt="1"
       h="10"
       rounded="md"
       border={isSelected ? '2px' : '1px'}
@@ -60,13 +57,8 @@ function GraphToggleButton({
       whiteSpace="nowrap"
     >
       <Text fontFamily="Credmark Regular" lineHeight="1">
-        {graph.title}
+        {metricGroup.title}
       </Text>
-      {graph.subtitle && (
-        <Text fontFamily="Credmark Regular" fontSize="xs" lineHeight="1">
-          {graph.subtitle}
-        </Text>
-      )}
     </VStack>
   );
 }
@@ -83,10 +75,9 @@ export default function RiskTerminalData({
     'COMPOUND',
   ]);
 
-  const [activeGraphs, setActiveGraphs] = useState<GraphKey[]>([
-    ...GRAPHS.map((graph) => graph.key),
-    ...SECONDARY_GRAPHS.map((graph) => graph.key),
-  ]);
+  const [activeMetricGroups, setActiveMetricGroups] = useState<
+    MetricGroupKey[]
+  >(METRIC_GROUPS.map((mg) => mg.key));
 
   const lcrData: Record<AssetKey, ReturnType<typeof useLcrData>> = {
     AAVEV2: useLcrData('AAVEV2', 90, dummy),
@@ -196,45 +187,25 @@ export default function RiskTerminalData({
             maxW={{ base: 'unset', md: '120px' }}
             fontFamily="Credmark Regular"
           >
-            TOGGLE GRAPHS
+            TOGGLE METRICS
           </Text>
           <Wrap spacing="2">
-            {GRAPHS.map((graph) => (
+            {METRIC_GROUPS.map((metricGroup) => (
               <GraphToggleButton
-                key={graph.key}
-                graph={graph}
-                isSelected={activeGraphs.includes(graph.key)}
+                key={metricGroup.key}
+                metricGroup={metricGroup}
+                isSelected={activeMetricGroups.includes(metricGroup.key)}
                 onToggle={() =>
-                  activeGraphs.includes(graph.key)
-                    ? setActiveGraphs(
-                        activeGraphs.filter((aa) => aa !== graph.key),
+                  activeMetricGroups.includes(metricGroup.key)
+                    ? setActiveMetricGroups(
+                        activeMetricGroups.filter(
+                          (aa) => aa !== metricGroup.key,
+                        ),
                       )
-                    : setActiveGraphs([...activeGraphs, graph.key])
-                }
-              />
-            ))}
-          </Wrap>
-        </Stack>
-        <Stack direction={{ base: 'column', md: 'row' }} mt="2">
-          <Text
-            color="gray.600"
-            lineHeight="1"
-            minW={{ base: 'unset', md: '120px' }}
-            maxW={{ base: 'unset', md: '120px' }}
-            fontFamily="Credmark Regular"
-          ></Text>
-          <Wrap spacing="2">
-            {SECONDARY_GRAPHS.map((graph) => (
-              <GraphToggleButton
-                key={graph.key}
-                graph={graph}
-                isSelected={activeGraphs.includes(graph.key)}
-                onToggle={() =>
-                  activeGraphs.includes(graph.key)
-                    ? setActiveGraphs(
-                        activeGraphs.filter((aa) => aa !== graph.key),
-                      )
-                    : setActiveGraphs([...activeGraphs, graph.key])
+                    : setActiveMetricGroups([
+                        ...activeMetricGroups,
+                        metricGroup.key,
+                      ])
                 }
               />
             ))}
@@ -274,7 +245,7 @@ export default function RiskTerminalData({
             Select at least 1 protocol to view graphs
           </Center>
         </Box>
-      ) : activeGraphs.length === 0 ? (
+      ) : activeMetricGroups.length === 0 ? (
         <Box pt="8">
           <Center
             bg="gray.50"
@@ -293,24 +264,25 @@ export default function RiskTerminalData({
       ) : (
         <></>
       )}
-      <Collapse in={activeGraphs.includes('VAR') && activeAssets.length > 0}>
-        <VarStats activeAssets={activeAssets} data={varData} />
+
+      <Collapse
+        in={activeMetricGroups.includes('RISK') && activeAssets.length > 0}
+      >
+        <RiskMetrics
+          activeAssets={activeAssets}
+          varData={varData}
+          lcrData={lcrData}
+        />
       </Collapse>
 
-      <Collapse in={activeGraphs.includes('LCR') && activeAssets.length > 0}>
-        <LcrStats activeAssets={activeAssets} data={lcrData} />
-      </Collapse>
-
-      <Collapse in={activeGraphs.includes('TA') && activeAssets.length > 0}>
-        <TaStats activeAssets={activeAssets} data={varData} />
-      </Collapse>
-
-      <Collapse in={activeGraphs.includes('TL') && activeAssets.length > 0}>
-        <TlStats activeAssets={activeAssets} data={varData} />
-      </Collapse>
-
-      <Collapse in={activeGraphs.includes('MC') && activeAssets.length > 0}>
-        <McStats activeAssets={activeAssets} data={lcrData} />
+      <Collapse
+        in={activeMetricGroups.includes('CORE') && activeAssets.length > 0}
+      >
+        <CoreMetrics
+          activeAssets={activeAssets}
+          varData={varData}
+          lcrData={lcrData}
+        />
       </Collapse>
     </VStack>
   );

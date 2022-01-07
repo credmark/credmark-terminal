@@ -1,13 +1,8 @@
 import type Color from 'color';
 
 export type AssetKey = 'AAVEV2' | 'COMPOUND';
-export type GraphKey =
-  | 'LCR' // Liquidity Coverage Ratio
-  | 'VAR' // Value at Risk
-  | 'TA' // Total Assets
-  | 'TL' // Total Liabilities
-  | 'MC'; // Market Cap
 
+export type MetricGroupKey = 'CORE' | 'RISK';
 export interface AssetInfo {
   key: AssetKey;
   title: string;
@@ -17,11 +12,9 @@ export interface AssetInfo {
   infoLink: string;
 }
 
-export interface GraphInfo {
-  key: GraphKey;
+export interface MetricGroupInfo {
+  key: MetricGroupKey;
   title: string;
-  subtitle?: string;
-  description: string;
 }
 
 export interface LcrDataPoint {
@@ -75,7 +68,7 @@ export type AssetStatsMap = Partial<
     Array<{
       key: string;
       value: string;
-      tooltip?: string;
+      tooltip?: React.ReactNode;
       isPrimary?: boolean;
     }>
   >
