@@ -1,7 +1,6 @@
 import { Img } from '@chakra-ui/image';
 import { Box, Center, Link, VStack } from '@chakra-ui/layout';
-import { Icon, useDisclosure, useMediaQuery } from '@chakra-ui/react';
-import { Collapse } from '@chakra-ui/transition';
+import { Collapse, Icon, useDisclosure, useMediaQuery } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';

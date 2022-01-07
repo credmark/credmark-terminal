@@ -1,4 +1,10 @@
-import { Box, Center, Flex, Spinner } from '@chakra-ui/react';
+import {
+  Box,
+  Center,
+  Flex,
+  Spinner,
+  useBreakpointValue,
+} from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
 
@@ -15,14 +21,17 @@ interface HistoricalChartProps {
   lines: Line[];
   loading: boolean;
   formatValue?: (value: any) => string;
+  showLegend?: boolean;
 }
 
 export default function HistoricalChart({
   lines,
   loading,
   formatValue,
+  showLegend = false,
 }: HistoricalChartProps): JSX.Element {
   const [duration, setDuration] = useState(30); // In Days
+  const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
 
   const series = useMemo(() => {
     return lines.map((line) => {
@@ -57,10 +66,11 @@ export default function HistoricalChart({
   const option = useMemo(() => {
     return {
       legend: {
-        show: false,
+        show: showLegend,
+        width: legendWidth ? series.length * legendWidth : undefined,
       },
       grid: {
-        top: 32,
+        top: showLegend ? 96 : 32,
         bottom: 48,
         left: 48,
         right: 32,
@@ -179,18 +189,25 @@ export default function HistoricalChart({
       },
       series,
     };
-  }, [formatValue, series]);
+  }, [formatValue, series, showLegend, legendWidth]);
 
   return (
     <>
-      <ReactEChartsCore
-        option={option}
-        notMerge={true}
-        lazyUpdate={true}
-        style={{
-          height: '360px',
-        }}
-      />
+      <Box position="relative">
+        <ReactEChartsCore
+          option={option}
+          notMerge={true}
+          lazyUpdate={true}
+          style={{
+            height: '360px',
+          }}
+        />
+        {lines.length === 0 && (
+          <Center position="absolute" top="0" left="0" right="0" bottom="0">
+            <Spinner color="purple.500" />
+          </Center>
+        )}
+      </Box>
       <Flex pl="20" align="center">
         {[30, 60, 90].map((days) => (
           <Box
@@ -216,11 +233,6 @@ export default function HistoricalChart({
         ))}
         {lines.length !== 0 && loading && <Spinner color="purple.500" />}
       </Flex>
-      {lines.length === 0 && (
-        <Center position="absolute" top="0" left="0" right="0" bottom="0">
-          <Spinner color="purple.500" />
-        </Center>
-      )}
     </>
   );
 }
