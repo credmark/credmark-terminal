@@ -29,7 +29,7 @@ export default function CoreMetrics({
   lcrData,
   varData,
 }: RiskMetricsProps) {
-  const [activeMetric, setActiveMetric] = useState<MetricKey>('VAR');
+  const [activeMetric, setActiveMetric] = useState<MetricKey>('LCR');
 
   const chartLines = useMemo(() => {
     const lines: Array<{
@@ -132,7 +132,7 @@ export default function CoreMetrics({
               outflows for 30 days) in a stress situation. <br />
               <br />
               <Link
-                href="https://docs.credmark.com/credmark-risk-library/risk-metrics/liquidity-coverage-ratio-lcr"
+                href="https://docs.credmark.com/credmark-risk-library/analytics/metrics/liquidity-coverage-ratio-lcr"
                 isExternal
                 textDecoration="underline"
                 pb="1"
@@ -182,7 +182,7 @@ export default function CoreMetrics({
               as the portfolio. <br />
               <br />
               <Link
-                href="https://docs.credmark.com/credmark-risk-library/risk-metrics/value-at-risk-var"
+                href="https://docs.credmark.com/credmark-risk-library/analytics/metrics/value-at-risk-var"
                 isExternal
                 textDecoration="underline"
                 pb="1"
