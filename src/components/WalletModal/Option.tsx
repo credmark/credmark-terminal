@@ -40,7 +40,7 @@ export default function Option({
       <Flex w="100%" align="center">
         <Box flex="1" textAlign="left">
           {header}
-          {subheader && <Text size="sm">{subheader}</Text>}
+          {subheader && <Text fontSize="sm">{subheader}</Text>}
         </Box>
         <Center>
           <Image src={icon} w={`${size ?? 32}px`} h={`${size ?? 32}px`} />
