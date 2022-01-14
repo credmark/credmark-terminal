@@ -35,8 +35,8 @@ export default function PendingView({
       <Box mt="4" mb="2">
         {error ? (
           <Alert status="error" rounded="md">
-            <Icon as={IoWarningSharp} mr="2" />
-            <Text>Error connecting</Text>
+            <Icon as={IoWarningSharp} mr="2" color="red.500"></Icon>
+            <Text color="red.500">Error connecting</Text>
             <Spacer />
             <Button
               colorScheme="red"
