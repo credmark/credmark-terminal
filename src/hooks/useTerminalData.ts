@@ -95,7 +95,7 @@ export function useLcrData(token: AssetKey, limit?: number, dummy = false) {
     setLoading(true);
     const abortController = new AbortController();
     fetch(
-      `https://gateway.credmark.com/v1/models/lcr/data?token=${token}&limit=${limit}`,
+      `https://gateway.credmark.com/v0/models/lcr/data?token=${token}&limit=${limit}`,
       { signal: abortController.signal },
     )
       .then<LcrGatewayResponse>((resp) => resp.json())
@@ -139,7 +139,7 @@ export function useVarData(token: AssetKey, limit?: number, dummy = false) {
     setLoading(true);
     const abortController = new AbortController();
     fetch(
-      `https://gateway.credmark.com/v1/models/var/data?token=${token}&limit=${limit}`,
+      `https://gateway.credmark.com/v0/models/var/data?token=${token}&limit=${limit}`,
       {
         signal: abortController.signal,
       },

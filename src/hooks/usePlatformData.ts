@@ -62,7 +62,7 @@ export function useCmkData(days = 30, dummy = false) {
     setLoading(true);
     const abortController = new AbortController();
     fetch(
-      `https://gateway.credmark.com/v1/models/cmk/data?token=CMK&limit=${limit}`,
+      `https://gateway.credmark.com/v0/models/cmk/data?token=CMK&limit=${limit}`,
       { signal: abortController.signal },
     )
       .then<CmkGatewayResponse>((resp) => resp.json())
@@ -115,7 +115,7 @@ export function useStakedCmkData(days = 30, dummy = false) {
     setLoading(true);
     const abortController = new AbortController();
     fetch(
-      `https://gateway.credmark.com/v1/models/cmk/data?token=XCMK&limit=${limit}`,
+      `https://gateway.credmark.com/v0/models/cmk/data?token=XCMK&limit=${limit}`,
       { signal: abortController.signal },
     )
       .then<StakedCmkGatewayResponse>((resp) => resp.json())
