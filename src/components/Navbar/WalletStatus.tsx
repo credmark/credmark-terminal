@@ -62,7 +62,7 @@ export default function WalletStatus() {
             </strong>
           </Text>
           <Link
-            href={`https://app.uniswap.org/#/swap?outputCurrency=${
+            href={`https://app.sushi.com/en/swap?outputCurrency=${
               CMK[chainId ?? 1]?.address
             }`}
             isExternal
