@@ -1,6 +1,7 @@
 import {
   Center,
   Icon,
+  IconProps,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -13,25 +14,32 @@ import { IoInformationCircleOutline } from 'react-icons/io5';
 
 interface InfoPopoverProps {
   children: React.ReactNode;
+  trigger?: React.ReactNode;
+  triggerIconProps?: IconProps;
 }
 
-export default function InfoPopover({ children }: InfoPopoverProps) {
+export default function InfoPopover({
+  children,
+  trigger,
+  triggerIconProps = {},
+}: InfoPopoverProps) {
+  const defaultTrigger = (
+    <Center>
+      <Icon
+        as={IoInformationCircleOutline}
+        cursor="pointer"
+        transitionDuration="normal"
+        transitionProperty="transform"
+        _active={{
+          transform: 'scale(0.98)',
+        }}
+        {...triggerIconProps}
+      />
+    </Center>
+  );
   return (
     <Popover placement="top-start" gutter={16} flip={false}>
-      <PopoverTrigger>
-        <Center>
-          <Icon
-            as={IoInformationCircleOutline}
-            boxSize="20px"
-            cursor="pointer"
-            transitionDuration="normal"
-            transitionProperty="transform"
-            _active={{
-              transform: 'scale(0.98)',
-            }}
-          />
-        </Center>
-      </PopoverTrigger>
+      <PopoverTrigger>{trigger ?? defaultTrigger}</PopoverTrigger>
       <PopoverContent color="purple.500" bg="white" borderColor="purple.500">
         <PopoverArrow
           borderColor="purple.500"
