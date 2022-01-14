@@ -22,7 +22,7 @@ interface RiskMetricsProps {
   varData: Record<AssetKey, ReturnType<typeof useVarData>>;
 }
 
-type MetricKey = 'VAR' | 'LCR';
+type MetricKey = 'VAR' | 'LCR' | 'VTL';
 
 export default function CoreMetrics({
   activeAssets,
@@ -73,10 +73,22 @@ export default function CoreMetrics({
             }))
             .reverse();
           break;
+        case 'VTL':
+          lineData = (dataPoints as VarDataPoint[])
+            .map((dp) => ({
+              timestamp: new Date((dp.ts - (dp.ts % 86400)) * 1000),
+              value:
+                ((Number(dp['10_day_99p']) * -1e9) / dp['total_liabilities']) *
+                100,
+            }))
+            .reverse();
+          break;
       }
 
       lines.push({
-        name: `${asset.title} - ${{ VAR: 'VaR', LCR: 'LCR' }[activeMetric]}`,
+        name: `${asset.title} - ${
+          { VAR: 'VaR', LCR: 'LCR', VTL: 'VaR/TL' }[activeMetric]
+        }`,
         color: asset.color.toString(),
         data: lineData,
       });
@@ -110,7 +122,7 @@ export default function CoreMetrics({
 
       tls[asset.key] = [
         {
-          key: 'LCR',
+          key: 'Liquidity Coverage Ratio (LCR)',
           value: `${(latestStat.lcr * 100).toFixed(1)}%`,
           tooltip: (
             <Text>
@@ -159,7 +171,7 @@ export default function CoreMetrics({
       tls[asset.key] = [
         ...(tls[asset.key] ?? []),
         {
-          key: 'VaR',
+          key: 'Value at Risk (VaR)',
           value: `$${latestStat.var.toFixed(1)}B`,
           tooltip: (
             <Text>
@@ -234,8 +246,9 @@ export default function CoreMetrics({
       <StatContainer title="Historic Risk Metrics">
         <Box borderBottom="1px" borderColor="purple.500" mx="4" my="8" px="4">
           <HStack spacing="1">
-            <Box {...tabProps('VAR')}>VaR</Box>
             <Box {...tabProps('LCR')}>LCR</Box>
+            <Box {...tabProps('VAR')}>VaR</Box>
+            <Box {...tabProps('VTL')}>VaR / TL</Box>
           </HStack>
         </Box>
         <HistoricalChart
