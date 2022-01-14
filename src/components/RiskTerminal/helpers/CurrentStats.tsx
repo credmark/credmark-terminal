@@ -2,6 +2,7 @@ import {
   Box,
   Flex,
   HStack,
+  Img,
   SkeletonText,
   Stack,
   Text,
@@ -66,39 +67,51 @@ export default function CurrentStats({
               <VStack
                 minW="280px"
                 key={asset.key}
-                color={asset.color.toString()}
-                spacing="4"
+                bg={asset.color.toString()}
+                color={'white'}
+                boxShadow={`0px 0px 20px 0px ${asset.color
+                  .fade(0.6)
+                  .toString()}`}
+                spacing="6"
                 px="6"
-                py="6"
-                shadow="md"
-                bg="white"
+                pb="6"
                 rounded="lg"
               >
-                <Text fontFamily="Credmark Regular">{asset.title}</Text>
+                <HStack
+                  bg="white"
+                  color={asset.color.toString()}
+                  px="4"
+                  py="1"
+                  roundedBottom="md"
+                >
+                  <Img src={asset.logo} h="20px" />
+                  <Text fontFamily="Credmark Regular" pt="2px">
+                    {asset.title}
+                  </Text>
+                </HStack>
                 {assetStats.length > 0 && (
-                  <Box w="100%" maxW="320px">
+                  <VStack w="100%" maxW="320px" align="stretch" spacing="5">
                     {assetStats.map((stat, psi) => (
-                      <Flex key={psi} align="center">
-                        <HStack flex="1.5" justify="center">
+                      <Flex align="center" direction="column" key={psi}>
+                        <HStack justify="center" w="full">
+                          <Text fontSize="14px" lineHeight="1">
+                            {stat.key}
+                          </Text>
                           {stat.tooltip && (
                             <InfoPopover>{stat.tooltip}</InfoPopover>
                           )}
-                          <Text textAlign="center" fontSize="14px">
-                            {stat.key}
-                          </Text>
                         </HStack>
                         <Text
-                          ml="2"
-                          fontSize="xl"
+                          fontSize="3xl"
                           fontWeight="bold"
                           textAlign="left"
-                          flex="1"
+                          lineHeight="1.325"
                         >
                           {stat.value}
                         </Text>
                       </Flex>
                     ))}
-                  </Box>
+                  </VStack>
                 )}
               </VStack>
             );
