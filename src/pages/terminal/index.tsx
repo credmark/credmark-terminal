@@ -47,8 +47,8 @@ export default function TerminalPage() {
       <Container maxW="container.md" py="8" textAlign="center" fontSize="lg">
         <Box bg="blackAlpha.50" rounded="lg" p="4">
           Credmark&apos;s <strong>Risk Terminal</strong> is THE source for{' '}
-          <strong>Risk Data</strong> in the DeFi world. Powered by Credmark's
-          ongoing research and open-source{' '}
+          <strong>Risk Data</strong> in the DeFi world. Powered by
+          Credmark&apos;s ongoing research and open-source{' '}
           <Link
             href="https://docs.credmark.com/credmark-risk-library/"
             isExternal
