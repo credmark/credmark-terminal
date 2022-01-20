@@ -11,7 +11,6 @@ import {
   Button,
   Icon,
 } from '@chakra-ui/react';
-import JSBI from 'jsbi';
 import React from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
@@ -54,18 +53,6 @@ interface CmkMarketStatsProps {
 }
 
 export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
-  function getVolume(volBigNum: string, usdcPrice: string) {
-    return (
-      Number(usdcPrice) *
-      Number(
-        JSBI.divide(
-          JSBI.BigInt(volBigNum),
-          JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(18)),
-        ).toString(),
-      )
-    );
-  }
-
   function getMarketLink(market: MarketInfo) {
     if (market.app === 'sushiswap') {
       return `https://analytics.sushi.com/pairs/${market.address}`;
@@ -118,14 +105,14 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
                   data:
                     data.map((val) => ({
                       timestamp: new Date(val.ts * 1000),
-                      value: getVolume(
-                        val.markets.find(
-                          (vm) =>
-                            vm.address.toLowerCase() ===
-                            m.address.toLowerCase(),
-                        )?.volume_24h ?? '0',
-                        val.usdc_price,
-                      ),
+                      value:
+                        Number(
+                          val.markets.find(
+                            (vm) =>
+                              vm.address.toLowerCase() ===
+                              m.address.toLowerCase(),
+                          )?.volume_24h ?? '0',
+                        ) * Number(val.usdc_price),
                     })) ?? [],
                 }}
                 loading={false}

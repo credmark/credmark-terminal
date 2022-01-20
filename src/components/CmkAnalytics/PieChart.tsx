@@ -2,7 +2,14 @@ import { Box, Center, Text } from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
-export default function PieChart(): JSX.Element {
+import { CmkAnalyticsDataPoint } from '~/types/analytics';
+import { shortenNumber } from '~/utils/formatTokenAmount';
+
+interface PieChartProps {
+  data: CmkAnalyticsDataPoint;
+}
+
+export default function PieChart({ data }: PieChartProps): JSX.Element {
   const option = useMemo(() => {
     return {
       tooltip: {
@@ -12,7 +19,10 @@ export default function PieChart(): JSX.Element {
                 <div style="display: flex; margin-bottom: 2px;">
                   <div>${params.marker}</div>
                   <div style="flex: 1">${params.name}</div>
-                  <strong style="margin-left: 16px">${params.value}M CMK</strong>
+                  <strong style="margin-left: 16px">${shortenNumber(
+                    params.value,
+                    1,
+                  )} CMK</strong>
                 </div>
                 `;
         },
@@ -22,11 +32,30 @@ export default function PieChart(): JSX.Element {
           type: 'pie',
           radius: '50%',
           data: [
-            { value: 25.5, name: 'Circulating Supply' },
-            { value: 12.5, name: 'Treasury' },
-            { value: 3, name: 'Reserved for upcoming CEXes' },
-            { value: 6, name: 'Protocol owned Liquidity' },
-            { value: 4, name: 'Owned by community' },
+            {
+              value: data.supply_distribution.community_treasury,
+              name: 'Community Rewards',
+            },
+            {
+              value: data.supply_distribution.dao_treasury,
+              name: 'DAO Treasury',
+            },
+            {
+              value: data.supply_distribution.investor,
+              name: 'Investors',
+            },
+            {
+              value: data.supply_distribution.team_allocated,
+              name: 'Team & Founders',
+            },
+            {
+              value: data.supply_distribution.team_unallocated,
+              name: 'Team Unallocated',
+            },
+            {
+              value: data.supply_distribution.vesting_unallocated,
+              name: 'Vesting Unallocated',
+            },
           ],
           emphasis: {
             itemStyle: {
@@ -51,7 +80,7 @@ export default function PieChart(): JSX.Element {
           px="4"
           rounded="md"
         >
-          Liquidity
+          Supply Distribution
         </Text>
       </Center>
       <Box position="relative">
@@ -64,6 +93,20 @@ export default function PieChart(): JSX.Element {
           }}
         />
       </Box>
+      <Center my="4">
+        <Text
+          textAlign="center"
+          fontSize="xl"
+          borderColor="purple.500"
+          border="1px"
+          color="purple.500"
+          px="4"
+          rounded="md"
+        >
+          Circulating Supply {shortenNumber(Number(data.circulating_supply), 1)}{' '}
+          CMK
+        </Text>
+      </Center>
     </Box>
   );
 }

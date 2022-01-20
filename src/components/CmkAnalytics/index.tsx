@@ -1,5 +1,4 @@
 import { VStack, HStack, Img, Text, Center, Spinner } from '@chakra-ui/react';
-import JSBI from 'jsbi';
 import React from 'react';
 
 import {
@@ -15,18 +14,6 @@ import PieChart from './PieChart';
 export default function CmkAnalytics() {
   const cmkAnalytics = useCmkAnalyticsData();
   const stakedCmkAnalytics = useStakedCmkAnalyticsData();
-
-  function getVolume(volBigNum: string, usdcPrice: string) {
-    return (
-      Number(usdcPrice) *
-      Number(
-        JSBI.divide(
-          JSBI.BigInt(volBigNum),
-          JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(18)),
-        ).toString(),
-      )
-    );
-  }
 
   return (
     <VStack align="stretch" mt="-56px" spacing="20">
@@ -97,13 +84,15 @@ export default function CmkAnalytics() {
               data:
                 cmkAnalytics.data?.map((val) => ({
                   timestamp: new Date(val.ts * 1000),
-                  value: getVolume(val.volume_24h, val.usdc_price),
+                  value: Number(val.volume_24h) * Number(val.usdc_price),
                 })) ?? [],
             }}
             loading={false}
             formatValue={(val) => '$' + shortenNumber(val, 2)}
           />
-          <PieChart />
+          {cmkAnalytics.data && (
+            <PieChart data={cmkAnalytics.data[cmkAnalytics.data.length - 1]} />
+          )}
           <CmkMarketStats data={cmkAnalytics.data ?? []} />
           <HistoricalChart
             title="Total Staked CMK"

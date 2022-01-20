@@ -12,6 +12,14 @@ export interface CmkAnalyticsDataPoint {
   total_supply: string;
   market_cap_usdc: string;
   circulating_supply: string;
+  supply_distribution: {
+    dao_treasury: string;
+    community_treasury: string;
+    investor: string;
+    team_allocated: string;
+    team_unallocated: string;
+    vesting_unallocated: string;
+  };
   total_holders: number;
   volume_24h: string;
   markets: MarketInfo[];
