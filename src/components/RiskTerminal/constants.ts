@@ -18,7 +18,7 @@ export const ASSETS: Array<AssetInfo> = [
     logo: '/img/assets/compound.png',
     color: Color('#00D395'),
     infoLink:
-      'https://docs.credmark.com/risk-insights/research/aave-and-compound-defi-risk-research/investment-metrics',
+      'https://docs.credmark.com/credmark-risk-library/defi-protocol-taxonomy/lending/compound',
   },
 ];
 
