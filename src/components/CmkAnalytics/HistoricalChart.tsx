@@ -5,6 +5,7 @@ import {
   Spinner,
   useBreakpointValue,
   Text,
+  HStack,
 } from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
@@ -216,8 +217,8 @@ export default function HistoricalChart({
 
   return (
     <Box>
-      {title && (
-        <Center>
+      <HStack mx="8" justify="space-between">
+        {title && (
           <Text
             textAlign="center"
             fontSize="xl"
@@ -228,13 +229,11 @@ export default function HistoricalChart({
           >
             {title}
           </Text>
-        </Center>
-      )}
-      {currentData && (
-        <Center my="4">
+        )}
+        {currentData && (
           <Text
             textAlign="center"
-            fontSize="xl"
+            fontSize="2xl"
             borderColor="purple.500"
             border="1px"
             color="purple.500"
@@ -243,8 +242,9 @@ export default function HistoricalChart({
           >
             {formatValue ? formatValue(currentData.value) : currentData.value}
           </Text>
-        </Center>
-      )}
+        )}
+      </HStack>
+
       <Box position="relative">
         <ReactEChartsCore
           option={option}

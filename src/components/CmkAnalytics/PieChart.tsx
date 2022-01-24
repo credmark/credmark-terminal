@@ -1,4 +1,4 @@
-import { Box, Center, Text } from '@chakra-ui/react';
+import { Box, HStack, Text } from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
@@ -67,11 +67,18 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
         },
       ],
     };
-  }, []);
+  }, [
+    data.supply_distribution.community_treasury,
+    data.supply_distribution.dao_treasury,
+    data.supply_distribution.investor,
+    data.supply_distribution.team_allocated,
+    data.supply_distribution.team_unallocated,
+    data.supply_distribution.vesting_unallocated,
+  ]);
 
   return (
     <Box>
-      <Center>
+      <HStack mx="8" justify="space-between">
         <Text
           textAlign="center"
           fontSize="xl"
@@ -82,7 +89,19 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
         >
           Supply Distribution
         </Text>
-      </Center>
+        <Text
+          textAlign="center"
+          fontSize="2xl"
+          borderColor="purple.500"
+          border="1px"
+          color="purple.500"
+          px="4"
+          rounded="md"
+        >
+          Circulating Supply {shortenNumber(Number(data.circulating_supply), 1)}{' '}
+          CMK
+        </Text>
+      </HStack>
       <Box position="relative">
         <ReactEChartsCore
           option={option}
@@ -93,20 +112,6 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
           }}
         />
       </Box>
-      <Center my="4">
-        <Text
-          textAlign="center"
-          fontSize="xl"
-          borderColor="purple.500"
-          border="1px"
-          color="purple.500"
-          px="4"
-          rounded="md"
-        >
-          Circulating Supply {shortenNumber(Number(data.circulating_supply), 1)}{' '}
-          CMK
-        </Text>
-      </Center>
     </Box>
   );
 }
