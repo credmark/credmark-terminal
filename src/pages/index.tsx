@@ -17,7 +17,7 @@ import {
 } from '~/hooks/stats';
 import { useCmkData, useStakedCmkData } from '~/hooks/usePlatformData';
 import { useActiveWeb3React } from '~/hooks/web3';
-import { formatTokenAmount } from '~/utils/formatTokenAmount';
+import { formatTokenAmount, shortenNumber } from '~/utils/formatTokenAmount';
 
 export default function IndexPage(): JSX.Element {
   const router = useRouter();
@@ -239,19 +239,14 @@ export default function IndexPage(): JSX.Element {
             title="PRICE OF CMK ($)"
             titleImg="/img/cmk.svg"
             yLabel="CMK TOKEN PRICE"
-            gradient={['#3B0065', '#08538C']}
+            lineColor="#3B0065"
           />
           <AreaChart
             data={stakedCmkData.data?.map((point) => ({
               timestamp: new Date(point.ts * 1000),
               value: parseFloat(point.amount_staked_usdc),
             }))}
-            formatValue={(val) =>
-              new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              }).format(val)
-            }
+            formatValue={(val) => '$' + shortenNumber(val, 1)}
             loading={stakedCmkData.loading}
             title="STAKED CMK ($)"
             titleImg="/img/xcmk.svg"

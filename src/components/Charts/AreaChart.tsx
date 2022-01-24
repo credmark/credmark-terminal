@@ -19,7 +19,8 @@ interface AreaChartProps {
 
   height?: number;
   padding?: number;
-  gradient: string[];
+  gradient?: string[];
+  lineColor?: string;
 }
 
 export default function AreaChart({
@@ -32,6 +33,7 @@ export default function AreaChart({
   height = 300,
   padding = 40,
   gradient,
+  lineColor,
 }: AreaChartProps) {
   const [duration, setDuration] = useState<number | 'ALL'>(30); // In Days
 
@@ -52,6 +54,15 @@ export default function AreaChart({
       .map((dp) => [dp.timestamp, dp.value])
       .reverse();
   }, [data, duration, loading]);
+
+  const currentValue = useMemo(() => {
+    if (data && data.length > 0) {
+      const sorted = data.sort(
+        (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
+      );
+      return sorted[sorted.length - 1].value;
+    }
+  }, [data]);
 
   const option: EChartsOption = useMemo(
     () => ({
@@ -114,6 +125,12 @@ export default function AreaChart({
       yAxis: {
         type: 'value',
         boundaryGap: [0, '100%'],
+        min: function (value) {
+          return value.min * 0.75;
+        },
+        max: function (value) {
+          return value.max * 1.25;
+        },
         axisLine: {
           show: false,
         },
@@ -131,19 +148,21 @@ export default function AreaChart({
         },
         axisLabel: {
           show: true,
+          showMinLabel: false,
+          showMaxLabel: false,
           formatter: function (value: number | string) {
             const num = Number(value);
-            const fixedFigs = 0;
+            const fixedFigs = 2;
             if (num >= 1e9) {
-              return `${(num / 1e9).toFixed(fixedFigs)}B`;
+              return `${Number((num / 1e9).toFixed(fixedFigs))}B`;
             } else if (num >= 1e6) {
-              return `${(num / 1e6).toFixed(fixedFigs)}M`;
+              return `${Number((num / 1e6).toFixed(fixedFigs))}M`;
             } else if (num >= 1e3) {
-              return `${(num / 1e3).toFixed(fixedFigs)}K`;
+              return `${Number((num / 1e3).toFixed(fixedFigs))}K`;
             } else if (num > 10) {
-              return num.toFixed(fixedFigs);
+              return Number(num.toFixed(fixedFigs));
             } else {
-              return num;
+              return Number(num.toFixed(fixedFigs));
             }
           },
         },
@@ -172,27 +191,31 @@ export default function AreaChart({
           itemStyle: {
             color: '#E53E3E',
           },
-          lineStyle: {
-            width: 0,
-          },
+          lineStyle: lineColor
+            ? { color: lineColor }
+            : {
+                width: 0,
+              },
           label: {
             fontWeight: 800,
           },
-          areaStyle: {
-            opacity: 1,
-            color: new EChartsGraphic.LinearGradient(
-              0,
-              0,
-              0,
-              1,
-              gradient.map((color, index) => ({ color, offset: index })),
-            ),
-          },
+          areaStyle: gradient
+            ? {
+                opacity: 1,
+                color: new EChartsGraphic.LinearGradient(
+                  0,
+                  0,
+                  0,
+                  1,
+                  gradient.map((color, index) => ({ color, offset: index })),
+                ),
+              }
+            : undefined,
           data: dataByDuration,
         },
       ],
     }),
-    [dataByDuration, formatValue, gradient, yLabel],
+    [dataByDuration, formatValue, gradient, lineColor, yLabel],
   );
 
   return (
@@ -220,6 +243,18 @@ export default function AreaChart({
             {title}
           </Text>
         </HStack>
+        {currentValue && (
+          <Box
+            textAlign="right"
+            fontSize="lg"
+            fontWeight="bold"
+            pt="1"
+            pr="2"
+            color="purple.500"
+          >
+            {formatValue ? formatValue(currentValue) : currentValue}
+          </Box>
+        )}
         <Box position="absolute" top="0px" left="0px" bottom="px" right="0px">
           <ReactEChartsCore
             option={option}
