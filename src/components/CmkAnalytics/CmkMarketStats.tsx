@@ -5,11 +5,11 @@ import {
   Box,
   AccordionIcon,
   AccordionPanel,
-  Center,
   Text,
   Link,
   Button,
   Icon,
+  HStack,
 } from '@chakra-ui/react';
 import React from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
@@ -63,7 +63,7 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
 
   return (
     <Box>
-      <Center mb="8">
+      <HStack mx="8" justify="space-between">
         <Text
           textAlign="center"
           fontSize="xl"
@@ -72,10 +72,21 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
           px="4"
           rounded="md"
         >
-          CMK Markets
+          Market Stats
         </Text>
-      </Center>
-      <Accordion allowMultiple>
+        <Text
+          textAlign="center"
+          fontSize="2xl"
+          borderColor="purple.500"
+          border="1px"
+          color="purple.500"
+          px="4"
+          rounded="md"
+        >
+          {MARKETS.length}
+        </Text>
+      </HStack>
+      <Accordion allowMultiple mt="8">
         {MARKETS.map((m) => (
           <AccordionItem key={m.address}>
             <h2>

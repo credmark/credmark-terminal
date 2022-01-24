@@ -1,158 +1,149 @@
-import { VStack, HStack, Img, Text, Center, Spinner } from '@chakra-ui/react';
-import React from 'react';
+import { Box, HStack, Img, Stack, Text, VStack, Wrap } from '@chakra-ui/react';
+import Color from 'color';
+import React, { useEffect, useRef, useState } from 'react';
 
-import {
-  useCmkAnalyticsData,
-  useStakedCmkAnalyticsData,
-} from '~/hooks/useAnalyticsData';
-import { shortenNumber } from '~/utils/formatTokenAmount';
+import { useOnScreen } from '~/hooks/useOnScreen';
+import { useActiveWeb3React } from '~/hooks/web3';
 
-import CmkMarketStats from './CmkMarketStats';
-import HistoricalChart from './HistoricalChart';
-import PieChart from './PieChart';
+import CmkTokenStats from './CmkTokenStats';
+import StakingStats from './StakingStats';
+
+type AssetKey = 'CMK' | 'XCMK';
+
+export const ASSETS = [
+  {
+    key: 'CMK' as AssetKey,
+    title: 'CMK Token Stats',
+    logo: '/img/cmk.svg',
+    color: Color('#3B0065'),
+    scrollToId: 'cmk-analytics-container',
+  },
+  {
+    key: 'XCMK' as AssetKey,
+    title: 'Staking Stats',
+    logo: '/img/xcmk.svg',
+    color: Color('#DE1A60'),
+    scrollToId: 'xcmk-analytics-container',
+  },
+];
 
 export default function CmkAnalytics() {
-  const cmkAnalytics = useCmkAnalyticsData();
-  const stakedCmkAnalytics = useStakedCmkAnalyticsData();
+  const { account } = useActiveWeb3React();
+
+  const [activeAsset, setActiveAsset] = useState<AssetKey>();
+  const ref1 = useRef(null);
+  const ref2 = useRef(null);
+
+  const onScreen1 = useOnScreen(ref1);
+  const onScreen2 = useOnScreen(ref2);
+
+  useEffect(() => {
+    if (onScreen1) setActiveAsset('CMK');
+  }, [onScreen1]);
+
+  useEffect(() => {
+    if (onScreen2) setActiveAsset('XCMK');
+  }, [onScreen2]);
 
   return (
-    <VStack align="stretch" mt="-56px" spacing="20">
-      <HStack
-        // zIndex={disabled ? 3 : undefined}
-        alignSelf="center"
-        px="6"
-        pt="2"
-        pb="1"
-        bg="white"
-        shadow="lg"
-        rounded="lg"
-        mb="8"
-        spacing="4"
-      >
-        <Img src="/img/cmk.svg" h="72px" mt="-20px" />
-        <Text
-          fontFamily="Credmark Regular"
-          textAlign="center"
-          bgGradient="linear(135deg, #08538C, #3B0065)"
-          bgClip="text"
-          lineHeight="1.2"
-          fontSize="4xl"
-          px="1"
+    <>
+      <VStack align="stretch" mt="-56px" spacing="20">
+        <HStack
+          alignSelf="center"
+          px="6"
+          pt="2"
+          pb="1"
+          bg="white"
+          shadow="lg"
+          rounded="lg"
+          mb="8"
+          spacing="4"
         >
-          Analytics
-        </Text>
-      </HStack>
-      {cmkAnalytics.loading || stakedCmkAnalytics.loading ? (
-        <Center>
-          <Spinner></Spinner>
-        </Center>
-      ) : (
-        <>
-          <HistoricalChart
-            title="CMK Price ($)"
-            line={{
-              name: 'CMK Price',
-              // color: '#ff0000',
-              data:
-                cmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.usdc_price),
-                })) ?? [],
-            }}
-            loading={false}
-            formatValue={(val) => '$' + val.toFixed(2)}
-          />
-          <HistoricalChart
-            title="CMK Holders"
-            line={{
-              name: 'CMK Holders',
-              // color: '#ff0000',
-              data:
-                cmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.total_holders),
-                })) ?? [],
-            }}
-            loading={false}
-            formatValue={(val) => val.toFixed(0)}
-          />
-          <HistoricalChart
-            title="CMK 24H Volume"
-            line={{
-              name: 'CMK 24H Volume',
-              // color: '#ff0000',
-              data:
-                cmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.volume_24h) * Number(val.usdc_price),
-                })) ?? [],
-            }}
-            loading={false}
-            formatValue={(val) => '$' + shortenNumber(val, 2)}
-          />
-          {cmkAnalytics.data && (
-            <PieChart data={cmkAnalytics.data[cmkAnalytics.data.length - 1]} />
-          )}
-          <CmkMarketStats data={cmkAnalytics.data ?? []} />
-          <HistoricalChart
-            title="Total Staked CMK"
-            line={{
-              name: 'Total staked CMK',
-              // color: '#ff0000',
-              data:
-                stakedCmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.amount_staked_usdc),
-                })) ?? [],
-            }}
-            loading={false}
-            formatValue={(val) => '$' + shortenNumber(val, 2)}
-          />
-          <HistoricalChart
-            title="Total Staked CMK Wallets"
-            line={{
-              name: 'Total staked CMK Wallets',
-              // color: '#ff0000',
-              data:
-                stakedCmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.total_holders),
-                })) ?? [],
-            }}
-            loading={false}
-            formatValue={(val) => val.toFixed(0)}
-          />
-          <HistoricalChart
-            title="Avg CMK Staked"
-            line={{
-              name: 'Avg CMK Staked',
-              // color: '#ff0000',
-              data:
-                stakedCmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value:
-                    Number(val.amount_staked_usdc) / Number(val.total_holders),
-                })) ?? [],
-            }}
-            loading={false}
-            formatValue={(val) => '$' + shortenNumber(val, 2)}
-          />
-          <HistoricalChart
-            title="xCMK APR"
-            line={{
-              name: 'xCMK APR',
-              // color: '#ff0000',
-              data:
-                stakedCmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.staking_apr_percent),
-                })) ?? [],
-            }}
-            loading={false}
-            formatValue={(val) => val.toFixed(2) + '%'}
-          />
-        </>
-      )}
-    </VStack>
+          <Img src="/img/cmk.svg" h="72px" mt="-20px" />
+          <Text
+            fontFamily="Credmark Regular"
+            textAlign="center"
+            bgGradient="linear(135deg, #08538C, #3B0065)"
+            bgClip="text"
+            lineHeight="1.2"
+            fontSize="4xl"
+            px="1"
+          >
+            Analytics
+          </Text>
+        </HStack>
+        <Stack
+          direction={{ base: 'column', md: 'row' }}
+          mt="20"
+          align="center"
+          justify="center"
+          position="sticky"
+          top={!account ? '88px' : '164px'}
+          bg="white"
+          zIndex="2"
+          py="2"
+          roundedBottom="lg"
+          borderBottom="1px"
+          borderLeft="1px"
+          borderRight="1px"
+          borderColor="gray.50"
+        >
+          <Text
+            color="gray.600"
+            lineHeight="1"
+            w={{ base: 'unset', md: '120px' }}
+            fontFamily="Credmark Regular"
+          >
+            BROWSE METRICS
+          </Text>
+          <Wrap spacing="4">
+            {ASSETS.map((asset) => (
+              <HStack key={asset.key} spacing="1">
+                <HStack
+                  cursor="pointer"
+                  _hover={{
+                    shadow: 'xl',
+                  }}
+                  color={asset.color.toString()}
+                  bg={asset.color.fade(0.875).toString()}
+                  px="4"
+                  h="10"
+                  rounded="md"
+                  border={activeAsset === asset.key ? '2px' : '1px'}
+                  borderColor={asset.color.toString()}
+                  transitionProperty="box-shadow"
+                  transitionDuration="normal"
+                  opacity={activeAsset === asset.key ? 1.0 : 0.5}
+                  onClick={() => {
+                    setActiveAsset(asset.key);
+                    const scrollToElem = document.getElementById(
+                      asset.scrollToId,
+                    );
+                    if (scrollToElem)
+                      window.scrollTo({
+                        top: scrollToElem.offsetTop,
+                        behavior: 'smooth',
+                      });
+                  }}
+                  whiteSpace="nowrap"
+                >
+                  <Box w="6">
+                    <Img src={asset.logo} />
+                  </Box>
+                  <Text fontFamily="Credmark Regular">{asset.title}</Text>
+                </HStack>
+              </HStack>
+            ))}
+          </Wrap>
+        </Stack>
+        <Box id="cmk-analytics-container" ref={ref1}>
+          <CmkTokenStats />
+        </Box>
+
+        <Box id="xcmk-analytics-container" ref={ref2}>
+          <StakingStats />
+        </Box>
+      </VStack>
+    </>
   );
 }
