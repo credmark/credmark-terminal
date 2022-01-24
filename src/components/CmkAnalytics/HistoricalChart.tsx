@@ -168,6 +168,12 @@ export default function HistoricalChart({
       yAxis: {
         type: 'value',
         boundaryGap: false,
+        min: function (value: any) {
+          return value.min * 0.75;
+        },
+        max: function (value: any) {
+          return value.max * 1.25;
+        },
         axisLine: {
           show: false,
         },
@@ -185,19 +191,21 @@ export default function HistoricalChart({
         },
         axisLabel: {
           show: true,
+          showMinLabel: false,
+          showMaxLabel: false,
           formatter: function (value: number | string) {
             const num = Number(value);
-            const fixedFigs = 0;
+            const fixedFigs = 2;
             if (num >= 1e9) {
-              return `${(num / 1e9).toFixed(fixedFigs)}B`;
+              return `${Number((num / 1e9).toFixed(fixedFigs))}B`;
             } else if (num >= 1e6) {
-              return `${(num / 1e6).toFixed(fixedFigs)}M`;
+              return `${Number((num / 1e6).toFixed(fixedFigs))}M`;
             } else if (num >= 1e3) {
-              return `${(num / 1e3).toFixed(fixedFigs)}K`;
+              return `${Number((num / 1e3).toFixed(fixedFigs))}K`;
             } else if (num > 10) {
-              return num.toFixed(fixedFigs);
+              return Number(num.toFixed(fixedFigs));
             } else {
-              return num;
+              return Number(num.toFixed(fixedFigs));
             }
           },
         },
