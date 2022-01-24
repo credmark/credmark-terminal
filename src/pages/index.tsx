@@ -251,7 +251,7 @@ export default function IndexPage(): JSX.Element {
             title="STAKED CMK ($)"
             titleImg="/img/xcmk.svg"
             yLabel="AMOUNT STAKED"
-            gradient={['#DE1A60', '#3B0065']}
+            lineColor="#DE1A60"
           />
         </VStack>
       </Container>
