@@ -9,13 +9,17 @@ type ChartData = Array<{
   value: number;
 }>;
 
+type Duration = number | 'ALL';
+
 interface AreaChartProps {
   data?: ChartData;
   loading?: boolean;
-  title: string;
+  title?: string;
   titleImg?: string;
   yLabel: string;
   formatValue?: (value: any) => string;
+  durations?: Duration[];
+  defaultDuration?: Duration;
 
   height?: number;
   padding?: number;
@@ -27,15 +31,17 @@ export default function AreaChart({
   data,
   loading,
   title,
+  titleImg,
   yLabel,
   formatValue,
-  titleImg,
+  durations = [1, 7, 30, 'ALL'],
+  defaultDuration = 30,
   height = 300,
   padding = 40,
   gradient,
   lineColor,
 }: AreaChartProps) {
-  const [duration, setDuration] = useState<number | 'ALL'>(30); // In Days
+  const [duration, setDuration] = useState<number | 'ALL'>(defaultDuration); // In Days
 
   const dataByDuration = useMemo(() => {
     if (loading || !data || data.length === 0) {
@@ -218,44 +224,55 @@ export default function AreaChart({
     [dataByDuration, formatValue, gradient, lineColor, yLabel],
   );
 
+  const currentPriceHeight = 0;
+
   return (
     <Box p={padding + 'px'}>
-      <Box shadow="md" position="relative" h={height - padding * 2 + 'px'}>
-        <HStack
-          bg="white"
-          position="absolute"
-          top="-4"
-          left="4"
-          shadow="lg"
-          py="1"
-          px="2"
-          rounded="md"
-          border="1px"
-          borderColor="gray.100"
-        >
-          <Img src={titleImg} h="6" />
-          <Text
-            fontFamily="Credmark Regular"
-            fontSize="lg"
-            pt="1"
-            color="purple.500"
-          >
-            {title}
-          </Text>
-        </HStack>
-        {currentValue && (
-          <Box
-            textAlign="right"
-            fontSize="lg"
-            fontWeight="bold"
-            pt="1"
-            pr="2"
-            color="purple.500"
-          >
-            {formatValue ? formatValue(currentValue) : currentValue}
+      <Box
+        shadow="md"
+        position="relative"
+        h={height - padding * 2 + currentPriceHeight + 'px'}
+      >
+        {(title || titleImg) && (
+          <Box position="absolute" top="-4" left="4">
+            <HStack
+              bg="white"
+              shadow="lg"
+              py="1"
+              px="2"
+              rounded="md"
+              border="1px"
+              borderColor="gray.100"
+            >
+              <Img src={titleImg} h="6" />
+              <Text
+                fontFamily="Credmark Regular"
+                fontSize="lg"
+                pt="1"
+                color="purple.500"
+              >
+                {title}
+              </Text>
+            </HStack>
+            {currentValue && (
+              <Box textAlign="center" pt="2" pr="2" color="purple.500">
+                <Text as="span" fontSize="xs">
+                  {yLabel}
+                </Text>{' '}
+                <Text as="span" fontWeight="bold">
+                  {formatValue ? formatValue(currentValue) : currentValue}
+                </Text>
+              </Box>
+            )}
           </Box>
         )}
-        <Box position="absolute" top="0px" left="0px" bottom="px" right="0px">
+        <Box
+          position="absolute"
+          top={currentPriceHeight + 'px'}
+          left="0px"
+          bottom="0px"
+          right="0px"
+        >
           <ReactEChartsCore
             option={option}
             notMerge={true}
@@ -273,7 +290,7 @@ export default function AreaChart({
         )}
       </Box>
       <Flex align="center" mt="8">
-        {[1, 7, 30, 'ALL'].map((days) => (
+        {durations.map((days) => (
           <Box
             key={days}
             p="2"
@@ -282,8 +299,6 @@ export default function AreaChart({
             fontWeight="bold"
             color={duration === days ? 'purple.500' : 'gray.300'}
             cursor="pointer"
-            borderBottom={duration === days ? '2px' : '0'}
-            borderColor="purple.500"
             onClick={() => setDuration(days as 'ALL')}
             _hover={
               duration === days
