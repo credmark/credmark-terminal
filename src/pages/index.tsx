@@ -222,7 +222,7 @@ export default function IndexPage(): JSX.Element {
               </Text>
             </HStack>
           </Box>
-        </Stack>{' '}
+        </Stack>
         <VStack align="stretch">
           <AreaChart
             data={cmkData.data?.map((point) => ({
@@ -251,7 +251,8 @@ export default function IndexPage(): JSX.Element {
             title="STAKED CMK ($)"
             titleImg="/img/xcmk.svg"
             yLabel="AMOUNT STAKED"
-            lineColor="#DE1A60"
+            gradient={['#DE1A60', '#3B0065']}
+            // lineColor="#DE1A60"
           />
         </VStack>
       </Container>

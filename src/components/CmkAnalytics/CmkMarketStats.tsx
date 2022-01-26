@@ -1,23 +1,10 @@
-import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  Box,
-  AccordionIcon,
-  AccordionPanel,
-  Text,
-  Link,
-  Button,
-  Icon,
-  HStack,
-} from '@chakra-ui/react';
+import { Box, Button, HStack, Link, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
-import { FaExternalLinkAlt } from 'react-icons/fa';
 
 import { CmkAnalyticsDataPoint } from '~/types/analytics';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
-import HistoricalChart from './HistoricalChart';
+import AreaChart from '../Charts/AreaChart';
 
 interface MarketInfo {
   app: 'uniswap_v3' | 'sushiswap';
@@ -29,22 +16,22 @@ const MARKETS: MarketInfo[] = [
   {
     app: 'uniswap_v3',
     address: '0xf7a716e2df2bde4d0ba7656c131b06b1af68513c',
-    label: 'Uniswap -> CMK/USDC',
+    label: 'Uniswap (CMK-USDC)',
   },
   {
     app: 'uniswap_v3',
     address: '0x59e1f901b5c33ff6fae15b61684ebf17cca7b9b3',
-    label: 'Uniswap -> CMK/ETH',
+    label: 'Uniswap (CMK-ETH)',
   },
   {
     app: 'sushiswap',
     address: '0x3349217670f9aa55c5640a2b3d806654d27d0569',
-    label: 'Sushiswap -> CMK/WETH',
+    label: 'Sushiswap (CMK-WETH)',
   },
   {
     app: 'sushiswap',
     address: '0xb7b42c9145435ef2432620af3bf82b7734704c75',
-    label: 'Sushiswap -> CMK/USDC',
+    label: 'Sushiswap (CMK-USDC)',
   },
 ];
 
@@ -61,78 +48,70 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
     }
   }
 
+  function getCurrentVolume(market: MarketInfo) {
+    if (data.length === 0) {
+      return '';
+    }
+
+    const val = data[data.length - 1];
+    const foo =
+      Number(
+        val.markets.find(
+          (vm) => vm.address.toLowerCase() === market.address.toLowerCase(),
+        )?.volume_24h ?? '0',
+      ) * Number(val.usdc_price);
+
+    return '$' + shortenNumber(foo, 0);
+  }
+
   return (
-    <Box>
-      <HStack mx="8" justify="space-between">
-        <Text
-          textAlign="center"
-          fontSize="xl"
-          bg="purple.500"
-          color="white"
-          px="4"
-          rounded="md"
-        >
-          Market Stats
-        </Text>
-        <Text
-          textAlign="center"
-          fontSize="2xl"
-          borderColor="purple.500"
-          border="1px"
-          color="purple.500"
-          px="4"
-          rounded="md"
-        >
-          {MARKETS.length}
-        </Text>
-      </HStack>
-      <Accordion allowMultiple mt="8">
-        {MARKETS.map((m) => (
-          <AccordionItem key={m.address}>
-            <h2>
-              <AccordionButton>
-                <Box flex="1" textAlign="left">
-                  {m.label}
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-            </h2>
-            <AccordionPanel pt={10} pb={20}>
-              <Link href={getMarketLink(m)} isExternal>
-                <Button
-                  mb="8"
-                  colorScheme="purple"
-                  variant="outline"
-                  rightIcon={<Icon as={FaExternalLinkAlt} />}
-                >
-                  View on {m.app}
-                </Button>
-              </Link>
-              <HistoricalChart
-                title={m.label + ' 24H Volume'}
-                line={{
-                  name: m.label + ' 24H Volume',
-                  // color: '#ff0000',
-                  data:
-                    data.map((val) => ({
-                      timestamp: new Date(val.ts * 1000),
-                      value:
-                        Number(
-                          val.markets.find(
-                            (vm) =>
-                              vm.address.toLowerCase() ===
-                              m.address.toLowerCase(),
-                          )?.volume_24h ?? '0',
-                        ) * Number(val.usdc_price),
-                    })) ?? [],
-                }}
-                loading={false}
-                formatValue={(val) => '$' + shortenNumber(val, 0)}
-              />
-            </AccordionPanel>
-          </AccordionItem>
-        ))}
-      </Accordion>
-    </Box>
+    <VStack align="stretch">
+      {MARKETS.map((m) => (
+        <HStack key={m.address}>
+          <Box flex="1" textAlign="center">
+            <Text
+              fontFamily="Credmark Regular"
+              color="purple.500"
+              fontSize="2xl"
+            >
+              {m.label}
+            </Text>
+            <Text color="purple.500" mt="2">
+              24 HR VOL -{' '}
+              <Text as="span" fontWeight="bold">
+                {getCurrentVolume(m)}
+              </Text>
+            </Text>
+            <Link href={getMarketLink(m)} isExternal>
+              <Button colorScheme="purple" rounded="full" mt="2">
+                View on{' '}
+                {{ uniswap_v3: 'Uniswap', sushiswap: 'Sushiswap' }[m.app]}
+              </Button>
+            </Link>
+          </Box>
+          <Box flex="1">
+            <AreaChart
+              data={
+                data.map((val) => ({
+                  timestamp: new Date(val.ts * 1000),
+                  value:
+                    Number(
+                      val.markets.find(
+                        (vm) =>
+                          vm.address.toLowerCase() === m.address.toLowerCase(),
+                      )?.volume_24h ?? '0',
+                    ) * Number(val.usdc_price),
+                })) ?? []
+              }
+              formatValue={(val) => '$' + shortenNumber(val, 0)}
+              gradient={['#DE1A60', '#3B0065']}
+              yLabel="Amount"
+              durations={[30, 60, 90]}
+              defaultDuration={60}
+            />
+          </Box>
+        </HStack>
+      ))}
+    </VStack>
   );
 }
