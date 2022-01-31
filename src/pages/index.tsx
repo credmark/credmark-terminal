@@ -1,6 +1,15 @@
 import { Img } from '@chakra-ui/image';
-import { Box, Container, HStack, Text, VStack } from '@chakra-ui/layout';
-import { Stack } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Heading,
+  HStack,
+  Link,
+  Text,
+  VStack,
+} from '@chakra-ui/layout';
+import { Button, Stack } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 
@@ -68,6 +77,37 @@ export default function IndexPage(): JSX.Element {
         shadow="xl"
         rounded="3xl"
       >
+        <HStack justify="space-between">
+          <Heading
+            as="h2"
+            fontSize="2xl"
+            fontFamily="Credmark Regular"
+            color="purple.500"
+            textAlign="center"
+          >
+            CMK Token Analytics
+          </Heading>
+          <NextLink href="/analytics" passHref>
+            <Link>
+              <Button
+                variant="outline"
+                color="purple.500"
+                size="sm"
+                rounded="lg"
+                fontFamily="Credmark Regular"
+                pt="1"
+                _hover={{
+                  bg: 'purple.50',
+                }}
+                _active={{
+                  bg: 'purple.100',
+                }}
+              >
+                SEE MORE
+              </Button>
+            </Link>
+          </NextLink>
+        </HStack>
         <Stack
           p="4"
           spacing="8"
@@ -239,7 +279,8 @@ export default function IndexPage(): JSX.Element {
             title="PRICE OF CMK ($)"
             titleImg="/img/cmk.svg"
             yLabel="CMK TOKEN PRICE"
-            lineColor="#3B0065"
+            line
+            gradient={['#3B0065']}
           />
           <AreaChart
             data={stakedCmkData.data?.map((point) => ({
@@ -252,7 +293,6 @@ export default function IndexPage(): JSX.Element {
             titleImg="/img/xcmk.svg"
             yLabel="AMOUNT STAKED"
             gradient={['#DE1A60', '#3B0065']}
-            // lineColor="#DE1A60"
           />
         </VStack>
       </Container>

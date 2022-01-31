@@ -23,8 +23,8 @@ interface AreaChartProps {
 
   height?: number;
   padding?: number;
-  gradient?: string[];
-  lineColor?: string;
+  gradient: string[];
+  line?: boolean;
 }
 
 export default function AreaChart({
@@ -39,7 +39,7 @@ export default function AreaChart({
   height = 300,
   padding = 40,
   gradient,
-  lineColor,
+  line = false,
 }: AreaChartProps) {
   const [duration, setDuration] = useState<number | 'ALL'>(defaultDuration); // In Days
 
@@ -128,6 +128,16 @@ export default function AreaChart({
           hideOverlap: true,
         },
       },
+      visualMap: [
+        {
+          show: false,
+          type: 'continuous',
+          seriesIndex: 0,
+          dimension: 0,
+          min: 0,
+          max: (data?.length ?? 0) - 1,
+        },
+      ],
       yAxis: {
         type: 'value',
         boundaryGap: [0, '100%'],
@@ -168,7 +178,7 @@ export default function AreaChart({
             } else if (num > 10) {
               return Number(num.toFixed(fixedFigs));
             } else {
-              return Number(num.toFixed(fixedFigs));
+              return num.toFixed(fixedFigs);
             }
           },
         },
@@ -197,15 +207,28 @@ export default function AreaChart({
           itemStyle: {
             color: '#E53E3E',
           },
-          lineStyle: lineColor
-            ? { color: lineColor }
+          lineStyle: line
+            ? {
+                color: {
+                  type: 'linear',
+                  x: 0,
+                  y: 0,
+                  x2: 1,
+                  y2: 1,
+                  colorStops: gradient.map((color, index) => ({
+                    color,
+                    offset: index,
+                  })),
+                  global: false, // default is false
+                },
+              }
             : {
                 width: 0,
               },
           label: {
             fontWeight: 800,
           },
-          areaStyle: gradient
+          areaStyle: !line
             ? {
                 opacity: 1,
                 color: new EChartsGraphic.LinearGradient(
@@ -221,7 +244,7 @@ export default function AreaChart({
         },
       ],
     }),
-    [dataByDuration, formatValue, gradient, lineColor, yLabel],
+    [data?.length, dataByDuration, formatValue, gradient, line, yLabel],
   );
 
   const currentPriceHeight = 0;

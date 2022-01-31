@@ -1,18 +1,15 @@
 import {
-  VStack,
+  Center,
   Container,
-  Box,
-  Link,
   Heading,
   HStack,
   Img,
-  Center,
   Spinner,
+  VStack,
 } from '@chakra-ui/react';
 import React from 'react';
 
 import AreaChart from '~/components/Charts/AreaChart';
-import CmkAnalytics from '~/components/CmkAnalytics';
 import CmkMarketStats from '~/components/CmkAnalytics/CmkMarketStats';
 import PieChart from '~/components/CmkAnalytics/PieChart';
 import Navbar from '~/components/Navbar';
@@ -52,7 +49,7 @@ export default function AnalyticsPage() {
             color="purple.500"
             textAlign="center"
           >
-            Platform Analytics
+            CMK Token Analytics
           </Heading>
 
           <HStack mt="8" align="start">
@@ -84,9 +81,10 @@ export default function AnalyticsPage() {
                     }
                     title="Price of CMK"
                     titleImg="/img/cmk.svg"
-                    lineColor="#3B0065"
+                    gradient={['#08538C', '#3B0065']}
+                    line
                     formatValue={(val: any) => '$' + val.toFixed(2)}
-                    yLabel="Price"
+                    yLabel="PRICE"
                     height={400}
                     durations={[30, 60, 90]}
                     defaultDuration={60}
@@ -102,7 +100,7 @@ export default function AnalyticsPage() {
                     titleImg="/img/holder.svg"
                     gradient={['#DE1A60', '#3B0065']}
                     formatValue={(val: any) => val.toFixed(0)}
-                    yLabel="Holders"
+                    yLabel="HOLDERS"
                     height={400}
                     durations={[30, 60, 90]}
                     defaultDuration={60}
@@ -114,11 +112,11 @@ export default function AnalyticsPage() {
                         value: Number(val.volume_24h) * Number(val.usdc_price),
                       })) ?? []
                     }
-                    title="CMK 24H Volume"
+                    title="CMK 24H Trading Volume"
                     titleImg="/img/cmk.svg"
                     gradient={['#3B0065', '#08538C']}
                     formatValue={(val: any) => '$' + shortenNumber(val, 2)}
-                    yLabel="Total Volume"
+                    yLabel="TOTAL VOLUME"
                     height={400}
                     durations={[30, 60, 90]}
                     defaultDuration={60}
@@ -187,14 +185,13 @@ export default function AnalyticsPage() {
                       stakedCmkAnalytics.data?.map((val) => ({
                         timestamp: new Date(val.ts * 1000),
                         value:
-                          Number(val.amount_staked_usdc) /
-                          Number(val.total_holders),
+                          Number(val.cmk_balance) / Number(val.total_holders),
                       })) ?? []
                     }
                     title="AVERAGE CMK STAKED"
                     titleImg="/img/xcmk.svg"
                     gradient={['#DE1A60', '#3B0065']}
-                    formatValue={(val: any) => '$' + shortenNumber(val, 2)}
+                    formatValue={(val: any) => shortenNumber(val, 2)}
                     yLabel="AMOUNT"
                     height={400}
                     durations={[30, 60, 90]}
