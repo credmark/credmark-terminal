@@ -9,4 +9,5 @@ export interface Env {
   coinbaseLink: string;
 
   gaTrackingId?: string;
+  hotjarId?: string;
 }

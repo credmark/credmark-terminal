@@ -10,6 +10,7 @@ const prodEnv: Env = {
   coinbaseLink: 'https://go.cb-w.com/hvp6uWLm1hb',
 
   gaTrackingId: 'UA-201404361-1',
+  hotjarId: '2809067',
 };
 
 export default prodEnv;
