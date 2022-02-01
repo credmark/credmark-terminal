@@ -280,7 +280,7 @@ export default function IndexPage(): JSX.Element {
             titleImg="/img/cmk.svg"
             yLabel="CMK TOKEN PRICE"
             line
-            gradient={['#3B0065']}
+            gradient={['#08538C', '#3B0065']}
           />
           <AreaChart
             data={stakedCmkData.data?.map((point) => ({
