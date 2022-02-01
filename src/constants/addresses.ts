@@ -34,6 +34,7 @@ export const CMK_ADDRESSES: { [chainId: number]: string } = {
 
 export const LOCKED_CMK_ADDRESSES: { [chainId: number]: string[] } = {
   [1]: [
+    '0x414709bd112d006cbb85be21a9e19bf9bce8657e',
     '0xCbF507C87f19B58fB719B65697Fb7fA84D682aA9',
     '0xCA9bb8A10B2C0FB16A18eDae105456bf7e91B041',
     '0x70371C6D23A26Df7Bf0654C47D69ddE9000013E7',

@@ -33,6 +33,11 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
           radius: '50%',
           data: [
             {
+              value: data.circulating_supply,
+              itemStyle: { color: '#00ff00' },
+              name: 'CirculatingSupply',
+            },
+            {
               value: data.supply_distribution.community_treasury,
               itemStyle: { color: '#420069' },
               name: 'Community Rewards',
@@ -74,6 +79,7 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
       ],
     };
   }, [
+    data.circulating_supply,
     data.supply_distribution.community_treasury,
     data.supply_distribution.dao_treasury,
     data.supply_distribution.investor,
@@ -115,10 +121,10 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
           rounded="md"
           lineHeight="1.1"
         >
-          CIRCULATING SUPPLY
+          TOTAL SUPPLY
           <br />{' '}
           <Text as="span" fontWeight="bold">
-            {shortenNumber(Number(data.circulating_supply), 1)} CMK
+            {shortenNumber(Number(data.total_supply), 0)} CMK
           </Text>
         </Text>
       </HStack>
