@@ -30,12 +30,68 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
       series: [
         {
           type: 'pie',
-          radius: '50%',
+          radius: ['0%', '40%'],
+          label: {
+            position: 'inner',
+            fontSize: 10,
+            fontWeight: 900,
+          },
+          labelLine: {
+            show: false,
+          },
           data: [
             {
-              value: data.circulating_supply,
-              itemStyle: { color: '#00ff00' },
-              name: 'CirculatingSupply',
+              value:
+                1e8 -
+                (Number(data.supply_distribution.community_treasury) +
+                  Number(data.supply_distribution.dao_treasury) +
+                  Number(data.supply_distribution.investor) +
+                  Number(data.supply_distribution.team_allocated) +
+                  Number(data.supply_distribution.team_unallocated) +
+                  Number(data.supply_distribution.vesting_unallocated)),
+              itemStyle: { color: '#F2005F' },
+              name: 'Public',
+            },
+            {
+              value:
+                Number(data.supply_distribution.community_treasury) +
+                Number(data.supply_distribution.dao_treasury),
+              itemStyle: { color: '#3B0065' },
+              name: 'Treasury',
+            },
+            {
+              value:
+                Number(data.supply_distribution.investor) +
+                Number(data.supply_distribution.team_allocated) +
+                Number(data.supply_distribution.team_unallocated) +
+                Number(data.supply_distribution.vesting_unallocated),
+              itemStyle: { color: '#08538C' },
+              name: 'Locked',
+            },
+          ],
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)',
+            },
+          },
+        },
+        {
+          type: 'pie',
+          radius: ['55%', '70%'],
+          data: [
+            {
+              value:
+                1e8 -
+                (Number(data.supply_distribution.community_treasury) +
+                  Number(data.supply_distribution.dao_treasury) +
+                  Number(data.supply_distribution.investor) +
+                  Number(data.supply_distribution.team_allocated) +
+                  Number(data.supply_distribution.team_unallocated) +
+                  Number(data.supply_distribution.vesting_unallocated)),
+              itemStyle: { color: '#F2005F' },
+              name: 'Public',
             },
             {
               value: data.supply_distribution.community_treasury,
@@ -49,22 +105,22 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
             },
             {
               value: data.supply_distribution.investor,
-              itemStyle: { color: '#005391' },
+              itemStyle: { color: '#005999' },
               name: 'Investors',
             },
             {
               value: data.supply_distribution.team_allocated,
-              itemStyle: { color: '#006AB7' },
+              itemStyle: { color: '#006bb8' },
               name: 'Team & Founders',
             },
             {
               value: data.supply_distribution.team_unallocated,
-              itemStyle: { color: '#F2005F' },
+              itemStyle: { color: '#007dd6' },
               name: 'Team Unallocated',
             },
             {
               value: data.supply_distribution.vesting_unallocated,
-              itemStyle: { color: '#FF007C' },
+              itemStyle: { color: '#008ff5' },
               name: 'Vesting Unallocated',
             },
           ],
@@ -79,7 +135,6 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
       ],
     };
   }, [
-    data.circulating_supply,
     data.supply_distribution.community_treasury,
     data.supply_distribution.dao_treasury,
     data.supply_distribution.investor,

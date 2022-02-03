@@ -10,7 +10,7 @@ import {
   Stack,
   VStack,
 } from '@chakra-ui/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 
 import AreaChart from '~/components/Charts/AreaChart';
 import CmkMarketStats from '~/components/CmkAnalytics/CmkMarketStats';
@@ -20,8 +20,6 @@ import {
   useCmkAnalyticsData,
   useStakedCmkAnalyticsData,
 } from '~/hooks/useAnalyticsData';
-import { useOnScreen } from '~/hooks/useOnScreen';
-import { useActiveWeb3React } from '~/hooks/web3';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 type AnalyticsKey = 'TOKEN' | 'MARKET';
@@ -40,30 +38,8 @@ const ANALYTICS = [
 ];
 
 export default function AnalyticsPage() {
-  const { account } = useActiveWeb3React();
-
   const cmkAnalytics = useCmkAnalyticsData();
   const stakedCmkAnalytics = useStakedCmkAnalyticsData();
-
-  const [activeAnalytics, setActiveAnalytics] = useState<AnalyticsKey>();
-
-  const refs = {
-    TOKEN: useRef(null),
-    MARKET: useRef(null),
-  };
-
-  const onScreen = {
-    TOKEN: useOnScreen(refs.TOKEN),
-    MARKET: useOnScreen(refs.MARKET),
-  };
-
-  useEffect(() => {
-    if (onScreen.TOKEN) setActiveAnalytics('TOKEN');
-  }, [onScreen.TOKEN]);
-
-  useEffect(() => {
-    if (onScreen.MARKET) setActiveAnalytics('MARKET');
-  }, [onScreen.MARKET]);
 
   return (
     <Box
@@ -72,34 +48,33 @@ export default function AnalyticsPage() {
     >
       <Navbar />
       <Stack
+        mt="8"
         mx="auto"
         maxW="container.sm"
         direction={{ base: 'column', md: 'row' }}
         align="center"
         justify="center"
-        position="sticky"
-        top={!account ? '88px' : '164px'}
         zIndex="2"
         py="4"
-        roundedBottom="lg"
-        borderBottom="1px"
-        borderLeft="1px"
-        borderRight="1px"
-        borderColor="gray.50"
-        bg="white"
-        px="8"
       >
         {ANALYTICS.map((a) => (
           <Button
             key={a.key}
             colorScheme="purple"
-            variant={activeAnalytics === a.key ? 'solid' : 'ghost'}
+            variant="outline"
+            _hover={{
+              transform: 'translateY(-2px)',
+              boxShadow: 'lg',
+            }}
+            _active={{
+              transform: 'scale(0.98)',
+              boxShadow: 'inner',
+            }}
             onClick={() => {
-              setActiveAnalytics(a.key);
               const scrollToElem = document.getElementById(a.scrollToId);
               if (scrollToElem)
                 window.scrollTo({
-                  top: scrollToElem.offsetTop,
+                  top: scrollToElem.offsetTop + 120,
                   behavior: 'smooth',
                 });
             }}
@@ -120,12 +95,7 @@ export default function AnalyticsPage() {
         borderColor="gray.100"
         pb="40"
       >
-        <Container
-          id="token-analytics-container"
-          ref={refs.TOKEN}
-          maxW="container.xl"
-          py="2"
-        >
+        <Container id="token-analytics-container" maxW="container.xl" py="2">
           <Heading
             as="h1"
             fontSize="4xl"
@@ -302,12 +272,7 @@ export default function AnalyticsPage() {
             </VStack>
           </HStack>
         </Container>
-        <Container
-          id="market-analytics-container"
-          ref={refs.MARKET}
-          maxW="container.xl"
-          py="2"
-        >
+        <Container id="market-analytics-container" maxW="container.xl" py="2">
           <Heading
             mt="12"
             as="h1"
