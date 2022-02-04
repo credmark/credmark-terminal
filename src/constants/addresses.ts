@@ -32,7 +32,25 @@ export const CMK_ADDRESSES: { [chainId: number]: string } = {
   [42]: '0xbdE2c4a0Ae933723a53bd38DbaE6831EE8580Ba1',
 };
 
-export const LOCKED_CMK_ADDRESSES: { [chainId: number]: string[] } = {
+export const CMK_LOCKED_ADDRESSES: { [chainId: number]: string[] } = {
+  [1]: [
+    '0xCbF507C87f19B58fB719B65697Fb7fA84D682aA9', // Investor
+    '0x46d812De7EF3cA2E3c1D8EfFb496F070b2202DFF', // Investor
+    '0xCA9bb8A10B2C0FB16A18eDae105456bf7e91B041', // Investor
+    '0x70371C6D23A26Df7Bf0654C47D69ddE9000013E7', // Investor
+    '0x0f8d3D79f5Fb9EDFceFF399F056c996eb9b89C67', // Investor
+    '0xC2560D7D2cF12f921193874cc8dfBC4bb162b7cb', // Team Unallocated
+    '0xdb9DCecbA3f21e2aa53897a05A92F89209731b68', // Team Allocated
+    '0x5CE367c907a119afa25f4DBEe4f5B4705C802Df5', // Team Allocated
+    '0x654958393b7e54f1e2e51f736a14b9d26d00eb1e', // Vesting Unallocated
+  ],
+  [4]: ['0x16B57599b3C61Ca7A4B11e782105440760649549'],
+  [3]: ['0x16B57599b3C61Ca7A4B11e782105440760649549'],
+  [5]: ['0x16B57599b3C61Ca7A4B11e782105440760649549'],
+  [42]: ['0x16B57599b3C61Ca7A4B11e782105440760649549'],
+};
+
+export const CMK_TREASURY_ADDRESSES: { [chainId: number]: string[] } = {
   [1]: [
     '0x414709bd112d006cbb85be21a9e19bf9bce8657e', // DAO Treasury
     '0x02bcb9675727ade60243c3d467a3bf152142698b', // Community Treasury

@@ -14,7 +14,7 @@ import React from 'react';
 
 import AreaChart from '~/components/Charts/AreaChart';
 import CmkMarketStats from '~/components/CmkAnalytics/CmkMarketStats';
-import PieChart from '~/components/CmkAnalytics/PieChart';
+import CmkSupplyDistribution from '~/components/CmkAnalytics/CmkSupplyDistribution';
 import Navbar from '~/components/Navbar';
 import {
   useCmkAnalyticsData,
@@ -38,8 +38,8 @@ const ANALYTICS = [
 ];
 
 export default function AnalyticsPage() {
-  const cmkAnalytics = useCmkAnalyticsData();
-  const stakedCmkAnalytics = useStakedCmkAnalyticsData();
+  const cmkAnalytics = useCmkAnalyticsData(90);
+  const stakedCmkAnalytics = useStakedCmkAnalyticsData(90);
 
   return (
     <Box
@@ -120,8 +120,8 @@ export default function AnalyticsPage() {
                   CMK
                 </Heading>
               </HStack>
-              {cmkAnalytics.loading ? (
-                <Center>
+              {cmkAnalytics.loading && !cmkAnalytics.data ? (
+                <Center p="8">
                   <Spinner />
                 </Center>
               ) : (
@@ -175,9 +175,14 @@ export default function AnalyticsPage() {
                     durations={[30, 60, 90]}
                     defaultDuration={60}
                   />
-                  {cmkAnalytics.data && (
-                    <PieChart
-                      data={cmkAnalytics.data[cmkAnalytics.data.length - 1]}
+                  {cmkAnalytics.data && stakedCmkAnalytics.data && (
+                    <CmkSupplyDistribution
+                      cmkData={cmkAnalytics.data[cmkAnalytics.data.length - 1]}
+                      xcmkData={
+                        stakedCmkAnalytics.data[
+                          stakedCmkAnalytics.data.length - 1
+                        ]
+                      }
                     />
                   )}
                 </>
@@ -196,8 +201,8 @@ export default function AnalyticsPage() {
                   xCMK
                 </Heading>
               </HStack>
-              {stakedCmkAnalytics.loading ? (
-                <Center>
+              {stakedCmkAnalytics.loading && !stakedCmkAnalytics.data ? (
+                <Center p="8">
                   <Spinner />
                 </Center>
               ) : (

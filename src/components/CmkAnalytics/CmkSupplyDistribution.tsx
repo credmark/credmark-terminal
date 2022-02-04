@@ -2,14 +2,21 @@ import { Box, HStack, Text } from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
-import { CmkAnalyticsDataPoint } from '~/types/analytics';
+import {
+  CmkAnalyticsDataPoint,
+  StakedCmkAnalyticsDataPoint,
+} from '~/types/analytics';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 interface PieChartProps {
-  data: CmkAnalyticsDataPoint;
+  cmkData: CmkAnalyticsDataPoint;
+  xcmkData: StakedCmkAnalyticsDataPoint;
 }
 
-export default function PieChart({ data }: PieChartProps): JSX.Element {
+export default function CmkSupplyDistribution({
+  cmkData,
+  xcmkData,
+}: PieChartProps): JSX.Element {
   const option = useMemo(() => {
     return {
       tooltip: {
@@ -30,7 +37,7 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
       series: [
         {
           type: 'pie',
-          radius: ['0%', '40%'],
+          radius: ['0%', '50%'],
           label: {
             position: 'inner',
             fontSize: 10,
@@ -43,28 +50,28 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
             {
               value:
                 1e8 -
-                (Number(data.supply_distribution.community_treasury) +
-                  Number(data.supply_distribution.dao_treasury) +
-                  Number(data.supply_distribution.investor) +
-                  Number(data.supply_distribution.team_allocated) +
-                  Number(data.supply_distribution.team_unallocated) +
-                  Number(data.supply_distribution.vesting_unallocated)),
-              itemStyle: { color: '#F2005F' },
+                (Number(cmkData.supply_distribution.community_treasury) +
+                  Number(cmkData.supply_distribution.dao_treasury) +
+                  Number(cmkData.supply_distribution.investor) +
+                  Number(cmkData.supply_distribution.team_allocated) +
+                  Number(cmkData.supply_distribution.team_unallocated) +
+                  Number(cmkData.supply_distribution.vesting_unallocated)),
+              itemStyle: { color: '#DE1A60' },
               name: 'Public',
             },
             {
               value:
-                Number(data.supply_distribution.community_treasury) +
-                Number(data.supply_distribution.dao_treasury),
+                Number(cmkData.supply_distribution.community_treasury) +
+                Number(cmkData.supply_distribution.dao_treasury),
               itemStyle: { color: '#3B0065' },
               name: 'Treasury',
             },
             {
               value:
-                Number(data.supply_distribution.investor) +
-                Number(data.supply_distribution.team_allocated) +
-                Number(data.supply_distribution.team_unallocated) +
-                Number(data.supply_distribution.vesting_unallocated),
+                Number(cmkData.supply_distribution.investor) +
+                Number(cmkData.supply_distribution.team_allocated) +
+                Number(cmkData.supply_distribution.team_unallocated) +
+                Number(cmkData.supply_distribution.vesting_unallocated),
               itemStyle: { color: '#08538C' },
               name: 'Locked',
             },
@@ -84,42 +91,48 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
             {
               value:
                 1e8 -
-                (Number(data.supply_distribution.community_treasury) +
-                  Number(data.supply_distribution.dao_treasury) +
-                  Number(data.supply_distribution.investor) +
-                  Number(data.supply_distribution.team_allocated) +
-                  Number(data.supply_distribution.team_unallocated) +
-                  Number(data.supply_distribution.vesting_unallocated)),
+                (Number(cmkData.supply_distribution.community_treasury) +
+                  Number(cmkData.supply_distribution.dao_treasury) +
+                  Number(cmkData.supply_distribution.investor) +
+                  Number(cmkData.supply_distribution.team_allocated) +
+                  Number(cmkData.supply_distribution.team_unallocated) +
+                  Number(cmkData.supply_distribution.vesting_unallocated) +
+                  Number(xcmkData.cmk_balance)),
               itemStyle: { color: '#F2005F' },
-              name: 'Public',
+              name: 'Public Circulating Supply',
             },
             {
-              value: data.supply_distribution.community_treasury,
+              value: xcmkData.cmk_balance,
+              itemStyle: { color: '#FF007C' },
+              name: 'CMK Staked',
+            },
+            {
+              value: cmkData.supply_distribution.community_treasury,
               itemStyle: { color: '#420069' },
               name: 'Community Rewards',
             },
             {
-              value: data.supply_distribution.dao_treasury,
+              value: cmkData.supply_distribution.dao_treasury,
               itemStyle: { color: '#5D0096' },
               name: 'DAO Treasury',
             },
             {
-              value: data.supply_distribution.investor,
+              value: cmkData.supply_distribution.investor,
               itemStyle: { color: '#005999' },
               name: 'Investors',
             },
             {
-              value: data.supply_distribution.team_allocated,
+              value: cmkData.supply_distribution.team_allocated,
               itemStyle: { color: '#006bb8' },
               name: 'Team & Founders',
             },
             {
-              value: data.supply_distribution.team_unallocated,
+              value: cmkData.supply_distribution.team_unallocated,
               itemStyle: { color: '#007dd6' },
               name: 'Team Unallocated',
             },
             {
-              value: data.supply_distribution.vesting_unallocated,
+              value: cmkData.supply_distribution.vesting_unallocated,
               itemStyle: { color: '#008ff5' },
               name: 'Vesting Unallocated',
             },
@@ -135,12 +148,13 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
       ],
     };
   }, [
-    data.supply_distribution.community_treasury,
-    data.supply_distribution.dao_treasury,
-    data.supply_distribution.investor,
-    data.supply_distribution.team_allocated,
-    data.supply_distribution.team_unallocated,
-    data.supply_distribution.vesting_unallocated,
+    cmkData.supply_distribution.community_treasury,
+    cmkData.supply_distribution.dao_treasury,
+    cmkData.supply_distribution.investor,
+    cmkData.supply_distribution.team_allocated,
+    cmkData.supply_distribution.team_unallocated,
+    cmkData.supply_distribution.vesting_unallocated,
+    xcmkData.cmk_balance,
   ]);
 
   return (
@@ -179,7 +193,7 @@ export default function PieChart({ data }: PieChartProps): JSX.Element {
           TOTAL SUPPLY
           <br />{' '}
           <Text as="span" fontWeight="bold">
-            {shortenNumber(Number(data.total_supply), 0)} CMK
+            {shortenNumber(Number(cmkData.total_supply), 0)} CMK
           </Text>
         </Text>
       </HStack>
