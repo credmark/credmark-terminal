@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import {
   CMK_ADDRESSES,
   STAKED_CMK_ADDRESSES,
-  LOCKED_CMK_ADDRESSES,
+  CMK_LOCKED_ADDRESSES,
   REWARDS_POOL_ADDRESSES,
 } from '~/constants/addresses';
 import { CMK, SCMK } from '~/constants/tokens';
@@ -62,7 +62,7 @@ export function useCmkCirculatingSupply() {
   const totalSupply = totalSupplyResult?.[0] as BigNumber | undefined;
 
   const lockedAddresses =
-    (chainId ? LOCKED_CMK_ADDRESSES[chainId] : undefined) ?? [];
+    (chainId ? CMK_LOCKED_ADDRESSES[chainId] : undefined) ?? [];
 
   const result = useSingleContractMultipleData(
     cmkContract,
