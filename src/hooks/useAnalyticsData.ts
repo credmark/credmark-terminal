@@ -59,7 +59,11 @@ export function useStakedCmkAnalyticsData(days = 30) {
     )
       .then<StakedCmkAnalyticsGatewayResponse>((resp) => resp.json())
       .then((jsonResp) => {
-        setData(jsonResp.data.sort((pointA, pointB) => pointA.ts - pointB.ts));
+        setData(
+          jsonResp.data
+            .filter((point) => point.ts >= 1639598400)
+            .sort((pointA, pointB) => pointA.ts - pointB.ts),
+        );
       })
       .catch((err) => {
         if (abortController.signal.aborted) {
