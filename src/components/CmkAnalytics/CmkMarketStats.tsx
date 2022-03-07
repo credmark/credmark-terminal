@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Link, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, Link, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 
 import { CmkAnalyticsDataPoint } from '~/types/analytics';
@@ -67,8 +67,8 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
   return (
     <VStack align="stretch">
       {MARKETS.map((m) => (
-        <HStack key={m.address}>
-          <Box flex="1" textAlign="center">
+        <SimpleGrid key={m.address} columns={{ base: 1, lg: 2 }}>
+          <Box textAlign="center">
             <Text
               fontFamily="Credmark Regular"
               color="purple.500"
@@ -89,7 +89,7 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
               </Button>
             </Link>
           </Box>
-          <Box flex="1">
+          <Box>
             <AreaChart
               data={
                 data.map((val) => ({
@@ -110,7 +110,7 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
               defaultDuration={60}
             />
           </Box>
-        </HStack>
+        </SimpleGrid>
       ))}
     </VStack>
   );
