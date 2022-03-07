@@ -28,7 +28,7 @@ interface AreaChartProps {
 }
 
 export default function AreaChart({
-  data,
+  data: _data,
   loading,
   title,
   titleImg,
@@ -41,6 +41,13 @@ export default function AreaChart({
   gradient,
   line = false,
 }: AreaChartProps) {
+  const data = useMemo(() => {
+    return _data?.map((dp) => ({
+      timestamp: dp.timestamp,
+      value: isNaN(dp.value) ? 0 : dp.value,
+    }));
+  }, [_data]);
+
   const [duration, setDuration] = useState<number | 'ALL'>(defaultDuration); // In Days
 
   const dataByDuration = useMemo(() => {
