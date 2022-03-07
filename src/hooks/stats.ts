@@ -284,6 +284,11 @@ export function useStakingApyPercent() {
   } = useSingleCallResult(rewardsPoolContract, 'endTime');
 
   const {
+    loading: rewardsPoolLastRewardTimeLoading,
+    result: rewardsPoolLastRewardTimeResult,
+  } = useSingleCallResult(rewardsPoolContract, 'lastRewardTime');
+
+  const {
     loading: rewardsPoolCmkBalanceLoading,
     result: rewardsPoolCmkBalanceResult,
   } = useSingleCallResult(cmkContract, 'balanceOf', [
@@ -301,6 +306,10 @@ export function useStakingApyPercent() {
     | BigNumber
     | undefined;
 
+  const rewardsPoolLastRewardTime = rewardsPoolLastRewardTimeResult?.[0] as
+    | BigNumber
+    | undefined;
+
   const rewardsPoolCmkBalance = rewardsPoolCmkBalanceResult?.[0] as
     | BigNumber
     | undefined;
@@ -315,9 +324,15 @@ export function useStakingApyPercent() {
       ? rewardsPoolEndTime.sub(nowInSec)
       : undefined;
 
+  const timePassedInSec =
+    rewardsPoolLastRewardTime && rewardsPoolLastRewardTime.lt(nowInSec)
+      ? nowInSec.sub(rewardsPoolLastRewardTime)
+      : BigNumber.from(0);
+
   return {
     loading:
       rewardsPoolEndTimeLoading ||
+      rewardsPoolLastRewardTimeLoading ||
       rewardsPoolCmkBalanceLoading ||
       stakedCmkCmkBalanceLoading,
     value:
@@ -330,7 +345,12 @@ export function useStakingApyPercent() {
             JSBI.BigInt(
               rewardsPoolCmkBalance.mul(100).mul(SEC_IN_YEAR).toString(),
             ),
-            JSBI.BigInt(timeLeftInSec.mul(stakedCmkCmkBalance).toString()),
+            JSBI.BigInt(
+              timeLeftInSec
+                .add(timePassedInSec)
+                .mul(stakedCmkCmkBalance)
+                .toString(),
+            ),
           )
         : new Fraction(0, 1),
   };
