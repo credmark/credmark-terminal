@@ -111,14 +111,12 @@ export default function Sidebar() {
                 STAKE
               </Link>
             </NextLink>
-            <NextLink href="/analytics" passHref>
+            <NextLink href="/info" passHref>
               <Link
                 fontFamily="Credmark Regular"
                 fontSize="sm"
                 textAlign="center"
-                color={
-                  router.pathname === '/analytics' ? 'pink.500' : 'purple.500'
-                }
+                color={router.pathname === '/info' ? 'pink.500' : 'purple.500'}
                 lineHeight="1"
               >
                 ANALYTICS

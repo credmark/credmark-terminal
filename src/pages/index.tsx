@@ -87,7 +87,7 @@ export default function IndexPage(): JSX.Element {
           >
             CMK Token Analytics
           </Heading>
-          <NextLink href="/analytics" passHref>
+          <NextLink href="/info" passHref>
             <Link>
               <Button
                 variant="outline"
