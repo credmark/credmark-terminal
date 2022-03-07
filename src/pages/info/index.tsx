@@ -6,6 +6,7 @@ import {
   Heading,
   HStack,
   Img,
+  SimpleGrid,
   Spinner,
   Stack,
   VStack,
@@ -106,7 +107,7 @@ export default function AnalyticsPage() {
             Token Analytics
           </Heading>
 
-          <HStack mt="8" align="start">
+          <SimpleGrid columns={{ base: 1, lg: 2 }}>
             <VStack flex="1" py="4" align="stretch" px="4">
               <HStack justify="center">
                 <Img src="/img/cmk.svg" maxH="10" />
@@ -275,7 +276,7 @@ export default function AnalyticsPage() {
                 </>
               )}
             </VStack>
-          </HStack>
+          </SimpleGrid>
         </Container>
         <Container id="market-analytics-container" maxW="container.xl" py="2">
           <Heading
