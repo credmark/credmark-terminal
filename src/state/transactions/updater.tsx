@@ -9,11 +9,15 @@ import { updateBlockNumber } from '../application/actions';
 import { useBlockNumber } from '../application/hooks';
 import { AppDispatch, AppState } from '../index';
 
-import { checkedTransaction, finalizeTransaction } from './actions';
+import {
+  checkedTransaction,
+  finalizeTransaction,
+  SerializableTransactionReceipt,
+} from './actions';
 
 interface TxInterface {
   addedTime: number;
-  receipt?: Record<string, any>;
+  receipt?: SerializableTransactionReceipt;
   lastCheckedBlockNumber?: number;
 }
 

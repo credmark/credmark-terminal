@@ -67,6 +67,7 @@ export default function AccountDetails({
           <Button
             size="xs"
             onClick={() => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (connector as any).close();
             }}
           >

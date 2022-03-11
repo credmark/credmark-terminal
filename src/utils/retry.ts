@@ -49,11 +49,15 @@ export function retry<T>(
           completed = true;
         }
         break;
-      } catch (error: any) {
+      } catch (error) {
         if (completed) {
           break;
         }
-        if (n <= 0 || !error.isRetryableError) {
+        if (
+          n <= 0 ||
+          !(error instanceof RetryableError) ||
+          !error.isRetryableError
+        ) {
           reject(error);
           completed = true;
           break;

@@ -14,7 +14,9 @@ import {
 } from './actions';
 import { Call, parseCallKey, toCallKey } from './utils';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Result extends ReadonlyArray<any> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   readonly [key: string]: any;
 }
 

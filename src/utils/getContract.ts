@@ -1,5 +1,5 @@
 import { AddressZero } from '@ethersproject/constants';
-import { Contract } from '@ethersproject/contracts';
+import { Contract, ContractInterface } from '@ethersproject/contracts';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 
 import isAddress from './isAddress';
@@ -23,7 +23,7 @@ export function getProviderOrSigner(
 // account is optional
 export default function getContract(
   address: string,
-  ABI: any,
+  ABI: ContractInterface,
   library: Web3Provider,
   account?: string,
 ): Contract {
@@ -31,9 +31,5 @@ export default function getContract(
     throw Error(`Invalid 'address' parameter '${address}'.`);
   }
 
-  return new Contract(
-    address,
-    ABI,
-    getProviderOrSigner(library, account) as any,
-  );
+  return new Contract(address, ABI, getProviderOrSigner(library, account));
 }

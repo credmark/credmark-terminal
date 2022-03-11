@@ -21,7 +21,11 @@ export default function CmkSupplyDistribution({
     return {
       tooltip: {
         trigger: 'item',
-        formatter: (params: any) => {
+        formatter: (params: {
+          marker: string;
+          name: string;
+          value: number;
+        }) => {
           return `
                 <div style="display: flex; margin-bottom: 2px;">
                   <div>${params.marker}</div>

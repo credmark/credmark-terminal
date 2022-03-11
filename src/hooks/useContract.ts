@@ -1,4 +1,4 @@
-import { Contract } from '@ethersproject/contracts';
+import { Contract, ContractInterface } from '@ethersproject/contracts';
 import QuoterABI from '@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json';
 import { useMemo } from 'react';
 
@@ -29,7 +29,7 @@ import { useActiveWeb3React } from './web3';
 // returns null on errors
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
-  ABI: any,
+  ABI: ContractInterface,
   withSignerIfPossible = true,
 ): T | null {
   const { library, account, chainId } = useActiveWeb3React();

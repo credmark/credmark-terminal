@@ -61,6 +61,7 @@ async function fetchChunk(
     }
 
     return returnData;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (
       error.code === -32000 ||
@@ -262,6 +263,7 @@ export default function Updater(): null {
               );
             }
           })
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .catch((error: any) => {
             if (error.isCancelledError) {
               console.debug(

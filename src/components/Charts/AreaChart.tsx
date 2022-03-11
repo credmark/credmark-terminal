@@ -17,7 +17,7 @@ interface AreaChartProps {
   title?: string;
   titleImg?: string;
   yLabel: string;
-  formatValue?: (value: any) => string;
+  formatValue?: (value: number) => string;
   durations?: Duration[];
   defaultDuration?: Duration;
 
@@ -90,6 +90,7 @@ export default function AreaChart({
         axisPointer: {
           type: 'cross',
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         formatter: ([params]: any) => {
           const date = new Date(params.data[0]).toLocaleDateString(undefined, {
             day: '2-digit',

@@ -220,8 +220,6 @@ export function useUnissuedRewards() {
 }
 
 export function useNextRewardAmount(account: string | null | undefined) {
-  const { chainId } = useActiveWeb3React();
-
   const { loading: sCmkTotalSupplyLoading, value: sCmkTotalSupply } =
     useSCmkTotalSupply();
   const { loading: unissuedRewardsCmkLoading, value: unissuedRewardsCmk } =

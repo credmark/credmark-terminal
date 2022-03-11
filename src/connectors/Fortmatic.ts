@@ -18,6 +18,7 @@ export class FortmaticConnector extends FortmaticConnectorCore {
     if (!this.fortmatic) {
       const { default: Fortmatic } = await import('fortmatic');
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { apiKey, chainId } = this as any;
       if (chainId in CHAIN_ID_NETWORK_ARGUMENT) {
         this.fortmatic = new Fortmatic(
@@ -48,6 +49,7 @@ export class FortmaticConnector extends FortmaticConnectorCore {
 
     return {
       provider: this.fortmatic.getProvider(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chainId: (this as any).chainId,
       account,
     };

@@ -100,10 +100,9 @@ export default function WalletModal({
   ]);
 
   const tryActivation = async (connector: AbstractConnector | undefined) => {
-    let name = '';
     Object.keys(SUPPORTED_WALLETS).map((key) => {
       if (connector === SUPPORTED_WALLETS[key].connector) {
-        return (name = SUPPORTED_WALLETS[key].name);
+        return SUPPORTED_WALLETS[key].name;
       }
       return true;
     });

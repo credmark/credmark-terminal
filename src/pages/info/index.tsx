@@ -138,7 +138,7 @@ export default function AnalyticsPage() {
                     titleImg="/img/cmk.svg"
                     gradient={['#08538C', '#3B0065']}
                     line
-                    formatValue={(val: any) => '$' + val.toFixed(2)}
+                    formatValue={(val) => '$' + val.toFixed(2)}
                     yLabel="PRICE"
                     height={400}
                     durations={[30, 60, 90]}
@@ -154,7 +154,7 @@ export default function AnalyticsPage() {
                     title="CMK Holders"
                     titleImg="/img/holder.svg"
                     gradient={['#DE1A60', '#3B0065']}
-                    formatValue={(val: any) => val.toFixed(0)}
+                    formatValue={(val) => val.toFixed(0)}
                     yLabel="HOLDERS"
                     height={400}
                     durations={[30, 60, 90]}
@@ -170,7 +170,7 @@ export default function AnalyticsPage() {
                     title="CMK 24H Trading Volume"
                     titleImg="/img/cmk.svg"
                     gradient={['#3B0065', '#08538C']}
-                    formatValue={(val: any) => '$' + shortenNumber(val, 2)}
+                    formatValue={(val) => '$' + shortenNumber(val, 2)}
                     yLabel="TOTAL VOLUME"
                     height={400}
                     durations={[30, 60, 90]}
@@ -218,7 +218,7 @@ export default function AnalyticsPage() {
                     title="STAKED CMK"
                     titleImg="/img/xcmk.svg"
                     gradient={['#DE1A60', '#3B0065']}
-                    formatValue={(val: any) => '$' + shortenNumber(val, 2)}
+                    formatValue={(val) => '$' + shortenNumber(val, 2)}
                     yLabel="AMOUNT STAKED"
                     height={400}
                     durations={[30, 60, 90]}
@@ -234,7 +234,7 @@ export default function AnalyticsPage() {
                     title="STAKED WALLETS"
                     titleImg="/img/wallet.svg"
                     gradient={['#3B0065', '#08538C']}
-                    formatValue={(val: any) => val.toFixed(0)}
+                    formatValue={(val) => val.toFixed(0)}
                     yLabel="WALLETS"
                     height={400}
                     durations={[30, 60, 90]}
@@ -251,7 +251,7 @@ export default function AnalyticsPage() {
                     title="AVERAGE CMK AMOUNT STAKED"
                     titleImg="/img/xcmk.svg"
                     gradient={['#DE1A60', '#3B0065']}
-                    formatValue={(val: any) => shortenNumber(val, 2)}
+                    formatValue={(val) => shortenNumber(val, 2)}
                     yLabel="AMOUNT"
                     height={400}
                     durations={[30, 60, 90]}
@@ -267,7 +267,7 @@ export default function AnalyticsPage() {
                     title="XCMK APR"
                     titleImg="/img/xcmk.svg"
                     gradient={['#DE1A60', '#3B0065']}
-                    formatValue={(val: any) => val.toFixed(2) + '%'}
+                    formatValue={(val) => val.toFixed(2) + '%'}
                     yLabel="AMOUNT"
                     height={400}
                     durations={[30, 60, 90]}

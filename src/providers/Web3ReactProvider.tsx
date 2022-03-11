@@ -11,6 +11,7 @@ function Web3ProviderNetworkSSR({
   getLibrary,
 }: {
   children: React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getLibrary: (provider: any) => Web3Provider;
 }): JSX.Element {
   return (

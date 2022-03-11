@@ -20,7 +20,7 @@ export interface Line {
 interface HistoricalChartProps {
   lines: Line[];
   loading: boolean;
-  formatValue?: (value: any) => string;
+  formatValue?: (value: number) => string;
   showLegend?: boolean;
 }
 
@@ -80,10 +80,17 @@ export default function HistoricalChart({
         axisPointer: {
           type: 'cross',
         },
-        formatter: (params: any[]) => {
+        formatter: (
+          params: Array<{
+            seriesName: string;
+            marker: string;
+            data: [number, number];
+          }>,
+        ) => {
           if (!Array.isArray(params) || params.length === 0) {
             return;
           }
+
           const date = new Date(params[0].data[0]).toLocaleDateString(
             undefined,
             {
@@ -152,10 +159,10 @@ export default function HistoricalChart({
       },
       yAxis: {
         type: 'value',
-        min: function (value: any) {
+        min: function (value: { min: number }) {
           return value.min * 0.75;
         },
-        max: function (value: any) {
+        max: function (value: { max: number }) {
           return value.max * 1.25;
         },
         boundaryGap: false,
