@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "contracts:compile": "typechain --target ethers-v5 --out-dir src/abis/types './src/abis/**/*.json'",
-    "start": "APP_ENV=local next dev",
-    "build:dev": "APP_ENV=dev next build",
-    "build": "APP_ENV=prod next build",
+    "build:staging": "cp env/.env.staging .env && next build",
+    "build:production": "cp env/.env.production .env && next build",
+    "start": "cp env/.env.local .env && next dev",
+    "staging": "cp env/.env.staging .env && next start",
+    "production": "cp env/.env.production .env && next start",
     "analyze": "ANALYZE=true next build",
-    "dev": "APP_ENV=dev next start",
-    "prod": "APP_ENV=prod next start",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "postinstall": "npm run contracts:compile"

@@ -1,5 +1,4 @@
 export interface Env {
-  type: 'LOCAL' | 'DEV' | 'PROD';
   host: string;
 
   infuraKey: string;

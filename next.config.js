@@ -5,9 +5,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 
 module.exports = withBundleAnalyzer({
-  env: {
-    APP_ENV: process.env.APP_ENV,
-  },
   async redirects() {
     return [
       {
