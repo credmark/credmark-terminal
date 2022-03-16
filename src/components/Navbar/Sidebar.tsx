@@ -151,6 +151,18 @@ export default function Sidebar() {
               <br />
               LIBRARY
             </Link>
+
+            <Link
+              href="/codeterminal"
+              isExternal
+              fontFamily="Credmark Regular"
+              fontSize="sm"
+              textAlign="center"
+              color={'purple.500'}
+              lineHeight="1"
+            >
+              CodeBox
+            </Link>
           </VStack>
           <VStack>
             <Link

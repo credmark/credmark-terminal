@@ -1,0 +1,19 @@
+.container{
+    height: 440px;
+    left: 335px;
+    top: 192px;
+    border-radius: 4px;
+    padding: 20px;
+    background-color: #1a1a1a;
+    
+    font-family: 'courier new';
+    font-size: 14px;
+    font-style: normal;
+    line-height: 16px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #FFFFFF;
+    
+    overflow: auto;
+  }
+  
