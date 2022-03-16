@@ -1,10 +1,13 @@
+import { Container } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
 
 import { codeTerminal, CURSOR_LEN, PAUSE_LEN } from './constants';
-import styles from './styles.module.css';
 
-// eslint-disable-next-line react/prop-types
-const CodeTerminal = ({ speed = 100 }) => {
+interface Props {
+  speed: number;
+}
+
+const CodeTerminal = ({ speed = 100 }: Props) => {
   const [displayedContent, setDisplayedContent] = useState(codeTerminal.label);
   const [index, setIndex] = useState(0);
 
@@ -73,9 +76,21 @@ const CodeTerminal = ({ speed = 100 }) => {
   }, [index]);
 
   return (
-    <div className={styles.container}>
+    <Container
+      h="440"
+      maxW="container.xl"
+      borderRadius="5"
+      p="15px"
+      bg="#1a1a1a"
+      fontFamily="courier new"
+      fontSize="14"
+      lineHeight="16px"
+      textAlign="left"
+      color="#ffffff"
+      overflow="auto"
+    >
       <pre>{displayedContent}</pre>
-    </div>
+    </Container>
   );
 };
 
