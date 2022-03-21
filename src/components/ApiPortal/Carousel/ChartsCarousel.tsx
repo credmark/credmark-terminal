@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Img } from '@chakra-ui/react';
 import {
   CarouselProvider,
   Slider,
@@ -7,7 +7,6 @@ import {
   ButtonNext,
 } from 'pure-react-carousel';
 import React, { FC } from 'react';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 
 import CarouselItem from './CarouselItem';
 
@@ -16,7 +15,7 @@ interface ChartsCarouselItemProps {
   description: string;
   lists: {
     text: string;
-    icon: JSX.Element;
+    icon: string;
   }[];
   isAccess: boolean;
   isBackground: boolean;
@@ -50,7 +49,7 @@ const ChartsCarousel: FC<ChartsCarouselProps> = ({ item }) => {
             borderRadius="full"
             fontSize="3xl"
           >
-            <FaAngleLeft />
+            {/* <Img src="/img/apiPortal/right.svg" /> */}
           </Button>
           <Button
             color="white"
@@ -65,7 +64,7 @@ const ChartsCarousel: FC<ChartsCarouselProps> = ({ item }) => {
             borderRadius="full"
             fontSize="3xl"
           >
-            <FaAngleRight />
+            <Img src="/img/apiPortal/right.svg" />
           </Button>
         </Flex>
         <Slider>

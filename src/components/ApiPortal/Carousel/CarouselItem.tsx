@@ -4,19 +4,17 @@ import {
   Flex,
   Heading,
   HStack,
-  Icon,
   Stack,
   Text,
   Img,
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { AiFillLock } from 'react-icons/ai';
 interface ICarouselItem {
   title: string;
   description: string;
   lists: {
     text: string;
-    icon: JSX.Element;
+    icon: string;
   }[];
   isAccess: boolean;
   isBackground: boolean;
@@ -27,7 +25,7 @@ interface CarouselItemProps {
 
 type Item = {
   text: string;
-  icon: JSX.Element;
+  icon: string;
 };
 
 const CarouselItem: FC<CarouselItemProps> = ({ item }) => {
@@ -42,9 +40,7 @@ const CarouselItem: FC<CarouselItemProps> = ({ item }) => {
           <Stack>
             {item.lists.map((item: Item) => (
               <HStack key={item.text}>
-                <Icon color="purple.800" fontSize="xl">
-                  {item.icon}
-                </Icon>
+                <Img src={'/img/apiPortal/' + item.icon} />
                 <Text fontSize="sm">{item.text}</Text>
               </HStack>
             ))}
@@ -52,9 +48,7 @@ const CarouselItem: FC<CarouselItemProps> = ({ item }) => {
 
           {item.isAccess ? (
             <Button alignSelf="flex-start" colorScheme="pink">
-              <Icon fontSize="lg" mr={1}>
-                <AiFillLock />
-              </Icon>
+              <Img src="/img/apiPortal/white_lock.svg" />
               Get Access
             </Button>
           ) : (
