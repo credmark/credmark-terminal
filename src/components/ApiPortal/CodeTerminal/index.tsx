@@ -77,7 +77,7 @@ const CodeTerminal = ({ speed = 100 }: Props) => {
 
   return (
     <Container
-      h="440"
+      minH="440"
       maxW="container.xl"
       borderRadius="5"
       p="15px"
@@ -89,7 +89,7 @@ const CodeTerminal = ({ speed = 100 }: Props) => {
       color="#ffffff"
       overflow="auto"
     >
-      <pre>{displayedContent}</pre>
+      <pre style={{ whiteSpace: 'pre-wrap' }}>{displayedContent}</pre>
     </Container>
   );
 };
