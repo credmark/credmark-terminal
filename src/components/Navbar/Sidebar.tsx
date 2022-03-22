@@ -139,20 +139,6 @@ export default function Sidebar() {
             </NextLink>
             <Box bg="purple.500" w="16px" h="2px"></Box>
             <Link
-              href="https://docs.credmark.com/credmark-risk-library/"
-              isExternal
-              fontFamily="Credmark Regular"
-              fontSize="sm"
-              textAlign="center"
-              color={'purple.500'}
-              lineHeight="1"
-            >
-              RISK
-              <br />
-              LIBRARY
-            </Link>
-
-            <Link
               href="/codeterminal"
               isExternal
               fontFamily="Credmark Regular"

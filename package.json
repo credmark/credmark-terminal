@@ -16,7 +16,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^1.1.7",
     "@chakra-ui/react": "^1.7.4",
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
@@ -38,18 +37,15 @@
     "ethers": "^5.5.1",
     "focus-visible": "^5.2.0",
     "framer-motion": "^4.1.17",
-    "install": "^0.13.0",
     "jsbi": "^3.2.5",
     "lodash.flatmap": "^4.5.0",
     "next": "11.1.2",
-    "npm": "^8.5.5",
     "nprogress": "^0.2.0",
     "pure-react-carousel": "^1.28.1",
     "react": "17.0.2",
     "react-device-detect": "^2.1.2",
     "react-dom": "17.0.2",
     "react-icons": "^4.3.1",
-    "react-papaparse": "^4.0.2",
     "react-redux": "^7.2.6"
   },
   "devDependencies": {

@@ -1,399 +1,218 @@
-import { InfoIcon, ArrowForwardIcon } from '@chakra-ui/icons';
 import {
-  Box,
-  Img,
   Container,
-  Stack,
-  HStack,
+  Grid,
+  Heading,
   Text,
+  VStack,
   Center,
-  Button,
+  HStack,
 } from '@chakra-ui/react';
 import React from 'react';
+import { IoArrowForwardOutline } from 'react-icons/io5';
 
-export default function Rewards() {
+import PackageCard from '~/components/ApiPortal/PackageCard';
+const packages = () => {
+  const packagesList = [
+    {
+      name: 'Starter',
+      benefits: [
+        {
+          icon: '/img/apiPortal/credmark.svg',
+          text: 'Stake CMK',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/dollar.svg',
+          text: 'free',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/unlock.svg',
+          text: 'No Lockup Period',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/code.svg',
+          text: 'Model Framework',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/disabled_pc.svg',
+          text: 'Risk Terminal Access',
+          access: false,
+        },
+        {
+          icon: '/img/apiPortal/disabled_gateway.svg',
+          text: 'API Gateaway Access',
+          access: false,
+        },
+        {
+          icon: '/img/apiPortal/disabled_report.svg',
+          text: 'Custom Model & Reports',
+          access: false,
+        },
+      ],
+      price: 0,
+    },
+    {
+      name: 'Pro',
+      benefits: [
+        {
+          icon: '/img/apiPortal/credmark.svg',
+          text: 'Stake CMK',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/dollar.svg',
+          text: '$35 per month*',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/unlock.svg',
+          text: '1 Week Lockup Period',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/code.svg',
+          text: 'Model Framework',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/pc.svg',
+          text: 'Credmark Terminal Access',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/disabled_gateway.svg',
+          text: 'API Gateaway Access',
+          access: false,
+        },
+        {
+          icon: '/img/apiPortal/disabled_report.svg',
+          text: 'Custom Model & Reports',
+          access: false,
+        },
+      ],
+      price: 50,
+    },
+    {
+      name: 'Unlimited',
+      benefits: [
+        {
+          icon: '/img/apiPortal/credmark.svg',
+          text: 'Stake CMK',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/dollar.svg',
+          text: '$350 per month',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/unlock.svg',
+          text: '1 Month Lockup Period',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/code.svg',
+          text: 'Model Framework',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/pc.svg',
+          text: 'Credmark Terminal Access',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/gateway.svg',
+          text: 'API Gateaway Access',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/disabled_report.svg',
+          text: 'Custom Model & Reports',
+          access: false,
+        },
+      ],
+      price: 100,
+    },
+    {
+      name: 'Premium',
+      benefits: [
+        {
+          icon: '/img/apiPortal/credmark.svg',
+          text: 'Stake CMK',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/dollar.svg',
+          text: '$ 3500 per month*',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/unlock.svg',
+          text: '1 Year Lockup Period',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/code.svg',
+          text: 'Model Framework',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/pc.svg',
+          text: 'Risk Terminal Access',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/gateway.svg',
+          text: 'API Gateaway Access',
+          access: true,
+        },
+        {
+          icon: '/img/apiPortal/report.svg',
+          text: 'Custom Model & Reports',
+          access: true,
+        },
+      ],
+      price: 1000,
+    },
+  ];
+
   return (
-    <Container maxW="container.lg" centerContent>
-      <Box pt={10} pb={10}>
-        <Center
-          fontSize={{ base: 'large', md: 'xx-large' }}
-          fontWeight="semibold"
+    <Container maxW="container.xl">
+      <Center>
+        <Text
+          my="2"
+          mb="8"
+          fontSize={{ sm: '2xl', md: '4xl' }}
           textAlign="center"
+          maxW="1000px"
         >
-          Choose a Tier to Gain Access to our Tools and Start
-        </Center>
-        <Center fontSize={{ base: 'large', md: 'xx-large' }}>
-          Earning Rewards
-        </Center>
-      </Box>
-      <Stack direction={['column', 'row']} spacing="24px">
-        <Box
-          w={{ base: '300px', md: '250px' }}
-          boxShadow="xl"
-          bg="white"
-          borderRadius="7px"
-        >
-          <Center color="black" fontSize="xl" fontWeight={500} h="60px">
-            Starter
-          </Center>
-          <Center color="black" fontSize="xl" fontWeight={400} mt="5">
-            1X
-          </Center>
-          <Center color="black" fontSize="18px" fontWeight={400}>
-            Staking Rewards
-          </Center>
-          <Box maxW="container.sm" pl="5" mt="5">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/credmark.svg" />
-              <Text fontSize={13}>Stake CMK</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/dollar.svg" />
-              <Text fontSize={13}>free</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/unlock.svg" />
-              <Text fontSize={13}>No Lockup Period </Text>
-            </HStack>
-          </Box>
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/code.svg" />
-              <Text fontSize={13}>Model Framework </Text>
-            </HStack>
-          </Box>
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px" color={'#e6e6e6'}>
-              <Img src="/img/apiPortal/disabled_pc.svg" />
-              <Text fontSize={13}>Risk Terminal Access</Text>
-              <InfoIcon />
-            </HStack>
-          </Box>
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px" color={'#e6e6e6'}>
-              <Img src="/img/apiPortal/disabled_gateway.svg" />
-              <Text fontSize={13}>API Gateway Access</Text>
-              <InfoIcon />
-            </HStack>
-          </Box>
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px" color={'#e6e6e6'}>
-              <Img src="/img/apiPortal/disabled_report.svg" />
-              <Text fontSize={13}>Custom Models & Reports</Text>
-              <InfoIcon />
-            </HStack>
-          </Box>
-          <Box maxW="container.sm" mt="5" mb={10}>
-            <Center>
-              <Button
-                colorScheme="#71478f"
-                color={'#71478f'}
-                variant="outline"
-                width={'70%'}
-              >
-                Free
-              </Button>
-            </Center>
-          </Box>
-        </Box>
-        <Box
-          w={{ base: '300px', md: '250px' }}
-          boxShadow="xl"
-          bg="white"
-          borderRadius="7px"
-        >
-          <Center color="black" fontSize="xl" fontWeight={500} h="60px">
-            Pro
-          </Center>
-          <Center color="black" fontSize="xl" fontWeight={400} mt="5">
-            2X
-          </Center>
-          <Center color="black" fontSize="18px" fontWeight={400}>
-            Staking Rewards
-          </Center>
-          <Box maxW="container.sm" pl="5" mt="5">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/credmark.svg" />
-              <Text fontSize={13}>Stake CMK</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/dollar.svg" />
-              <Text fontSize={13}>$35 per month*</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/filled_lock.svg" />
-              <Text fontSize={13}>1 Week Lookup Period</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/code.svg" />
-              <Text fontSize={13}>Model Framework</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/pc.svg" />
-
-              <Text fontSize={13}>Risk Terminal Access</Text>
-            </HStack>
-          </Box>
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px" color={'#e6e6e6'}>
-              <Img src="/img/apiPortal/disabled_gateway.svg" />
-              <Text fontSize={13}>API Gateway Access</Text>
-              <InfoIcon />
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px" color={'#e6e6e6'}>
-              <Img src="/img/apiPortal/disabled_report.svg" />
-              <Text fontSize={13}>Custom Models & Reports</Text>
-              <InfoIcon />
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" mt="5" mb={10}>
-            <Center>
-              <Button
-                colorScheme="#71478f"
-                color={'#71478f'}
-                variant="outline"
-                width={'70%'}
-              >
-                $50 per month<span>*</span>{' '}
-                <span>
-                  <ArrowForwardIcon />
-                </span>
-              </Button>
-            </Center>
-          </Box>
-        </Box>
-        <Box
-          w={{ base: '300px', md: '250px' }}
-          boxShadow="xl"
-          bg="white"
-          borderRadius="7px"
-        >
-          <Center
-            color="white"
-            fontSize="xl"
-            fontWeight={500}
-            bgColor="#de1a60"
-            h="60px"
-            borderTopRightRadius="7px"
-            borderTopLeftRadius="7px"
-          >
-            Unlimited
-          </Center>
-          <Center color="black" fontSize="xl" fontWeight={400} mt="5">
-            3X
-          </Center>
-          <Center color="black" fontSize="18px" fontWeight={400}>
-            Staking Rewards
-          </Center>
-          <Box maxW="container.sm" pl="5" mt="5">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/credmark.svg" />
-              <Text fontSize={13}>Stake CMK</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="img/apiPortal/dollar.svg" />
-              <Text fontSize={13}>$350 per month*</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/filled_lock.svg" />
-              <Text fontSize={13}>1 Month Lookup Period</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/code.svg" />
-              <Text fontSize={13}>Mode Framework</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/pc.svg" />
-              <Text fontSize={13}>Risk Terminal Access</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/gateway.svg" />
-              <Text fontSize={13}>API Gateway Access</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px" color={'#e6e6e6'}>
-              <Img src="/img/apiPortal/disabled_report.svg" />
-              <Text fontSize={13}>Custom Model & Reports</Text>
-              <InfoIcon />
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" mt="5" mb={10}>
-            <Center>
-              <Button
-                bgColor="#de1a60"
-                color={'white'}
-                variant="outline"
-                width={'70%'}
-              >
-                $100 per month<span>*</span>{' '}
-                <span>
-                  <ArrowForwardIcon />
-                </span>
-              </Button>
-            </Center>
-          </Box>
-        </Box>
-        <Box
-          w={{ base: '300px', md: '250px' }}
-          boxShadow="xl"
-          bg="white"
-          borderRadius="7px"
-        >
-          <Center
-            color="black"
-            fontSize="xl"
-            fontWeight={500}
-            h="60px"
-            borderTopRightRadius="7px"
-            borderTopLeftRadius="7px"
-          >
-            Premium
-          </Center>
-          <Center color="black" fontSize="xl" fontWeight={400} mt="5">
-            4X
-          </Center>
-          <Center color="black" fontSize="18px" fontWeight={400}>
-            Staking Rewards
-          </Center>
-          <Box maxW="container.sm" pl="5" mt="5">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/credmark.svg" />
-              <Text fontSize={13}>Stake CMK</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/dollar.svg" />
-              <Text fontSize={13}>$3,500 per month*</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/filled_lock.svg" />
-              <Text fontSize={13}>1 Year Lookup Period</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/code.svg" />
-              <Text fontSize={13}>Model Framework</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/pc.svg" />
-              <Text fontSize={13}>Risk Terminal Access</Text>
-            </HStack>
-          </Box>
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/gateway.svg" />
-              <Text fontSize={13}>API Gateway Access</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" pl="5" mt="3">
-            <HStack spacing="10px">
-              <Img src="/img/apiPortal/report.svg" />
-              <Text fontSize={13}>Custom Model & Reports</Text>
-            </HStack>
-          </Box>
-
-          <Box maxW="container.sm" mt="5" mb={10}>
-            <Center>
-              <Button
-                colorScheme="#71478f"
-                color={'#71478f'}
-                variant="outline"
-                width={'70%'}
-              >
-                $100 per month*
-                <ArrowForwardIcon />
-              </Button>
-            </Center>
-          </Box>
-        </Box>
-      </Stack>
-      <Box pt={5} pb={5}>
-        <Text
-          fontSize="16px"
-          textAlign={'center'}
-          fontWeight={500}
-          color={'#989898'}
-        >
-          Need Help? Check Out Our FAQ <ArrowForwardIcon />
+          Select a Membership to Gain Access to our Tools and Start Earning
+          Rewards
         </Text>
-        <Text
-          fontSize="12px"
-          textAlign={'center'}
-          fontWeight={400}
-          color={'#bbbbbb'}
-        >
-          *Costs are denominated in USD, and access is stored as staked amount
+      </Center>
+
+      <Grid gridTemplateColumns="repeat(auto-fit,minmax(250px,1fr))" gap="4">
+        {packagesList.map((item, i) => (
+          <PackageCard index={i} item={item} key={item.name} />
+        ))}
+      </Grid>
+      <VStack>
+        <HStack mt="6">
+          <Heading fontSize="md" as="h4">
+            Need Help? Check Out Our FAQ
+          </Heading>
+          <IoArrowForwardOutline />
+        </HStack>
+        <Text color="gray.200" textAlign="center" fontSize="sm">
+          *Costs are denominated in USD, and access is stored as staked CMK.
+          Changes <br /> in the price are subject to a DAO Governance Vote.
         </Text>
-        <Text
-          fontSize="12px"
-          textAlign={'center'}
-          fontWeight={400}
-          color={'#bbbbbb'}
-        >
-          in the price are subject to a DAO Governance Vote. Depending on the
-          amount{' '}
-        </Text>
-        <Text
-          fontSize="12px"
-          textAlign={'center'}
-          fontWeight={400}
-          color={'#bbbbbb'}
-        >
-          staked, staking rewards may exceed monthly costs.{' '}
-        </Text>
-      </Box>
-      <Box p={5}></Box>
+      </VStack>
     </Container>
   );
-}
+};
+
+export default packages;

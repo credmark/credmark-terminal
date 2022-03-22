@@ -8,17 +8,17 @@ import CodeTerminal from './CodeTerminal';
 const sections = [
   {
     id: 0,
-    icon: 'earn.svg',
+    icon: '/img/apiPortal/earn.svg',
     text: 'Fine-tuned data aggregation and nomination for 1st, 2nd and 3rd order Data',
   },
   {
     id: 1,
-    icon: 'clock.svg',
+    icon: '/img/apiPortal/clock.svg',
     text: 'Completed historical data',
   },
   {
     id: 2,
-    icon: 'direct.svg',
+    icon: '/img/apiPortal/direct.svg',
     text: 'Direct query of output  from risk models',
   },
 ];
@@ -30,19 +30,19 @@ const items = [
     lists: [
       {
         text: 'Visualize Insights into Defi Data',
-        icon: 'analytics.svg',
+        icon: '/img/apiPortal/analytics.svg',
       },
       {
         text: 'Market data & risk metrics for various Products',
-        icon: 'circle_rise.svg',
+        icon: '/img/apiPortal/circle_rise.svg',
       },
       {
         text: 'Historic data upto 90 days',
-        icon: 'clock.svg',
+        icon: '/img/apiPortal/clock.svg',
       },
       {
         text: 'Export data to CSV',
-        icon: 'download.svg',
+        icon: '/img/apiPortal/download.svg',
       },
     ],
     isAccess: true,
@@ -55,19 +55,19 @@ const items = [
     lists: [
       {
         text: 'Visualize Insights into Defi Data',
-        icon: 'analytics.svg',
+        icon: '/img/apiPortal/analytics.svg',
       },
       {
         text: 'Market data & risk metrics for various Products',
-        icon: 'circle_rise.svg',
+        icon: '/img/apiPortal/circle_rise.svg',
       },
       {
         text: 'Historic data upto 90 days',
-        icon: 'clock.svg',
+        icon: '/img/apiPortal/clock.svg',
       },
       {
         text: 'Export data to CSV',
-        icon: 'download.svg',
+        icon: '/img/apiPortal/download.svg',
       },
     ],
     isAccess: false,
@@ -79,19 +79,19 @@ const items = [
     lists: [
       {
         text: 'Visualize Insights into Defi Data',
-        icon: 'analytics.svg',
+        icon: '/img/apiPortal/analytics.svg',
       },
       {
         text: 'Market data & risk metrics for various Products',
-        icon: 'circle_rise.svg',
+        icon: '/img/apiPortal/circle_rise.svg',
       },
       {
         text: 'Historic data upto 90 days',
-        icon: 'clock.svg',
+        icon: '/img/apiPortal/clock.svg',
       },
       {
         text: 'Export data to CSV',
-        icon: 'download.svg',
+        icon: '/img/apiPortal/download.svg',
       },
     ],
     isAccess: false,
@@ -188,7 +188,7 @@ export default function Home() {
               {sections.map((section) => {
                 return (
                   <HStack key={section.id} spacing="10px">
-                    <Img src={'/img/apiPortal/' + section.icon} />
+                    <Img src={section.icon} />
                     <Text fontSize={13}>{section.text}</Text>
                   </HStack>
                 );

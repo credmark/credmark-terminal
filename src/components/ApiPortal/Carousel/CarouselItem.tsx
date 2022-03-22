@@ -40,7 +40,7 @@ const CarouselItem: FC<CarouselItemProps> = ({ item }) => {
           <Stack>
             {item.lists.map((item: Item) => (
               <HStack key={item.text}>
-                <Img src={'/img/apiPortal/' + item.icon} />
+                <Img src={item.icon} />
                 <Text fontSize="sm">{item.text}</Text>
               </HStack>
             ))}
