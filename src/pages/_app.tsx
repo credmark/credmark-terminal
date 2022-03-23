@@ -16,6 +16,7 @@ import NProgress from 'nprogress';
 import React, { useEffect } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
+import Layout from '~/components/Layout';
 import Web3ReactManager from '~/components/Web3ReactManager';
 import env from '~/env';
 import reduxStore from '~/state';
@@ -74,6 +75,15 @@ function RouteBasedProviders({
       router.events.off('routeChangeError', onError);
     };
   }, [router.events]);
+
+  const pathParts = router.pathname
+    .toLowerCase()
+    .split('/')
+    .filter((part) => !!part);
+
+  if (pathParts[0] !== 'v1') {
+    return <Layout>{children}</Layout>;
+  }
 
   return <>{children}</>;
 }
