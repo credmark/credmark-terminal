@@ -37,14 +37,15 @@ export default function InfoPopover({
       />
     </Center>
   );
+
   return (
-    <Popover placement="top-start" gutter={16} flip={false}>
+    <Popover placement="bottom-start" gutter={16} flip={false}>
       <PopoverTrigger>{trigger ?? defaultTrigger}</PopoverTrigger>
       <PopoverContent color="purple.500" bg="white" borderColor="purple.500">
         <PopoverArrow
           borderColor="purple.500"
-          borderRight="1px"
-          borderBottom="1px"
+          borderLeft="1px"
+          borderTop="1px"
         />
         <PopoverCloseButton
           top="-2"
