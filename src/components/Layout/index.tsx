@@ -92,7 +92,9 @@ export default function Layout({ children }: LayoutProps) {
           <Sidebar fixedWidth={60} />
         </GridItem>
 
-        <GridItem gridArea="content">{children}</GridItem>
+        <GridItem gridArea="content" minW="0">
+          {children}
+        </GridItem>
 
         <GridItem gridArea="footer">
           <Footer />

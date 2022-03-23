@@ -5,7 +5,7 @@ import {
   Spinner,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import ReactEChartsCore from 'echarts-for-react';
+import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
 
 export interface Line {
@@ -22,6 +22,7 @@ interface HistoricalChartProps {
   loading: boolean;
   formatValue?: (value: number) => string;
   showLegend?: boolean;
+  onChartReady?: (chart: EChartsInstance) => void;
 }
 
 export default function HistoricalChart({
@@ -29,6 +30,7 @@ export default function HistoricalChart({
   loading,
   formatValue,
   showLegend = false,
+  onChartReady,
 }: HistoricalChartProps): JSX.Element {
   const [duration, setDuration] = useState(30); // In Days
   const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
@@ -234,12 +236,10 @@ export default function HistoricalChart({
       <Box position="relative">
         <ReactEChartsCore
           option={option}
-          notMerge={true}
-          lazyUpdate={true}
           style={{
             height: '360px',
-            // width: width + 'px',
           }}
+          onChartReady={onChartReady}
         />
         {lines.length === 0 && (
           <Center position="absolute" top="0" left="0" right="0" bottom="0">

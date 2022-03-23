@@ -201,7 +201,11 @@ export default function LendersPage() {
         mb="16"
       >
         {METRICS.map((metric) => (
-          <GridItem key={metric.key}>
+          <GridItem
+            key={metric.key}
+            minW="0"
+            colSpan={expandedMetric === metric.key ? 2 : 1}
+          >
             <LenderChartBox
               metric={metric}
               activeAssets={activeAssets}

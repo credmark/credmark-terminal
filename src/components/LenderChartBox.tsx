@@ -1,5 +1,7 @@
 import { Box, HStack, Flex, Text, Center, Img, Icon } from '@chakra-ui/react';
-import React, { useMemo } from 'react';
+import useSize from '@react-hook/size';
+import { EChartsInstance } from 'echarts-for-react';
+import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { IoExpandSharp } from 'react-icons/io5';
 
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
@@ -24,6 +26,15 @@ export default function LenderChartBox({
   varData,
   onExpand,
 }: LenderChartBoxProps) {
+  const chartRef = useRef<EChartsInstance>();
+  const containerRef = useRef(null);
+
+  const [containerWidth] = useSize(containerRef);
+
+  useLayoutEffect(() => {
+    chartRef.current?.resize();
+  }, [containerWidth]);
+
   const chartLines = useMemo(() => {
     const lines: Array<{
       name: string;
@@ -82,7 +93,7 @@ export default function LenderChartBox({
   }, [lcrData, metric, varData]);
 
   return (
-    <Box key={metric.key} rounded="md" border="1px" borderColor="gray.200">
+    <Box ref={containerRef} rounded="md" border="1px" borderColor="gray.200">
       <HStack
         bg="#D8D8D8"
         px="4"
@@ -138,6 +149,7 @@ export default function LenderChartBox({
               !!Object.values(varData).find(({ loading }) => loading)
             }
             formatValue={metric.formatValue}
+            onChartReady={(chart) => (chartRef.current = chart)}
           />
         </Box>
       </Flex>
