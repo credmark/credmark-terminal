@@ -73,3 +73,23 @@ export type AssetStatsMap = Partial<
     }>
   >
 >;
+
+export type MetricKey = 'VAR' | 'LCR' | 'VTL' | 'TA' | 'TL' | 'MC';
+
+export interface MetricInfo {
+  key: MetricKey;
+  label: string;
+  tooltip: React.ReactNode;
+  chartLine: (
+    lcrDataPoints: LcrDataPoint[],
+    varDataPoints: VarDataPoint[],
+  ) => Array<{
+    timestamp: Date;
+    value: number;
+  }>;
+  currentValue: (
+    latestLcrDataPoint: LcrDataPoint,
+    latestVarDataPoint: VarDataPoint,
+  ) => number;
+  formatValue: (value: number) => string;
+}

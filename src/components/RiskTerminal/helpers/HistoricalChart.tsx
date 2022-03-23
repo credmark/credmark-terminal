@@ -5,7 +5,7 @@ import {
   Spinner,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import ReactEChartsCore from 'echarts-for-react';
+import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
 
 export interface Line {
@@ -22,6 +22,7 @@ interface HistoricalChartProps {
   loading: boolean;
   formatValue?: (value: number) => string;
   showLegend?: boolean;
+  onChartReady?: (chart: EChartsInstance) => void;
 }
 
 export default function HistoricalChart({
@@ -29,6 +30,7 @@ export default function HistoricalChart({
   loading,
   formatValue,
   showLegend = false,
+  onChartReady,
 }: HistoricalChartProps): JSX.Element {
   const [duration, setDuration] = useState(30); // In Days
   const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
@@ -70,7 +72,7 @@ export default function HistoricalChart({
         width: legendWidth ? series.length * legendWidth : undefined,
       },
       grid: {
-        top: showLegend ? 96 : 32,
+        top: showLegend ? 64 : 0,
         bottom: 48,
         left: 48,
         right: 32,
@@ -208,22 +210,8 @@ export default function HistoricalChart({
 
   return (
     <>
-      <Box position="relative">
-        <ReactEChartsCore
-          option={option}
-          notMerge={true}
-          lazyUpdate={true}
-          style={{
-            height: '360px',
-          }}
-        />
-        {lines.length === 0 && (
-          <Center position="absolute" top="0" left="0" right="0" bottom="0">
-            <Spinner color="purple.500" />
-          </Center>
-        )}
-      </Box>
-      <Flex pl="20" align="center">
+      <Flex align="center" justifyContent="flex-end" pr="4" pb="4">
+        {lines.length !== 0 && loading && <Spinner color="purple.500" />}
         {[30, 60, 90].map((days) => (
           <Box
             key={days}
@@ -232,8 +220,6 @@ export default function HistoricalChart({
             fontWeight="bold"
             color={duration === days ? 'gray.900' : 'gray.300'}
             cursor="pointer"
-            borderBottom={duration === days ? '2px' : '0'}
-            borderColor="gray.700"
             onClick={() => setDuration(days)}
             _hover={
               duration === days
@@ -246,8 +232,21 @@ export default function HistoricalChart({
             {days}D
           </Box>
         ))}
-        {lines.length !== 0 && loading && <Spinner color="purple.500" />}
       </Flex>
+      <Box position="relative">
+        <ReactEChartsCore
+          option={option}
+          style={{
+            height: '360px',
+          }}
+          onChartReady={onChartReady}
+        />
+        {lines.length === 0 && (
+          <Center position="absolute" top="0" left="0" right="0" bottom="0">
+            <Spinner color="purple.500" />
+          </Center>
+        )}
+      </Box>
     </>
   );
 }
