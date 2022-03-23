@@ -1,7 +1,8 @@
 import { HStack, Text, VStack, Box, Button, Img } from '@chakra-ui/react';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import Carousel from '~/components/ApiPortal/Carousel/ChartsCarousel';
+import DashboardLayout from '~/components/Layout/DashboardLayout/DasboardLayout';
 
 import CodeTerminal from './CodeTerminal';
 
@@ -99,7 +100,7 @@ const items = [
   },
 ];
 
-export default function Home() {
+const Gateway = () => {
   return (
     <VStack
       minH="100vh"
@@ -211,4 +212,9 @@ export default function Home() {
       <Carousel item={items} />
     </VStack>
   );
-}
+};
+
+export default Gateway;
+Gateway.getLayout = function getLayout(page: ReactElement) {
+  return <DashboardLayout text="Dashboard">{page}</DashboardLayout>;
+};

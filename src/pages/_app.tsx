@@ -8,12 +8,13 @@ import '~/theme/nprogress.css'; //styles of nprogress
 
 import { ChakraProvider } from '@chakra-ui/react';
 import { Web3ReactProvider } from '@web3-react/core';
+import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import NextHead from 'next/head';
 import { useRouter } from 'next/router';
 import NProgress from 'nprogress';
-import React, { useEffect } from 'react';
+import React, { useEffect, ReactElement, ReactNode } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
 import Web3ReactManager from '~/components/Web3ReactManager';
@@ -27,6 +28,8 @@ import Fonts from '~/theme/fonts';
 import getLibrary from '~/utils/getLibrary';
 
 import 'pure-react-carousel/dist/react-carousel.es.css'; // requires a loader
+// import Footer from '~/components/Footer/Footer';
+// import Navigation from '~/components/Navigation/Navigation';
 
 function ReduxUpdaters() {
   return (
@@ -83,11 +86,20 @@ const Web3ProviderNetwork = dynamic(
   { ssr: false },
 );
 
-function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
   const { host } = env;
   const title = 'Credmark App';
   const description = '';
   // const img = `${host}/img/smart-pool.png`;
+  const getLayout = Component.getLayout || ((page) => page);
 
   return (
     <>
@@ -116,7 +128,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
               <Fonts />
               <Web3ReactManager>
                 <RouteBasedProviders>
-                  <Component {...pageProps} />
+                  {getLayout(<Component {...pageProps} />)}
                 </RouteBasedProviders>
               </Web3ReactManager>
             </ReduxProvider>

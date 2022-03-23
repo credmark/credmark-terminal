@@ -7,10 +7,11 @@ import {
   Center,
   HStack,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { IoArrowForwardOutline } from 'react-icons/io5';
 
 import PackageCard from '~/components/ApiPortal/PackageCard';
+import DashboardLayout from '~/components/Layout/DashboardLayout/DasboardLayout';
 const packages = () => {
   const packagesList = [
     {
@@ -216,3 +217,6 @@ const packages = () => {
 };
 
 export default packages;
+packages.getLayout = function getLayout(page: ReactElement) {
+  return <DashboardLayout text="Dashboard">{page}</DashboardLayout>;
+};
