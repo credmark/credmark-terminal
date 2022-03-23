@@ -28,8 +28,6 @@ import Fonts from '~/theme/fonts';
 import getLibrary from '~/utils/getLibrary';
 
 import 'pure-react-carousel/dist/react-carousel.es.css'; // requires a loader
-// import Footer from '~/components/Footer/Footer';
-// import Navigation from '~/components/Navigation/Navigation';
 
 function ReduxUpdaters() {
   return (

@@ -1,4 +1,12 @@
-import { Flex, Stack, Heading, Button, VStack, Text } from '@chakra-ui/react';
+import {
+  Flex,
+  Stack,
+  Heading,
+  Button,
+  VStack,
+  Text,
+  HStack,
+} from '@chakra-ui/react';
 import React from 'react';
 
 import { Card } from './Card';
@@ -55,13 +63,20 @@ const BalanceCard = () => {
           <Text fontSize="sm" color="gray.500">
             Current Balance
           </Text>
-          <Text
-            fontSize={{ base: '5xl', sm: '3xl' }}
-            fontWeight="600"
-            color="gray.800"
-          >
-            40,783
-          </Text>
+
+          <HStack>
+            <Text
+              fontSize={{ base: '5xl', sm: '3xl' }}
+              fontWeight="600"
+              color="gray.800"
+            >
+              40,783
+            </Text>
+            <Text fontSize="md" color="gray.500">
+              CMK
+            </Text>
+          </HStack>
+
           <Text fontSize="sm" color="gray.500">
             Current Balance
           </Text>

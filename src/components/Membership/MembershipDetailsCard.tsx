@@ -36,7 +36,7 @@ const MembershipDetailsCard = () => {
           <Text lineHeight="1.2">
             Total <br /> Consumption
           </Text>
-          <Text fontWeight="bold">6,378</Text>
+          <Text fontWeight="bold">6,378 CMK</Text>
         </Flex>
         <Flex pt="2" w="100%" justify="space-between">
           <Text>Net APY</Text>
