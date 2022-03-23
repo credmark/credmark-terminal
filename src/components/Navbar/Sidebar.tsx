@@ -139,7 +139,7 @@ export default function Sidebar() {
             </NextLink>
             <Box bg="purple.500" w="16px" h="2px"></Box>
             <Link
-              href="https://docs.credmark.com/credmark-risk-library/"
+              href="/codeterminal"
               isExternal
               fontFamily="Credmark Regular"
               fontSize="sm"
@@ -147,9 +147,7 @@ export default function Sidebar() {
               color={'purple.500'}
               lineHeight="1"
             >
-              RISK
-              <br />
-              LIBRARY
+              CodeBox
             </Link>
           </VStack>
           <VStack>
