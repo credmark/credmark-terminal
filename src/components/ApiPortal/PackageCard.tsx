@@ -44,9 +44,9 @@ const PackageCard: FC<PackageCardProps> = ({ item, index }) => {
           {item.name}
         </Heading>
       </VStack>
-      <VStack py="4" px="4" maxW="container.sm">
+      <VStack py="4" px="4" maxW="container.sm" bg="white">
         <Text fontSize="xl" textAlign="center">
-          `{index + 1}X`
+          {index + 1}X
         </Text>
         <Text fontSize="md" textAlign="center">
           Staking Rewards
@@ -68,7 +68,7 @@ const PackageCard: FC<PackageCardProps> = ({ item, index }) => {
           ))}
         </Stack>
       </VStack>
-      <VStack py="6" px="5">
+      <VStack py="6" px="5" bg="white">
         <Button
           transition="0.3s ease"
           _groupHover={{

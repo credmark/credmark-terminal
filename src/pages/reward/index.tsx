@@ -183,14 +183,14 @@ const packages = () => {
     <Container maxW="container.xl">
       <Center>
         <Text
-          my="2"
           mb="8"
-          fontSize={{ sm: '2xl', md: '4xl' }}
+          mt="5"
+          fontSize={{ sm: 'xl', md: '3xl' }}
           textAlign="center"
           maxW="1000px"
         >
-          Select a Membership to Gain Access to our Tools and Start Earning
-          Rewards
+          Select a Membership to Gain Access to our Tools and Start
+          <br /> Earning Rewards
         </Text>
       </Center>
 
@@ -199,7 +199,7 @@ const packages = () => {
           <PackageCard index={i} item={item} key={item.name} />
         ))}
       </Grid>
-      <VStack>
+      <VStack pb="10">
         <HStack mt="6">
           <Heading fontSize="md" as="h4">
             Need Help? Check Out Our FAQ
