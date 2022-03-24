@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Img } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, useMediaQuery } from '@chakra-ui/react';
 import {
   CarouselProvider,
   Slider,
@@ -7,6 +7,7 @@ import {
   ButtonNext,
 } from 'pure-react-carousel';
 import React, { FC } from 'react';
+import { IoChevronForward, IoChevronBack } from 'react-icons/io5';
 
 import CarouselItem from './CarouselItem';
 
@@ -26,6 +27,11 @@ interface ChartsCarouselProps {
 
 const ChartsCarousel: FC<ChartsCarouselProps> = ({ item }) => {
   const items = item;
+
+  const [isDesktop] = useMediaQuery('(min-device-width: 1024px)');
+  const [isTablet] = useMediaQuery('(min-device-width: 600px)');
+  const slideCount = isDesktop ? 2.5 : isTablet ? 1.5 : 1;
+
   return (
     <Container maxW="container.xl" my={8}>
       <CarouselProvider
@@ -33,7 +39,7 @@ const ChartsCarousel: FC<ChartsCarouselProps> = ({ item }) => {
         naturalSlideHeight={125}
         touchEnabled={true}
         totalSlides={3}
-        visibleSlides={2}
+        visibleSlides={slideCount}
       >
         <Flex zIndex="50" justify="space-between" position="relative" top="170">
           <Button
@@ -49,7 +55,7 @@ const ChartsCarousel: FC<ChartsCarouselProps> = ({ item }) => {
             borderRadius="full"
             fontSize="3xl"
           >
-            {/* <Img src="/img/apiPortal/right.svg" /> */}
+            <IoChevronBack />
           </Button>
           <Button
             color="white"
@@ -64,13 +70,13 @@ const ChartsCarousel: FC<ChartsCarouselProps> = ({ item }) => {
             borderRadius="full"
             fontSize="3xl"
           >
-            <Img src="/img/apiPortal/right.svg" />
+            <IoChevronForward />
           </Button>
         </Flex>
         <Slider>
           {items.map((item, i) => (
             <Slide index={i} key={i}>
-              <Box mr={10}>
+              <Box m={5}>
                 <CarouselItem item={item} />
               </Box>
             </Slide>

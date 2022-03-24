@@ -1,9 +1,17 @@
-import { HStack, Text, VStack, Box, Button, Img } from '@chakra-ui/react';
+import {
+  HStack,
+  Text,
+  VStack,
+  Box,
+  Button,
+  Img,
+  Center,
+  useMediaQuery,
+} from '@chakra-ui/react';
 import React from 'react';
 
 import Carousel from '~/components/ApiPortal/Carousel/ChartsCarousel';
-
-import CodeTerminal from './CodeTerminal';
+import CodeTerminal from '~/components/ApiPortal/CodeTerminal';
 
 const sections = [
   {
@@ -99,37 +107,63 @@ const items = [
   },
 ];
 
-export default function Home() {
+const Gateway = () => {
+  const [isTablet] = useMediaQuery('(min-width: 600px)');
+
   return (
     <VStack
       minH="100vh"
       bg="linear-gradient(135deg, #DE1A600C 0%, #3B00650C 50%, #08538C0C 100%)"
       spacing="8"
     >
-      <VStack bg={'#f8f8f9'} width="100%">
-        <Box
-          w="full"
-          bg="white"
-          color="black"
-          borderWidth="1px"
-          borderRadius="lg"
-          p={'5'}
-        >
-          <HStack>
-            <Text fontSize="24" mr={4}>
-              Your Credmark Membership NFT
-            </Text>
-            <Button
-              size={'md'}
-              colorScheme="white"
-              style={{ color: '#3B0065' }}
-              variant="outline"
-            >
-              Mint Your NFT
-            </Button>
-          </HStack>
-          <HStack pt={3}>
-            <HStack mr="20px">
+      {isTablet ? (
+        <VStack width="100%">
+          <Box w="full" bg="white" color="black" borderWidth="1px" p={'5'}>
+            <HStack>
+              <Text fontSize="24" mr={4}>
+                Your Credmark Membership NFT
+              </Text>
+              <Button
+                size={'md'}
+                colorScheme="white"
+                style={{ color: '#3B0065' }}
+                variant="outline"
+              >
+                Mint Your NFT
+              </Button>
+            </HStack>
+            <HStack pt={3}>
+              <HStack mr="4">
+                <Img src="/img/apiPortal/credmark.svg" h="24px" />
+                <Text fontSize="14" fontWeight={'400'}>
+                  Access the Credmark ecosystem in a unique way
+                </Text>
+              </HStack>
+              <HStack>
+                <Img src="/img/apiPortal/rocket.svg" h="24px" />
+                <Text fontSize="14" fontWeight={'400'}>
+                  Earn & boost staking rewards for your CMK
+                </Text>
+              </HStack>
+              <HStack>
+                <Img src="/img/apiPortal/diamond.svg" h="24px" />
+                <Text fontSize="14" fontWeight={'400'}>
+                  Get your personal access NFT
+                </Text>
+              </HStack>
+            </HStack>
+          </Box>
+        </VStack>
+      ) : (
+        <VStack width="100%">
+          <Box w="full" bg="white" color="black" borderWidth="1px" p={'5'}>
+            <Center>
+              <Text fontSize="24" mr={4}>
+                Your Credmark Membership NFT
+              </Text>
+            </Center>
+
+            <HStack mt="4">
               <Img src="/img/apiPortal/credmark.svg" h="24px" />
               <Text fontSize="14" fontWeight={'400'}>
                 Access the Credmark ecosystem in a unique way
@@ -141,16 +175,27 @@ export default function Home() {
                 Earn & boost staking rewards for your CMK
               </Text>
             </HStack>
-            <HStack>
+            <HStack mb="4">
               <Img src="/img/apiPortal/diamond.svg" h="24px" />
               <Text fontSize="14" fontWeight={'400'}>
                 Get your personal access NFT
               </Text>
             </HStack>
-          </HStack>
-        </Box>
-      </VStack>
-      <VStack p={5} pos={'relative'}>
+            <Center>
+              <Button
+                size={'md'}
+                colorScheme="white"
+                style={{ color: '#3B0065' }}
+                variant="outline"
+              >
+                Mint Your NFT
+              </Button>
+            </Center>
+          </Box>
+        </VStack>
+      )}
+
+      <VStack p={8} pos={'relative'}>
         <Box
           bg="black"
           w={{ base: '100%', md: '35rem' }}
@@ -165,10 +210,10 @@ export default function Home() {
           rounded="md"
           bg="white"
           m={4}
-          w={{ base: '100%', md: '20rem' }}
+          w={{ sm: '100%', md: '20rem' }}
           pt={5}
           top={{ md: '4rem' }}
-          right={{ md: '-150px' }}
+          right={{ md: '-5rem' }}
           pos={{ sm: 'relative', md: 'absolute', lg: 'absolute' }}
           className="card-position"
         >
@@ -202,6 +247,7 @@ export default function Home() {
                 backgroundColor={'#de1a60'}
                 variant="solid"
               >
+                <Img src="/img/apiPortal/white_lock.svg" mr="1" />
                 Get Access
               </Button>
             </VStack>
@@ -211,4 +257,6 @@ export default function Home() {
       <Carousel item={items} />
     </VStack>
   );
-}
+};
+
+export default Gateway;

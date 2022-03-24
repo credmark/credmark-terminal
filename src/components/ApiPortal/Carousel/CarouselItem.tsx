@@ -1,13 +1,4 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  HStack,
-  Stack,
-  Text,
-  Img,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, Stack, Text, Img } from '@chakra-ui/react';
 import React, { FC } from 'react';
 interface ICarouselItem {
   title: string;
@@ -30,12 +21,14 @@ type Item = {
 
 const CarouselItem: FC<CarouselItemProps> = ({ item }) => {
   return (
-    <Box bg="white">
+    <Box bg="white" h="300px">
       <Flex mx={2}>
         <Stack p={4} spacing={4}>
           <Stack spacing={0} align="flex-start">
-            <Heading>{item.title}</Heading>
-            <Text fontSize="xl">{item.description}</Text>
+            <Text fontSize="2xl" fontWeight="bold">
+              {item.title}
+            </Text>
+            <Text fontSize="md">{item.description}</Text>
           </Stack>
           <Stack>
             {item.lists.map((item: Item) => (
@@ -48,7 +41,7 @@ const CarouselItem: FC<CarouselItemProps> = ({ item }) => {
 
           {item.isAccess ? (
             <Button alignSelf="flex-start" colorScheme="pink">
-              <Img src="/img/apiPortal/white_lock.svg" />
+              <Img src="/img/apiPortal/white_lock.svg" mr="1" />
               Get Access
             </Button>
           ) : (
@@ -57,11 +50,6 @@ const CarouselItem: FC<CarouselItemProps> = ({ item }) => {
             </Button>
           )}
         </Stack>
-        {item.isBackground && (
-          <Flex justify="center" align="center" flex="1">
-            <Img src="/img/apiPortal/carousel.svg" alt="chart" />
-          </Flex>
-        )}
       </Flex>
     </Box>
   );
