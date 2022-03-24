@@ -86,7 +86,7 @@ const CodeTerminal = ({ speed = 100 }: Props) => {
       fontSize="14"
       lineHeight="16px"
       textAlign="left"
-      color="#ffffff"
+      color="white"
       overflow="auto"
     >
       <pre style={{ whiteSpace: 'pre-wrap' }}>{displayedContent}</pre>

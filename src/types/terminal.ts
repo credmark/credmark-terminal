@@ -75,7 +75,6 @@ export type AssetStatsMap = Partial<
 >;
 
 export type MetricKey = 'VAR' | 'LCR' | 'VTL' | 'TA' | 'TL' | 'MC';
-
 export interface MetricInfo {
   key: MetricKey;
   label: string;

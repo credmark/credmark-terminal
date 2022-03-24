@@ -27,7 +27,7 @@ const PackageCard: FC<PackageCardProps> = ({ item, index }) => {
       overflow="hidden"
       role="group"
       margin="auto"
-      w={{ sm: '250px', md: '250px' }}
+      w={{ sm: '300px', md: '250px' }}
     >
       <VStack
         transition="0.3s ease"
@@ -44,7 +44,7 @@ const PackageCard: FC<PackageCardProps> = ({ item, index }) => {
           {item.name}
         </Heading>
       </VStack>
-      <VStack py="4" px="4" maxW="container.sm">
+      <VStack py="4" px="4" maxW="container.sm" bg="white">
         <Text fontSize="xl" textAlign="center">
           {index + 1}X
         </Text>
@@ -68,7 +68,7 @@ const PackageCard: FC<PackageCardProps> = ({ item, index }) => {
           ))}
         </Stack>
       </VStack>
-      <VStack py="6" px="5">
+      <VStack py="6" px="5" bg="white">
         <Button
           transition="0.3s ease"
           _groupHover={{

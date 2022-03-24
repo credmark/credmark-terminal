@@ -1,11 +1,11 @@
-import { VStack, HStack, Text } from '@chakra-ui/react';
+import { HStack, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 
 import { Card } from './Card';
 
-// interface RemainingDaysCardProps {}
+// interface RewardCardProps {}
 
-const RemainingDaysCard = () => {
+const RewardCard = () => {
   return (
     <Card>
       <VStack
@@ -13,29 +13,30 @@ const RemainingDaysCard = () => {
         h="100%"
         align="center"
         spacing={0}
-        minW="250px"
+        // minW="250px"
         justify="center"
       >
         <Text fontSize="sm" color="gray.500">
-          Days of Access Remaining
+          Total Rewards Recieved
         </Text>
         <HStack>
           <Text
-            fontSize={{ base: '5xl', sm: '3xl' }}
+            fontSize={{ base: '3xl', sm: '2xl' }}
             fontWeight="600"
             color="gray.800"
           >
-            636
+            2,469
           </Text>
           <Text fontSize="md" color="gray.500">
-            Days
+            CMK
           </Text>
         </HStack>
-        <Text fontSize="lg" color="gray.500">
-          ~20.8 months
+
+        <Text fontSize="md" color="gray.500">
+          $592.56
         </Text>
       </VStack>
     </Card>
   );
 };
-export default RemainingDaysCard;
+export default RewardCard;

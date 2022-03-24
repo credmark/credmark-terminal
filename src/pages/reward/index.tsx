@@ -7,11 +7,11 @@ import {
   Center,
   HStack,
 } from '@chakra-ui/react';
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { IoArrowForwardOutline } from 'react-icons/io5';
 
 import PackageCard from '~/components/ApiPortal/PackageCard';
-import DashboardLayout from '~/components/Layout/DashboardLayout/DasboardLayout';
+
 const packages = () => {
   const packagesList = [
     {
@@ -181,17 +181,17 @@ const packages = () => {
   ];
 
   return (
-    <Container maxW="container.xl">
+    <Container maxW="container.xl" p="8" mb="40">
       <Center>
         <Text
           my="2"
           mb="8"
-          fontSize={{ sm: '2xl', md: '4xl' }}
+          fontSize={{ sm: 'xl', md: '2xl' }}
           textAlign="center"
           maxW="1000px"
         >
-          Select a Membership to Gain Access to our Tools and Start Earning
-          Rewards
+          Select a Membership to Gain Access to our Tools and Start
+          <br /> Earning Rewards
         </Text>
       </Center>
 
@@ -217,6 +217,3 @@ const packages = () => {
 };
 
 export default packages;
-packages.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout text="Dashboard">{page}</DashboardLayout>;
-};

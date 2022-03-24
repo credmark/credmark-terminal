@@ -30,7 +30,7 @@ const BalanceCard = () => {
           }}
         >
           <Stack spacing={0}>
-            <Heading fontSize={{ base: 'md', md: 'lg' }}>
+            <Heading fontSize={{ base: 'sm', md: 'md' }}>
               Pro Membership NFT:0x7777....7777
             </Heading>
             <Text color="gray.300" fontSize="sm">
@@ -59,14 +59,14 @@ const BalanceCard = () => {
             </Button>
           </Flex>
         </Stack>
-        <VStack spacing={0} minW="250px" justify="center">
+        <VStack spacing={0} justify="center">
           <Text fontSize="sm" color="gray.500">
             Current Balance
           </Text>
 
           <HStack>
             <Text
-              fontSize={{ base: '5xl', sm: '3xl' }}
+              fontSize={{ base: '3xl', sm: '2xl' }}
               fontWeight="600"
               color="gray.800"
             >

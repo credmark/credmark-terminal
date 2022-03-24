@@ -1,18 +1,17 @@
 import { Button, Flex, Grid, GridItem } from '@chakra-ui/react';
-import React, { ReactElement } from 'react';
+import React from 'react';
 
-import DashboardLayout from '~/components/Layout/DashboardLayout/DasboardLayout';
-import BalanceCard from '~/components/Membership/BalanceCard';
-import { Card } from '~/components/Membership/Card';
-import MembershipDetailsCard from '~/components/Membership/MembershipDetailsCard';
-import RemainingDaysCard from '~/components/Membership/RemainingDaysCard';
-import RewardCard from '~/components/Membership/RewardCard';
+import BalanceCard from '~/pages/membership/Cards/BalanceCard';
+import { Card } from '~/pages/membership/Cards/Card';
+import MembershipDetailsCard from '~/pages/membership/Cards/MembershipDetailsCard';
+import RemainingDaysCard from '~/pages/membership/Cards/RemainingDaysCard';
+import RewardCard from '~/pages/membership/Cards/RewardCard';
 
 const Membership = () => {
   return (
     <Flex w="full" minH="100%">
       <Grid
-        padding="4"
+        padding="8"
         templateRows={{ sm: 'repeat(8, 1fr)', lg: 'repeat(7, 1fr)' }}
         templateColumns={{ sm: 'repeat(8, 1fr)', lg: 'repeat(9, 1fr)' }}
         width="full"
@@ -30,13 +29,13 @@ const Membership = () => {
           <RemainingDaysCard />
         </GridItem>
 
-        <GridItem colSpan={{ sm: 3, lg: 2 }} rowSpan={{ sm: 4, lg: 5 }}>
+        <GridItem colSpan={{ sm: 8, lg: 3 }} rowSpan={{ sm: 2, lg: 5 }}>
           <MembershipDetailsCard />
         </GridItem>
         <GridItem
-          w="99%"
-          colSpan={{ sm: 5, lg: 7 }}
-          rowSpan={{ sm: 4, lg: 5 }}
+          w="100%"
+          colSpan={{ sm: 8, lg: 6 }}
+          rowSpan={{ sm: 2, lg: 5 }}
           as={Card}
         >
           {/* Chart here */}
@@ -47,7 +46,7 @@ const Membership = () => {
           display="flex"
           justifyContent="center"
         >
-          <Button colorScheme="pink" w="full" mx="2">
+          <Button colorScheme="pink" w="full">
             Mint New Key
           </Button>
         </GridItem>
@@ -56,6 +55,3 @@ const Membership = () => {
   );
 };
 export default Membership;
-Membership.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout text="Dashboard">{page}</DashboardLayout>;
-};

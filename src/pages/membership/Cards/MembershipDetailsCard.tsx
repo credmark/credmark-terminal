@@ -8,17 +8,15 @@ import { Card } from './Card';
 
 const MembershipDetailsCard = () => {
   return (
-    <Card>
+    <Card fontSize="sm">
       <VStack p="4">
-        <Text fontSize="sm" color="gray.400">
-          Membership NFT Details
-        </Text>
+        <Text color="gray.400">Membership NFT Details</Text>
         <Flex pt="4" w="100%" justify="space-between">
-          <Text>Date Created</Text>
+          <Text color="gray.400">Date Created</Text>
           <Text fontWeight="bold">Jan 02 2022</Text>
         </Flex>
         <Flex pt="2" w="100%" justify="space-between">
-          <Text>Tier</Text>
+          <Text color="gray.400">Tier</Text>
           <Text fontWeight="bold">
             Pro{' '}
             <Icon>
@@ -27,19 +25,19 @@ const MembershipDetailsCard = () => {
           </Text>
         </Flex>
         <Flex pt="2" w="100%" justify="space-between">
-          <Text lineHeight="1.2">
+          <Text lineHeight="1.2" color="gray.400">
             Lookup Days <br /> Remaining
           </Text>
           <Text fontWeight="bold">20 Days</Text>
         </Flex>
         <Flex pt="2" w="100%" justify="space-between">
-          <Text lineHeight="1.2">
+          <Text lineHeight="1.2" color="gray.400">
             Total <br /> Consumption
           </Text>
           <Text fontWeight="bold">6,378 CMK</Text>
         </Flex>
         <Flex pt="2" w="100%" justify="space-between">
-          <Text>Net APY</Text>
+          <Text color="gray.400">Net APY</Text>
           <Text fontWeight="bold">-33.52%</Text>
         </Flex>
       </VStack>

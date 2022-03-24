@@ -8,13 +8,12 @@ import '~/theme/nprogress.css'; //styles of nprogress
 
 import { ChakraProvider } from '@chakra-ui/react';
 import { Web3ReactProvider } from '@web3-react/core';
-import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import NextHead from 'next/head';
 import { useRouter } from 'next/router';
 import NProgress from 'nprogress';
-import React, { useEffect, ReactElement, ReactNode } from 'react';
+import React, { useEffect } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
 import Layout from '~/components/Layout';
@@ -94,20 +93,11 @@ const Web3ProviderNetwork = dynamic(
   { ssr: false },
 );
 
-type NextPageWithLayout = NextPage & {
-  getLayout?: (page: ReactElement) => ReactNode;
-};
-
-type AppPropsWithLayout = AppProps & {
-  Component: NextPageWithLayout;
-};
-
-function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
+function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   const { host } = env;
   const title = 'Credmark App';
   const description = '';
   // const img = `${host}/img/smart-pool.png`;
-  const getLayout = Component.getLayout || ((page) => page);
 
   return (
     <>
@@ -136,7 +126,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout): JSX.Element {
               <Fonts />
               <Web3ReactManager>
                 <RouteBasedProviders>
-                  {getLayout(<Component {...pageProps} />)}
+                  <Component {...pageProps} />
                 </RouteBasedProviders>
               </Web3ReactManager>
             </ReduxProvider>
