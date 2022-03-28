@@ -7,6 +7,7 @@ interface Props {
   speed: number;
 }
 
+// TODO: Replace with typed.js
 const CodeTerminal = ({ speed = 100 }: Props) => {
   const [displayedContent, setDisplayedContent] = useState(codeTerminal.label);
   const [index, setIndex] = useState(0);
@@ -77,11 +78,11 @@ const CodeTerminal = ({ speed = 100 }: Props) => {
 
   return (
     <Container
-      minH="440"
+      minH="540px"
       maxW="container.xl"
       borderRadius="5"
       p="15px"
-      bg="#1a1a1a"
+      bg="black"
       fontFamily="courier new"
       fontSize="14"
       lineHeight="16px"
