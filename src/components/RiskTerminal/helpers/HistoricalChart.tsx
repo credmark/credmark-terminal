@@ -1,12 +1,6 @@
-import {
-  Box,
-  Center,
-  Flex,
-  Spinner,
-  useBreakpointValue,
-} from '@chakra-ui/react';
+import { Box, Center, Spinner, useBreakpointValue } from '@chakra-ui/react';
 import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 
 export interface Line {
   name: string;
@@ -32,17 +26,10 @@ export default function HistoricalChart({
   showLegend = false,
   onChartReady,
 }: HistoricalChartProps): JSX.Element {
-  const [duration, setDuration] = useState(30); // In Days
   const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
 
   const series = useMemo(() => {
     return lines.map((line) => {
-      const startTs =
-        line.data.length > 0
-          ? line.data[line.data.length - 1].timestamp.valueOf()
-          : 0;
-      const endTs = startTs > 0 ? startTs - duration * 24 * 3600 * 1000 : 0;
-
       return {
         name: line.name,
         type: 'line',
@@ -58,12 +45,10 @@ export default function HistoricalChart({
         itemStyle: {
           color: line.color,
         },
-        data: line.data
-          .filter((dp) => dp.timestamp.valueOf() > endTs)
-          .map(({ timestamp, value }) => [timestamp, value]),
+        data: line.data.map(({ timestamp, value }) => [timestamp, value]),
       };
     });
-  }, [lines, duration]);
+  }, [lines]);
 
   const option = useMemo(() => {
     return {
@@ -209,44 +194,21 @@ export default function HistoricalChart({
   }, [formatValue, series, showLegend, legendWidth]);
 
   return (
-    <>
-      <Flex align="center" justifyContent="flex-end" pr="4" pb="4">
-        {lines.length !== 0 && loading && <Spinner color="purple.500" />}
-        {[30, 60, 90].map((days) => (
-          <Box
-            key={days}
-            p="2"
-            mx="2"
-            fontWeight="bold"
-            color={duration === days ? 'gray.900' : 'gray.300'}
-            cursor="pointer"
-            onClick={() => setDuration(days)}
-            _hover={
-              duration === days
-                ? {}
-                : {
-                    color: 'gray.700',
-                  }
-            }
-          >
-            {days}D
-          </Box>
-        ))}
-      </Flex>
-      <Box position="relative">
-        <ReactEChartsCore
-          option={option}
-          style={{
-            height: '360px',
-          }}
-          onChartReady={onChartReady}
-        />
-        {lines.length === 0 && (
-          <Center position="absolute" top="0" left="0" right="0" bottom="0">
-            <Spinner color="purple.500" />
-          </Center>
-        )}
-      </Box>
-    </>
+    <Box position="relative">
+      <ReactEChartsCore
+        option={option}
+        lazyUpdate={true}
+        notMerge={true}
+        style={{
+          height: '360px',
+        }}
+        onChartReady={onChartReady}
+      />
+      {loading && (
+        <Center position="absolute" top="0" left="0" right="0" bottom="0">
+          <Spinner color="purple.500" />
+        </Center>
+      )}
+    </Box>
   );
 }
