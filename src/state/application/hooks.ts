@@ -5,7 +5,11 @@ import { useActiveWeb3React } from '~/hooks/web3';
 
 import { AppDispatch, AppState } from '../index';
 
-import { ApplicationModal, setOpenModal } from './actions';
+import {
+  ApplicationModal,
+  setOpenModal,
+  setSidebarVisibility,
+} from './actions';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
@@ -33,4 +37,18 @@ export function useToggleModal(modal: ApplicationModal): () => void {
 
 export function useWalletModalToggle(): () => void {
   return useToggleModal(ApplicationModal.WALLET);
+}
+
+export function useSidebarVisibility() {
+  return useSelector((state: AppState) => state.application.sidebarVisibility);
+}
+
+export function useShowSidebar() {
+  const dispatch = useDispatch<AppDispatch>();
+  return useCallback(() => dispatch(setSidebarVisibility(true)), [dispatch]);
+}
+
+export function useHideSidebar() {
+  const dispatch = useDispatch<AppDispatch>();
+  return useCallback(() => dispatch(setSidebarVisibility(false)), [dispatch]);
 }

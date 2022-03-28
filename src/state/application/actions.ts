@@ -12,3 +12,7 @@ export const updateBlockNumber = createAction<{
 export const setOpenModal = createAction<ApplicationModal | null>(
   'application/setOpenModal',
 );
+
+export const setSidebarVisibility = createAction<boolean>(
+  'application/setSidebarVisibility',
+);

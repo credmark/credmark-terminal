@@ -1,15 +1,22 @@
 import { createReducer } from '@reduxjs/toolkit';
 
-import { ApplicationModal, setOpenModal, updateBlockNumber } from './actions';
+import {
+  ApplicationModal,
+  setOpenModal,
+  setSidebarVisibility,
+  updateBlockNumber,
+} from './actions';
 
 export interface ApplicationState {
   readonly blockNumber: { readonly [chainId: number]: number };
   readonly openModal: ApplicationModal | null;
+  readonly sidebarVisibility: boolean;
 }
 
 const initialState: ApplicationState = {
   blockNumber: {},
   openModal: null,
+  sidebarVisibility: true,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -27,5 +34,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(setOpenModal, (state, action) => {
       state.openModal = action.payload;
+    })
+    .addCase(setSidebarVisibility, (state, action) => {
+      state.sidebarVisibility = action.payload;
     }),
 );

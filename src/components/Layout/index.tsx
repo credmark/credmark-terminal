@@ -15,6 +15,8 @@ import {
 } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 
+import { useSidebarVisibility } from '~/state/application/hooks';
+
 import Footer from './Footer';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -56,6 +58,8 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const mobileSidebar = useDisclosure();
+  const isSidebarVisible = useSidebarVisibility();
+
   const [isMobile] = useMediaQuery('(max-width: 992px)');
 
   useEffect(() => {
@@ -69,7 +73,10 @@ export default function Layout({ children }: LayoutProps) {
         spacing="0"
         bg="#E5E5E5"
         maxW="100vw"
-        templateColumns={{ base: '1fr', md: '240px 1fr' }}
+        templateColumns={{
+          base: '1fr',
+          md: isSidebarVisible ? '240px 1fr' : '1fr',
+        }}
         templateRows="min-content 1fr min-content"
         templateAreas={{
           base: `
@@ -77,20 +84,28 @@ export default function Layout({ children }: LayoutProps) {
           "content"
           "footer"
         `,
-          md: `
+          md: isSidebarVisible
+            ? `
           "navbar navbar"
           "sidebar content"
           "sidebar footer"
-        `,
+        `
+            : `
+            "navbar"
+            "content"
+            "footer"
+          `,
         }}
       >
         <GridItem gridArea="navbar">
           <Navbar mobileSidebar={mobileSidebar} />
         </GridItem>
 
-        <GridItem gridArea="sidebar" display={{ base: 'none', md: 'block' }}>
-          <Sidebar fixedWidth={60} />
-        </GridItem>
+        {isSidebarVisible && (
+          <GridItem gridArea="sidebar" display={{ base: 'none', md: 'block' }}>
+            <Sidebar fixedWidth={60} />
+          </GridItem>
+        )}
 
         <GridItem gridArea="content" minW="0">
           {children}
@@ -100,7 +115,8 @@ export default function Layout({ children }: LayoutProps) {
           <Footer />
         </GridItem>
       </Grid>
-      <SidebarDrawer {...mobileSidebar} />
+
+      {isSidebarVisible && <SidebarDrawer {...mobileSidebar} />}
     </>
   );
 }
