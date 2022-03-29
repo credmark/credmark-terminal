@@ -7,7 +7,9 @@ import {
   Img,
   Stack,
   Flex,
+  Link,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import React from 'react';
 
 import Carousel from '~/components/ApiPortal/Carousel';
@@ -109,11 +111,7 @@ const items = [
 
 export default function HomePage() {
   return (
-    <VStack
-      minH="100vh"
-      bg="linear-gradient(135deg, #DE1A600C 0%, #3B00650C 50%, #08538C0C 100%)"
-      spacing="8"
-    >
+    <VStack spacing="8">
       <Box w="full" bg="white" p={'5'} roundedBottomLeft="sm" shadow="md">
         <Stack direction="row" spacing="8">
           <Text fontSize="2xl" fontWeight="thin">
@@ -186,10 +184,14 @@ export default function HomePage() {
             })}
           </VStack>
 
-          <Button colorScheme="pink">
-            <Img src="/img/apiPortal/white_lock.svg" mr="1" />
-            Get Access
-          </Button>
+          <NextLink href="/api-access/tiers" passHref>
+            <Link _hover={{ textDecoration: 'none' }}>
+              <Button colorScheme="pink">
+                <Img src="/img/apiPortal/white_lock.svg" mr="1" />
+                Get Access
+              </Button>
+            </Link>
+          </NextLink>
         </Box>
       </Flex>
       <Box w="full">
