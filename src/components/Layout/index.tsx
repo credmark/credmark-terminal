@@ -71,7 +71,7 @@ export default function Layout({ children }: LayoutProps) {
       <Grid
         minH="100vh"
         spacing="0"
-        bg="#E5E5E5"
+        bg="#F8F8F9"
         maxW="100vw"
         templateColumns={{
           base: '1fr',
