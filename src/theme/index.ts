@@ -63,6 +63,14 @@ const theme = extendTheme(
         '900': '#1A1A1A',
       },
     },
+    components: {
+      Button: {
+        baseStyle: {
+          rounded: 'base', // Normally, it is "md"
+          fontWeight: 400,
+        },
+      },
+    },
   },
   withDefaultColorScheme({ colorScheme: 'purple' }),
 );
