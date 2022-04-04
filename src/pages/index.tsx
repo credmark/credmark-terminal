@@ -1,34 +1,51 @@
 import {
-  HStack,
-  Text,
-  VStack,
   Box,
   Button,
-  Img,
-  Stack,
   Flex,
+  HStack,
+  Icon,
   Link,
+  Stack,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React from 'react';
+import {
+  MdAnalytics,
+  MdAutoAwesome,
+  MdBolt,
+  MdDeviceHub,
+  MdFileDownload,
+  MdHistory,
+  MdInsights,
+  MdLock,
+  MdOutlineDataExploration,
+  MdQueryStats,
+} from 'react-icons/md';
 
 import Carousel from '~/components/ApiPortal/Carousel';
 import CodeTerminal from '~/components/ApiPortal/CodeTerminal';
+import {
+  CmkLogoIcon,
+  MdDiamondIcon,
+  MdRocketLaunchIcon,
+} from '~/components/Icons';
 
-const sections = [
+const SECTIONS = [
   {
     id: 0,
-    icon: '/img/apiPortal/earn.svg',
+    icon: MdAnalytics,
     text: 'Fine-tuned data aggregation and nomination for 1st, 2nd and 3rd order Data',
   },
   {
     id: 1,
-    icon: '/img/apiPortal/clock.svg',
+    icon: MdHistory,
     text: 'Completed historical data',
   },
   {
     id: 2,
-    icon: '/img/apiPortal/direct.svg',
+    icon: MdQueryStats,
     text: 'Direct query of output  from risk models',
   },
 ];
@@ -40,44 +57,43 @@ const items = [
     lists: [
       {
         text: 'Visualize Insights into Defi Data',
-        icon: '/img/apiPortal/analytics.svg',
+        icon: MdInsights,
       },
       {
         text: 'Market data & risk metrics for various Products',
-        icon: '/img/apiPortal/circle_rise.svg',
+        icon: MdOutlineDataExploration,
       },
       {
         text: 'Historic data upto 90 days',
-        icon: '/img/apiPortal/clock.svg',
+        icon: MdHistory,
       },
       {
         text: 'Export data to CSV',
-        icon: '/img/apiPortal/download.svg',
+        icon: MdFileDownload,
       },
     ],
     isAccess: true,
     isBackground: true,
   },
-
   {
     title: 'Model Development',
-    description: 'Advanced Insights into Defi Data',
+    description: 'Lorem ipsum dolor sit amet',
     lists: [
       {
-        text: 'Visualize Insights into Defi Data',
-        icon: '/img/apiPortal/analytics.svg',
+        text: 'Lorem ipsum dolor sit amet, consectetur adipis',
+        icon: MdBolt,
       },
       {
-        text: 'Market data & risk metrics for various Products',
-        icon: '/img/apiPortal/circle_rise.svg',
+        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+        icon: MdRocketLaunchIcon,
       },
       {
-        text: 'Historic data upto 90 days',
-        icon: '/img/apiPortal/clock.svg',
+        text: 'Lorem ipsum dolor sit amet',
+        icon: MdAutoAwesome,
       },
       {
-        text: 'Export data to CSV',
-        icon: '/img/apiPortal/download.svg',
+        text: 'Lorem ipsum dolor sit amet, consectetur',
+        icon: MdDeviceHub,
       },
     ],
     isAccess: false,
@@ -85,23 +101,23 @@ const items = [
   },
   {
     title: 'Model Validation',
-    description: 'Advanced Insights into Defi Data',
+    description: 'Lorem ipsum dolor sit amet',
     lists: [
       {
-        text: 'Visualize Insights into Defi Data',
-        icon: '/img/apiPortal/analytics.svg',
+        text: 'Lorem ipsum dolor sit amet, consectetur adipis',
+        icon: MdBolt,
       },
       {
-        text: 'Market data & risk metrics for various Products',
-        icon: '/img/apiPortal/circle_rise.svg',
+        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+        icon: MdRocketLaunchIcon,
       },
       {
-        text: 'Historic data upto 90 days',
-        icon: '/img/apiPortal/clock.svg',
+        text: 'Lorem ipsum dolor sit amet',
+        icon: MdAutoAwesome,
       },
       {
-        text: 'Export data to CSV',
-        icon: '/img/apiPortal/download.svg',
+        text: 'Lorem ipsum dolor sit amet, consectetur',
+        icon: MdDeviceHub,
       },
     ],
     isAccess: false,
@@ -124,19 +140,19 @@ export default function HomePage() {
 
         <HStack align="center" mt={4} spacing="8">
           <HStack>
-            <Img src="/img/apiPortal/credmark.svg" h="24px" />
-            <Text fontSize="14" fontWeight={'400'}>
+            <CmkLogoIcon color="purple.500" boxSize="5" />
+            <Text fontSize="sm">
               Access the Credmark ecosystem in a unique way
             </Text>
           </HStack>
           <HStack>
-            <Img src="/img/apiPortal/rocket.svg" h="24px" />
+            <MdRocketLaunchIcon color="purple.500" boxSize="5" />
             <Text fontSize="14" fontWeight={'400'}>
               Earn & boost staking rewards for your CMK
             </Text>
           </HStack>
           <HStack mb="4">
-            <Img src="/img/apiPortal/diamond.svg" h="24px" />
+            <MdDiamondIcon color="purple.500" boxSize="5" />
             <Text fontSize="14" fontWeight={'400'}>
               Get your personal access NFT
             </Text>
@@ -171,11 +187,11 @@ export default function HomePage() {
           <Text color="gray.700" fontWeight={300}>
             High Integrity Risk and Data Models
           </Text>
-          <VStack my="8" align="stretch">
-            {sections.map((section) => {
+          <VStack my="8" align="stretch" spacing="3">
+            {SECTIONS.map((section) => {
               return (
-                <HStack key={section.id} spacing="2">
-                  <Img src={section.icon} />
+                <HStack key={section.id} spacing="3">
+                  <Icon as={section.icon} boxSize="6" color="purple.500" />
                   <Text fontSize="sm" lineHeight="1.1">
                     {section.text}
                   </Text>
@@ -186,8 +202,7 @@ export default function HomePage() {
 
           <NextLink href="/api-access/tiers" passHref>
             <Link _hover={{ textDecoration: 'none' }}>
-              <Button colorScheme="pink">
-                <Img src="/img/apiPortal/white_lock.svg" mr="1" />
+              <Button colorScheme="pink" leftIcon={<Icon as={MdLock} />}>
                 Get Access
               </Button>
             </Link>

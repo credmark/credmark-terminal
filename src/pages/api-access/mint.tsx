@@ -37,8 +37,11 @@ import {
 
 import FaqModal from '~/components/ApiPortal/FaqModal';
 import _MintChart from '~/components/ApiPortal/MintChart';
-import { CmkLogoIcon, CmkTerminalIcon } from '~/components/Icons';
-import EtherscanLogoIcon from '~/components/Icons/EtherscanLogoIcon';
+import {
+  CmkLogoIcon,
+  CmkTerminalIcon,
+  EtherscanLogoIcon,
+} from '~/components/Icons';
 import { isValidTierKey, TierKey, TIERS } from '~/constants/tiers';
 import { CMK, USDC } from '~/constants/tokens';
 import useUSDCPrice from '~/hooks/useUSDCPrice';
