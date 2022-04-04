@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useActiveWeb3React } from '~/hooks/web3';
@@ -43,12 +43,23 @@ export function useSidebarVisibility() {
   return useSelector((state: AppState) => state.application.sidebarVisibility);
 }
 
-export function useShowSidebar() {
+export function useSidebar() {
   const dispatch = useDispatch<AppDispatch>();
-  return useCallback(() => dispatch(setSidebarVisibility(true)), [dispatch]);
+
+  return {
+    show: useCallback(() => dispatch(setSidebarVisibility(true)), [dispatch]),
+    hide: useCallback(() => dispatch(setSidebarVisibility(false)), [dispatch]),
+  };
 }
 
-export function useHideSidebar() {
-  const dispatch = useDispatch<AppDispatch>();
-  return useCallback(() => dispatch(setSidebarVisibility(false)), [dispatch]);
+export function useHiddenSidebar(hideSidebar = true) {
+  const sidebar = useSidebar();
+
+  useEffect(() => {
+    hideSidebar ? sidebar.hide() : sidebar.show();
+
+    return () => {
+      hideSidebar ? sidebar.show() : sidebar.hide();
+    };
+  }, [sidebar, hideSidebar]);
 }

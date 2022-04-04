@@ -2,6 +2,8 @@ import {
   Box,
   Button,
   Heading,
+  Icon,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -14,6 +16,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';
+import { MdArrowForward } from 'react-icons/md';
 
 const faqs = [
   {
@@ -149,6 +152,28 @@ export default function FaqModal({ isOpen, onClose }: UseDisclosureReturn) {
               </Box>
             ))}
           </VStack>
+
+          <Box mt="12">
+            More Questions?{' '}
+            <Link
+              href="https://credmark.com/faq"
+              isExternal
+              textDecoration="underline"
+            >
+              Check our full FAQ <Icon as={MdArrowForward} />
+            </Link>
+          </Box>
+          <Box mt="4">
+            <Link
+              href="https://discord.com/invite/BJbYSRDdtr"
+              isExternal
+              textDecoration="underline"
+            >
+              Visit our Discord
+            </Link>{' '}
+            to read more, post feedback or join community discussion.{' '}
+            <Icon as={MdArrowForward} />
+          </Box>
         </ModalBody>
 
         <ModalFooter>

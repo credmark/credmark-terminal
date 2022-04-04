@@ -11,7 +11,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   MdApi,
   MdArrowForward,
@@ -24,54 +24,13 @@ import {
 
 import FaqModal from '~/components/ApiPortal/FaqModal';
 import { CmkTerminalIcon } from '~/components/Icons';
-import { useHideSidebar, useShowSidebar } from '~/state/application/hooks';
-
-const TIERS = [
-  {
-    label: 'BUIDL',
-    rewardMultiplier: 1,
-    monthlyFeeUsd: 0,
-    lockupPeriod: 0,
-    modelFramework: true,
-    terminalAccess: true,
-    apiGatewayAccess: false,
-    custom: false,
-  },
-  {
-    label: 'DYOR',
-    rewardMultiplier: 2,
-    monthlyFeeUsd: 500,
-    lockupPeriod: '1 week',
-    modelFramework: true,
-    terminalAccess: true,
-    apiGatewayAccess: 'API Access (10,000 calls/day)',
-    custom: false,
-  },
-  {
-    label: 'WAGMI',
-    rewardMultiplier: 4,
-    monthlyFeeUsd: 5000,
-    lockupPeriod: '1 month',
-    modelFramework: true,
-    terminalAccess: true,
-    apiGatewayAccess: 'Unlimited API Access',
-    custom: true,
-    isActive: true,
-  },
-];
+import { TIERS } from '~/constants/tiers';
+import { useHiddenSidebar } from '~/state/application/hooks';
 
 export default function ApiAccessTiersPage() {
-  const showSidebar = useShowSidebar();
-  const hideSidebar = useHideSidebar();
+  useHiddenSidebar(true);
+
   const faq = useDisclosure();
-
-  useEffect(() => {
-    hideSidebar();
-
-    return () => {
-      showSidebar();
-    };
-  }, [hideSidebar, showSidebar]);
 
   return (
     <Container maxW="container.xl" py="20" minH="90vh">
