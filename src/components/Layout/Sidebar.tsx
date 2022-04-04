@@ -15,15 +15,18 @@ import {
   IoCaretBackSharp,
   IoCaretDownSharp,
   IoCaretForwardSharp,
-  IoCheckmarkCircleSharp,
-  IoCodeSharp,
-  IoDesktopSharp,
-  IoHome,
-  IoKeySharp,
 } from 'react-icons/io5';
+import {
+  MdApi,
+  MdCode,
+  MdOutlineHome,
+  MdOutlineVerified,
+} from 'react-icons/md';
+
+import { CmkTerminalIcon } from '~/components/Icons';
 
 interface NavItemProps extends BoxProps {
-  icon?: IconType;
+  icon?: IconType | typeof Icon;
   label: string;
   isActive?: boolean;
   isFocused?: boolean;
@@ -83,7 +86,7 @@ function NavItem({
       {...boxProps}
     >
       {backIcon && <Icon as={IoCaretBackSharp} />}
-      {icon && <Icon as={icon} />}
+      {icon && <Icon as={icon} boxSize="5" />}
       <Text flex="1">{label}</Text>
       {forwardIcon && <Icon as={IoCaretForwardSharp} />}
       {subNav && subNav.length > 0 && <Icon as={IoCaretDownSharp} />}
@@ -151,30 +154,26 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
         transitionDuration="normal"
       >
         <NavItem
-          icon={IoHome}
+          icon={MdOutlineHome}
           label="Home"
           href="/"
           isActive={router.pathname === '/'}
         />
         <NavItem
-          icon={IoDesktopSharp}
+          icon={CmkTerminalIcon}
           label="Risk Terminal"
           isFocused={router.pathname.startsWith('/terminal')}
           onClick={() => setShowTerminalItems(true)}
           forwardIcon
         />
         <NavItem
-          icon={IoKeySharp}
-          label="API Access"
+          icon={MdApi}
+          label="Membership"
           href="/api-access"
           isActive={router.pathname === '/api-access'}
         />
-        <NavItem icon={IoCodeSharp} label="Model Development" isDisabled />
-        <NavItem
-          icon={IoCheckmarkCircleSharp}
-          label="Model Validation"
-          isDisabled
-        />
+        <NavItem icon={MdCode} label="Model Development" isDisabled />
+        <NavItem icon={MdOutlineVerified} label="Model Validation" isDisabled />
       </VStack>
       <VStack
         align="stretch"
@@ -190,7 +189,7 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
         transitionDuration="normal"
       >
         <NavItem
-          icon={IoHome}
+          icon={MdOutlineHome}
           label="Home"
           onClick={() => setShowTerminalItems(false)}
           backIcon
