@@ -52,9 +52,13 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
             <Link color="white">Analytics</Link>
           </NextLink>
 
-          <NextLink href="/terminal">
-            <Link color="white">Risk Library</Link>
-          </NextLink>
+          <Link
+            color="white"
+            href="https://docs.credmark.com/credmark-wiki"
+            isExternal
+          >
+            Credmark Wiki
+          </Link>
 
           <Web3Status />
         </HStack>

@@ -32,13 +32,12 @@ const METRICS: MetricInfo[] = [
         <br />
         <br />
         <Link
-          href="https://docs.credmark.com/credmark-risk-library/analytics/metrics/value-at-risk-var"
+          href="https://docs.credmark.com/credmark-wiki/analytics/metrics/value-at-risk-var"
           isExternal
           textDecoration="underline"
           pb="1"
         >
-          Read more about VaR in our Risk Library{' '}
-          <Icon as={FaExternalLinkAlt} />
+          Read more about VaR in Credmark Wiki <Icon as={FaExternalLinkAlt} />
         </Link>
       </Text>
     ),
@@ -63,13 +62,12 @@ const METRICS: MetricInfo[] = [
         in a stress situation. <br />
         <br />
         <Link
-          href="https://docs.credmark.com/credmark-risk-library/analytics/metrics/liquidity-coverage-ratio-lcr"
+          href="https://docs.credmark.com/credmark-wiki/analytics/metrics/liquidity-coverage-ratio-lcr"
           isExternal
           textDecoration="underline"
           pb="1"
         >
-          Read more about LCR in our Risk Library{' '}
-          <Icon as={FaExternalLinkAlt} />
+          Read more about LCR in Credmark Wiki <Icon as={FaExternalLinkAlt} />
         </Link>
       </Text>
     ),

@@ -110,7 +110,7 @@ export default function Footer() {
         <Stack align={'flex-start'} spacing="4">
           <ListHeader>Projects</ListHeader>
           <Link href={'#'}>White Paper</Link>
-          <Link href={'#'}>Risk Library</Link>
+          <Link href={'#'}>Credmark Wiki</Link>
           <Link href={'#'}>Reports</Link>
           <Link href={'#'}>Risk Terminal</Link>
         </Stack>
