@@ -331,7 +331,7 @@ export default function WalletModal({
   return (
     <Modal isOpen={walletModalOpen} onClose={toggleWalletModal} isCentered>
       <ModalOverlay />
-      <ModalContent rounded="3xl" bg="purple.500" color="white" shadow="2xl">
+      <ModalContent rounded="base" bg="purple.500" color="white" shadow="2xl">
         {getModalContent()}
       </ModalContent>
     </Modal>

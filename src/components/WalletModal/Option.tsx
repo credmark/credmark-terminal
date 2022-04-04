@@ -30,6 +30,7 @@ export default function Option({
       onClick={() => clickable && !active && onClick && onClick()}
       my="2"
       borderColor="purple.100"
+      color="white"
       _hover={{
         bg: 'white',
         color: 'purple.500',
