@@ -92,4 +92,5 @@ export interface MetricInfo {
     latestVarDataPoint: VarDataPoint,
   ) => number;
   formatValue: (value: number) => string;
+  chartType?: 'area' | 'line';
 }

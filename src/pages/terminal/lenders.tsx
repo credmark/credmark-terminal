@@ -114,6 +114,7 @@ const METRICS: MetricInfo[] = [
         .reverse(),
     currentValue: (_, dp) => Number(dp['total_liabilities']),
     formatValue: (val) => `$${shortenNumber(val, 1)}`,
+    chartType: 'area',
   },
   {
     key: 'TA',
@@ -128,6 +129,7 @@ const METRICS: MetricInfo[] = [
         .reverse(),
     currentValue: (_, dp) => Number(dp['total_assets']),
     formatValue: (val) => `$${shortenNumber(val, 1)}`,
+    chartType: 'area',
   },
   {
     key: 'MC',
@@ -142,6 +144,7 @@ const METRICS: MetricInfo[] = [
         .reverse(),
     currentValue: (dp) => Number(dp['market_cap']),
     formatValue: (val) => `$${shortenNumber(val, 1)}`,
+    chartType: 'area',
   },
 ];
 

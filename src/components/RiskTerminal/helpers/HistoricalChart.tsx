@@ -17,6 +17,7 @@ interface HistoricalChartProps {
   formatValue?: (value: number) => string;
   showLegend?: boolean;
   onChartReady?: (chart: EChartsInstance) => void;
+  isAreaChart?: boolean;
 }
 
 export default function HistoricalChart({
@@ -25,6 +26,7 @@ export default function HistoricalChart({
   formatValue,
   showLegend = false,
   onChartReady,
+  isAreaChart,
 }: HistoricalChartProps): JSX.Element {
   const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
 
@@ -36,6 +38,28 @@ export default function HistoricalChart({
         symbol: 'circle',
         symbolSize: 10,
         showSymbol: false,
+        areaStyle: isAreaChart
+          ? {
+              opacity: 0.325,
+              color: {
+                type: 'linear',
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  {
+                    offset: 0,
+                    color: line.color,
+                  },
+                  {
+                    offset: 1,
+                    color: 'white',
+                  },
+                ],
+              },
+            }
+          : undefined,
         label: {
           fontWeight: 800,
         },
@@ -48,7 +72,7 @@ export default function HistoricalChart({
         data: line.data.map(({ timestamp, value }) => [timestamp, value]),
       };
     });
-  }, [lines]);
+  }, [isAreaChart, lines]);
 
   const option = useMemo(() => {
     return {

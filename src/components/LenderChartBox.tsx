@@ -245,6 +245,7 @@ export default function LenderChartBox({
             loading={loading}
             formatValue={metric.formatValue}
             onChartReady={(chart) => (chartRef.current = chart)}
+            isAreaChart={metric.chartType === 'area'}
           />
         </Box>
       </Flex>
