@@ -2,7 +2,9 @@ import { Price, CurrencyAmount, Currency, Fraction } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 
 export function shortenNumber(num: number, fixedFigs: number) {
-  if (num >= 1e9) {
+  if (num >= 1e12) {
+    return `${(num / 1e12).toFixed(fixedFigs)}T`;
+  } else if (num >= 1e9) {
     return `${(num / 1e9).toFixed(fixedFigs)}B`;
   } else if (num >= 1e6) {
     return `${(num / 1e6).toFixed(fixedFigs)}M`;

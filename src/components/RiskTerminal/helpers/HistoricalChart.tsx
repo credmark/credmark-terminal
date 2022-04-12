@@ -13,7 +13,7 @@ export interface Line {
 
 interface HistoricalChartProps {
   lines: Line[];
-  loading: boolean;
+  loading?: boolean;
   formatValue?: (value: number) => string;
   showLegend?: boolean;
   onChartReady?: (chart: EChartsInstance) => void;
@@ -22,7 +22,7 @@ interface HistoricalChartProps {
 
 export default function HistoricalChart({
   lines,
-  loading,
+  loading = false,
   formatValue,
   showLegend = false,
   onChartReady,
