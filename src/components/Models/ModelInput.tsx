@@ -101,7 +101,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   );
 
   const computeValidationSchema = useCallback(
-    (type: CType, required: string[] = [], key = '') => {
+    (type: CType, required: string[] = [], key = ''): Yup.BaseSchema => {
       const input = getUnreferencedInput(type);
       switch (input.type) {
         case 'object': {
@@ -184,7 +184,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
             <VStack
               spacing="8"
               pl="8"
-              borderLeftWidth="1px"
+              borderLeftWidth="2px"
               borderColor="purple.500"
               mt="2"
               align="stretch"
@@ -216,7 +216,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
                   <Box
                     spacing="8"
                     pl="8"
-                    borderLeftWidth="1px"
+                    borderLeftWidth="2px"
                     borderColor={!error ? 'purple.500' : 'red.500'}
                     mt="2"
                     align="stretch"
@@ -343,7 +343,13 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
       {({ isSubmitting }) => (
         <Form>
           {Object.keys(modelInput.properties ?? {}).length === 0 ? (
-            <Box p="4" textAlign="center">
+            <Box
+              pt="4"
+              textAlign="center"
+              color="gray.200"
+              fontSize="3xl"
+              fontWeight="bold"
+            >
               No input required
             </Box>
           ) : (
