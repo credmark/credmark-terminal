@@ -218,6 +218,7 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
             <JSONTree
               data={output}
               theme={{ tree: { borderRadius: '4px', padding: '16px 8px' } }}
+              hideRoot
             />
           </TabPanel>
           <TabPanel>
