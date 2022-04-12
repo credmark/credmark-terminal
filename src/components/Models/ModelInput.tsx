@@ -136,7 +136,8 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
           if (required.includes(key)) schema = schema.required('Required.');
           return schema;
         }
-        case 'string': {
+        case 'string':
+        default: {
           let schema = Yup.string().ensure();
           if (required.includes(key)) schema = schema.required('Required.');
           if (input.maxLength)
