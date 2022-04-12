@@ -1,6 +1,11 @@
 import {
   Box,
+  FormControl,
+  FormHelperText,
+  FormLabel,
   Heading,
+  Input,
+  Link,
   Tab,
   TabList,
   TabPanel,
@@ -18,6 +23,7 @@ import {
   SelectComponentsConfig,
 } from 'chakra-react-select';
 import _get from 'lodash.get';
+import * as _math from 'mathjs';
 import React, { useCallback, useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { JSONTree } from 'react-json-tree';
@@ -54,6 +60,8 @@ interface Key extends BaseCType {
   type: 'boolean' | 'integer' | 'number' | 'string' | 'object' | 'array';
 }
 
+const math = _math.create(_math.all, { number: 'BigNumber', precision: 64 });
+
 const chakraStyles: ChakraStylesConfig<Key, false, GroupBase<Key>> = {
   dropdownIndicator: (provided) => ({
     ...provided,
@@ -73,12 +81,9 @@ const chakraStyles: ChakraStylesConfig<Key, false, GroupBase<Key>> = {
 };
 
 export default function ModelOutput({ model, output }: ModelOutputProps) {
-  // const keys = useMemo(() => {
-  //     model.
-  // }, []);
-
   const [valueKey, setValueKey] = useState<Key>();
   const [searchInput, setSearchInput] = useState('');
+  const [transformInput, setTransformInput] = useState('');
 
   const getUnreferencedOutput = useCallback(
     (output: CType): UnreferenceOutput => {
@@ -119,19 +124,13 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
         case 'array':
           return computeKeys(
             Array.isArray(output.items) ? output.items[0] : output.items,
-            path + '[0]',
+            path + '[]',
           );
         case 'string':
         case 'integer':
         case 'number':
         case 'boolean':
         default:
-          console.log({
-            path,
-            type: output.type,
-            title: output.title,
-            description: output.description,
-          });
           return [
             {
               path,
@@ -150,27 +149,58 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
     return keys
       .filter(
         ({ path, type }) =>
-          path.startsWith('series[0].output') &&
+          path.startsWith('series[].output') &&
           ['integer', 'number'].includes(type),
       )
-      .map(({ path, ...key }) => ({ ...key, path: path.slice(17) }));
+      .map(({ path, ...key }) => ({ ...key, path: path.slice(16) }));
   }, [keys]);
 
   const lines = useMemo<Line[]>(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let evaluate: (scope: { val: any }) => any;
+    if (transformInput.trim()) {
+      try {
+        const compiled = math.compile(
+          transformInput.replaceAll('val', 'bignumber(val)'),
+        );
+
+        compiled.evaluate({ val: 0 });
+
+        evaluate = compiled.evaluate;
+        // eslint-disable-next-line no-empty
+      } catch {}
+    }
+
     const line: Line = {
       color: '#DE1A60',
       name: model.displayName ?? model.slug,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: (output.series ?? []).map((s: any) => {
+        let value = 0;
+        if (evaluate) {
+          value =
+            evaluate({
+              val: _get(s.output, valueKey?.path ?? 0) ?? 0,
+            })?.toNumber() ?? 0;
+        } else {
+          value = _get(s.output, valueKey?.path ?? 0) ?? 0;
+        }
+
         return {
           timestamp: new Date(s.sampleTimestamp * 1000),
-          value: _get(s.output, valueKey?.path ?? 0) ?? 0,
+          value,
         };
       }),
     };
 
     return [line];
-  }, [model.displayName, model.slug, output.series, valueKey?.path]);
+  }, [
+    model.displayName,
+    model.slug,
+    output.series,
+    valueKey?.path,
+    transformInput,
+  ]);
 
   const customComponents = useMemo<
     SelectComponentsConfig<Key, false, GroupBase<Key>>
@@ -222,30 +252,57 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
             />
           </TabPanel>
           <TabPanel>
-            <Select<Key, false, GroupBase<Key>>
-              placeholder="Select value path"
-              options={chartValueKeys}
-              filterOption={(option, filterValue) =>
-                (option.data.title ?? option.data.path)
-                  .toLocaleLowerCase()
-                  .includes(filterValue.toLocaleLowerCase().trim()) ||
-                (option.data.description ?? '')
-                  .toLocaleLowerCase()
-                  .includes(filterValue.toLocaleLowerCase().trim())
-              }
-              getOptionLabel={(option) => option.title ?? option.path}
-              components={customComponents}
-              onChange={(val) => setValueKey(val ?? undefined)}
-              isOptionSelected={(option) => valueKey?.path === option.path}
-              chakraStyles={chakraStyles}
-              isClearable
-              inputValue={searchInput}
-              onInputChange={(input) => setSearchInput(input)}
-            />
-            <HistoricalChart
-              lines={lines}
-              formatValue={(val) => shortenNumber(val, 1)}
-            />
+            <FormControl>
+              <FormLabel>Select y-axis key of series output</FormLabel>
+              <Select<Key, false, GroupBase<Key>>
+                placeholder="Select value path"
+                options={chartValueKeys}
+                filterOption={(option, filterValue) =>
+                  (option.data.title ?? option.data.path)
+                    .toLocaleLowerCase()
+                    .includes(filterValue.toLocaleLowerCase().trim()) ||
+                  (option.data.description ?? '')
+                    .toLocaleLowerCase()
+                    .includes(filterValue.toLocaleLowerCase().trim())
+                }
+                getOptionLabel={(option) => option.title ?? option.path}
+                components={customComponents}
+                onChange={(val) => setValueKey(val ?? undefined)}
+                isOptionSelected={(option) => valueKey?.path === option.path}
+                chakraStyles={chakraStyles}
+                isClearable
+                inputValue={searchInput}
+                onInputChange={(input) => setSearchInput(input)}
+              />
+            </FormControl>
+
+            <FormControl mt="4">
+              <FormLabel>Value transformer expression</FormLabel>
+              <Input
+                value={transformInput}
+                onChange={(e) => setTransformInput(e.target.value)}
+                placeholder="val * 1"
+              />
+              <FormHelperText>
+                Use{' '}
+                <code>
+                  <strong>val</strong>
+                </code>{' '}
+                to reference y-axis data points. Refer syntax at{' '}
+                <Link
+                  href="https://mathjs.org/docs/expressions/syntax.html"
+                  isExternal
+                >
+                  https://mathjs.org/docs/expressions/syntax.html
+                </Link>
+              </FormHelperText>
+            </FormControl>
+            <Box mt="8">
+              <HistoricalChart
+                lines={lines}
+                formatValue={(val) => shortenNumber(val, 1)}
+              />
+            </Box>
           </TabPanel>
         </TabPanels>
       </Tabs>

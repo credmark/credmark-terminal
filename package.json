@@ -43,6 +43,7 @@
     "jsbi": "^3.2.5",
     "lodash.flatmap": "^4.5.0",
     "lodash.get": "^4.4.2",
+    "mathjs": "^10.4.3",
     "next": "11.1.2",
     "nprogress": "^0.2.0",
     "pure-react-carousel": "^1.28.1",
