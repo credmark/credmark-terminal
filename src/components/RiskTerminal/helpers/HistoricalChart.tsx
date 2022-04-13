@@ -2,6 +2,8 @@ import { Box, Center, Spinner, useBreakpointValue } from '@chakra-ui/react';
 import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
+import { shortenNumber } from '~/utils/formatTokenAmount';
+
 export interface Line {
   name: string;
   color: string;
@@ -197,19 +199,7 @@ export default function HistoricalChart({
           showMinLabel: false,
           showMaxLabel: false,
           formatter: function (value: number | string) {
-            const num = Number(value);
-            const fixedFigs = 2;
-            if (num >= 1e9) {
-              return `${Number((num / 1e9).toFixed(fixedFigs))}B`;
-            } else if (num >= 1e6) {
-              return `${Number((num / 1e6).toFixed(fixedFigs))}M`;
-            } else if (num >= 1e3) {
-              return `${Number((num / 1e3).toFixed(fixedFigs))}K`;
-            } else if (num > 10) {
-              return Number(num.toFixed(fixedFigs));
-            } else {
-              return Number(num.toFixed(fixedFigs));
-            }
+            return shortenNumber(Number(value), 2);
           },
         },
       },
