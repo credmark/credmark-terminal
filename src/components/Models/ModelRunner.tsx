@@ -91,7 +91,7 @@ export default function ModelRunner({ model }: ModelRunnerProps) {
 
       <ModelRunConfig value={config} onChange={setConfig} />
       <ModelInput modelInput={model.input} onRun={onRun} />
-      {output && <ModelOutput model={model} output={output} />}
+      {output && <ModelOutput model={model} result={output} />}
       {error && <ModelRunError error={error} />}
     </VStack>
   );
