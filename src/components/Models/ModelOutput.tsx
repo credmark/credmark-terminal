@@ -116,10 +116,6 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
     [model.output.definitions],
   );
 
-  const isBlockSeries =
-    model.output.title?.startsWith('BlockSeries[') &&
-    Array.isArray(output.series);
-
   const keys = useMemo<Key[]>(() => {
     function computeKeys(type: CType, path = ''): Key[] {
       const output = getUnreferencedOutput(type);
@@ -165,14 +161,12 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
   }, [keys]);
 
   const lines = useMemo<Line[]>(() => {
-    let evaluate: (scope: { val: number }) => _math.BigNumber;
+    let evaluate: (scope: { val: math.BigNumber }) => math.BigNumber;
     if (transformInput.trim()) {
       try {
-        const compiled = math.compile(
-          transformInput.replaceAll('val', 'bignumber(val)'),
-        );
+        const compiled = math.compile(transformInput);
 
-        compiled.evaluate({ val: 0 });
+        compiled.evaluate({ val: math.bignumber(0) });
 
         evaluate = compiled.evaluate;
         // eslint-disable-next-line no-empty
@@ -187,7 +181,7 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
         if (evaluate) {
           value =
             evaluate({
-              val: _get(s.output, valueKey?.path ?? 0) ?? 0,
+              val: math.bignumber(_get(s.output, valueKey?.path ?? 0) ?? 0),
             })?.toNumber() ?? 0;
         } else {
           value = _get(s.output, valueKey?.path ?? 0) ?? 0;
@@ -241,7 +235,7 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
       <Tabs>
         <TabList>
           <Tab>JSON</Tab>
-          {isBlockSeries && <Tab>Chart</Tab>}
+          {chartValueKeys.length > 0 && <Tab>Chart</Tab>}
         </TabList>
 
         <TabPanels>
@@ -301,7 +295,7 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
             <Box mt="8">
               <HistoricalChart
                 lines={lines}
-                formatValue={(val) => shortenNumber(val, 1)}
+                formatValue={(val) => shortenNumber(val, 4)}
               />
             </Box>
           </TabPanel>
