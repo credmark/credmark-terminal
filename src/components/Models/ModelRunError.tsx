@@ -46,7 +46,9 @@ export default function ModelRunError({ error }: ModelRunErrorProps) {
                 {s.slug}, version: {s.version}
               </i>
             </Text>
-            <Text as="pre">{s.trace}</Text>
+            <Text as="pre" whiteSpace="pre-wrap">
+              {s.trace}
+            </Text>
           </Box>
         ))}
       </Box>

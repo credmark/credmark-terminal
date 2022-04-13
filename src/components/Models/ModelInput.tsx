@@ -347,7 +347,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   }
 
   return (
-    <Box bg="white" rounded="base" p="8">
+    <Box bg="white" rounded="base" p="8" shadow="2xl">
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}

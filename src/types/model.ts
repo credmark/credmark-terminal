@@ -79,3 +79,9 @@ export interface CModelRunError {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type CRecord = Record<string, any>;
+
+export interface CAdvancedConfig {
+  version: string;
+  chainId: number;
+  blockNumber: number | string;
+}
