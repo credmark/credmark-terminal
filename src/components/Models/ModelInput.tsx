@@ -177,8 +177,15 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
         return (
           <Box key={keyPath}>
             <Text fontWeight="bold">
-              {input.title ? `${keyPath}: ${input.title}` : keyPath}
+              {input.title && keyPath
+                ? `${keyPath}: ${input.title}`
+                : input.title ?? keyPath}
             </Text>
+            {input.description && (
+              <Text fontSize="sm" color="gray.500">
+                {input.description}
+              </Text>
+            )}
             <VStack
               spacing="8"
               pl="8"
@@ -209,8 +216,15 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
               return (
                 <Box key={keyPath}>
                   <Text fontWeight="bold">
-                    {input.title ? `${keyPath}: ${input.title}` : keyPath}
+                    {input.title && keyPath
+                      ? `${keyPath}: ${input.title}`
+                      : input.title ?? keyPath}
                   </Text>
+                  {input.description && (
+                    <Text fontSize="sm" color="gray.500">
+                      {input.description}
+                    </Text>
+                  )}
                   <Box
                     spacing="8"
                     pl="8"
@@ -352,11 +366,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
                 No input required
               </Box>
             ) : (
-              <VStack spacing="8" align="stretch">
-                {Object.entries(modelInput.properties ?? {}).map(
-                  ([key, value]) => getInputFields(value, key),
-                )}
-              </VStack>
+              getInputFields(modelInput)
             )}
             <Box mt="16" textAlign="center">
               <Button
