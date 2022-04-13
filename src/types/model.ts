@@ -53,7 +53,7 @@ export type CType =
   | CTypeAllOf
   | CTypeRef;
 
-export interface ModelMetadata {
+export interface CModelMetadata {
   slug: string;
   displayName: string;
   description?: string;
@@ -62,3 +62,20 @@ export interface ModelMetadata {
   output: CTypeObject;
   error: CType;
 }
+
+export interface CModelRunError {
+  code: string;
+  message?: string;
+  details?: unknown;
+  permanent: boolean;
+  stack: Array<{
+    blockNumber: number;
+    chainId: 1;
+    slug: string;
+    version: string;
+    trace: string;
+  }>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type CRecord = Record<string, any>;

@@ -36,16 +36,16 @@ import {
   CTypeInteger,
   CTypeObject,
   CTypeString,
-  ModelMetadata,
+  CModelMetadata,
+  CRecord,
 } from '~/types/model';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 import HistoricalChart, { Line } from '../RiskTerminal/helpers/HistoricalChart';
 
 interface ModelOutputProps {
-  model: ModelMetadata;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  output: Record<string, any>;
+  model: CModelMetadata;
+  output: CRecord;
 }
 
 type UnreferenceOutput =
@@ -58,6 +58,15 @@ type UnreferenceOutput =
 interface Key extends BaseCType {
   path: string;
   type: 'boolean' | 'integer' | 'number' | 'string' | 'object' | 'array';
+}
+
+interface BlockSeries {
+  series: Array<{
+    blockNumber: number;
+    blockTimestamp: number;
+    sampleTimestamp: number;
+    output: CRecord;
+  }>;
 }
 
 const math = _math.create(_math.all, { number: 'BigNumber', precision: 64 });
@@ -156,8 +165,7 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
   }, [keys]);
 
   const lines = useMemo<Line[]>(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let evaluate: (scope: { val: any }) => any;
+    let evaluate: (scope: { val: number }) => _math.BigNumber;
     if (transformInput.trim()) {
       try {
         const compiled = math.compile(
@@ -174,8 +182,7 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
     const line: Line = {
       color: '#DE1A60',
       name: model.displayName ?? model.slug,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: (output.series ?? []).map((s: any) => {
+      data: ((output as BlockSeries).series ?? []).map((s) => {
         let value = 0;
         if (evaluate) {
           value =
@@ -194,13 +201,7 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
     };
 
     return [line];
-  }, [
-    model.displayName,
-    model.slug,
-    output.series,
-    valueKey?.path,
-    transformInput,
-  ]);
+  }, [transformInput, model.displayName, model.slug, output, valueKey?.path]);
 
   const customComponents = useMemo<
     SelectComponentsConfig<Key, false, GroupBase<Key>>

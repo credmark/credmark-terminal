@@ -14,16 +14,16 @@ import React, { useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 
 import ModelRunner from '~/components/Models/ModelRunner';
-import { ModelMetadata } from '~/types/model';
+import { CModelMetadata } from '~/types/model';
 
 interface ModelPageProps {
-  models: ModelMetadata[];
+  models: CModelMetadata[];
 }
 
 const chakraStyles: ChakraStylesConfig<
-  ModelMetadata,
+  CModelMetadata,
   false,
-  GroupBase<ModelMetadata>
+  GroupBase<CModelMetadata>
 > = {
   dropdownIndicator: (provided) => ({
     ...provided,
@@ -58,11 +58,11 @@ export default function ModelsPage({ models }: ModelPageProps) {
   }, [models, slug]);
 
   const customComponents = useMemo<
-    SelectComponentsConfig<ModelMetadata, false, GroupBase<ModelMetadata>>
+    SelectComponentsConfig<CModelMetadata, false, GroupBase<CModelMetadata>>
   >(() => {
     return {
       Option: (
-        props: OptionProps<ModelMetadata, false, GroupBase<ModelMetadata>>,
+        props: OptionProps<CModelMetadata, false, GroupBase<CModelMetadata>>,
       ) => (
         <chakraComponents.Option {...props}>
           <Box>
@@ -96,7 +96,7 @@ export default function ModelsPage({ models }: ModelPageProps) {
       <Heading mb="8" color="purple.500">
         Credmark Models
       </Heading>
-      <Select<ModelMetadata, false, GroupBase<ModelMetadata>>
+      <Select<CModelMetadata, false, GroupBase<CModelMetadata>>
         placeholder="Select a model..."
         options={models}
         filterOption={(option, filterValue) =>

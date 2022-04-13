@@ -1,52 +1,38 @@
 import { Box, Heading, Text, useToast, VStack } from '@chakra-ui/react';
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
-import { ModelMetadata } from '~/types/model';
+import { CModelMetadata, CModelRunError, CRecord } from '~/types/model';
 
 import ModelInput from './ModelInput';
 import ModelOutput from './ModelOutput';
+import ModelRunError from './ModelRunError';
 
 interface ModelRunnerProps {
-  model: ModelMetadata;
+  model: CModelMetadata;
 }
-
-interface ModelRunError {
-  code: string;
-  message?: string;
-  details?: unknown;
-  permanent: boolean;
-  stack: Array<{
-    blockNumber: number;
-    chainId: 1;
-    slug: string;
-    version: string;
-    trace: string;
-  }>;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type InputValues = Record<string, any>;
 
 export default function ModelRunner({ model }: ModelRunnerProps) {
   const toast = useToast();
-  const [output, setOutput] = useState<InputValues>();
-  const [error, setError] = useState<ModelRunError>();
+  const [output, setOutput] = useState<CRecord>();
+  const [error, setError] = useState<CModelRunError>();
 
-  function onRun(inputValues: InputValues): Promise<void> {
-    setOutput(undefined);
+  const onRun = useCallback(
+    async (inputValues: CRecord): Promise<void> => {
+      setOutput(undefined);
 
-    return axios({
-      method: 'POST',
-      url: 'https://gateway.credmark.com/v1/model/run',
-      data: {
-        slug: model.slug,
-        chainId: 1,
-        blockNumber: 'latest',
-        input: inputValues,
-      },
-    })
-      .then((resp) => {
+      try {
+        const resp = await axios({
+          method: 'POST',
+          url: 'https://gateway.credmark.com/v1/model/run',
+          data: {
+            slug: model.slug,
+            chainId: 1,
+            blockNumber: 'latest',
+            input: inputValues,
+          },
+        });
+
         if (resp.data.error) {
           setError(resp.data.error);
           console.log(resp.data.error);
@@ -54,8 +40,7 @@ export default function ModelRunner({ model }: ModelRunnerProps) {
         }
 
         setOutput(resp.data.output);
-      })
-      .catch(() => {
+      } catch {
         toast({
           position: 'top-right',
           status: 'error',
@@ -64,8 +49,10 @@ export default function ModelRunner({ model }: ModelRunnerProps) {
           variant: 'left-accent',
           title: 'Error while running model',
         });
-      });
-  }
+      }
+    },
+    [model.slug, toast],
+  );
 
   return (
     <VStack py="8" align="stretch" spacing="8">
@@ -82,54 +69,9 @@ export default function ModelRunner({ model }: ModelRunnerProps) {
         </Text>
       </Box>
 
-      <Box bg="white" rounded="base" p="8">
-        <ModelInput modelInput={model.input} onRun={onRun} />
-      </Box>
+      <ModelInput modelInput={model.input} onRun={onRun} />
       {output && <ModelOutput model={model} output={output} />}
-      {error && (
-        <VStack
-          bg="red.50"
-          borderWidth="1px"
-          borderColor="red.500"
-          rounded="base"
-          spacing="4"
-          p="8"
-          color="red.500"
-          align="stretch"
-        >
-          <Heading size="md" textAlign="center" mb="4">
-            Error while running model
-          </Heading>
-
-          <Text fontWeight="bold">
-            <i>message: </i>
-            {error.message || 'Some unexpected error has occured'}
-          </Text>
-          <Text>
-            <i>code: </i>
-            {error.code || '-'}
-          </Text>
-          <Text>
-            <i>details: </i>
-            {JSON.stringify(error.details ?? {})}
-          </Text>
-
-          <Box>
-            <i>trace:</i>
-            {error.stack.map((s, i) => (
-              <Box key={i} mt="2">
-                <Text>
-                  <i>
-                    [{i}] chainId: {s.chainId}, block: {s.blockNumber}, slug:{' '}
-                    {s.slug}, version: {s.version}
-                  </i>
-                </Text>
-                <Text as="pre">{s.trace}</Text>
-              </Box>
-            ))}
-          </Box>
-        </VStack>
-      )}
+      {error && <ModelRunError error={error} />}
     </VStack>
   );
 }
