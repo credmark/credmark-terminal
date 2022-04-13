@@ -2,14 +2,18 @@ import { Price, CurrencyAmount, Currency, Fraction } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 
 export function shortenNumber(num: number, fixedFigs: number) {
-  if (num >= 1e12) {
-    return `${(num / 1e12).toFixed(fixedFigs)}T`;
+  if (num >= 1e18) {
+    return `${Number((num / 1e18).toFixed(fixedFigs))}Qt`;
+  } else if (num >= 1e15) {
+    return `${Number((num / 1e15).toFixed(fixedFigs))}Qd`;
+  } else if (num >= 1e12) {
+    return `${Number((num / 1e12).toFixed(fixedFigs))}T`;
   } else if (num >= 1e9) {
-    return `${(num / 1e9).toFixed(fixedFigs)}B`;
+    return `${Number((num / 1e9).toFixed(fixedFigs))}B`;
   } else if (num >= 1e6) {
-    return `${(num / 1e6).toFixed(fixedFigs)}M`;
+    return `${Number((num / 1e6).toFixed(fixedFigs))}M`;
   } else if (num >= 1e3) {
-    return `${(num / 1e3).toFixed(fixedFigs)}K`;
+    return `${Number((num / 1e3).toFixed(fixedFigs))}K`;
   } else {
     return num.toFixed(fixedFigs);
   }
