@@ -32,15 +32,13 @@ import {
   CTypeInteger,
   CTypeObject,
   CTypeString,
-  ModelMetadata,
+  CModelMetadata,
+  CRecord,
 } from '~/types/model';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type InputValues = Record<string, any>;
-
 interface ModelInputProps {
-  modelInput: ModelMetadata['input'];
-  onRun: (input: InputValues) => Promise<void>;
+  modelInput: CModelMetadata['input'];
+  onRun: (input: CRecord) => Promise<void>;
 }
 
 export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
@@ -73,12 +71,11 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   );
 
   const computeInitialValues = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (type: CType): any => {
+    (type: CType): CRecord | boolean | string | number | unknown[] => {
       const input = getUnreferencedInput(type);
       switch (input.type) {
         case 'object':
-          return Object.entries(input.properties ?? {}).reduce<InputValues>(
+          return Object.entries(input.properties ?? {}).reduce<CRecord>(
             (iv, [key, value]) => ({
               ...iv,
               [key]: computeInitialValues(value),
@@ -106,7 +103,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
       switch (input.type) {
         case 'object': {
           return Yup.object().shape(
-            Object.entries(input.properties ?? {}).reduce<InputValues>(
+            Object.entries(input.properties ?? {}).reduce<CRecord>(
               (iv, [key, value]) => ({
                 ...iv,
                 [key]: computeValidationSchema(value, input.required, key),
@@ -158,7 +155,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   );
 
   const initialValues = useMemo(() => {
-    return computeInitialValues(modelInput);
+    return computeInitialValues(modelInput) as CRecord;
   }, [computeInitialValues, modelInput]);
 
   const validationSchema = useMemo(() => {
@@ -166,8 +163,8 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   }, [computeValidationSchema, modelInput]);
 
   function onSubmit(
-    inputValues: InputValues,
-    actions: FormikHelpers<InputValues>,
+    inputValues: CRecord,
+    actions: FormikHelpers<CRecord>,
   ): void {
     actions.setSubmitting(true);
     onRun(inputValues).finally(() => actions.setSubmitting(false));
@@ -297,7 +294,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
       default:
         return (
           <Field key={keyPath} name={keyPath}>
-            {({ field, form }: FieldProps<string, InputValues>) => {
+            {({ field, form }: FieldProps<string, CRecord>) => {
               let error = getIn(form.errors, keyPath);
               // When field is a nested object in an array and array
               // itself has failed validation, getIn will return first
@@ -336,45 +333,47 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   }
 
   return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={onSubmit}
-      validationSchema={validationSchema}
-    >
-      {({ isSubmitting }) => (
-        <Form>
-          {Object.keys(modelInput.properties ?? {}).length === 0 ? (
-            <Box
-              pt="4"
-              textAlign="center"
-              color="gray.200"
-              fontSize="3xl"
-              fontWeight="bold"
-            >
-              No input required
+    <Box bg="white" rounded="base" p="8">
+      <Formik
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        validationSchema={validationSchema}
+      >
+        {({ isSubmitting }) => (
+          <Form>
+            {Object.keys(modelInput.properties ?? {}).length === 0 ? (
+              <Box
+                pt="4"
+                textAlign="center"
+                color="gray.200"
+                fontSize="3xl"
+                fontWeight="bold"
+              >
+                No input required
+              </Box>
+            ) : (
+              <VStack spacing="8" align="stretch">
+                {Object.entries(modelInput.properties ?? {}).map(
+                  ([key, value]) => getInputFields(value, key),
+                )}
+              </VStack>
+            )}
+            <Box mt="16" textAlign="center">
+              <Button
+                type="submit"
+                colorScheme="pink"
+                size="lg"
+                px="16"
+                rightIcon={<Icon as={MdPlayArrow} />}
+                isLoading={isSubmitting}
+                loadingText="Running..."
+              >
+                Run
+              </Button>
             </Box>
-          ) : (
-            <VStack spacing="8" align="stretch">
-              {Object.entries(modelInput.properties ?? {}).map(([key, value]) =>
-                getInputFields(value, key),
-              )}
-            </VStack>
-          )}
-          <Box mt="16" textAlign="center">
-            <Button
-              type="submit"
-              colorScheme="pink"
-              size="lg"
-              px="16"
-              rightIcon={<Icon as={MdPlayArrow} />}
-              isLoading={isSubmitting}
-              loadingText="Running..."
-            >
-              Run
-            </Button>
-          </Box>
-        </Form>
-      )}
-    </Formik>
+          </Form>
+        )}
+      </Formik>
+    </Box>
   );
 }
