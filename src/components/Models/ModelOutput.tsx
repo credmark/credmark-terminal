@@ -1,6 +1,7 @@
 import {
   Box,
   FormControl,
+  FormErrorMessage,
   FormHelperText,
   FormLabel,
   Heading,
@@ -23,8 +24,9 @@ import {
   SelectComponentsConfig,
 } from 'chakra-react-select';
 import _get from 'lodash.get';
+import _set from 'lodash.set';
 import * as _math from 'mathjs';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { JSONTree } from 'react-json-tree';
 
@@ -45,7 +47,7 @@ import HistoricalChart, { Line } from '../RiskTerminal/helpers/HistoricalChart';
 
 interface ModelOutputProps {
   model: CModelMetadata;
-  output: CRecord;
+  result: CRecord;
 }
 
 type UnreferenceOutput =
@@ -56,7 +58,10 @@ type UnreferenceOutput =
   | CTypeBoolean;
 
 interface Key extends BaseCType {
-  path: string;
+  absolutePath: string;
+  relativePath: string;
+  basePath: string;
+  mathPath: string;
   type: 'boolean' | 'integer' | 'number' | 'string' | 'object' | 'array';
 }
 
@@ -89,7 +94,7 @@ const chakraStyles: ChakraStylesConfig<Key, false, GroupBase<Key>> = {
   }),
 };
 
-export default function ModelOutput({ model, output }: ModelOutputProps) {
+export default function ModelOutput({ model, result }: ModelOutputProps) {
   const [valueKey, setValueKey] = useState<Key>();
   const [searchInput, setSearchInput] = useState('');
   const [transformInput, setTransformInput] = useState('');
@@ -116,75 +121,143 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
     [model.output.definitions],
   );
 
-  const keys = useMemo<Key[]>(() => {
-    function computeKeys(type: CType, path = ''): Key[] {
+  const chartValueKeys = useMemo(() => {
+    function computeKeys(type: CType, path = '', mathPath = ''): Key[] {
       const output = getUnreferencedOutput(type);
       switch (output.type) {
         case 'object':
           return Object.entries(output.properties ?? {})
             .map(([key, value]) =>
-              computeKeys(value, `${path}${path ? '.' : ''}${key}`),
+              computeKeys(
+                value,
+                `${path}${path ? '.' : ''}${key}`,
+                `${path}${path ? '.' : ''}${key}`,
+              ),
             )
             .flat();
-        case 'array':
+
+        case 'array': {
+          if (path.startsWith('series[0].output')) {
+            const outputArray = _get(result, path);
+            const arrayLength = Array.isArray(outputArray)
+              ? outputArray.length
+              : 0;
+
+            const arrayItemKeys: Key[] = [];
+            for (let i = 0; i < arrayLength; i++) {
+              arrayItemKeys.push(
+                ...computeKeys(
+                  Array.isArray(output.items) ? output.items[0] : output.items,
+                  path + `[${i}]`,
+                  mathPath + `[${i + 1}]`,
+                ),
+              );
+            }
+
+            return arrayItemKeys;
+          }
+
           return computeKeys(
             Array.isArray(output.items) ? output.items[0] : output.items,
-            path + '[]',
+            path + '[0]',
           );
+        }
+
         case 'string':
         case 'integer':
         case 'number':
         case 'boolean':
         default:
-          return [
-            {
-              path,
-              type: output.type,
-              title: output.title,
-              description: output.description,
-            },
-          ];
+          if (
+            path.startsWith('series[0].output') &&
+            ['integer', 'number'].includes(output.type)
+          ) {
+            return [
+              {
+                absolutePath: path,
+                relativePath: path.slice(17),
+                basePath: 'series[0].output',
+                mathPath: mathPath.slice(17),
+                type: output.type,
+                title: output.title,
+                description: output.description,
+              },
+            ];
+          } else {
+            return [];
+          }
       }
     }
 
     return computeKeys(model.output);
-  }, [getUnreferencedOutput, model.output]);
+  }, [getUnreferencedOutput, model.output, result]);
 
-  const chartValueKeys = useMemo(() => {
-    return keys
-      .filter(
-        ({ path, type }) =>
-          path.startsWith('series[].output') &&
-          ['integer', 'number'].includes(type),
-      )
-      .map(({ path, ...key }) => ({ ...key, path: path.slice(16) }));
-  }, [keys]);
+  const isTransformInputValid = useMemo(() => {
+    try {
+      const compiled = math.compile(transformInput);
+      const scope: Record<string, math.BigNumber> = {
+        val: math.bignumber(0),
+      };
+
+      for (const key of chartValueKeys) {
+        _set(scope, key.relativePath, math.bignumber(0));
+      }
+
+      compiled.evaluate(scope);
+      return true;
+      // eslint-disable-next-line no-empty
+    } catch {
+      return false;
+    }
+  }, [chartValueKeys, transformInput]);
 
   const lines = useMemo<Line[]>(() => {
-    let evaluate: (scope: { val: math.BigNumber }) => math.BigNumber;
+    let evaluate: (scope: Record<string, math.BigNumber>) => math.BigNumber;
     if (transformInput.trim()) {
       try {
         const compiled = math.compile(transformInput);
+        const scope: Record<string, math.BigNumber> = {};
+        if (valueKey) {
+          scope.val = math.bignumber(0);
+        }
 
-        compiled.evaluate({ val: math.bignumber(0) });
+        for (const key of chartValueKeys) {
+          _set(scope, key.relativePath, math.bignumber(0));
+        }
 
+        compiled.evaluate(scope);
         evaluate = compiled.evaluate;
         // eslint-disable-next-line no-empty
       } catch {}
     }
 
+    function getByKey(record: CRecord, key: Key | undefined): number | string {
+      return _get(record, key?.relativePath ?? 0) ?? 0;
+    }
+
     const line: Line = {
       color: '#DE1A60',
       name: model.displayName ?? model.slug,
-      data: ((output as BlockSeries).series ?? []).map((s) => {
+      data: ((result as BlockSeries).series ?? []).map((s) => {
         let value = 0;
         if (evaluate) {
-          value =
-            evaluate({
-              val: math.bignumber(_get(s.output, valueKey?.path ?? 0) ?? 0),
-            })?.toNumber() ?? 0;
+          const scope: Record<string, math.BigNumber> = {};
+
+          if (valueKey) {
+            scope.val = math.bignumber(getByKey(s.output, valueKey));
+          }
+
+          for (const key of chartValueKeys) {
+            _set(
+              scope,
+              key.relativePath,
+              math.bignumber(getByKey(s.output, key)),
+            );
+          }
+
+          value = evaluate(scope)?.toNumber() ?? 0;
         } else {
-          value = _get(s.output, valueKey?.path ?? 0) ?? 0;
+          value = Number(getByKey(s.output, valueKey));
         }
 
         return {
@@ -195,7 +268,14 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
     };
 
     return [line];
-  }, [transformInput, model.displayName, model.slug, output, valueKey?.path]);
+  }, [
+    transformInput,
+    model.displayName,
+    model.slug,
+    result,
+    valueKey,
+    chartValueKeys,
+  ]);
 
   const customComponents = useMemo<
     SelectComponentsConfig<Key, false, GroupBase<Key>>
@@ -208,7 +288,7 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
               <Highlighter
                 searchWords={[searchInput]}
                 autoEscape={true}
-                textToHighlight={props.data.title ?? props.data.path}
+                textToHighlight={props.data.title ?? props.data.mathPath}
                 highlightTag={({ children }) => <strong>{children}</strong>}
               />
             </Text>
@@ -216,12 +296,22 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
               fontSize="sm"
               color={props.isSelected ? 'whiteAlpha.800' : 'gray.600'}
             >
-              <Highlighter
-                searchWords={[searchInput]}
-                autoEscape={true}
-                textToHighlight={props.data.description ?? ''}
-                highlightTag={({ children }) => <strong>{children}</strong>}
-              />
+              <Text as="span">
+                <Highlighter
+                  searchWords={[searchInput]}
+                  autoEscape={true}
+                  textToHighlight={props.data.mathPath ?? ''}
+                  highlightTag={({ children }) => <strong>{children}</strong>}
+                />
+              </Text>
+              <Text as="span">
+                <Highlighter
+                  searchWords={[searchInput]}
+                  autoEscape={true}
+                  textToHighlight={props.data.description ?? ''}
+                  highlightTag={({ children }) => <strong>{children}</strong>}
+                />
+              </Text>
             </Text>
           </Box>
         </chakraComponents.Option>
@@ -241,7 +331,7 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
         <TabPanels>
           <TabPanel>
             <JSONTree
-              data={output}
+              data={result}
               theme={{ tree: { borderRadius: '4px', padding: '16px 8px' } }}
               hideRoot
             />
@@ -253,17 +343,19 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
                 placeholder="Select value path"
                 options={chartValueKeys}
                 filterOption={(option, filterValue) =>
-                  (option.data.title ?? option.data.path)
+                  (option.data.title ?? option.data.mathPath)
                     .toLocaleLowerCase()
                     .includes(filterValue.toLocaleLowerCase().trim()) ||
                   (option.data.description ?? '')
                     .toLocaleLowerCase()
                     .includes(filterValue.toLocaleLowerCase().trim())
                 }
-                getOptionLabel={(option) => option.title ?? option.path}
+                getOptionLabel={(option) => option.title ?? option.mathPath}
                 components={customComponents}
                 onChange={(val) => setValueKey(val ?? undefined)}
-                isOptionSelected={(option) => valueKey?.path === option.path}
+                isOptionSelected={(option) =>
+                  valueKey?.mathPath === option.mathPath
+                }
                 chakraStyles={chakraStyles}
                 isClearable
                 inputValue={searchInput}
@@ -271,13 +363,14 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
               />
             </FormControl>
 
-            <FormControl mt="4">
+            <FormControl mt="4" isInvalid={!isTransformInputValid}>
               <FormLabel>Value transformer expression</FormLabel>
               <Input
                 value={transformInput}
                 onChange={(e) => setTransformInput(e.target.value)}
                 placeholder="val * 1"
               />
+              <FormErrorMessage>Invalid expression</FormErrorMessage>
               <FormHelperText>
                 Use{' '}
                 <code>
@@ -290,6 +383,23 @@ export default function ModelOutput({ model, output }: ModelOutputProps) {
                 >
                   https://mathjs.org/docs/expressions/syntax.html
                 </Link>
+                <br />
+                Along with{' '}
+                <code>
+                  <strong>val</strong>
+                </code>
+                , scope also includes other available data points (
+                {chartValueKeys.map((k, i) => (
+                  <Fragment key={k.mathPath}>
+                    <code>
+                      <strong>{k.mathPath}</strong>
+                    </code>
+                    {i < chartValueKeys.length - 1 && <>, </>}
+                  </Fragment>
+                ))}
+                )
+                <br />
+                Note: Index starts from 1 in transformer
               </FormHelperText>
             </FormControl>
             <Box mt="8">
