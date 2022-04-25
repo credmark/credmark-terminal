@@ -20,6 +20,7 @@ interface HistoricalChartProps {
   showLegend?: boolean;
   onChartReady?: (chart: EChartsInstance) => void;
   isAreaChart?: boolean;
+  height?: number;
 }
 
 export default function HistoricalChart({
@@ -29,6 +30,7 @@ export default function HistoricalChart({
   showLegend = false,
   onChartReady,
   isAreaChart,
+  height = 360,
 }: HistoricalChartProps): JSX.Element {
   const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
 
@@ -83,7 +85,7 @@ export default function HistoricalChart({
         width: legendWidth ? series.length * legendWidth : undefined,
       },
       grid: {
-        top: showLegend ? 64 : 0,
+        top: showLegend ? 64 : 16,
         bottom: 48,
         left: 48,
         right: 32,
@@ -214,7 +216,7 @@ export default function HistoricalChart({
         lazyUpdate={true}
         notMerge={true}
         style={{
-          height: '360px',
+          height: height + 'px',
         }}
         onChartReady={onChartReady}
       />
