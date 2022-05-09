@@ -57,6 +57,7 @@ export default function AnalyticsPage() {
         position="relative"
         gap="10"
         paddingTop="10"
+        paddingBottom="50"
       >
         <Container
           maxWidth="100%"
@@ -82,7 +83,7 @@ export default function AnalyticsPage() {
               line
               formatValue={(val) => '$' + val.toFixed(2)}
               yLabel="PRICE"
-              height={400}
+              height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
             />
@@ -103,7 +104,7 @@ export default function AnalyticsPage() {
               gradient={['#DE1A60', '#3B0065']}
               formatValue={(val) => '$' + shortenNumber(val, 2)}
               yLabel="AMOUNT STAKED"
-              height={400}
+              height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
             />
@@ -132,7 +133,7 @@ export default function AnalyticsPage() {
               gradient={['#DE1A60', '#3B0065']}
               formatValue={(val) => val.toFixed(0)}
               yLabel="HOLDERS"
-              height={400}
+              height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
             />
@@ -153,7 +154,7 @@ export default function AnalyticsPage() {
               gradient={['#3B0065', '#08538C']}
               formatValue={(val) => val.toFixed(0)}
               yLabel="WALLETS"
-              height={400}
+              height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
             />
@@ -182,7 +183,7 @@ export default function AnalyticsPage() {
               gradient={['#3B0065', '#08538C']}
               formatValue={(val) => '$' + shortenNumber(val, 2)}
               yLabel="TOTAL VOLUME"
-              height={400}
+              height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
             />
@@ -203,7 +204,7 @@ export default function AnalyticsPage() {
               gradient={['#DE1A60', '#3B0065']}
               formatValue={(val) => shortenNumber(val, 2)}
               yLabel="AMOUNT"
-              height={400}
+              height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
             />
@@ -246,14 +247,21 @@ export default function AnalyticsPage() {
               gradient={['#DE1A60', '#3B0065']}
               formatValue={(val) => val.toFixed(2) + '%'}
               yLabel="AMOUNT"
-              height={400}
+              height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
             />
           </LoadingOrShowData>
         </Container>
-
-        <CmkMarketStatistics data={cmkAnalytics.data ?? []} />
+        <Container
+          maxWidth="100%"
+          gap="10"
+          display="flex"
+          flexDirection="row"
+          flexWrap="wrap"
+        >
+          <CmkMarketStatistics data={cmkAnalytics.data ?? []} />
+        </Container>
       </Container>
     </Box>
   );

@@ -5,6 +5,7 @@ import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
 
 import { CmkDownloadIcon } from '~/components/Icons';
+import CmkArrowRight from '~/components/Icons/CmkArrowRight';
 import CmkFullScreenIcon from '~/components/Icons/CmkFullScreenIcon';
 
 type ChartData = Array<{
@@ -13,6 +14,13 @@ type ChartData = Array<{
 }>;
 
 type Duration = number | 'ALL';
+
+interface ChartInfoProps {
+  volume?: string;
+  platform: string;
+  link?: string;
+  app: 'uniswap_v3' | 'sushiswap';
+}
 
 interface AreaChartProps {
   data?: ChartData;
@@ -25,21 +33,27 @@ interface AreaChartProps {
   defaultDuration?: Duration;
 
   height?: number;
+  minHeight?: number;
   padding?: number;
   gradient: string[];
   line?: boolean;
+  summarySpaced?: boolean;
+  info?: ChartInfoProps;
 }
 
 export default function AreaChart({
   data: _data,
   loading,
   title,
+  info,
   titleImg,
   yLabel,
+  minHeight = 400,
   formatValue,
   durations = [1, 7, 30, 'ALL'],
   defaultDuration = 30,
   height = 300,
+  summarySpaced = false,
   padding = 40,
   gradient,
   line = false,
@@ -284,14 +298,36 @@ export default function AreaChart({
       shadow=" rgba(224, 227, 234, 0.6) 0px 0px 10px"
       id={pageId}
       backgroundColor="#fff"
+      position="relative"
+      minHeight={minHeight}
     >
+      {info && (
+        <Box position="absolute" top={10} left={1}>
+          <Text
+            fontSize="lg"
+            pt="1"
+            color="purple.500"
+            paddingLeft="2"
+            paddingBottom="2"
+          >
+            24hr Volume: <strong>{info.volume}</strong>
+          </Text>
+        </Box>
+      )}
+
       <Box
         shadow="md"
         position="relative"
+        display="grid"
+        gridTemplateRows="auto 1fr"
+        minHeight={isFullScreen ? '70%' : 340}
         h={
           isFullScreen
             ? '90%'
-            : height - padding * 2 + currentPriceHeight + 'px'
+            : (summarySpaced ? height + 20 : height) -
+              padding * 2 +
+              currentPriceHeight +
+              'px'
         }
       >
         <Box
@@ -304,7 +340,7 @@ export default function AreaChart({
         >
           <HStack bg="transparent">
             <Img src={titleImg} h="4" />
-            <Text fontSize="md" pt="1" color="purple.500">
+            <Text fontSize="md" color="purple.500">
               {title}
             </Text>
           </HStack>
@@ -334,10 +370,10 @@ export default function AreaChart({
         </Box>
         <Box
           position="absolute"
-          marginTop="20px"
+          marginTop="40px"
           top="0"
           left="45px"
-          bottom="30px"
+          bottom="50px"
           right="10px"
         >
           <ReactEChartsCore
@@ -380,6 +416,22 @@ export default function AreaChart({
           </Box>
         ))}
       </Flex>
+      {info && (
+        <Text
+          fontSize="xs"
+          pt="1"
+          color="purple.500"
+          paddingLeft="2"
+          paddingBottom="2"
+          position="absolute"
+          bottom={1}
+        >
+          <a href={info.link} target="_blank" rel="noopener noreferrer">
+            View on {info.platform}
+          </a>
+          <CmkArrowRight marginLeft="2" fontSize="10" />
+        </Text>
+      )}
     </Container>
   );
 }

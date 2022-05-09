@@ -199,7 +199,7 @@ export default function CmkSupplyDistributions({
       >
         <HStack bg="transparent">
           <Img src={titleImg} h="4" />
-          <Text fontSize="md" pt="1" color="purple.500">
+          <Text fontSize="md" color="purple.500">
             CMK Supply Distribution
           </Text>
         </HStack>
