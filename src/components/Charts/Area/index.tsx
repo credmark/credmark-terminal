@@ -1,5 +1,5 @@
 import { Box, Center, Flex, HStack, Text } from '@chakra-ui/layout';
-import { Img, Spinner, Button, Container } from '@chakra-ui/react';
+import { Img, Spinner, Container, IconButton } from '@chakra-ui/react';
 import { EChartsOption, graphic as EChartsGraphic } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
@@ -277,10 +277,9 @@ export default function AreaChart({
         <Box
           borderBottom="1px solid #DEDEDE"
           display="grid"
-          gridTemplateColumns="1fr 20px 20px"
+          gridTemplateColumns="1fr max-content"
           gap="5"
           paddingLeft="3"
-          paddingRight="5"
           alignItems="center"
         >
           <HStack bg="transparent">
@@ -290,26 +289,28 @@ export default function AreaChart({
             </Text>
           </HStack>
 
-          <Button
-            padding="0"
-            backgroundColor="transparent"
+          <Box
             display="flex"
-            alignItems="center"
+            gap="1"
             justifyContent="center"
-            cursor="pointer"
-          >
-            <CmkDownloadIcon fontSize="2xl" fill="#999999" />
-          </Button>
-          <Button
-            padding="0"
-            backgroundColor="transparent"
-            display="flex"
             alignItems="center"
-            justifyContent="center"
-            cursor="pointer"
+            zIndex={99}
           >
-            <CmkFullScreenIcon fontSize="2xl" fill="#999999" />
-          </Button>
+            <IconButton
+              aria-label="Download"
+              cursor="pointer"
+              backgroundColor="transparent"
+              icon={<CmkDownloadIcon fontSize="15" fill="#999999" />}
+              onClick={() => null}
+            />
+            <IconButton
+              aria-label="Fullscreen"
+              cursor="pointer"
+              backgroundColor="transparent"
+              icon={<CmkFullScreenIcon fontSize="15" fill="#999999" />}
+              onClick={() => null}
+            />
+          </Box>
         </Box>
         <Box
           position="absolute"
@@ -329,6 +330,7 @@ export default function AreaChart({
             }}
           />
         </Box>
+
         {loading && (
           <Center position="absolute" top="0" left="0" right="0" bottom="0">
             <Spinner color="purple.500" />
