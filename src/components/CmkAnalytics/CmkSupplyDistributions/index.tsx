@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/layout';
-import { Img, HStack, Text, Container, Button } from '@chakra-ui/react';
+import { Img, HStack, Text, Container, IconButton } from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { CmkDownloadIcon } from '~/components/Icons';
 import CmkFullScreenIcon from '~/components/Icons/CmkFullScreenIcon';
@@ -22,6 +22,8 @@ export default function CmkSupplyDistributions({
   xcmkData,
   titleImg,
 }: PieChartProps): JSX.Element {
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+
   const option = useMemo(() => {
     return {
       tooltip: {
@@ -166,6 +168,16 @@ export default function CmkSupplyDistributions({
     xcmkData.cmk_balance,
   ]);
 
+  const toggleFullScreen = () => {
+    if (!isFullScreen) {
+      document?.getElementById('CMK-Supply-Distribution')?.requestFullscreen();
+      setIsFullScreen(true);
+    } else {
+      document?.exitFullscreen();
+      setIsFullScreen(false);
+    }
+  };
+
   return (
     <Container
       minWidth="320px"
@@ -173,6 +185,8 @@ export default function CmkSupplyDistributions({
       padding={0}
       border="1px solid #DEDEDE"
       shadow=" rgba(224, 227, 234, 0.6) 0px 0px 10px"
+      id="CMK-Supply-Distribution"
+      backgroundColor="#fff"
     >
       <Box
         borderBottom="1px solid #DEDEDE"
@@ -190,24 +204,19 @@ export default function CmkSupplyDistributions({
           </Text>
         </HStack>
 
-        <Button
-          backgroundColor="transparent"
-          display="grid"
-          placeItems="center"
+        <IconButton
+          aria-label="Fullscreen"
           cursor="pointer"
-          padding="0"
-        >
-          <CmkDownloadIcon fontSize="2xl" fill="#999999" />
-        </Button>
-        <Button
           backgroundColor="transparent"
-          display="grid"
-          placeItems="center"
+          icon={<CmkDownloadIcon fontSize="15" fill="#999999" />}
+        />
+        <IconButton
+          aria-label="Fullscreen"
           cursor="pointer"
-          padding="0"
-        >
-          <CmkFullScreenIcon fontSize="2xl" fill="#999999" />
-        </Button>
+          backgroundColor="transparent"
+          icon={<CmkFullScreenIcon fontSize="15" fill="#999999" />}
+          onClick={toggleFullScreen}
+        />
       </Box>
       <HStack mx="8" justify="space-between">
         <Text
@@ -232,7 +241,7 @@ export default function CmkSupplyDistributions({
           notMerge={true}
           lazyUpdate={true}
           style={{
-            height: '360px',
+            height: isFullScreen ? '70vh' : '360px',
           }}
         />
       </Box>

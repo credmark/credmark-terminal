@@ -44,6 +44,7 @@ export default function AreaChart({
   gradient,
   line = false,
 }: AreaChartProps) {
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
   const data = useMemo(() => {
     return _data?.map((dp) => ({
       timestamp: dp.timestamp,
@@ -261,6 +262,19 @@ export default function AreaChart({
 
   const currentPriceHeight = 0;
 
+  const pageId = title
+    ? title.replace(/\s/g, '-')
+    : `cmk-analytics-${Math.random()}`;
+
+  const toggleFullScreen = () => {
+    if (!isFullScreen) {
+      document?.getElementById(pageId)?.requestFullscreen();
+      setIsFullScreen(true);
+    } else {
+      document?.exitFullscreen();
+      setIsFullScreen(false);
+    }
+  };
   return (
     <Container
       minWidth="320px"
@@ -268,11 +282,17 @@ export default function AreaChart({
       padding={0}
       border="1px solid #DEDEDE"
       shadow=" rgba(224, 227, 234, 0.6) 0px 0px 10px"
+      id={pageId}
+      backgroundColor="#fff"
     >
       <Box
         shadow="md"
         position="relative"
-        h={height - padding * 2 + currentPriceHeight + 'px'}
+        h={
+          isFullScreen
+            ? '90%'
+            : height - padding * 2 + currentPriceHeight + 'px'
+        }
       >
         <Box
           borderBottom="1px solid #DEDEDE"
@@ -308,7 +328,7 @@ export default function AreaChart({
               cursor="pointer"
               backgroundColor="transparent"
               icon={<CmkFullScreenIcon fontSize="15" fill="#999999" />}
-              onClick={() => null}
+              onClick={toggleFullScreen}
             />
           </Box>
         </Box>
@@ -325,7 +345,7 @@ export default function AreaChart({
             notMerge={true}
             lazyUpdate={true}
             style={{
-              height: height + 'px',
+              height: isFullScreen ? '100%' : height + 'px',
               margin: padding * -1 + 'px',
             }}
           />
