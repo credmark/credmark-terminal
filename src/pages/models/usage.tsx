@@ -69,7 +69,7 @@ export default function ModelUsagePage() {
         let minDate: Date | undefined;
         let maxDate: Date | undefined;
         for (const usage of list) {
-          if (!Object.hasOwn(slugLineMap, usage.slug)) {
+          if (!(usage.slug in slugLineMap)) {
             slugLineMap[usage.slug] = {
               name: usage.slug,
               color: '#DE1A60',
@@ -149,9 +149,15 @@ export default function ModelUsagePage() {
           <Input
             type="date"
             value={barChartDate?.toISOString().slice(0, 10)}
-            onChange={(event) =>
-              setBarChartDate(new Date(`${event.target.value}T00:00:00.000Z`))
-            }
+            onChange={(event) => {
+              if (event.target.value) {
+                setBarChartDate(
+                  new Date(`${event.target.value}T00:00:00.000Z`),
+                );
+              } else {
+                setBarChartDate(undefined);
+              }
+            }}
             mb="8"
             min={minBarChartDate?.toISOString()?.slice(0, 10)}
             max={maxBarChartDate?.toISOString()?.slice(0, 10)}
