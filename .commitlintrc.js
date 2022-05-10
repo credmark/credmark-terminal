@@ -22,6 +22,7 @@ module.exports = {
         'build',
         'chore',
         'ci',
+        'cleanup',
         'docs',
         'feat',
         'fix',
@@ -97,6 +98,11 @@ module.exports = {
             title: 'Reverts',
             emoji: '🗑',
           },
+          cleanup: {
+            description: 'Removes unwanted code',
+            title: 'Cleanup',
+            emoji: '🧹',
+          }
         },
       },
       scope: {
