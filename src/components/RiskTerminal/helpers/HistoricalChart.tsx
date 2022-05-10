@@ -126,7 +126,8 @@ export default function HistoricalChart({
         itemStyle: {
           color: line.color,
         },
-        data,
+        // Sort data for perfect connecting animation when changing duration
+        data: data.sort((a, b) => b[0].valueOf() - a[0].valueOf()),
       };
     });
   }, [duration, durations, isAreaChart, lines]);
