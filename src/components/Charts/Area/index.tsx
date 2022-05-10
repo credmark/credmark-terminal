@@ -3,6 +3,7 @@ import { Img, Spinner, Container, IconButton } from '@chakra-ui/react';
 import { EChartsOption, graphic as EChartsGraphic } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
+import { CSVLink } from 'react-csv';
 
 import { CmkDownloadIcon } from '~/components/Icons';
 import CmkArrowRight from '~/components/Icons/CmkArrowRight';
@@ -33,6 +34,8 @@ interface AreaChartProps {
   defaultDuration?: Duration;
 
   height?: number;
+  headerSummary?: string;
+  headerAmount?: string;
   minHeight?: number;
   padding?: number;
   gradient: string[];
@@ -47,6 +50,8 @@ export default function AreaChart({
   title,
   info,
   titleImg,
+  headerAmount,
+  headerSummary,
   yLabel,
   minHeight = 400,
   formatValue,
@@ -289,6 +294,24 @@ export default function AreaChart({
       setIsFullScreen(false);
     }
   };
+
+  const generateCsvFormat = () => {
+    const formattedCsvTitle = `${duration}-${title?.replace(/\s/g, '-')}`;
+
+    if (dataByDuration) {
+      const header = [title || 'Credmark Analytics', 'Amount'];
+      const values = dataByDuration
+        ?.map((o) => Object.values(o).join(','))
+        .join('\n');
+      return { header, values, formattedCsvTitle };
+    }
+    return {
+      header: [],
+      values: '',
+      formattedCsvTitle: 'credmark-token-analytics',
+    };
+  };
+
   return (
     <Container
       minWidth="320px"
@@ -301,16 +324,16 @@ export default function AreaChart({
       position="relative"
       minHeight={minHeight}
     >
-      {info && (
+      {(headerAmount || headerSummary) && (
         <Box position="absolute" top={10} left={1}>
           <Text
-            fontSize="lg"
+            fontSize="sm"
             pt="1"
             color="purple.500"
             paddingLeft="2"
             paddingBottom="2"
           >
-            24hr Volume: <strong>{info.volume}</strong>
+            {headerSummary} <strong>{headerAmount}</strong>
           </Text>
         </Box>
       )}
@@ -352,13 +375,18 @@ export default function AreaChart({
             alignItems="center"
             zIndex={99}
           >
-            <IconButton
-              aria-label="Download"
-              cursor="pointer"
-              backgroundColor="transparent"
-              icon={<CmkDownloadIcon fontSize="15" fill="#999999" />}
-              onClick={() => null}
-            />
+            {data ? (
+              <CSVLink
+                filename={`${generateCsvFormat().formattedCsvTitle.toLocaleLowerCase()}.csv`}
+                headers={generateCsvFormat().header}
+                data={generateCsvFormat().values}
+                style={{ display: 'flex' }}
+              >
+                <CmkDownloadIcon fontSize="15" fill="#999999" />
+              </CSVLink>
+            ) : (
+              <> </>
+            )}
             <IconButton
               aria-label="Fullscreen"
               cursor="pointer"

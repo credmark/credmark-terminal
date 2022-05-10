@@ -43,6 +43,10 @@ export default function AnalyticsPage() {
   const cmkAnalytics = useCmkAnalyticsData(90);
   const stakedCmkAnalytics = useStakedCmkAnalyticsData(90);
 
+  const latestData = cmkAnalytics.data?.sort((a, b) => b.ts - a.ts)[0];
+  const lateststakedCmkData = stakedCmkAnalytics.data?.sort(
+    (a, b) => b.ts - a.ts,
+  )[0];
   return (
     <Box
       minH="100vh"
@@ -77,6 +81,8 @@ export default function AnalyticsPage() {
                   value: Number(val.usdc_price),
                 })) ?? []
               }
+              headerSummary="Current Price:"
+              headerAmount={`$${latestData?.usdc_price ?? 0}`}
               title="Price of CMK"
               titleImg="/img/cmk.svg"
               gradient={['#08538C', '#3B0065']}
@@ -99,6 +105,8 @@ export default function AnalyticsPage() {
                   value: Number(val.amount_staked_usdc),
                 })) ?? []
               }
+              headerSummary="Total staked CMK:"
+              headerAmount={`$${lateststakedCmkData?.amount_staked_usdc}`}
               title="STAKED CMK"
               titleImg="/img/xcmk.svg"
               gradient={['#DE1A60', '#3B0065']}
@@ -128,6 +136,8 @@ export default function AnalyticsPage() {
                   value: Number(val.total_holders),
                 })) ?? []
               }
+              headerSummary="Wallets:"
+              headerAmount={`${latestData?.total_holders}`}
               title="CMK Holders"
               titleImg="/img/holder.svg"
               gradient={['#DE1A60', '#3B0065']}
@@ -149,9 +159,11 @@ export default function AnalyticsPage() {
                   value: Number(val.total_holders),
                 })) ?? []
               }
+              headerSummary="Total:"
+              headerAmount={`${lateststakedCmkData?.total_holders}`}
               title="STAKED WALLETS"
               titleImg="/img/wallet.svg"
-              gradient={['#3B0065', '#08538C']}
+              gradient={['#E21569', '#ebebeb']}
               formatValue={(val) => val.toFixed(0)}
               yLabel="WALLETS"
               height={380}
@@ -178,6 +190,8 @@ export default function AnalyticsPage() {
                   value: Number(val.volume_24h) * Number(val.usdc_price),
                 })) ?? []
               }
+              headerSummary="Total Volume:"
+              headerAmount={`$${latestData?.volume_24h}`}
               title="CMK 24H Trading Volume"
               titleImg="/img/cmk.svg"
               gradient={['#3B0065', '#08538C']}
@@ -199,14 +213,20 @@ export default function AnalyticsPage() {
                   value: Number(val.cmk_balance) / Number(val.total_holders),
                 })) ?? []
               }
+              headerSummary="Average:"
+              headerAmount={`$${
+                Number(lateststakedCmkData?.cmk_balance) /
+                Number(lateststakedCmkData?.total_holders)
+              }`}
               title="AVERAGE CMK AMOUNT STAKED"
               titleImg="/img/xcmk.svg"
-              gradient={['#DE1A60', '#3B0065']}
+              gradient={['#DE1A60']}
               formatValue={(val) => shortenNumber(val, 2)}
               yLabel="AMOUNT"
               height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
+              line
             />
           </LoadingOrShowData>
         </Container>
@@ -242,14 +262,17 @@ export default function AnalyticsPage() {
                   value: Number(val.staking_apr_percent),
                 })) ?? []
               }
+              headerSummary="Latest APR:"
+              headerAmount={`${lateststakedCmkData?.staking_apr_percent}%`}
               title="XCMK APR"
               titleImg="/img/xcmk.svg"
-              gradient={['#DE1A60', '#3B0065']}
+              gradient={['#DE1A60']}
               formatValue={(val) => val.toFixed(2) + '%'}
               yLabel="AMOUNT"
               height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
+              line
             />
           </LoadingOrShowData>
         </Container>

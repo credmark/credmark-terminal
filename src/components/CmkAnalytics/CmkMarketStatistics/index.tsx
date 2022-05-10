@@ -80,6 +80,8 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
             platform: { uniswap_v3: 'Uniswap', sushiswap: 'Sushiswap' }[m.app],
             app: m.app,
           }}
+          headerSummary="24hr Volume:"
+          headerAmount={`0`}
           data={
             data.map((val) => ({
               timestamp: new Date(val.ts * 1000),
