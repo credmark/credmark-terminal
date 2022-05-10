@@ -34,6 +34,8 @@ interface HistoricalChartProps extends BoxProps {
   height?: number;
   durations?: number[]; // In days
   defaultDuration?: number;
+  showCurrentStats?: boolean;
+  currentStats?: Array<{ label: React.ReactNode; value: string }>;
 }
 
 const ChartOverlay = chakra(Center, {
@@ -58,6 +60,8 @@ export default function HistoricalChart({
   height = 360,
   durations,
   defaultDuration,
+  showCurrentStats = false,
+  currentStats = [],
 
   ...boxProps
 }: HistoricalChartProps): JSX.Element {
@@ -261,8 +265,17 @@ export default function HistoricalChart({
 
   return (
     <Box {...boxProps}>
-      {Array.isArray(durations) && (
+      {(Array.isArray(durations) || showCurrentStats) && (
         <HStack align="center" p="2">
+          {showCurrentStats &&
+            currentStats.map(({ label, value }, index) => (
+              <Box key={index} textAlign="left">
+                <Text fontSize="sm">{label}</Text>
+                <Text fontSize="3xl" fontWeight="medium">
+                  {value}
+                </Text>
+              </Box>
+            ))}
           <Spacer />
           {loading && !noData && <Spinner color="purple.500" />}
           {(durations ?? []).map((days) => (
