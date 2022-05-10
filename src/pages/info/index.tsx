@@ -105,9 +105,9 @@ export default function AnalyticsPage() {
                   value: Number(val.amount_staked_usdc),
                 })) ?? []
               }
-              headerSummary="Total staked CMK:"
+              headerSummary="Amount Staked:"
               headerAmount={`$${lateststakedCmkData?.amount_staked_usdc}`}
-              title="STAKED CMK"
+              title="Staked CMK"
               titleImg="/img/xcmk.svg"
               gradient={['#DE1A60', '#3B0065']}
               formatValue={(val) => '$' + shortenNumber(val, 2)}
@@ -159,7 +159,7 @@ export default function AnalyticsPage() {
                   value: Number(val.total_holders),
                 })) ?? []
               }
-              headerSummary="Total:"
+              headerSummary="Wallets:"
               headerAmount={`${lateststakedCmkData?.total_holders}`}
               title="STAKED WALLETS"
               titleImg="/img/wallet.svg"
@@ -192,7 +192,7 @@ export default function AnalyticsPage() {
               }
               headerSummary="Total Volume:"
               headerAmount={`$${latestData?.volume_24h}`}
-              title="CMK 24H Trading Volume"
+              title="CMK 24hr Trading Volume"
               titleImg="/img/cmk.svg"
               gradient={['#3B0065', '#08538C']}
               formatValue={(val) => '$' + shortenNumber(val, 2)}
@@ -213,12 +213,12 @@ export default function AnalyticsPage() {
                   value: Number(val.cmk_balance) / Number(val.total_holders),
                 })) ?? []
               }
-              headerSummary="Average:"
+              headerSummary="CMK:"
               headerAmount={`$${
                 Number(lateststakedCmkData?.cmk_balance) /
                 Number(lateststakedCmkData?.total_holders)
               }`}
-              title="AVERAGE CMK AMOUNT STAKED"
+              title="Avg CMK Staked per Wallet"
               titleImg="/img/xcmk.svg"
               gradient={['#DE1A60']}
               formatValue={(val) => shortenNumber(val, 2)}
@@ -262,7 +262,7 @@ export default function AnalyticsPage() {
                   value: Number(val.staking_apr_percent),
                 })) ?? []
               }
-              headerSummary="Latest APR:"
+              headerSummary="Current APR:"
               headerAmount={`${lateststakedCmkData?.staking_apr_percent}%`}
               title="XCMK APR"
               titleImg="/img/xcmk.svg"
