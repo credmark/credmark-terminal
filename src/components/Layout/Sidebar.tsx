@@ -201,12 +201,28 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
         />
         <NavItem
           label="DEXs"
-          isActive={router.pathname === '/terminal/dex'}
+          isFocused={router.pathname.startsWith('/terminal/dex')}
           subNav={[
-            { label: 'Uniswap V1', isDisabled: true },
-            { label: 'Uniswap V2', isDisabled: true },
-            { label: 'Curve', isDisabled: true },
-            { label: 'Sushiswap', isDisabled: true },
+            {
+              label: 'Uniswap V2',
+              href: '/terminal/dex/uniswap-v2',
+              isActive: router.pathname === '/terminal/dex/uniswap-v2',
+            },
+            {
+              label: 'Uniswap V3',
+              href: '/terminal/dex/uniswap-v3',
+              isActive: router.pathname === '/terminal/dex/uniswap-v3',
+            },
+            {
+              label: 'Curve',
+              href: '/terminal/dex/curve',
+              isActive: router.pathname === '/terminal/dex/curve',
+            },
+            {
+              label: 'Sushiswap',
+              href: '/terminal/dex/sushi',
+              isActive: router.pathname === '/terminal/dex/sushi',
+            },
           ]}
         />
       </VStack>
