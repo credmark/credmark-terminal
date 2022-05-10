@@ -1,13 +1,16 @@
 import {
   Box,
+  BoxProps,
   Center,
   chakra,
+  HStack,
+  Spacer,
   Spinner,
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
 import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
@@ -20,7 +23,7 @@ export interface Line {
   }>;
 }
 
-interface HistoricalChartProps {
+interface HistoricalChartProps extends BoxProps {
   lines: Line[];
   loading?: boolean;
   error?: string;
@@ -29,6 +32,8 @@ interface HistoricalChartProps {
   onChartReady?: (chart: EChartsInstance) => void;
   isAreaChart?: boolean;
   height?: number;
+  durations?: number[]; // In days
+  defaultDuration?: number;
 }
 
 const ChartOverlay = chakra(Center, {
@@ -51,11 +56,35 @@ export default function HistoricalChart({
   onChartReady,
   isAreaChart,
   height = 360,
+  durations,
+  defaultDuration,
+
+  ...boxProps
 }: HistoricalChartProps): JSX.Element {
   const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
+  const [duration, setDuration] = useState(defaultDuration); // In Days
 
   const series = useMemo(() => {
     return lines.map((line) => {
+      let data: [Date, number][] = [];
+      if (Array.isArray(durations) && typeof duration === 'number') {
+        const lineData = line.data.sort(
+          (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
+        );
+
+        const startTs =
+          lineData.length > 0
+            ? lineData[lineData.length - 1].timestamp.valueOf()
+            : 0;
+
+        const endTs = startTs > 0 ? startTs - duration * 24 * 3600 * 1000 : 0;
+        data = lineData
+          .filter((dp) => dp.timestamp.valueOf() > endTs)
+          .map(({ timestamp, value }) => [timestamp, value]);
+      } else {
+        data = line.data.map(({ timestamp, value }) => [timestamp, value]);
+      }
+
       return {
         name: line.name,
         type: 'line',
@@ -93,10 +122,10 @@ export default function HistoricalChart({
         itemStyle: {
           color: line.color,
         },
-        data: line.data.map(({ timestamp, value }) => [timestamp, value]),
+        data,
       };
     });
-  }, [isAreaChart, lines]);
+  }, [duration, durations, isAreaChart, lines]);
 
   const option = useMemo(() => {
     return {
@@ -231,28 +260,55 @@ export default function HistoricalChart({
     lines.reduce((dataLength, line) => dataLength + line.data.length, 0) === 0;
 
   return (
-    <Box position="relative">
-      <ReactEChartsCore
-        option={option}
-        lazyUpdate={true}
-        notMerge={true}
-        style={{
-          height: height + 'px',
-        }}
-        onChartReady={onChartReady}
-      />
-      {loading && noData && (
-        <ChartOverlay>
-          <Spinner color="purple.500" />
-        </ChartOverlay>
+    <Box {...boxProps}>
+      {Array.isArray(durations) && (
+        <HStack align="center" p="2">
+          <Spacer />
+          {loading && !noData && <Spinner color="purple.500" />}
+          {(durations ?? []).map((days) => (
+            <Box
+              key={days}
+              p="2"
+              fontWeight="bold"
+              color={duration === days ? 'gray.900' : 'gray.300'}
+              cursor="pointer"
+              onClick={() => setDuration(days)}
+              _hover={
+                duration === days
+                  ? {}
+                  : {
+                      color: 'gray.700',
+                    }
+              }
+            >
+              {days}D
+            </Box>
+          ))}
+        </HStack>
       )}
-      {error && (
-        <ChartOverlay>
-          <Text bg="red.50" color="red.600" p="4" rounded="md" fontSize="sm">
-            {error}
-          </Text>
-        </ChartOverlay>
-      )}
+      <Box position="relative">
+        <ReactEChartsCore
+          option={option}
+          lazyUpdate={true}
+          notMerge={true}
+          style={{
+            height: height + 'px',
+          }}
+          onChartReady={onChartReady}
+        />
+        {loading && noData && (
+          <ChartOverlay>
+            <Spinner color="purple.500" />
+          </ChartOverlay>
+        )}
+        {error && (
+          <ChartOverlay>
+            <Text bg="red.50" color="red.600" p="4" rounded="md" fontSize="sm">
+              {error}
+            </Text>
+          </ChartOverlay>
+        )}
+      </Box>
     </Box>
   );
 }
