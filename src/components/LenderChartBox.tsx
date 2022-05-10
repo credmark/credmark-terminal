@@ -10,7 +10,9 @@ import { AssetKey, MetricInfo } from '~/types/terminal';
 
 import InfoPopover from './InfoPopover';
 import { ASSETS } from './RiskTerminal/constants';
-import HistoricalChart, { Line } from './RiskTerminal/helpers/HistoricalChart';
+import HistoricalChart, {
+  ChartLine,
+} from './RiskTerminal/helpers/HistoricalChart';
 
 interface LenderChartBoxProps {
   metric: MetricInfo;
@@ -39,7 +41,7 @@ export default function LenderChartBox({
   }, [containerWidth]);
 
   const chartLines = useMemo(() => {
-    const lines: Array<Line> = [];
+    const lines: Array<ChartLine> = [];
 
     for (const asset of ASSETS) {
       if (!activeAssets.includes(asset.key)) continue;
