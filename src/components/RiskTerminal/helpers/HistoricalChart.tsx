@@ -1,4 +1,11 @@
-import { Box, Center, Spinner, useBreakpointValue } from '@chakra-ui/react';
+import {
+  Box,
+  Center,
+  chakra,
+  Spinner,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react';
 import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
@@ -16,6 +23,7 @@ export interface Line {
 interface HistoricalChartProps {
   lines: Line[];
   loading?: boolean;
+  error?: string;
   formatValue?: (value: number) => string;
   showLegend?: boolean;
   onChartReady?: (chart: EChartsInstance) => void;
@@ -23,10 +31,22 @@ interface HistoricalChartProps {
   height?: number;
 }
 
+const ChartOverlay = chakra(Center, {
+  baseStyle: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    p: 8,
+  },
+});
+
 export default function HistoricalChart({
   lines,
   loading = false,
-  formatValue,
+  error,
+  formatValue = (value: number) => String(value),
   showLegend = false,
   onChartReady,
   isAreaChart,
@@ -125,9 +145,7 @@ export default function HistoricalChart({
               <div style="display: flex; margin-bottom: 2px;">
                 <div>${param.marker}</div>
                 <div style="flex: 1">${series}</div>
-                <strong style="margin-left: 16px">${
-                  formatValue ? formatValue(value) : value
-                }</strong>
+                <strong style="margin-left: 16px">${formatValue(value)}</strong>
               </div>
               `;
           }
@@ -209,6 +227,9 @@ export default function HistoricalChart({
     };
   }, [formatValue, series, showLegend, legendWidth]);
 
+  const noData =
+    lines.reduce((dataLength, line) => dataLength + line.data.length, 0) === 0;
+
   return (
     <Box position="relative">
       <ReactEChartsCore
@@ -220,10 +241,17 @@ export default function HistoricalChart({
         }}
         onChartReady={onChartReady}
       />
-      {loading && (
-        <Center position="absolute" top="0" left="0" right="0" bottom="0">
+      {loading && noData && (
+        <ChartOverlay>
           <Spinner color="purple.500" />
-        </Center>
+        </ChartOverlay>
+      )}
+      {error && (
+        <ChartOverlay>
+          <Text bg="red.50" color="red.600" p="4" rounded="md" fontSize="sm">
+            {error}
+          </Text>
+        </ChartOverlay>
       )}
     </Box>
   );
