@@ -43,7 +43,9 @@ import {
 } from '~/types/model';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
-import HistoricalChart, { Line } from '../RiskTerminal/helpers/HistoricalChart';
+import HistoricalChart, {
+  ChartLine,
+} from '../RiskTerminal/helpers/HistoricalChart';
 
 interface ModelOutputProps {
   model: CModelMetadata;
@@ -211,7 +213,7 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
     }
   }, [chartValueKeys, transformInput]);
 
-  const lines = useMemo<Line[]>(() => {
+  const lines = useMemo<ChartLine[]>(() => {
     let evaluate: (scope: Record<string, math.BigNumber>) => math.BigNumber;
     if (transformInput.trim()) {
       try {
@@ -235,7 +237,7 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
       return _get(record, key?.relativePath ?? 0) ?? 0;
     }
 
-    const line: Line = {
+    const line: ChartLine = {
       color: '#DE1A60',
       name: model.displayName ?? model.slug,
       data: ((result as BlockSeries).series ?? []).map((s) => {

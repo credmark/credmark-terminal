@@ -14,7 +14,7 @@ import React, { useMemo, useState } from 'react';
 
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
-export interface Line {
+export interface ChartLine {
   name: string;
   color: string;
   data: Array<{
@@ -24,7 +24,7 @@ export interface Line {
 }
 
 interface HistoricalChartProps extends BoxProps {
-  lines: Line[];
+  lines: ChartLine[];
   loading?: boolean;
   error?: string;
   formatValue?: (value: number) => string;

@@ -1,9 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
 
-import { Line } from '~/components/RiskTerminal/helpers/HistoricalChart';
+import { ChartLine } from '~/components/RiskTerminal/helpers/HistoricalChart';
 
 interface UseLineChartProps {
-  defaultLines?: Line[];
+  defaultLines?: ChartLine[];
   formatValue?: (value: number) => string;
 }
 
@@ -11,9 +11,9 @@ export function useLineChart({
   defaultLines = [],
   formatValue = (value: number) => String(value),
 }: UseLineChartProps) {
-  const [lines, setLines] = useState<Line[]>(defaultLines);
+  const [lines, setLines] = useState<ChartLine[]>(defaultLines);
 
-  const setLine = useCallback((line: Line | undefined) => {
+  const setLine = useCallback((line: ChartLine | undefined) => {
     setLines(line ? [line] : []);
   }, []);
 
@@ -61,7 +61,7 @@ export function useSingleLineChart({
   });
 
   const updateData = useCallback(
-    (data: Line['data']) => {
+    (data: ChartLine['data']) => {
       setLine({
         name,
         color,

@@ -13,7 +13,7 @@ import Highlighter from 'react-highlight-words';
 
 import BarChart from '~/components/Charts/BarChart';
 import HistoricalChart, {
-  Line,
+  ChartLine,
 } from '~/components/RiskTerminal/helpers/HistoricalChart';
 
 interface ModelUsage {
@@ -24,7 +24,11 @@ interface ModelUsage {
   count: string;
 }
 
-const chakraStyles: ChakraStylesConfig<Line, false, GroupBase<Line>> = {
+const chakraStyles: ChakraStylesConfig<
+  ChartLine,
+  false,
+  GroupBase<ChartLine>
+> = {
   dropdownIndicator: (provided) => ({
     ...provided,
     background: 'transparent',
@@ -44,7 +48,7 @@ const chakraStyles: ChakraStylesConfig<Line, false, GroupBase<Line>> = {
 
 export default function ModelUsagePage() {
   const [loading, setLoading] = useState(false);
-  const [lines, setLines] = useState<Line[]>([]);
+  const [lines, setLines] = useState<ChartLine[]>([]);
   const [barChartDateRange, setBarChartDateRange] = useState<[Date, Date]>();
 
   const [barChartDate, setBarChartDate] = useState<Date>();
@@ -64,7 +68,7 @@ export default function ModelUsagePage() {
     setLoading(true);
     loadUsage()
       .then((list) => {
-        const slugLineMap: Record<string, Line> = {};
+        const slugLineMap: Record<string, ChartLine> = {};
 
         let minDate: Date | undefined;
         let maxDate: Date | undefined;
@@ -118,10 +122,10 @@ export default function ModelUsagePage() {
   const [slug, setSlug] = useState('');
 
   const customComponents = useMemo<
-    SelectComponentsConfig<Line, false, GroupBase<Line>>
+    SelectComponentsConfig<ChartLine, false, GroupBase<ChartLine>>
   >(() => {
     return {
-      Option: (props: OptionProps<Line, false, GroupBase<Line>>) => (
+      Option: (props: OptionProps<ChartLine, false, GroupBase<ChartLine>>) => (
         <chakraComponents.Option {...props}>
           <Box>
             <Text fontSize="lg">
@@ -172,7 +176,7 @@ export default function ModelUsagePage() {
           />
         </Box>
         <Box flex="1" position="sticky" top="8" left="0" right="0">
-          <Select<Line, false, GroupBase<Line>>
+          <Select<ChartLine, false, GroupBase<ChartLine>>
             placeholder="Select a model..."
             options={lines}
             filterOption={(option, filterValue) =>
