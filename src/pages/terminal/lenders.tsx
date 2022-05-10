@@ -217,6 +217,7 @@ export default function LendersPage() {
                   ? setExpandedMetric(undefined)
                   : setExpandedMetric(metric.key)
               }
+              isExpanded={expandedMetric === metric.key}
             />
           </GridItem>
         ))}
