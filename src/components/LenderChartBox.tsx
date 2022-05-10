@@ -1,16 +1,7 @@
-import {
-  Box,
-  Center,
-  Flex,
-  HStack,
-  Icon,
-  Img,
-  Spinner,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Center, Flex, HStack, Icon, Img, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { EChartsInstance } from 'echarts-for-react';
-import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { CSVLink } from 'react-csv';
 import { IoDownloadOutline, IoExpandSharp } from 'react-icons/io5';
 
@@ -19,7 +10,7 @@ import { AssetKey, MetricInfo } from '~/types/terminal';
 
 import InfoPopover from './InfoPopover';
 import { ASSETS } from './RiskTerminal/constants';
-import HistoricalChart from './RiskTerminal/helpers/HistoricalChart';
+import HistoricalChart, { Line } from './RiskTerminal/helpers/HistoricalChart';
 
 interface LenderChartBoxProps {
   metric: MetricInfo;
@@ -27,6 +18,7 @@ interface LenderChartBoxProps {
   lcrData: Record<AssetKey, ReturnType<typeof useLcrData>>;
   varData: Record<AssetKey, ReturnType<typeof useVarData>>;
   onExpand: () => void;
+  isExpanded: boolean;
 }
 
 export default function LenderChartBox({
@@ -35,26 +27,19 @@ export default function LenderChartBox({
   lcrData,
   varData,
   onExpand,
+  isExpanded,
 }: LenderChartBoxProps) {
   const chartRef = useRef<EChartsInstance>();
   const containerRef = useRef(null);
 
   const [containerWidth] = useSize(containerRef);
-  const [duration, setDuration] = useState(30); // In Days
 
   useLayoutEffect(() => {
     chartRef.current?.resize();
   }, [containerWidth]);
 
   const chartLines = useMemo(() => {
-    const lines: Array<{
-      name: string;
-      color: string;
-      data: Array<{
-        timestamp: Date;
-        value: number;
-      }>;
-    }> = [];
+    const lines: Array<Line> = [];
 
     for (const asset of ASSETS) {
       if (!activeAssets.includes(asset.key)) continue;
@@ -65,24 +50,15 @@ export default function LenderChartBox({
       const lcrDataPoints = lcrData[asset.key].data ?? [];
       const varDataPoints = varData[asset.key].data ?? [];
 
-      const lineData = metric.chartLine(lcrDataPoints, varDataPoints);
-
-      const startTs =
-        lineData.length > 0
-          ? lineData[lineData.length - 1].timestamp.valueOf()
-          : 0;
-
-      const endTs = startTs > 0 ? startTs - duration * 24 * 3600 * 1000 : 0;
-
       lines.push({
         name: `${asset.title} - ${metric.label}`,
         color: asset.color.toString(),
-        data: lineData.filter((dp) => dp.timestamp.valueOf() > endTs),
+        data: metric.chartLine(lcrDataPoints, varDataPoints),
       });
     }
 
     return lines;
-  }, [activeAssets, duration, lcrData, metric, varData]);
+  }, [activeAssets, lcrData, metric, varData]);
 
   const currentStats = useMemo(() => {
     const tls: Record<AssetKey, string> = {
@@ -168,10 +144,7 @@ export default function LenderChartBox({
         {metric.tooltip && <InfoPopover>{metric.tooltip}</InfoPopover>}
         <Box flex="1" />
         <CSVLink
-          filename={`${metric.label.replaceAll(
-            ' ',
-            '_',
-          )}[${duration}d][Credmark].csv`}
+          filename={`${metric.label.replaceAll(' ', '_')}[Credmark].csv`}
           headers={csvLinkProps.headers}
           data={csvLinkProps.data}
           style={{ display: 'flex' }}
@@ -181,73 +154,66 @@ export default function LenderChartBox({
         <Icon cursor="pointer" onClick={onExpand} as={IoExpandSharp} />
       </HStack>
       <Flex bg="white" roundedBottom="md">
-        <Flex
-          direction="column"
-          alignSelf="stretch"
-          borderRight="2px"
-          borderColor="gray.200"
-        >
-          {ASSETS.map((asset, assetIndex) => (
-            <Center
-              textAlign="center"
-              key={asset.key}
-              flex="1"
-              p="4"
-              borderBottom={assetIndex < ASSETS.length - 1 ? '2px' : 0}
-              borderColor="gray.200"
-              flexDirection="column"
-            >
-              <HStack opacity={activeAssets.includes(asset.key) ? 1 : 0.4}>
+        {!isExpanded && (
+          <Flex
+            direction="column"
+            alignSelf="stretch"
+            borderRight="2px"
+            borderColor="gray.200"
+          >
+            {ASSETS.map((asset, assetIndex) => (
+              <Center
+                textAlign="center"
+                key={asset.key}
+                flex="1"
+                p="4"
+                borderBottom={assetIndex < ASSETS.length - 1 ? '2px' : 0}
+                borderColor="gray.200"
+                flexDirection="column"
+              >
+                <HStack opacity={activeAssets.includes(asset.key) ? 1 : 0.4}>
+                  <Box w="6">
+                    <Img src={asset.logo} />
+                  </Box>
+                  <Text>{asset.title}</Text>
+                </HStack>
+                <Text
+                  fontSize="3xl"
+                  fontWeight="500"
+                  mt="1"
+                  opacity={activeAssets.includes(asset.key) ? 1 : 0.4}
+                >
+                  {currentStats[asset.key]}
+                </Text>
+              </Center>
+            ))}
+          </Flex>
+        )}
+        <HistoricalChart
+          flex="1"
+          lines={chartLines}
+          loading={loading}
+          formatValue={metric.formatValue}
+          onChartReady={(chart) => (chartRef.current = chart)}
+          isAreaChart={metric.chartType === 'area'}
+          durations={[30, 60, 90]}
+          defaultDuration={30}
+          showCurrentStats={isExpanded}
+          currentStats={ASSETS.map((asset) => ({
+            label: (
+              <HStack
+                opacity={activeAssets.includes(asset.key) ? 1 : 0.4}
+                mx="2"
+              >
                 <Box w="6">
                   <Img src={asset.logo} />
                 </Box>
                 <Text>{asset.title}</Text>
               </HStack>
-              <Text
-                fontSize="3xl"
-                fontWeight="500"
-                mt="1"
-                opacity={activeAssets.includes(asset.key) ? 1 : 0.4}
-              >
-                {currentStats[asset.key]}
-              </Text>
-            </Center>
-          ))}
-        </Flex>
-        <Box flex="1">
-          <Flex align="center" justifyContent="flex-end" pr="4" pb="4">
-            {chartLines.length !== 0 && loading && (
-              <Spinner color="purple.500" />
-            )}
-            {[30, 60, 90].map((days) => (
-              <Box
-                key={days}
-                p="2"
-                mx="2"
-                fontWeight="bold"
-                color={duration === days ? 'gray.900' : 'gray.300'}
-                cursor="pointer"
-                onClick={() => setDuration(days)}
-                _hover={
-                  duration === days
-                    ? {}
-                    : {
-                        color: 'gray.700',
-                      }
-                }
-              >
-                {days}D
-              </Box>
-            ))}
-          </Flex>
-          <HistoricalChart
-            lines={chartLines}
-            loading={loading}
-            formatValue={metric.formatValue}
-            onChartReady={(chart) => (chartRef.current = chart)}
-            isAreaChart={metric.chartType === 'area'}
-          />
-        </Box>
+            ),
+            value: String(currentStats[asset.key]),
+          }))}
+        />
       </Flex>
     </Box>
   );
