@@ -83,7 +83,9 @@ export default function AnalyticsPage() {
                 })) ?? []
               }
               headerSummary="Current Price:"
-              headerAmount={`$${latestData?.usdc_price ?? 0}`}
+              headerAmount={`$${Number(latestData?.usdc_price ?? 0).toFixed(
+                2,
+              )}`}
               title="Price of CMK"
               titleImg="/img/cmk.svg"
               gradient={['#08538C', '#3B0065']}
@@ -107,7 +109,10 @@ export default function AnalyticsPage() {
                 })) ?? []
               }
               headerSummary="Amount Staked:"
-              headerAmount={`$${lateststakedCmkData?.amount_staked_usdc}`}
+              headerAmount={`$${shortenNumber(
+                Number(lateststakedCmkData?.amount_staked_usdc),
+                0,
+              )}`}
               title="Staked CMK"
               titleImg="/img/xcmk.svg"
               gradient={['#DE1A60', '#3B0065']}
@@ -138,7 +143,10 @@ export default function AnalyticsPage() {
                 })) ?? []
               }
               headerSummary="Wallets:"
-              headerAmount={`${latestData?.total_holders}`}
+              headerAmount={`${shortenNumber(
+                Number(latestData?.total_holders),
+                0,
+              )}`}
               title="CMK Holders"
               titleImg="/img/holder.svg"
               gradient={['#DE1A60', '#3B0065']}
@@ -161,7 +169,10 @@ export default function AnalyticsPage() {
                 })) ?? []
               }
               headerSummary="Wallets:"
-              headerAmount={`${lateststakedCmkData?.total_holders}`}
+              headerAmount={`${shortenNumber(
+                Number(lateststakedCmkData?.total_holders),
+                0,
+              )}`}
               title="STAKED WALLETS"
               titleImg="/img/wallet.svg"
               gradient={['#E21569', '#ebebeb']}
@@ -192,7 +203,10 @@ export default function AnalyticsPage() {
                 })) ?? []
               }
               headerSummary="Total Volume:"
-              headerAmount={`$${latestData?.volume_24h}`}
+              headerAmount={`$${shortenNumber(
+                Number(latestData?.volume_24h),
+                0,
+              )}`}
               title="CMK 24hr Trading Volume"
               titleImg="/img/cmk.svg"
               gradient={['#3B0065', '#08538C']}
@@ -215,10 +229,11 @@ export default function AnalyticsPage() {
                 })) ?? []
               }
               headerSummary="CMK:"
-              headerAmount={`$${
+              headerAmount={`$${shortenNumber(
                 Number(lateststakedCmkData?.cmk_balance) /
-                Number(lateststakedCmkData?.total_holders)
-              }`}
+                  Number(lateststakedCmkData?.total_holders),
+                0,
+              )}`}
               title="Avg CMK Staked per Wallet"
               titleImg="/img/xcmk.svg"
               gradient={['#DE1A60']}
@@ -264,7 +279,10 @@ export default function AnalyticsPage() {
                 })) ?? []
               }
               headerSummary="Current APR:"
-              headerAmount={`${lateststakedCmkData?.staking_apr_percent}%`}
+              headerAmount={`${shortenNumber(
+                Number(lateststakedCmkData?.staking_apr_percent),
+                0,
+              )}%`}
               title="XCMK APR"
               titleImg="/img/xcmk.svg"
               gradient={['#DE1A60']}

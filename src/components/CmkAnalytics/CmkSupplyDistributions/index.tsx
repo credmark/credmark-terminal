@@ -67,7 +67,7 @@ export default function CmkSupplyDistributions({
                   Number(cmkData.supply_distribution.team_allocated) +
                   Number(cmkData.supply_distribution.team_unallocated) +
                   Number(cmkData.supply_distribution.vesting_unallocated)),
-              itemStyle: { color: '#DE1A60' },
+              itemStyle: { color: '#DB1976' },
               name: 'Public',
             },
             {
@@ -83,7 +83,7 @@ export default function CmkSupplyDistributions({
                 Number(cmkData.supply_distribution.team_allocated) +
                 Number(cmkData.supply_distribution.team_unallocated) +
                 Number(cmkData.supply_distribution.vesting_unallocated),
-              itemStyle: { color: '#08538C' },
+              itemStyle: { color: '#00BD84' },
               name: 'Locked',
             },
           ],
@@ -109,12 +109,12 @@ export default function CmkSupplyDistributions({
                   Number(cmkData.supply_distribution.team_unallocated) +
                   Number(cmkData.supply_distribution.vesting_unallocated) +
                   Number(xcmkData.cmk_balance)),
-              itemStyle: { color: '#F2005F' },
+              itemStyle: { color: '#DB1976' },
               name: 'Public Circulating Supply',
             },
             {
               value: xcmkData.cmk_balance,
-              itemStyle: { color: '#FF007C' },
+              itemStyle: { color: '#BC1565' },
               name: 'CMK Staked',
             },
             {
@@ -124,27 +124,27 @@ export default function CmkSupplyDistributions({
             },
             {
               value: cmkData.supply_distribution.dao_treasury,
-              itemStyle: { color: '#5D0096' },
+              itemStyle: { color: '#590099' },
               name: 'DAO Treasury',
             },
             {
               value: cmkData.supply_distribution.investor,
-              itemStyle: { color: '#005999' },
+              itemStyle: { color: '#00996B' },
               name: 'Investors',
             },
             {
               value: cmkData.supply_distribution.team_allocated,
-              itemStyle: { color: '#006bb8' },
+              itemStyle: { color: '#00AD7A' },
               name: 'Team & Founders',
             },
             {
               value: cmkData.supply_distribution.team_unallocated,
-              itemStyle: { color: '#007dd6' },
+              itemStyle: { color: '#00BD84' },
               name: 'Team Unallocated',
             },
             {
               value: cmkData.supply_distribution.vesting_unallocated,
-              itemStyle: { color: '#008ff5' },
+              itemStyle: { color: '#00D696' },
               name: 'Vesting Unallocated',
             },
           ],
@@ -218,24 +218,24 @@ export default function CmkSupplyDistributions({
           onClick={toggleFullScreen}
         />
       </Box>
-      <HStack mx="8" justify="space-between">
-        <Text
-          textAlign="center"
-          fontSize="lg"
-          bgGradient="linear(135deg, #08538C, #3B0065)"
-          bgClip="text"
-          px="4"
-          rounded="md"
-          lineHeight="1.1"
-        >
-          TOTAL SUPPLY
-          <br />{' '}
-          <Text as="span" fontWeight="bold">
-            {shortenNumber(Number(cmkData.total_supply), 0)} CMK
-          </Text>
-        </Text>
-      </HStack>
+
       <Box position="relative">
+        <Box position="absolute" top={0} left={1}>
+          <Text
+            fontSize="sm"
+            pt="1"
+            color="purple.500"
+            paddingLeft="2"
+            paddingBottom="2"
+          >
+            Total Supply:{' '}
+            <strong>
+              {' '}
+              {shortenNumber(Number(cmkData.total_supply), 0)} CMK
+            </strong>
+          </Text>
+        </Box>
+
         <ReactEChartsCore
           option={option}
           notMerge={true}
