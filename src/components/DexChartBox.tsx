@@ -112,7 +112,7 @@ export default function DexChartBox({
     const endDate = new Date();
     // 90 days before today or contract creation time, whichever is latest
     const startDate = new Date(
-      Math.max(new Date().valueOf() - 2 * 24 * 3600 * 1000, createdAt),
+      Math.max(new Date().valueOf() - 90 * 24 * 3600 * 1000, createdAt),
     );
 
     axios({
