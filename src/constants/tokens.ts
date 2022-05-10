@@ -1,4 +1,4 @@
-import { Token } from '@uniswap/sdk-core';
+import { Currency, Ether, Token } from '@uniswap/sdk-core';
 
 import {
   CMK_ADDRESSES,
@@ -44,6 +44,14 @@ export const USDC: { [chainId: number]: Token } = {
   [3]: new Token(3, USDC_ADDRESSES[3], 6, 'USDC', 'USD//C'),
   [5]: new Token(5, USDC_ADDRESSES[5], 6, 'USDC', 'USD//C'),
   [42]: new Token(42, USDC_ADDRESSES[42], 6, 'USDC', 'USD//C'),
+};
+
+export const ETH: { [chainId: number]: Currency } = {
+  [1]: Ether.onChain(1),
+  [4]: Ether.onChain(4),
+  [3]: Ether.onChain(3),
+  [5]: Ether.onChain(5),
+  [42]: Ether.onChain(42),
 };
 
 export const USDT = new Token(
@@ -123,6 +131,166 @@ export const MIR = new Token(
   18,
   'MIR',
   'Wrapped MIR',
+);
+
+export const ILV = new Token(
+  1,
+  '0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E',
+  18,
+  'ILV',
+  'Illuvium',
+);
+
+export const BIT = new Token(
+  1,
+  '0x1A4b46696b2bB4794Eb3D4c26f1c55F9170fa4C5',
+  18,
+  'BIT',
+  'BitDAO',
+);
+
+export const TOKE = new Token(
+  1,
+  '0x2e9d63788249371f1DFC918a52f8d799F4a38C94',
+  18,
+  'TOKE',
+  'Tokemak',
+);
+
+export const OHM = new Token(
+  1,
+  '0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5',
+  9,
+  'OHM',
+  'Olympus',
+);
+
+export const JPEG = new Token(
+  1,
+  '0xe80c0cd204d654cebe8dd64a4857cab6be8345a3',
+  18,
+  'JPEG',
+  "JPEG'd",
+);
+
+export const SUSHI = new Token(
+  1,
+  '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2',
+  18,
+  'SUSHI',
+  'SushiToken',
+);
+
+export const stETH = new Token(
+  1,
+  '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
+  18,
+  'stETH',
+  'Liquid staked Ether 2.0',
+);
+
+export const THREE_CRV = new Token(
+  1,
+  '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',
+  18,
+  '3Crv',
+  'Curve.fi DAI/USDC/USDT',
+);
+
+export const MIM = new Token(
+  1,
+  '0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3',
+  18,
+  'MIM',
+  'Magic Internet Money',
+);
+
+export const cyDAI = new Token(
+  1,
+  '0x8e595470Ed749b85C6F7669de83EAe304C2ec68F',
+  8,
+  'cyDAI',
+  'Iron Bank Dai Stablecoin',
+);
+
+export const cyUSDC = new Token(
+  1,
+  '0x76Eb2FE28b36B3ee97F3Adae0C69606eeDB2A37c',
+  8,
+  'cyUSDC',
+  'Iron Bank USD Coin',
+);
+
+export const cyUSDT = new Token(
+  1,
+  '0x48759F220ED983dB51fA7A8C0D2AAb8f3ce4166a',
+  8,
+  'cyUSDT',
+  'Iron Bank Tether USD',
+);
+
+export const cvxFXS = new Token(
+  1,
+  '0xFEEf77d3f69374f66429C91d732A244f074bdf74',
+  18,
+  'cvxFXS',
+  'Convex FXS',
+);
+
+export const CRV = new Token(
+  1,
+  '0xD533a949740bb3306d119CC777fa900bA034cd52',
+  18,
+  'CRV',
+  'Curve DAO Token',
+);
+
+export const cvxCRV = new Token(
+  1,
+  '0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7',
+  18,
+  'cvxCRV',
+  'Convex CRV',
+);
+
+export const sETH2 = new Token(
+  1,
+  '0xFe2e637202056d30016725477c5da089Ab0A043A',
+  18,
+  'sETH2',
+  'StakeWise Staked ETH2',
+);
+
+export const WISE = new Token(
+  1,
+  '0x66a0f676479Cee1d7373f3DC2e2952778BfF5bd6',
+  18,
+  'WISE',
+  'Wise Token',
+);
+
+export const MC = new Token(
+  1,
+  '0x949D48EcA67b17269629c7194F4b727d4Ef9E5d6',
+  18,
+  'MC',
+  'Merit Circle',
+);
+
+export const SYN = new Token(
+  1,
+  '0x0f2D719407FdBeFF09D87557AbB7232601FD9F29',
+  18,
+  'SYN',
+  'Synapse',
+);
+
+export const FNK = new Token(
+  1,
+  '0xB5FE099475d3030DDe498c3BB6F3854F762A48Ad',
+  18,
+  'FNK',
+  'Finiko',
 );
 
 export const UNI: { [chainId: number]: Token } = {
