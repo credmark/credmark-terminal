@@ -61,6 +61,7 @@ const MintChart = React.memo(
   (prevProps, nextProps) =>
     prevProps.activeTier.label === nextProps.activeTier.label &&
     prevProps.selectedAmount === nextProps.selectedAmount &&
+    prevProps.setSelectedAmount === nextProps.setSelectedAmount &&
     JSBI.equal(prevProps.rewardCmkPerSecond, nextProps.rewardCmkPerSecond) &&
     JSBI.equal(prevProps.totalCmkShares, nextProps.totalCmkShares),
 );
@@ -594,6 +595,7 @@ export default function ApiAccessMintPage() {
               rewardCmkPerSecond={rewardCmkPerSecond}
               totalCmkShares={totalCmkShares}
               selectedAmount={Number(usdcAmount)}
+              setSelectedAmount={onUsdcAmountChange}
             />
             <Box
               position="absolute"
