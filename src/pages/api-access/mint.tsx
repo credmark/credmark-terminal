@@ -22,7 +22,13 @@ import { CurrencyAmount } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   MdApi,
   MdArrowBack,
@@ -47,6 +53,7 @@ import { CMK, USDC } from '~/constants/tokens';
 import useUSDCPrice from '~/hooks/useUSDCPrice';
 import { useActiveWeb3React } from '~/hooks/web3';
 import { useHiddenSidebar } from '~/state/application/hooks';
+import { useTokenBalance } from '~/state/wallet/hooks';
 import { tryParseAmount } from '~/utils/tryParseAmount';
 
 const MintChart = React.memo(
@@ -98,6 +105,8 @@ export default function ApiAccessMintPage() {
 
   const [usdcAmount, setUsdcAmount] = useState('0');
   const [cmkAmount, setCmkAmount] = useState('0');
+
+  const maxUsdcAmount = useTokenBalance(account ?? undefined, usdc);
 
   const rewardCmkPerSecond = JSBI.multiply(
     JSBI.BigInt(10),
@@ -180,6 +189,46 @@ export default function ApiAccessMintPage() {
     }
   }
 
+  const [isAmountTouched, setAmountTouched] = useState(false);
+
+  const onUsdcAmountChange = useCallback(
+    (value: string | number, touched = true) => {
+      value = String(value);
+      setUsdcAmount(value);
+      setAmountTouched(touched);
+      const parsedUsdcAmount = tryParseAmount(value, usdc);
+      if (parsedUsdcAmount && usdcPrice) {
+        setCmkAmount(
+          usdcPrice.invert().quote(parsedUsdcAmount).toSignificant(6),
+        );
+      } else {
+        setCmkAmount('0');
+      }
+    },
+    [usdc, usdcPrice],
+  );
+
+  useEffect(() => {
+    if (!isAmountTouched) {
+      onUsdcAmountChange('10000', false);
+    }
+  }, [isAmountTouched, onUsdcAmountChange]);
+
+  const onCmkAmountChange = useCallback(
+    (value: string | number, touched = true) => {
+      value = String(value);
+      setCmkAmount(value);
+      setAmountTouched(touched);
+      const parsedCmkAmount = tryParseAmount(value, cmk);
+      if (parsedCmkAmount && usdcPrice) {
+        setUsdcAmount(usdcPrice.quote(parsedCmkAmount).toSignificant(6));
+      } else {
+        setUsdcAmount('0');
+      }
+    },
+    [cmk, usdcPrice],
+  );
+
   return (
     <Container maxW="full" py="20" minH="90vh">
       <Box>
@@ -210,29 +259,30 @@ export default function ApiAccessMintPage() {
               align="center"
             >
               <Input
-                flex="1"
                 variant="unstyled"
                 rounded="none"
                 fontSize="lg"
-                value={usdcAmount}
-                onChange={(e) => {
-                  setUsdcAmount(e.target.value);
-                  const parsedUsdcAmount = tryParseAmount(e.target.value, usdc);
-                  if (parsedUsdcAmount && usdcPrice) {
-                    setCmkAmount(
-                      usdcPrice
-                        .invert()
-                        .quote(parsedUsdcAmount)
-                        .toSignificant(6),
-                    );
-                  } else {
-                    setCmkAmount('0');
-                  }
-                }}
+                value={Number(usdcAmount).toLocaleString(navigator.language)}
+                onChange={(e) =>
+                  onUsdcAmountChange(e.target.value.replaceAll(',', ''), true)
+                }
               />
-              <Text fontSize="sm" userSelect="none" color="gray.300">
+              <Box fontSize="sm" userSelect="none" color="gray.300" flex="1">
                 USDC
-              </Text>
+              </Box>
+              <Button
+                ml="2"
+                size="sm"
+                h="27px"
+                variant="outline"
+                rounded="full"
+                fontSize="xs"
+                onClick={() => {
+                  onUsdcAmountChange(maxUsdcAmount?.toExact() ?? '0');
+                }}
+              >
+                Max
+              </Button>
             </Flex>
           </Box>
           <Box>
@@ -243,18 +293,10 @@ export default function ApiAccessMintPage() {
                 variant="unstyled"
                 rounded="none"
                 fontSize="lg"
-                value={cmkAmount}
-                onChange={(e) => {
-                  setCmkAmount(e.target.value);
-                  const parsedCmkAmount = tryParseAmount(e.target.value, cmk);
-                  if (parsedCmkAmount && usdcPrice) {
-                    setUsdcAmount(
-                      usdcPrice.quote(parsedCmkAmount).toSignificant(6),
-                    );
-                  } else {
-                    setUsdcAmount('0');
-                  }
-                }}
+                value={Number(cmkAmount).toLocaleString(navigator.language)}
+                onChange={(e) =>
+                  onCmkAmountChange(e.target.value.replaceAll(',', ''), true)
+                }
               />
               <Text fontSize="sm" userSelect="none" color="gray.300">
                 CMK
