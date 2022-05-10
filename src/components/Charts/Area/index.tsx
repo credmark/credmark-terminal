@@ -296,7 +296,7 @@ export default function AreaChart({
   };
 
   const generateCsvFormat = () => {
-    const formattedCsvTitle = `${duration}-${title?.replace(/\s/g, '-')}`;
+    const formattedCsvTitle = `${duration}d-${title?.replace(/\s/g, '-')}`;
 
     if (dataByDuration) {
       const header = [title || 'Credmark Analytics', 'Amount'];

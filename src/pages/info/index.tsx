@@ -50,6 +50,7 @@ export default function AnalyticsPage() {
   return (
     <Box
       minH="100vh"
+      width="100%"
       bg="linear-gradient(135deg, #DE1A600C 0%, #3B00650C 50%, #08538C0C 100%)"
     >
       <Container
