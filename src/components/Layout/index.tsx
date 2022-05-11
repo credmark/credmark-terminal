@@ -9,9 +9,9 @@ import {
   HStack,
   Img,
   Link,
+  useBreakpointValue,
   useDisclosure,
   UseDisclosureReturn,
-  useMediaQuery,
 } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 
@@ -60,7 +60,7 @@ export default function Layout({ children }: LayoutProps) {
   const mobileSidebar = useDisclosure();
   const isSidebarVisible = useSidebarVisibility();
 
-  const [isMobile] = useMediaQuery('(max-width: 992px)');
+  const isMobile = useBreakpointValue<boolean>({ base: true, lg: false });
 
   useEffect(() => {
     if (!isMobile) mobileSidebar.onClose();
@@ -75,7 +75,7 @@ export default function Layout({ children }: LayoutProps) {
         maxW="100vw"
         templateColumns={{
           base: '1fr',
-          md: isSidebarVisible ? '240px 1fr' : '1fr',
+          lg: isSidebarVisible ? '288px 1fr' : '1fr',
         }}
         templateRows="min-content 1fr min-content"
         templateAreas={{
@@ -84,7 +84,7 @@ export default function Layout({ children }: LayoutProps) {
           "content"
           "footer"
         `,
-          md: isSidebarVisible
+          lg: isSidebarVisible
             ? `
           "navbar navbar"
           "sidebar content"
@@ -102,8 +102,8 @@ export default function Layout({ children }: LayoutProps) {
         </GridItem>
 
         {isSidebarVisible && (
-          <GridItem gridArea="sidebar" display={{ base: 'none', md: 'block' }}>
-            <Sidebar fixedWidth={60} />
+          <GridItem gridArea="sidebar" display={{ base: 'none', lg: 'block' }}>
+            <Sidebar fixedWidth={72} />
           </GridItem>
         )}
 

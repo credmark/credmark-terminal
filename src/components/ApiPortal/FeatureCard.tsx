@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   HStack,
   Icon,
@@ -7,49 +6,55 @@ import {
   VStack,
   Text,
   BoxProps,
+  ButtonProps,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React from 'react';
 import { IconType } from 'react-icons';
 
-interface FeatureBoxProps extends BoxProps {
+import Card from '../Base/Card';
+
+interface FeatureCardProps extends BoxProps {
   title: string;
   subtitle: string;
-  features: Array<{ icon: IconType; text: string }>;
+  features: Array<{ icon: IconType | typeof Icon; text: string }>;
   actionButton:
     | {
         label: string;
-        icon: IconType;
+        icon?: IconType | typeof Icon;
         isDisabled: true;
       }
     | {
         href: string;
         label: string;
-        icon: IconType;
+        icon?: IconType | typeof Icon;
+        isExternal?: boolean;
       };
 }
 
-export default function FeatureBox({
+export default function FeatureCard({
   title,
   subtitle,
   features,
   actionButton,
   ...boxProps
-}: FeatureBoxProps) {
-  return (
-    <Box
-      shadow="xl"
-      rounded="sm"
-      bg="white"
-      alignSelf="center"
-      px="6"
-      py="8"
-      {...boxProps}
+}: FeatureCardProps) {
+  const ActionButton = (buttonProps: ButtonProps) => (
+    <Button
+      colorScheme="pink"
+      leftIcon={actionButton.icon ? <Icon as={actionButton.icon} /> : undefined}
+      {...buttonProps}
     >
-      <Text fontSize={'xl'} fontWeight={'bold'}>
+      {actionButton.label}
+    </Button>
+  );
+
+  return (
+    <Card alignSelf="center" {...boxProps}>
+      <Text fontSize={'2xl'} fontWeight={'bold'}>
         {title}
       </Text>
-      <Text color="gray.700" fontWeight={300}>
+      <Text color="gray.700" fontSize="lg" fontWeight={300}>
         {subtitle}
       </Text>
       <VStack my="8" align="stretch" spacing="3">
@@ -66,25 +71,22 @@ export default function FeatureBox({
       </VStack>
 
       {'isDisabled' in actionButton ? (
-        <Button
-          colorScheme="pink"
-          leftIcon={<Icon as={actionButton.icon} />}
-          isDisabled
+        <ActionButton isDisabled />
+      ) : actionButton.isExternal ? (
+        <Link
+          _hover={{ textDecoration: 'none' }}
+          href={actionButton.href}
+          isExternal
         >
-          {actionButton.label}
-        </Button>
+          <ActionButton />
+        </Link>
       ) : (
         <NextLink href={actionButton.href} passHref>
           <Link _hover={{ textDecoration: 'none' }}>
-            <Button
-              colorScheme="pink"
-              leftIcon={<Icon as={actionButton.icon} />}
-            >
-              {actionButton.label}
-            </Button>
+            <ActionButton />
           </Link>
         </NextLink>
       )}
-    </Box>
+    </Card>
   );
 }

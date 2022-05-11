@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IconType } from 'react-icons';
 import {
   IoCaretBackSharp,
@@ -31,6 +31,7 @@ interface NavItemProps extends BoxProps {
   isFocused?: boolean;
   isDisabled?: boolean;
   href?: string;
+  isExternal?: boolean;
   onClick?: () => void;
 
   backIcon?: boolean;
@@ -45,6 +46,7 @@ function NavItem({
   isFocused = false,
   isDisabled = false,
   href,
+  isExternal,
   onClick,
   backIcon,
   forwardIcon,
@@ -107,7 +109,15 @@ function NavItem({
     );
   }
 
-  if (href) {
+  if (href && isExternal) {
+    return (
+      <Link _hover={{ textDecoration: 'none' }} href={href} isExternal>
+        {inner}
+      </Link>
+    );
+  }
+
+  if (href && !isExternal) {
     return (
       <NextLink href={href} passHref>
         <Link _hover={{ textDecoration: 'none' }}>{inner}</Link>
@@ -130,19 +140,29 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
       { icon: MdOutlineHome, label: 'Home', href: '/' },
       {
         icon: CmkTerminalIcon,
-        label: 'Risk Terminal',
+        label: 'Credmark Terminal',
         isFocused: router.pathname.startsWith('/terminal'),
         onClick: () => setShowTerminalItems(true),
         forwardIcon: true,
       },
-      { icon: MdApi, label: 'Membership', href: '/api-access' },
-      { icon: MdCode, label: 'Model Development', isDisabled: true },
+      {
+        icon: MdApi,
+        label: 'API Access',
+        href: 'https://gateway.credmark.com/api',
+        isExternal: true,
+      },
+      {
+        icon: MdCode,
+        label: 'Model Framework',
+        href: 'https://github.com/credmark/credmark-models-py',
+        isExternal: true,
+      },
       { icon: MdOutlineVerified, label: 'Model Validation', isDisabled: true },
     ],
     [router.pathname],
   );
 
-  const terminalItems = useMemo<NavItemProps[]>(
+  const terminalItems: NavItemProps[] = useMemo(
     () => [
       {
         icon: MdOutlineHome,
@@ -178,26 +198,34 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
     [router.pathname],
   );
 
-  function getLinks(items: NavItemProps[]): string[] {
-    const links: string[] = [];
-    for (const item of items) {
-      if (item.href) {
-        links.push(item.href);
+  const terminalLinks: string[] = useMemo(() => {
+    function getLinks(items: NavItemProps[]): string[] {
+      const links: string[] = [];
+      for (const item of items) {
+        if (item.href) {
+          links.push(item.href);
+        }
+
+        if (Array.isArray(item.subNav)) {
+          links.push(...getLinks(item.subNav));
+        }
       }
 
-      if (Array.isArray(item.subNav)) {
-        links.push(...getLinks(item.subNav));
-      }
+      return links;
     }
 
-    return links;
-  }
-
-  const terminalLinks = getLinks(terminalItems);
+    return getLinks(terminalItems);
+  }, [terminalItems]);
 
   const [showTerminalItems, setShowTerminalItems] = useState(
     terminalLinks.includes(router.pathname),
   );
+
+  useEffect(() => {
+    if (terminalLinks.includes(router.pathname)) {
+      setShowTerminalItems(true);
+    }
+  }, [router.pathname, terminalLinks]);
 
   return (
     <Box

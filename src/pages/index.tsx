@@ -1,147 +1,83 @@
-import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  HStack,
-  Stack,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Container, Stack, VStack } from '@chakra-ui/react';
 import React from 'react';
-import { MdAnalytics, MdHistory, MdLock, MdQueryStats } from 'react-icons/md';
-
-import CodeTerminal from '~/components/ApiPortal/CodeTerminal';
-import FeatureBox from '~/components/ApiPortal/FeatureBox';
 import {
-  CmkLogoIcon,
-  MdDiamondIcon,
-  MdRocketLaunchIcon,
-} from '~/components/Icons';
+  MdApi,
+  MdAttachMoney,
+  MdBolt,
+  MdHistory,
+  MdInsights,
+  MdLock,
+  MdOutlineAnalytics,
+  MdOutlineDataExploration,
+  MdOutlineFileDownload,
+  MdOutlineVerified,
+  MdQueryStats,
+} from 'react-icons/md';
+
+import FeatureCard from '~/components/ApiPortal/FeatureCard';
+import { Card } from '~/components/Base';
+import MdDecentralizedIcon from '~/components/Icons/MdDecentralizedIcon';
 
 export default function HomePage() {
   return (
-    <VStack spacing="8" pb="20">
-      <Box w="full" bg="white" p={'5'} roundedBottomLeft="sm" shadow="md">
-        <Stack direction="row" spacing="8">
-          <Text fontSize="2xl" fontWeight="thin">
-            Your Credmark Membership NFT
-          </Text>
-          <Button colorScheme="purple" variant="outline">
-            Coming Soon...
-          </Button>
-        </Stack>
-
-        <HStack align="center" mt={4} spacing="8">
-          <HStack>
-            <CmkLogoIcon color="purple.500" boxSize="5" />
-            <Text fontSize="sm">
-              Access the Credmark ecosystem in a unique way
-            </Text>
-          </HStack>
-          <HStack>
-            <MdRocketLaunchIcon color="purple.500" boxSize="5" />
-            <Text fontSize="14" fontWeight={'400'}>
-              Earn &amp; boost staking rewards for your CMK
-            </Text>
-          </HStack>
-          <HStack mb="4">
-            <MdDiamondIcon color="purple.500" boxSize="5" />
-            <Text fontSize="14" fontWeight={'400'}>
-              Get your personal access NFT
-            </Text>
-          </HStack>
-        </HStack>
-      </Box>
-
+    <VStack spacing="20" py="20">
       <Container maxW="container.lg">
-        <Flex>
-          <Box py="8" zIndex="1">
-            <FeatureBox
-              maxW="360px"
-              title="API Gateway"
-              subtitle="High Integrity Risk and Data Models"
-              features={[
-                {
-                  icon: MdAnalytics,
-                  text: 'Fine-tuned data aggregation and nomination for 1st, 2nd and 3rd order Data',
-                },
-                {
-                  icon: MdHistory,
-                  text: 'Completed historical data',
-                },
-                {
-                  icon: MdQueryStats,
-                  text: 'Direct query of output  from risk models',
-                },
-              ]}
-              actionButton={{
-                href: '/api-access/tiers',
-                label: 'Get Access',
-                icon: MdLock,
-              }}
-            />
-          </Box>
-          <Box
-            zIndex="0"
-            ml="-40"
+        <Box position="relative">
+          <Card
+            position="absolute"
+            top="0"
+            right="0"
+            bottom="0"
+            w="80%"
             flex="1"
             bgImg="/img/terminal-graph.svg"
             bgPosition="bottom"
             bgSize="cover"
-            bgColor="white"
             shadow="md"
-          ></Box>
-        </Flex>
+          />
+          <Box py="8" position="relative">
+            <FeatureCard
+              maxW="360px"
+              title="Credmark Terminal"
+              subtitle="Visualize DeFi Analytics with Intuitive Graphs"
+              features={[
+                {
+                  icon: MdInsights,
+                  text: 'Visualized crypto analytics',
+                },
+                {
+                  icon: MdOutlineDataExploration,
+                  text: 'Market data & risk metrics for various protocols',
+                },
+                {
+                  icon: MdHistory,
+                  text: 'Historic data up to 90 days',
+                },
+                {
+                  icon: MdOutlineFileDownload,
+                  text: 'Export data to CSV',
+                },
+              ]}
+              actionButton={{
+                href: '/terminal/dex/uniswap-v2',
+                label: 'View Terminal',
+              }}
+            />
+          </Box>
+        </Box>
       </Container>
 
-      <Flex p={8} pos={'relative'}>
-        <Box
-          bg="black"
-          w={{ base: '100%', md: '50rem' }}
-          borderRadius="5"
-          color="white"
-          px="8"
-        >
-          <CodeTerminal speed={100} />
-        </Box>
-
-        <FeatureBox
-          w="360px"
-          ml="-40"
-          title="API Gateway"
-          subtitle="High Integrity Risk and Data Models"
-          features={[
-            {
-              icon: MdAnalytics,
-              text: 'Fine-tuned data aggregation and nomination for 1st, 2nd and 3rd order Data',
-            },
-            {
-              icon: MdHistory,
-              text: 'Completed historical data',
-            },
-            {
-              icon: MdQueryStats,
-              text: 'Direct query of output  from risk models',
-            },
-          ]}
-          actionButton={{
-            href: '/api-access/tiers',
-            label: 'Get Access',
-            icon: MdLock,
-          }}
-        />
-      </Flex>
-
-      <Container maxW="container.lg">
-        <Stack direction={{ base: 'column', md: 'row' }} spacing="8">
-          <FeatureBox
+      <Container maxW="container.xl">
+        <Stack direction={{ base: 'column', lg: 'row' }} spacing="8">
+          <FeatureCard
+            w={{ base: '360px', md: '480px', lg: 'auto' }}
+            alignSelf={{ base: 'center', lg: 'stretch' }}
             flex="1"
             title="API Gateway"
             subtitle="High Integrity Risk and Data Models"
             features={[
               {
-                icon: MdAnalytics,
+                icon: MdOutlineAnalytics,
                 text: 'Fine-tuned data aggregation and nomination for 1st, 2nd and 3rd order Data',
               },
               {
@@ -150,37 +86,66 @@ export default function HomePage() {
               },
               {
                 icon: MdQueryStats,
-                text: 'Direct query of output  from risk models',
+                text: 'Direct query of output from risk models',
               },
             ]}
             actionButton={{
-              href: '/api-access/tiers',
+              href: 'https://gateway.credmark.com/api',
+              isExternal: true,
+              label: 'Get Access',
+              icon: MdApi,
+            }}
+          />
+          <FeatureCard
+            w={{ base: '360px', md: '480px', lg: 'auto' }}
+            alignSelf={{ base: 'center', lg: 'stretch' }}
+            flex="1"
+            title="Model Framework"
+            subtitle="Rapid Prototyping and Deployment"
+            features={[
+              {
+                icon: MdDecentralizedIcon,
+                text: 'Abstracts away the complexity of web3 coding',
+              },
+              {
+                icon: MdHistory,
+                text: 'Complete real-time and historical data',
+              },
+              {
+                icon: MdBolt,
+                text: 'Model search engine with example scripts to start immediately',
+              },
+            ]}
+            actionButton={{
+              href: 'https://github.com/credmark/credmark-models-py',
+              isExternal: true,
               label: 'Get Access',
               icon: MdLock,
             }}
           />
-          <FeatureBox
+          <FeatureCard
+            w={{ base: '360px', md: '480px', lg: 'auto' }}
+            alignSelf={{ base: 'center', lg: 'stretch' }}
             flex="1"
-            title="API Gateway"
-            subtitle="High Integrity Risk and Data Models"
+            title="Model Validation"
+            subtitle="Earn Rewards for Model Assessment"
             features={[
               {
-                icon: MdAnalytics,
-                text: 'Fine-tuned data aggregation and nomination for 1st, 2nd and 3rd order Data',
-              },
-              {
-                icon: MdHistory,
-                text: 'Completed historical data',
-              },
-              {
                 icon: MdQueryStats,
-                text: 'Direct query of output  from risk models',
+                text: 'Perform quality assessment and curation of new models',
+              },
+              {
+                icon: MdOutlineVerified,
+                text: 'Vote on new model submissions for implementation',
+              },
+              {
+                icon: MdAttachMoney,
+                text: 'Be rewarded to do the work of validating models',
               },
             ]}
             actionButton={{
-              href: '/api-access/tiers',
-              label: 'Get Access',
-              icon: MdLock,
+              label: 'Coming Soon...',
+              isDisabled: true,
             }}
           />
         </Stack>

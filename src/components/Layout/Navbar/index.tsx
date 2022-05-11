@@ -9,7 +9,6 @@ import {
   IconButton,
   UseDisclosureReturn,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
 import React from 'react';
 import { IoChevronDown, IoChevronUp, IoMenuSharp } from 'react-icons/io5';
 
@@ -23,12 +22,12 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
 
   return (
     <Box>
-      <HStack bg="purple.500" px={{ base: 4, md: 8 }} py="2">
+      <HStack bg="purple.500" px={{ base: 4, lg: 8 }} py="2">
         <IconButton
           variant="unstyled"
           colorScheme="whiteAlpha"
           color="white"
-          display={{ md: 'none' }}
+          display={{ lg: 'none' }}
           size="sm"
           aria-label="Menu"
           fontSize="2xl"
@@ -47,17 +46,13 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
           <Img src="/img/logo-white-full.svg" h="40px" />
         </Link>
         <Box flex="1"></Box>
-        <HStack spacing="4" display={{ base: 'none', md: 'flex' }}>
-          <NextLink href="/info">
-            <Link color="white">Analytics</Link>
-          </NextLink>
-
+        <HStack spacing="4" display={{ base: 'none', lg: 'flex' }}>
           <Link
             color="white"
-            href="https://docs.credmark.com/credmark-wiki"
+            href="https://docs.credmark.com/dealing-with-risks/"
             isExternal
           >
-            Credmark Wiki
+            Risk library
           </Link>
 
           <Web3Status />
@@ -66,7 +61,7 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
           variant="unstyled"
           colorScheme="whiteAlpha"
           color="white"
-          display={{ md: 'none' }}
+          display={{ lg: 'none' }}
           size="sm"
           aria-label="More items"
           fontSize="2xl"
@@ -91,19 +86,18 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
       <Collapse in={mobileNav.isOpen} animateOpacity>
         <HStack
           spacing="4"
-          display={{ base: 'flex', md: 'none' }}
+          display={{ base: 'flex', lg: 'none' }}
           bg="purple.500"
           py="2"
           justify="center"
         >
-          <NextLink href="/info">
-            <Link color="white">Analytics</Link>
-          </NextLink>
-
-          <NextLink href="/terminal">
-            <Link color="white">Risk Library</Link>
-          </NextLink>
-
+          <Link
+            color="white"
+            href="https://docs.credmark.com/dealing-with-risks/"
+            isExternal
+          >
+            Risk Library
+          </Link>
           <Web3Status />
         </HStack>
       </Collapse>
