@@ -81,7 +81,21 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
             app: m.app,
           }}
           headerSummary="24hr Volume:"
-          headerAmount={`0`}
+          headerAmount={`$${shortenNumber(
+            data
+              .sort((a, b) => b.ts - a.ts)
+              .map((val) => ({
+                timestamp: new Date(val.ts * 1000),
+                value:
+                  Number(
+                    val.markets.find(
+                      (vm) =>
+                        vm.address.toLowerCase() === m.address.toLowerCase(),
+                    )?.volume_24h ?? '0',
+                  ) * Number(val.usdc_price),
+              }))[0].value || 0,
+            0,
+          ).toString()}`}
           data={
             data.map((val) => ({
               timestamp: new Date(val.ts * 1000),
