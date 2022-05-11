@@ -59,6 +59,7 @@ const pools = [
   {
     pool: '0xd658A338613198204DCa1143Ac3F01A722b5d94A',
     tokens: [cvxFXS, FXS],
+    createdAt: 1645574400000,
   },
   {
     pool: '0x9D0464996170c6B9e75eED71c68B99dDEDf279e8',
