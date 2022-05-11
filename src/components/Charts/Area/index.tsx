@@ -1,6 +1,6 @@
 import { Box, Center, Flex, HStack, Text } from '@chakra-ui/layout';
 import { Img, Spinner, Container, IconButton } from '@chakra-ui/react';
-import { EChartsOption, graphic as EChartsGraphic } from 'echarts';
+import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
 import { CSVLink } from 'react-csv';
@@ -35,6 +35,7 @@ interface AreaChartProps {
 
   height?: number;
   headerSummary?: string;
+  lineColor?: string;
   headerAmount?: string;
   minHeight?: number;
   padding?: number;
@@ -51,6 +52,7 @@ export default function AreaChart({
   info,
   titleImg,
   headerAmount,
+  lineColor,
   headerSummary,
   yLabel,
   minHeight = 400,
@@ -90,16 +92,6 @@ export default function AreaChart({
       .map((dp) => [dp.timestamp, dp.value])
       .reverse();
   }, [data, duration, loading]);
-
-  // TODO: remove this if its not needed
-  // const currentValue = useMemo(() => {
-  //   if (data && data.length > 0) {
-  //     const sorted = data.sort(
-  //       (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
-  //     );
-  //     return sorted[sorted.length - 1].value;
-  //   }
-  // }, [data]);
 
   const option: EChartsOption = useMemo(
     () => ({
@@ -230,53 +222,51 @@ export default function AreaChart({
       ],
       series: [
         {
-          smooth: 1,
-          sampling: 'max',
           type: 'line',
           symbol: 'circle',
           symbolSize: 10,
           showSymbol: false,
-          itemStyle: {
-            color: '#E53E3E',
-          },
-          lineStyle: line
+          areaStyle: !line
             ? {
+                opacity: 0.325,
                 color: {
                   type: 'linear',
                   x: 0,
                   y: 0,
-                  x2: 1,
+                  x2: 0,
                   y2: 1,
-                  colorStops: gradient.map((color, index) => ({
-                    color,
-                    offset: index,
-                  })),
-                  global: false, // default is false
+                  colorStops: gradient.map((color, index) => {
+                    console.log('color', color);
+                    return {
+                      color,
+                      offset: index,
+                    };
+                  }),
                 },
               }
-            : {
-                width: 0,
-              },
+            : undefined,
           label: {
             fontWeight: 800,
           },
-          areaStyle: !line
-            ? {
-                opacity: 1,
-                color: new EChartsGraphic.LinearGradient(
-                  0,
-                  0,
-                  0,
-                  1,
-                  gradient.map((color, index) => ({ color, offset: index })),
-                ),
-              }
-            : undefined,
+          lineStyle: {
+            color: lineColor || '#3B0065',
+          },
+          itemStyle: {
+            color: 'blue',
+          },
           data: dataByDuration,
         },
       ],
     }),
-    [data?.length, dataByDuration, formatValue, gradient, line, yLabel],
+    [
+      data?.length,
+      dataByDuration,
+      lineColor,
+      formatValue,
+      gradient,
+      line,
+      yLabel,
+    ],
   );
 
   const currentPriceHeight = 0;

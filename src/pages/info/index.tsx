@@ -76,6 +76,7 @@ export default function AnalyticsPage() {
             hasData={!!cmkAnalytics.data}
           >
             <AreaChart
+              lineColor="#825F96"
               data={
                 cmkAnalytics.data?.map((val) => ({
                   timestamp: new Date(val.ts * 1000),
@@ -115,7 +116,8 @@ export default function AnalyticsPage() {
               )}`}
               title="Staked CMK"
               titleImg="/img/xcmk.svg"
-              gradient={['#DE1A60', '#3B0065']}
+              lineColor="#DB197699"
+              gradient={['#e215691a', '#ffffff']}
               formatValue={(val) => '$' + shortenNumber(val, 2)}
               yLabel="AMOUNT STAKED"
               height={380}
@@ -149,7 +151,8 @@ export default function AnalyticsPage() {
               )}`}
               title="CMK Holders"
               titleImg="/img/holder.svg"
-              gradient={['#DE1A60', '#3B0065']}
+              lineColor="#825F96"
+              gradient={['#5b009033', '#ffffff']}
               formatValue={(val) => val.toFixed(0)}
               yLabel="HOLDERS"
               height={380}
@@ -175,7 +178,8 @@ export default function AnalyticsPage() {
               )}`}
               title="STAKED WALLETS"
               titleImg="/img/wallet.svg"
-              gradient={['#E21569', '#ebebeb']}
+              lineColor="#DB197699"
+              gradient={['#e215691a', '#ffffff']}
               formatValue={(val) => val.toFixed(0)}
               yLabel="WALLETS"
               height={380}
@@ -209,12 +213,14 @@ export default function AnalyticsPage() {
               )}`}
               title="CMK 24hr Trading Volume"
               titleImg="/img/cmk.svg"
-              gradient={['#3B0065', '#08538C']}
+              lineColor="#825F96"
+              gradient={['#5b009033', '#ffffff']}
               formatValue={(val) => '$' + shortenNumber(val, 2)}
               yLabel="TOTAL VOLUME"
               height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
+              line
             />
           </LoadingOrShowData>
           <LoadingOrShowData
@@ -236,13 +242,13 @@ export default function AnalyticsPage() {
               )}`}
               title="Avg CMK Staked per Wallet"
               titleImg="/img/xcmk.svg"
-              gradient={['#DE1A60']}
+              lineColor="#DB197699"
+              gradient={['#e215691a', '#ffffff']}
               formatValue={(val) => shortenNumber(val, 2)}
               yLabel="AMOUNT"
               height={380}
               durations={[30, 60, 90]}
               defaultDuration={60}
-              line
             />
           </LoadingOrShowData>
         </Container>
@@ -285,7 +291,8 @@ export default function AnalyticsPage() {
               )}%`}
               title="XCMK APR"
               titleImg="/img/xcmk.svg"
-              gradient={['#DE1A60']}
+              lineColor="#DB197699"
+              gradient={['#e215691a', '#ffffff']}
               formatValue={(val) => val.toFixed(2) + '%'}
               yLabel="AMOUNT"
               height={380}

@@ -96,13 +96,13 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
           }
           titleImg={m.titleImg}
           formatValue={(val) => '$' + shortenNumber(val, 0)}
-          gradient={['#E21569']}
+          lineColor="#825F96"
+          gradient={['#5b009033', '#ffffff']}
           yLabel="Amount"
           durations={[30, 60, 90]}
           defaultDuration={60}
           height={380}
           minHeight={450}
-          line
         />
       ))}
     </>
