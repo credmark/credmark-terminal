@@ -1,4 +1,4 @@
-import { Box, Container, Heading, HStack, Input, Text } from '@chakra-ui/react';
+import { Box, Container, Input, Text } from '@chakra-ui/react';
 import axios from 'axios';
 import {
   chakraComponents,
@@ -8,9 +8,10 @@ import {
   Select,
   SelectComponentsConfig,
 } from 'chakra-react-select';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 
+import { Card } from '~/components/Base';
 import BarChart from '~/components/Charts/BarChart';
 import HistoricalChart, {
   ChartLine,
@@ -55,37 +56,46 @@ export default function ModelUsagePage() {
 
   const [minBarChartDate, maxBarChartDate] = barChartDateRange ?? [];
 
-  const loadUsage = useCallback(async () => {
-    const resp = await axios({
-      method: 'GET',
-      url: 'https://gateway.credmark.com/v1/usage/requests',
-    });
-
-    return resp.data as ModelUsage[];
-  }, []);
+  const color = '#DE1A60';
 
   useEffect(() => {
     setLoading(true);
-    loadUsage()
-      .then((list) => {
+
+    const abortController = new AbortController();
+    axios({
+      method: 'GET',
+      signal: abortController.signal,
+      url: 'https://gateway.credmark.com/v1/usage/requests',
+    })
+      .then((resp) => {
+        const list = resp.data as ModelUsage[];
         const slugLineMap: Record<string, ChartLine> = {};
+        const allModelsDataMap: Record<number, ChartLine['data'][0]> = {};
 
         let minDate: Date | undefined;
         let maxDate: Date | undefined;
+
         for (const usage of list) {
           if (!(usage.slug in slugLineMap)) {
             slugLineMap[usage.slug] = {
               name: usage.slug,
-              color: '#DE1A60',
+              color,
               data: [],
             };
           }
 
           const timestamp = new Date(usage.ts);
+          const value = Number(usage.count);
           slugLineMap[usage.slug].data.push({
             timestamp,
-            value: Number(usage.count),
+            value,
           });
+
+          if (!(timestamp.valueOf() in allModelsDataMap)) {
+            allModelsDataMap[timestamp.valueOf()] = { timestamp, value: 0 };
+          }
+
+          allModelsDataMap[timestamp.valueOf()].value += value;
 
           if (!maxDate || timestamp > maxDate) maxDate = timestamp;
           if (!minDate || timestamp < minDate) minDate = timestamp;
@@ -96,12 +106,23 @@ export default function ModelUsagePage() {
           setBarChartDate(maxDate);
         }
 
-        setLines(Object.values(slugLineMap));
+        setLines([
+          {
+            name: 'All Models',
+            color,
+            data: Object.values(allModelsDataMap),
+          },
+          ...Object.values(slugLineMap),
+        ]);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [loadUsage]);
+
+    return () => {
+      abortController.abort();
+    };
+  }, []);
 
   const barChartData = useMemo(() => {
     const data: Array<{ category: string; value: number }> = [];
@@ -119,7 +140,7 @@ export default function ModelUsagePage() {
   }, [barChartDate, lines]);
 
   const [searchInput, setSearchInput] = useState('');
-  const [slug, setSlug] = useState('');
+  const [slug, setSlug] = useState('All Models');
 
   const customComponents = useMemo<
     SelectComponentsConfig<ChartLine, false, GroupBase<ChartLine>>
@@ -144,40 +165,10 @@ export default function ModelUsagePage() {
 
   return (
     <Container maxW="container.lg" p="8">
-      <Heading mb="8" color="purple.500">
-        Credmark Models Usage
-      </Heading>
-
-      <HStack align="start" spacing="8">
-        <Box flex="1">
-          <Input
-            type="date"
-            value={barChartDate?.toISOString().slice(0, 10)}
-            onChange={(event) => {
-              if (event.target.value) {
-                setBarChartDate(
-                  new Date(`${event.target.value}T00:00:00.000Z`),
-                );
-              } else {
-                setBarChartDate(undefined);
-              }
-            }}
-            mb="8"
-            min={minBarChartDate?.toISOString()?.slice(0, 10)}
-            max={maxBarChartDate?.toISOString()?.slice(0, 10)}
-          />
-
-          <BarChart
-            loading={loading}
-            data={barChartData}
-            height={Math.max(barChartData.length * 32, 300)}
-            padding={0}
-            onClick={(slug) => setSlug(slug)}
-          />
-        </Box>
-        <Box flex="1" position="sticky" top="8" left="0" right="0">
+      <Card>
+        <Box maxW="480px">
           <Select<ChartLine, false, GroupBase<ChartLine>>
-            placeholder="Select a model..."
+            placeholder={loading ? 'Loading Models...' : 'Select a Model...'}
             options={lines}
             filterOption={(option, filterValue) =>
               option.data.name
@@ -194,15 +185,43 @@ export default function ModelUsagePage() {
             inputValue={searchInput}
             onInputChange={(input) => setSearchInput(input)}
           />
-          <Box h="8"></Box>
-          <HistoricalChart
-            loading={loading}
-            lines={lines.filter((line) => line.name === slug)}
-            isAreaChart
-            height={540}
+        </Box>
+        <HistoricalChart
+          loading={loading}
+          lines={lines.filter((line) => line.name === slug)}
+          height={300}
+          durations={[30, 60, 90]}
+          defaultDuration={90}
+        />
+      </Card>
+
+      <Card mt="8">
+        <Box maxW="480px">
+          <Input
+            type="date"
+            value={barChartDate?.toISOString().slice(0, 10)}
+            onChange={(event) => {
+              if (event.target.value) {
+                setBarChartDate(
+                  new Date(`${event.target.value}T00:00:00.000Z`),
+                );
+              } else {
+                setBarChartDate(undefined);
+              }
+            }}
+            mb="8"
+            min={minBarChartDate?.toISOString()?.slice(0, 10)}
+            max={maxBarChartDate?.toISOString()?.slice(0, 10)}
           />
         </Box>
-      </HStack>
+        <BarChart
+          loading={loading}
+          data={barChartData}
+          height={Math.max(barChartData.length * 32, 300)}
+          padding={0}
+          onClick={(slug) => setSlug(slug)}
+        />
+      </Card>
     </Container>
   );
 }

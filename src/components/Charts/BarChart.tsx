@@ -83,7 +83,6 @@ export default function BarChart({
   return (
     <Box p={padding + 'px'}>
       <Box
-        shadow="md"
         position="relative"
         h={height - padding * 2 + currentPriceHeight + 'px'}
       >
