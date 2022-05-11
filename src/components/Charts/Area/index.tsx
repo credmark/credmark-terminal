@@ -313,19 +313,51 @@ export default function AreaChart({
       position="relative"
       minHeight={minHeight}
     >
-      {(headerAmount || headerSummary) && (
-        <Box position="absolute" top={10} left={1}>
-          <Text
-            fontSize="sm"
-            pt="1"
-            color="purple.500"
-            paddingLeft="2"
-            paddingBottom="2"
-          >
-            {headerSummary} <strong>{headerAmount}</strong>
-          </Text>
-        </Box>
-      )}
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+        position="absolute"
+        width="100%"
+        top={10}
+        left={1}
+      >
+        <div>
+          {(headerAmount || headerSummary) && (
+            <Text
+              fontSize="sm"
+              pt="1"
+              color="#1A1A1A"
+              paddingLeft="2"
+              paddingBottom="2"
+            >
+              {headerSummary} <strong>{headerAmount}</strong>
+            </Text>
+          )}
+        </div>
+        <Flex>
+          {durations.map((days) => (
+            <Box
+              key={days}
+              p="2"
+              mx="2"
+              fontSize="sm"
+              fontWeight="bold"
+              color={duration === days ? '#1A1A1A' : 'gray.300'}
+              cursor="pointer"
+              onClick={() => setDuration(days as 'ALL')}
+              _hover={
+                duration === days
+                  ? {}
+                  : {
+                      color: '#1A1A1A',
+                    }
+              }
+            >
+              {days === 'ALL' ? 'ALL' : `${days}D`}
+            </Box>
+          ))}
+        </Flex>
+      </Flex>
 
       <Box
         shadow="md"
@@ -352,7 +384,7 @@ export default function AreaChart({
         >
           <HStack bg="transparent">
             <Img src={titleImg} h="4" />
-            <Text fontSize="md" color="purple.500">
+            <Text fontSize="md" color="#1A1A1A">
               {title}
             </Text>
           </HStack>
@@ -410,29 +442,7 @@ export default function AreaChart({
           </Center>
         )}
       </Box>
-      <Flex align="center" mt="8">
-        {durations.map((days) => (
-          <Box
-            key={days}
-            p="2"
-            mx="2"
-            fontSize="sm"
-            fontWeight="bold"
-            color={duration === days ? 'purple.500' : 'gray.300'}
-            cursor="pointer"
-            onClick={() => setDuration(days as 'ALL')}
-            _hover={
-              duration === days
-                ? {}
-                : {
-                    color: 'purple.500',
-                  }
-            }
-          >
-            {days === 'ALL' ? 'ALL' : `${days}D`}
-          </Box>
-        ))}
-      </Flex>
+
       {info && (
         <Text
           fontSize="xs"

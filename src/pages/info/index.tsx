@@ -48,15 +48,11 @@ export default function AnalyticsPage() {
     (a, b) => b.ts - a.ts,
   )[0];
   return (
-    <Box
-      minH="100vh"
-      width="100%"
-      bg="linear-gradient(135deg, #DE1A600C 0%, #3B00650C 50%, #08538C0C 100%)"
-    >
+    <Box minH="100vh" width="100%" bg="#FFFFFF">
       <Container
-        maxWidth="100%"
         width="100%"
         bg="white"
+        maxW="container.xl"
         display="flex"
         flexDirection="column"
         position="relative"
