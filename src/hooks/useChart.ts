@@ -7,6 +7,10 @@ interface UseLineChartProps {
   formatValue?: (value: number) => string;
 }
 
+export interface CsvData extends Record<string, string> {
+  Timestamp: string;
+}
+
 export function useLineChart({
   defaultLines = [],
   formatValue = (value: number) => String(value),
@@ -30,7 +34,47 @@ export function useLineChart({
     });
   }, [formatValue, lines]);
 
-  return { lines, setLines, setLine, currentStats, formatValue };
+  const csv = useMemo(() => {
+    const csvDataTsMap: Record<
+      string,
+      Array<{ key: string; value: string }>
+    > = {};
+
+    const headers = ['Timestamp'];
+    for (const cl of lines) {
+      headers.push(cl.name);
+      for (const dp of cl.data) {
+        const MS_IN_1_HOUR = 3600 * 1000;
+        const ts = new Date(
+          Math.round(dp.timestamp.valueOf() / MS_IN_1_HOUR) * MS_IN_1_HOUR,
+        ).toISOString();
+
+        if (!(ts in csvDataTsMap)) {
+          csvDataTsMap[ts] = [];
+        }
+
+        csvDataTsMap[ts].push({
+          key: cl.name,
+          value: formatValue(dp.value),
+        });
+      }
+    }
+
+    const data: Array<CsvData> = [];
+    for (const ts in csvDataTsMap) {
+      data.push({
+        Timestamp: ts,
+        ...csvDataTsMap[ts].reduce(
+          (curr, prev) => ({ ...curr, [prev.key]: prev.value }),
+          {},
+        ),
+      });
+    }
+
+    return { data, headers };
+  }, [formatValue, lines]);
+
+  return { lines, setLines, setLine, currentStats, formatValue, csv };
 }
 
 interface UseSingleLineChartProps {
@@ -49,6 +93,7 @@ export function useSingleLineChart({
     currentStats,
     setLine,
     formatValue: _formatValue,
+    csv,
   } = useLineChart({
     defaultLines: [
       {
@@ -79,5 +124,6 @@ export function useSingleLineChart({
     currentStats: currentStats[0],
     formatValue: _formatValue,
     updateData,
+    csv,
   };
 }

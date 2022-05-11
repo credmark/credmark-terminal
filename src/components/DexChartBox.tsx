@@ -12,10 +12,21 @@ import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import axios, { AxiosResponse } from 'axios';
 import { EChartsInstance } from 'echarts-for-react';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { MdOpenInNew, MdZoomOutMap } from 'react-icons/md';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { CSVLink } from 'react-csv';
+import {
+  MdOpenInNew,
+  MdOutlineFileDownload,
+  MdZoomOutMap,
+} from 'react-icons/md';
 
-import { useSingleLineChart } from '~/hooks/useChart';
+import { CsvData, useSingleLineChart } from '~/hooks/useChart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 import CurrencyLogo from './CurrencyLogo';
@@ -182,6 +193,41 @@ export default function DexChartBox({
     };
   }, [tvlChart.updateData, volumeChart.updateData, createdAt, dex, pool]);
 
+  const csv = useMemo(() => {
+    function mergeCsvs(...csvs: Array<{ data: CsvData[]; headers: string[] }>) {
+      const dataMap: Record<string, CsvData> = {};
+      const headers: string[] = [];
+      for (const csv of csvs) {
+        for (const header of csv.headers) {
+          if (!headers.includes(header)) {
+            headers.push(header);
+          }
+        }
+
+        for (const datum of csv.data) {
+          const ts = datum['Timestamp'];
+          for (const [key, value] of Object.entries(datum)) {
+            if (key === 'Timestamp') {
+              continue;
+            }
+
+            if (!(ts in dataMap)) {
+              dataMap[ts] = {
+                Timestamp: ts,
+              };
+            }
+
+            dataMap[ts][key] = value;
+          }
+        }
+      }
+
+      return { data: Object.values(dataMap), headers };
+    }
+
+    return mergeCsvs(tvlChart.csv, volumeChart.csv);
+  }, [tvlChart.csv, volumeChart.csv]);
+
   return (
     <Box
       ref={containerRef}
@@ -213,6 +259,14 @@ export default function DexChartBox({
         </HStack>
 
         <Spacer />
+        <CSVLink
+          filename={`${tvlChart.line.name.replaceAll(' ', '_')}[Credmark].csv`}
+          headers={csv.headers}
+          data={csv.data}
+          style={{ display: 'flex' }}
+        >
+          <Icon cursor="pointer" as={MdOutlineFileDownload} />
+        </CSVLink>
         <Icon cursor="pointer" onClick={onExpand} as={MdZoomOutMap} />
       </HStack>
       <Flex align="stretch">
