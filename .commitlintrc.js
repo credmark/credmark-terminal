@@ -30,6 +30,7 @@ module.exports = {
         'refactor',
         'revert',
         'style',
+        'ui',
         'test',
       ],
     ],
@@ -59,6 +60,11 @@ module.exports = {
               'Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)',
             title: 'Styles',
             emoji: '💎',
+          },
+          ui: {
+            description: 'Changes that only affect the display of user interface (css, layout change, etc)',
+            title: 'UI',
+            emoji: '🎨',
           },
           refactor: {
             description:
