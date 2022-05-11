@@ -83,8 +83,8 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
           headerSummary="24hr Volume:"
           headerAmount={`$${shortenNumber(
             data
-              .sort((a, b) => b.ts - a.ts)
-              .map((val) => ({
+              ?.sort((a, b) => b.ts - a.ts)
+              ?.map((val) => ({
                 timestamp: new Date(val.ts * 1000),
                 value:
                   Number(
@@ -93,7 +93,7 @@ export default function CmkMarketStats({ data }: CmkMarketStatsProps) {
                         vm.address.toLowerCase() === m.address.toLowerCase(),
                     )?.volume_24h ?? '0',
                   ) * Number(val.usdc_price),
-              }))[0].value || 0,
+              }))[0]?.value || 0,
             0,
           ).toString()}`}
           data={
