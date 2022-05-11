@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { IconType } from 'react-icons';
 import {
   IoCaretBackSharp,
@@ -28,7 +28,6 @@ import { CmkTerminalIcon } from '~/components/Icons';
 interface NavItemProps extends BoxProps {
   icon?: IconType | typeof Icon;
   label: string;
-  isActive?: boolean;
   isFocused?: boolean;
   isDisabled?: boolean;
   href?: string;
@@ -43,7 +42,6 @@ interface NavItemProps extends BoxProps {
 function NavItem({
   icon,
   label,
-  isActive = false,
   isFocused = false,
   isDisabled = false,
   href,
@@ -54,6 +52,9 @@ function NavItem({
 
   ...boxProps
 }: NavItemProps) {
+  const router = useRouter();
+  const isActive = href && router.pathname === href;
+
   const inner = (
     <HStack
       onClick={onClick}
@@ -123,8 +124,79 @@ interface SidebarProps extends BoxProps {
 
 export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
   const router = useRouter();
+
+  const homeItems = useMemo<NavItemProps[]>(
+    () => [
+      { icon: MdOutlineHome, label: 'Home', href: '/' },
+      {
+        icon: CmkTerminalIcon,
+        label: 'Risk Terminal',
+        isFocused: router.pathname.startsWith('/terminal'),
+        onClick: () => setShowTerminalItems(true),
+        forwardIcon: true,
+      },
+      { icon: MdApi, label: 'Membership', href: '/api-access' },
+      { icon: MdCode, label: 'Model Development', isDisabled: true },
+      { icon: MdOutlineVerified, label: 'Model Validation', isDisabled: true },
+    ],
+    [router.pathname],
+  );
+
+  const terminalItems = useMemo<NavItemProps[]>(
+    () => [
+      {
+        icon: MdOutlineHome,
+        label: 'Home',
+        onClick: () => setShowTerminalItems(false),
+        backIcon: true,
+      },
+      { label: 'Model Usage', href: '/models/usage' },
+      { label: 'Lenders', href: '/terminal/lenders' },
+      {
+        label: 'DEXs',
+        isFocused: router.pathname.startsWith('/terminal/dex'),
+        subNav: [
+          {
+            label: 'Uniswap V2',
+            href: '/terminal/dex/uniswap-v2',
+          },
+          {
+            label: 'Uniswap V3',
+            href: '/terminal/dex/uniswap-v3',
+          },
+          {
+            label: 'Curve',
+            href: '/terminal/dex/curve',
+          },
+          {
+            label: 'Sushiswap',
+            href: '/terminal/dex/sushi',
+          },
+        ],
+      },
+    ],
+    [router.pathname],
+  );
+
+  function getLinks(items: NavItemProps[]): string[] {
+    const links: string[] = [];
+    for (const item of items) {
+      if (item.href) {
+        links.push(item.href);
+      }
+
+      if (Array.isArray(item.subNav)) {
+        links.push(...getLinks(item.subNav));
+      }
+    }
+
+    return links;
+  }
+
+  const terminalLinks = getLinks(terminalItems);
+
   const [showTerminalItems, setShowTerminalItems] = useState(
-    router.pathname.startsWith('/terminal/'),
+    terminalLinks.includes(router.pathname),
   );
 
   return (
@@ -153,27 +225,9 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
         transitionProperty="left"
         transitionDuration="normal"
       >
-        <NavItem
-          icon={MdOutlineHome}
-          label="Home"
-          href="/"
-          isActive={router.pathname === '/'}
-        />
-        <NavItem
-          icon={CmkTerminalIcon}
-          label="Risk Terminal"
-          isFocused={router.pathname.startsWith('/terminal')}
-          onClick={() => setShowTerminalItems(true)}
-          forwardIcon
-        />
-        <NavItem
-          icon={MdApi}
-          label="Membership"
-          href="/api-access"
-          isActive={router.pathname === '/api-access'}
-        />
-        <NavItem icon={MdCode} label="Model Development" isDisabled />
-        <NavItem icon={MdOutlineVerified} label="Model Validation" isDisabled />
+        {homeItems.map((item, index) => (
+          <NavItem key={index} {...item} />
+        ))}
       </VStack>
       <VStack
         align="stretch"
@@ -188,43 +242,9 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
         transitionProperty="left"
         transitionDuration="normal"
       >
-        <NavItem
-          icon={MdOutlineHome}
-          label="Home"
-          onClick={() => setShowTerminalItems(false)}
-          backIcon
-        />
-        <NavItem
-          label="Lenders"
-          href="/terminal/lenders"
-          isActive={router.pathname === '/terminal/lenders'}
-        />
-        <NavItem
-          label="DEXs"
-          isFocused={router.pathname.startsWith('/terminal/dex')}
-          subNav={[
-            {
-              label: 'Uniswap V2',
-              href: '/terminal/dex/uniswap-v2',
-              isActive: router.pathname === '/terminal/dex/uniswap-v2',
-            },
-            {
-              label: 'Uniswap V3',
-              href: '/terminal/dex/uniswap-v3',
-              isActive: router.pathname === '/terminal/dex/uniswap-v3',
-            },
-            {
-              label: 'Curve',
-              href: '/terminal/dex/curve',
-              isActive: router.pathname === '/terminal/dex/curve',
-            },
-            {
-              label: 'Sushiswap',
-              href: '/terminal/dex/sushi',
-              isActive: router.pathname === '/terminal/dex/sushi',
-            },
-          ]}
-        />
+        {terminalItems.map((item, index) => (
+          <NavItem key={index} {...item} />
+        ))}
       </VStack>
     </Box>
   );
