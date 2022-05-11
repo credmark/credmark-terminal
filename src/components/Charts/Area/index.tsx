@@ -236,7 +236,6 @@ export default function AreaChart({
                   x2: 0,
                   y2: 1,
                   colorStops: gradient.map((color, index) => {
-                    console.log('color', color);
                     return {
                       color,
                       offset: index,
