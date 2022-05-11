@@ -2,6 +2,7 @@ import { Box } from '@chakra-ui/layout';
 import { Img, HStack, Text, Container, IconButton } from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
+import { CSVLink } from 'react-csv';
 
 import { CmkDownloadIcon } from '~/components/Icons';
 import CmkFullScreenIcon from '~/components/Icons/CmkFullScreenIcon';
@@ -24,6 +25,66 @@ export default function CmkSupplyDistributions({
 }: PieChartProps): JSX.Element {
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
 
+  const dataToShow = useMemo(() => {
+    return [
+      {
+        value:
+          1e8 -
+          (Number(cmkData.supply_distribution.community_treasury) +
+            Number(cmkData.supply_distribution.dao_treasury) +
+            Number(cmkData.supply_distribution.investor) +
+            Number(cmkData.supply_distribution.team_allocated) +
+            Number(cmkData.supply_distribution.team_unallocated) +
+            Number(cmkData.supply_distribution.vesting_unallocated) +
+            Number(xcmkData.cmk_balance)),
+        itemStyle: { color: '#DB1976' },
+        name: 'Public Circulating Supply',
+      },
+      {
+        value: xcmkData.cmk_balance,
+        itemStyle: { color: '#BC1565' },
+        name: 'CMK Staked',
+      },
+      {
+        value: cmkData.supply_distribution.community_treasury,
+        itemStyle: { color: '#420069' },
+        name: 'Community Rewards',
+      },
+      {
+        value: cmkData.supply_distribution.dao_treasury,
+        itemStyle: { color: '#590099' },
+        name: 'DAO Treasury',
+      },
+      {
+        value: cmkData.supply_distribution.investor,
+        itemStyle: { color: '#00996B' },
+        name: 'Investors',
+      },
+      {
+        value: cmkData.supply_distribution.team_allocated,
+        itemStyle: { color: '#00AD7A' },
+        name: 'Team & Founders',
+      },
+      {
+        value: cmkData.supply_distribution.team_unallocated,
+        itemStyle: { color: '#00BD84' },
+        name: 'Team Unallocated',
+      },
+      {
+        value: cmkData.supply_distribution.vesting_unallocated,
+        itemStyle: { color: '#00D696' },
+        name: 'Vesting Unallocated',
+      },
+    ];
+  }, [
+    cmkData.supply_distribution.community_treasury,
+    cmkData.supply_distribution.dao_treasury,
+    cmkData.supply_distribution.investor,
+    cmkData.supply_distribution.team_allocated,
+    cmkData.supply_distribution.team_unallocated,
+    cmkData.supply_distribution.vesting_unallocated,
+    xcmkData.cmk_balance,
+  ]);
   const option = useMemo(() => {
     return {
       tooltip: {
@@ -98,56 +159,7 @@ export default function CmkSupplyDistributions({
         {
           type: 'pie',
           radius: ['55%', '70%'],
-          data: [
-            {
-              value:
-                1e8 -
-                (Number(cmkData.supply_distribution.community_treasury) +
-                  Number(cmkData.supply_distribution.dao_treasury) +
-                  Number(cmkData.supply_distribution.investor) +
-                  Number(cmkData.supply_distribution.team_allocated) +
-                  Number(cmkData.supply_distribution.team_unallocated) +
-                  Number(cmkData.supply_distribution.vesting_unallocated) +
-                  Number(xcmkData.cmk_balance)),
-              itemStyle: { color: '#DB1976' },
-              name: 'Public Circulating Supply',
-            },
-            {
-              value: xcmkData.cmk_balance,
-              itemStyle: { color: '#BC1565' },
-              name: 'CMK Staked',
-            },
-            {
-              value: cmkData.supply_distribution.community_treasury,
-              itemStyle: { color: '#420069' },
-              name: 'Community Rewards',
-            },
-            {
-              value: cmkData.supply_distribution.dao_treasury,
-              itemStyle: { color: '#590099' },
-              name: 'DAO Treasury',
-            },
-            {
-              value: cmkData.supply_distribution.investor,
-              itemStyle: { color: '#00996B' },
-              name: 'Investors',
-            },
-            {
-              value: cmkData.supply_distribution.team_allocated,
-              itemStyle: { color: '#00AD7A' },
-              name: 'Team & Founders',
-            },
-            {
-              value: cmkData.supply_distribution.team_unallocated,
-              itemStyle: { color: '#00BD84' },
-              name: 'Team Unallocated',
-            },
-            {
-              value: cmkData.supply_distribution.vesting_unallocated,
-              itemStyle: { color: '#00D696' },
-              name: 'Vesting Unallocated',
-            },
-          ],
+          data: dataToShow,
           emphasis: {
             itemStyle: {
               shadowBlur: 10,
@@ -165,7 +177,7 @@ export default function CmkSupplyDistributions({
     cmkData.supply_distribution.team_allocated,
     cmkData.supply_distribution.team_unallocated,
     cmkData.supply_distribution.vesting_unallocated,
-    xcmkData.cmk_balance,
+    dataToShow,
   ]);
 
   const toggleFullScreen = () => {
@@ -178,6 +190,17 @@ export default function CmkSupplyDistributions({
     }
   };
 
+  const generateCsvFormat = () => {
+    if (dataToShow.length > 0) {
+      const header = dataToShow.map((item) => item.name);
+      const values = dataToShow.map((item) => item.value).toString();
+      return { header, values };
+    }
+    return {
+      header: [],
+      values: '',
+    };
+  };
   return (
     <Container
       minWidth="320px"
@@ -192,7 +215,6 @@ export default function CmkSupplyDistributions({
         borderBottom="1px solid #DEDEDE"
         display="grid"
         gridTemplateColumns="1fr 20px 20px"
-        gap="5"
         paddingLeft="3"
         paddingRight="5"
         alignItems="center"
@@ -204,12 +226,18 @@ export default function CmkSupplyDistributions({
           </Text>
         </HStack>
 
-        <IconButton
-          aria-label="Fullscreen"
-          cursor="pointer"
-          backgroundColor="transparent"
-          icon={<CmkDownloadIcon fontSize="15" fill="#999999" />}
-        />
+        {dataToShow.length > 0 ? (
+          <CSVLink
+            filename={`CMK Supply Distribution.csv`}
+            headers={generateCsvFormat().header}
+            data={generateCsvFormat().values}
+            style={{ display: 'flex' }}
+          >
+            <CmkDownloadIcon fontSize="15" fill="#999999" />
+          </CSVLink>
+        ) : (
+          <> </>
+        )}
         <IconButton
           aria-label="Fullscreen"
           cursor="pointer"
