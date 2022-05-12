@@ -308,7 +308,7 @@ export default function AreaChart({
       width="100%"
       padding={0}
       border="1px solid #DEDEDE"
-      shadow=" rgba(224, 227, 234, 0.6) 0px 0px 10px"
+      shadow="md"
       id={pageId}
       backgroundColor="#fff"
       position="relative"
