@@ -171,6 +171,7 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
         backIcon: true,
       },
       { label: 'Model Usage', href: '/models/usage' },
+      { label: 'Token Analytics', href: '/info' },
       { label: 'Lenders', href: '/terminal/lenders' },
       {
         label: 'DEXs',
