@@ -1,4 +1,4 @@
-import { Box, Container, Spinner } from '@chakra-ui/react';
+import { Box, Container, Spinner, Grid } from '@chakra-ui/react';
 import React from 'react';
 
 import AreaChart from '~/components/Charts/Area';
@@ -60,12 +60,11 @@ export default function AnalyticsPage() {
         paddingTop="10"
         paddingBottom="50"
       >
-        <Container
-          maxWidth="100%"
-          gap="10"
-          display="flex"
-          flexDirection="row"
-          flexWrap="wrap"
+        <Grid
+          templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+          gap="8"
+          mt="6"
+          mb="16"
         >
           <LoadingOrShowData
             loading={cmkAnalytics.loading}
@@ -121,14 +120,7 @@ export default function AnalyticsPage() {
               defaultDuration={60}
             />
           </LoadingOrShowData>
-        </Container>
-        <Container
-          maxWidth="100%"
-          gap="10"
-          display="flex"
-          flexDirection="row"
-          flexWrap="wrap"
-        >
+
           <LoadingOrShowData
             loading={cmkAnalytics.loading}
             hasData={!!cmkAnalytics.data}
@@ -183,14 +175,7 @@ export default function AnalyticsPage() {
               defaultDuration={60}
             />
           </LoadingOrShowData>
-        </Container>
-        <Container
-          maxWidth="100%"
-          gap="10"
-          display="flex"
-          flexDirection="row"
-          flexWrap="wrap"
-        >
+
           <LoadingOrShowData
             loading={cmkAnalytics.loading}
             hasData={!!cmkAnalytics.data}
@@ -247,14 +232,7 @@ export default function AnalyticsPage() {
               defaultDuration={60}
             />
           </LoadingOrShowData>
-        </Container>
-        <Container
-          maxWidth="100%"
-          gap="10"
-          display="flex"
-          flexDirection="row"
-          flexWrap="wrap"
-        >
+
           <LoadingOrShowData
             loading={cmkAnalytics.loading}
             hasData={!!(cmkAnalytics.data && stakedCmkAnalytics.data)}
@@ -297,16 +275,9 @@ export default function AnalyticsPage() {
               line
             />
           </LoadingOrShowData>
-        </Container>
-        <Container
-          maxWidth="100%"
-          gap="10"
-          display="flex"
-          flexDirection="row"
-          flexWrap="wrap"
-        >
+
           <CmkMarketStatistics data={cmkAnalytics.data ?? []} />
-        </Container>
+        </Grid>
       </Container>
     </Box>
   );
