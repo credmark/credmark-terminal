@@ -318,6 +318,7 @@ export default function AreaChart({
         alignItems="center"
         position="absolute"
         width="100%"
+        zIndex={10}
         top={10}
         left={1}
       >
