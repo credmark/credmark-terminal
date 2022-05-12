@@ -8,6 +8,7 @@ import {
   MdArrowForward,
   MdOutlineFileDownload,
   MdZoomOutMap,
+  MdFullscreenExit,
 } from 'react-icons/md';
 
 type ChartData = Array<{
@@ -407,11 +408,7 @@ export default function AreaChart({
                 data={generateCsvFormat().values}
                 style={{ display: 'flex' }}
               >
-                <Icon
-                  cursor="pointer"
-                  onClick={toggleFullScreen}
-                  as={MdOutlineFileDownload}
-                />
+                <Icon cursor="pointer" as={MdOutlineFileDownload} />
               </CSVLink>
             ) : (
               <> </>
@@ -419,7 +416,7 @@ export default function AreaChart({
             <Icon
               cursor="pointer"
               onClick={toggleFullScreen}
-              as={MdZoomOutMap}
+              as={isFullScreen ? MdFullscreenExit : MdZoomOutMap}
             />
           </Box>
         </Box>

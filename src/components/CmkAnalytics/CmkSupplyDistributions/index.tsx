@@ -3,7 +3,11 @@ import { Img, HStack, Text, Container, Icon } from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
 import { CSVLink } from 'react-csv';
-import { MdOutlineFileDownload, MdZoomOutMap } from 'react-icons/md';
+import {
+  MdOutlineFileDownload,
+  MdZoomOutMap,
+  MdFullscreenExit,
+} from 'react-icons/md';
 
 import {
   CmkAnalyticsDataPoint,
@@ -246,7 +250,11 @@ export default function CmkSupplyDistributions({
           ) : (
             <> </>
           )}
-          <Icon cursor="pointer" onClick={toggleFullScreen} as={MdZoomOutMap} />
+          <Icon
+            cursor="pointer"
+            onClick={toggleFullScreen}
+            as={isFullScreen ? MdFullscreenExit : MdZoomOutMap}
+          />
         </Box>
       </Box>
 
