@@ -29,8 +29,8 @@ import {
 import { CsvData, useSingleLineChart } from '~/hooks/useChart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
+import HistoricalChart from './Charts/HistoricalChart';
 import CurrencyLogo from './CurrencyLogo';
-import HistoricalChart from './RiskTerminal/helpers/HistoricalChart';
 
 interface DexChartBoxProps {
   dex: 'SUSHISWAP' | 'UNISWAP_V2' | 'UNISWAP_V3' | 'CURVE';

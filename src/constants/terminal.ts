@@ -1,6 +1,6 @@
 import Color from 'color';
 
-import { AssetInfo, MetricGroupInfo } from '~/types/terminal';
+import { AssetInfo } from '~/types/terminal';
 
 export const ASSETS: Array<AssetInfo> = [
   {
@@ -19,16 +19,5 @@ export const ASSETS: Array<AssetInfo> = [
     color: Color('#00D395'),
     infoLink:
       'https://docs.credmark.com/credmark-risk-library/defi-protocol-taxonomy/lending/compound',
-  },
-];
-
-export const METRIC_GROUPS: Array<MetricGroupInfo> = [
-  {
-    key: 'RISK',
-    title: 'Risk Metrics',
-  },
-  {
-    key: 'CORE',
-    title: 'Core Metrics',
   },
 ];

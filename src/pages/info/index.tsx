@@ -47,6 +47,7 @@ export default function AnalyticsPage() {
   const lateststakedCmkData = stakedCmkAnalytics.data?.sort(
     (a, b) => b.ts - a.ts,
   )[0];
+
   return (
     <Box minH="100vh" width="100%" bg="#FFFFFF">
       <Container

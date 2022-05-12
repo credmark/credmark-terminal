@@ -30,6 +30,9 @@ import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { JSONTree } from 'react-json-tree';
 
+import HistoricalChart, {
+  ChartLine,
+} from '~/components/Charts/HistoricalChart';
 import {
   BaseCType,
   CType,
@@ -42,10 +45,6 @@ import {
   CRecord,
 } from '~/types/model';
 import { shortenNumber } from '~/utils/formatTokenAmount';
-
-import HistoricalChart, {
-  ChartLine,
-} from '../RiskTerminal/helpers/HistoricalChart';
 
 interface ModelOutputProps {
   model: CModelMetadata;

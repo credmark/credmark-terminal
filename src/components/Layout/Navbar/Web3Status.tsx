@@ -2,7 +2,6 @@ import { Button, Spinner, Text } from '@chakra-ui/react';
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
 import React, { useMemo } from 'react';
 
-import WalletModal from '~/components/WalletModal';
 import { NetworkContextName } from '~/constants/misc';
 import useENSName from '~/hooks/useENSName';
 import { useWalletModalToggle } from '~/state/application/hooks';
@@ -12,6 +11,8 @@ import {
 } from '~/state/transactions/hooks';
 import { TransactionDetails } from '~/state/transactions/reducer';
 import shortenAddress from '~/utils/shortenAddress';
+
+import WalletModal from './WalletModal';
 
 // we want the latest one to come first, so return negative if a is after b
 function newTransactionsFirst(a: TransactionDetails, b: TransactionDetails) {

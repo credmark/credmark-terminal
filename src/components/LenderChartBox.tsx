@@ -5,14 +5,12 @@ import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { CSVLink } from 'react-csv';
 import { IoDownloadOutline, IoExpandSharp } from 'react-icons/io5';
 
+import { ASSETS } from '~/constants/terminal';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
 import { AssetKey, MetricInfo } from '~/types/terminal';
 
+import HistoricalChart, { ChartLine } from './Charts/HistoricalChart';
 import InfoPopover from './InfoPopover';
-import { ASSETS } from './RiskTerminal/constants';
-import HistoricalChart, {
-  ChartLine,
-} from './RiskTerminal/helpers/HistoricalChart';
 
 interface LenderChartBoxProps {
   metric: MetricInfo;

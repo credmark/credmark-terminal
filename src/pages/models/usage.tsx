@@ -15,7 +15,7 @@ import { Card } from '~/components/Base';
 import BarChart from '~/components/Charts/BarChart';
 import HistoricalChart, {
   ChartLine,
-} from '~/components/RiskTerminal/helpers/HistoricalChart';
+} from '~/components/Charts/HistoricalChart';
 
 interface ModelUsage {
   ts: string;
