@@ -1,13 +1,14 @@
 import { Box, Center, Flex, HStack, Text } from '@chakra-ui/layout';
-import { Img, Spinner, Container, IconButton } from '@chakra-ui/react';
+import { Img, Spinner, Container, Icon, Link } from '@chakra-ui/react';
 import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
 import { CSVLink } from 'react-csv';
-
-import { CmkDownloadIcon } from '~/components/Icons';
-import CmkArrowRight from '~/components/Icons/CmkArrowRight';
-import CmkFullScreenIcon from '~/components/Icons/CmkFullScreenIcon';
+import {
+  MdArrowForward,
+  MdOutlineFileDownload,
+  MdZoomOutMap,
+} from 'react-icons/md';
 
 type ChartData = Array<{
   timestamp: Date;
@@ -381,6 +382,7 @@ export default function AreaChart({
           gridTemplateColumns="1fr max-content"
           gap="5"
           paddingLeft="3"
+          paddingRight="1"
           alignItems="center"
         >
           <HStack bg="transparent">
@@ -392,7 +394,8 @@ export default function AreaChart({
 
           <Box
             display="flex"
-            gap="1"
+            gap="3"
+            paddingRight={1}
             justifyContent="center"
             alignItems="center"
             zIndex={99}
@@ -404,17 +407,19 @@ export default function AreaChart({
                 data={generateCsvFormat().values}
                 style={{ display: 'flex' }}
               >
-                <CmkDownloadIcon fontSize="15" fill="#999999" />
+                <Icon
+                  cursor="pointer"
+                  onClick={toggleFullScreen}
+                  as={MdOutlineFileDownload}
+                />
               </CSVLink>
             ) : (
               <> </>
             )}
-            <IconButton
-              aria-label="Fullscreen"
+            <Icon
               cursor="pointer"
-              backgroundColor="transparent"
-              icon={<CmkFullScreenIcon fontSize="15" fill="#999999" />}
               onClick={toggleFullScreen}
+              as={MdZoomOutMap}
             />
           </Box>
         </Box>
@@ -445,20 +450,23 @@ export default function AreaChart({
       </Box>
 
       {info && (
-        <Text
+        <Link
           fontSize="xs"
-          pt="1"
           color="purple.500"
-          paddingLeft="2"
-          paddingBottom="2"
+          display="grid"
+          gridTemplateColumns="1fr max-content"
+          gap="1"
+          alignItems="center"
           position="absolute"
-          bottom={1}
+          bottom={2}
+          left={2}
+          href={info.link}
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <a href={info.link} target="_blank" rel="noopener noreferrer">
-            View on {info.platform}
-          </a>
-          <CmkArrowRight marginLeft="2" fontSize="10" />
-        </Text>
+          View on {info.platform}
+          <Icon cursor="pointer" as={MdArrowForward} />
+        </Link>
       )}
     </Container>
   );

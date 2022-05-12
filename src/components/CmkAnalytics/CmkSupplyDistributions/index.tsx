@@ -1,11 +1,10 @@
 import { Box } from '@chakra-ui/layout';
-import { Img, HStack, Text, Container, IconButton } from '@chakra-ui/react';
+import { Img, HStack, Text, Container, Icon } from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
 import { CSVLink } from 'react-csv';
+import { MdOutlineFileDownload, MdZoomOutMap } from 'react-icons/md';
 
-import { CmkDownloadIcon } from '~/components/Icons';
-import CmkFullScreenIcon from '~/components/Icons/CmkFullScreenIcon';
 import {
   CmkAnalyticsDataPoint,
   StakedCmkAnalyticsDataPoint,
@@ -214,9 +213,10 @@ export default function CmkSupplyDistributions({
       <Box
         borderBottom="1px solid #DEDEDE"
         display="grid"
-        gridTemplateColumns="1fr 20px 20px"
+        gridTemplateColumns="1fr max-content"
+        gap="5"
         paddingLeft="3"
-        paddingRight="5"
+        paddingRight="1"
         alignItems="center"
       >
         <HStack bg="transparent">
@@ -226,25 +226,28 @@ export default function CmkSupplyDistributions({
           </Text>
         </HStack>
 
-        {dataToShow.length > 0 ? (
-          <CSVLink
-            filename={`CMK Supply Distribution.csv`}
-            headers={generateCsvFormat().header}
-            data={generateCsvFormat().values}
-            style={{ display: 'flex' }}
-          >
-            <CmkDownloadIcon fontSize="15" fill="#999999" />
-          </CSVLink>
-        ) : (
-          <> </>
-        )}
-        <IconButton
-          aria-label="Fullscreen"
-          cursor="pointer"
-          backgroundColor="transparent"
-          icon={<CmkFullScreenIcon fontSize="15" fill="#999999" />}
-          onClick={toggleFullScreen}
-        />
+        <Box
+          display="flex"
+          gap="3"
+          paddingRight={1}
+          justifyContent="center"
+          alignItems="center"
+          zIndex={99}
+        >
+          {dataToShow?.length > 0 ? (
+            <CSVLink
+              filename={`CMK Supply Distribution.csv`}
+              headers={generateCsvFormat().header}
+              data={generateCsvFormat().values}
+              style={{ display: 'flex' }}
+            >
+              <Icon cursor="pointer" as={MdOutlineFileDownload} />
+            </CSVLink>
+          ) : (
+            <> </>
+          )}
+          <Icon cursor="pointer" onClick={toggleFullScreen} as={MdZoomOutMap} />
+        </Box>
       </Box>
 
       <Box position="relative">
