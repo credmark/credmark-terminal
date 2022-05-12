@@ -451,12 +451,12 @@ export default function AreaChart({
 
       {info && (
         <Link
+          isExternal
+          display="flex"
+          alignItems="center"
           fontSize="xs"
           color="purple.500"
-          display="grid"
-          gridTemplateColumns="1fr max-content"
           gap="1"
-          alignItems="center"
           position="absolute"
           bottom={2}
           left={2}
