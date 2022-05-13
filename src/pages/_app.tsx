@@ -74,16 +74,7 @@ function RouteBasedProviders({
     };
   }, [router.events]);
 
-  const pathParts = router.pathname
-    .toLowerCase()
-    .split('/')
-    .filter((part) => !!part);
-
-  if (pathParts[0] !== 'v1') {
-    return <Layout>{children}</Layout>;
-  }
-
-  return <>{children}</>;
+  return <Layout>{children}</Layout>;
 }
 
 const Web3ProviderNetwork = dynamic(

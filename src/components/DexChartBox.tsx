@@ -21,9 +21,10 @@ import React, {
 } from 'react';
 import { CSVLink } from 'react-csv';
 import {
+  MdFullscreen,
+  MdFullscreenExit,
   MdOpenInNew,
   MdOutlineFileDownload,
-  MdZoomOutMap,
 } from 'react-icons/md';
 
 import { CsvData, useSingleLineChart } from '~/hooks/useChart';
@@ -244,7 +245,7 @@ export default function DexChartBox({
         borderBottom="2px"
         borderColor="#DEDEDE"
       >
-        <HStack align="center">
+        <HStack>
           {sortedTokens.map((token) => (
             <CurrencyLogo currency={token} key={token.symbol} />
           ))}
@@ -253,7 +254,12 @@ export default function DexChartBox({
               .map((token) => token.symbol ?? token.name)
               .join(' / ')}
           </Text>
-          <Link href={`https://etherscan.io/address/${pool}`} isExternal>
+          <Link
+            href={`https://etherscan.io/address/${pool}`}
+            isExternal
+            display="flex"
+            alignItems="center"
+          >
             <Icon as={MdOpenInNew} />
           </Link>
         </HStack>
@@ -265,9 +271,14 @@ export default function DexChartBox({
           data={csv.data}
           style={{ display: 'flex' }}
         >
-          <Icon cursor="pointer" as={MdOutlineFileDownload} />
+          <Icon cursor="pointer" as={MdOutlineFileDownload} boxSize="5" />
         </CSVLink>
-        <Icon cursor="pointer" onClick={onExpand} as={MdZoomOutMap} />
+        <Icon
+          cursor="pointer"
+          onClick={onExpand}
+          as={isExpanded ? MdFullscreenExit : MdFullscreen}
+          boxSize="5"
+        />
       </HStack>
       <Flex align="stretch">
         {!isExpanded && (

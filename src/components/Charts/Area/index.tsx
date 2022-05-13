@@ -1,5 +1,5 @@
-import { Box, Center, Flex, HStack, Text } from '@chakra-ui/layout';
-import { Img, Spinner, Container, Icon, Link } from '@chakra-ui/react';
+import { Box, Center, Flex, HStack, Spacer, Text } from '@chakra-ui/layout';
+import { Img, Spinner, Icon, Link } from '@chakra-ui/react';
 import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
@@ -7,8 +7,8 @@ import { CSVLink } from 'react-csv';
 import {
   MdArrowForward,
   MdOutlineFileDownload,
-  MdZoomOutMap,
   MdFullscreenExit,
+  MdFullscreen,
 } from 'react-icons/md';
 
 type ChartData = Array<{
@@ -304,14 +304,12 @@ export default function AreaChart({
   };
 
   return (
-    <Container
-      minWidth="320px"
-      width="100%"
-      padding={0}
-      border="1px solid #DEDEDE"
-      shadow="md"
+    <Box
       id={pageId}
       backgroundColor="#fff"
+      borderColor="gray.100"
+      shadow="md"
+      rounded="base"
       position="relative"
       minHeight={minHeight}
     >
@@ -324,19 +322,17 @@ export default function AreaChart({
         top={10}
         left={1}
       >
-        <div>
-          {(headerAmount || headerSummary) && (
-            <Text
-              fontSize="sm"
-              pt="1"
-              color="#1A1A1A"
-              paddingLeft="2"
-              paddingBottom="2"
-            >
-              {headerSummary} <strong>{headerAmount}</strong>
-            </Text>
-          )}
-        </div>
+        {(headerAmount || headerSummary) && (
+          <Text
+            fontSize="sm"
+            pt="1"
+            color="#1A1A1A"
+            paddingLeft="2"
+            paddingBottom="2"
+          >
+            {headerSummary} <strong>{headerAmount}</strong>
+          </Text>
+        )}
         <Flex>
           {durations.map((days) => (
             <Box
@@ -377,49 +373,32 @@ export default function AreaChart({
               'px'
         }
       >
-        <Box
-          borderBottom="1px solid #DEDEDE"
-          display="grid"
-          gridTemplateColumns="1fr max-content"
-          gap="5"
-          paddingLeft="3"
-          paddingRight="1"
-          alignItems="center"
+        <HStack
+          px="4"
+          py="2"
+          roundedTop="md"
+          borderBottom="2px"
+          borderColor="#DEDEDE"
         >
-          <HStack bg="transparent">
-            <Img src={titleImg} h="4" />
-            <Text fontSize="md" color="#1A1A1A">
-              {title}
-            </Text>
-          </HStack>
+          <Img src={titleImg} h="4" />
+          <Text fontSize="lg">{title} </Text>
+          <Spacer />
 
-          <Box
-            display="flex"
-            gap="3"
-            paddingRight={1}
-            justifyContent="center"
-            alignItems="center"
-            zIndex={99}
+          <CSVLink
+            filename={`${generateCsvFormat().formattedCsvTitle.toLocaleLowerCase()}.csv`}
+            headers={generateCsvFormat().header}
+            data={generateCsvFormat().values}
+            style={{ display: 'flex' }}
           >
-            {data ? (
-              <CSVLink
-                filename={`${generateCsvFormat().formattedCsvTitle.toLocaleLowerCase()}.csv`}
-                headers={generateCsvFormat().header}
-                data={generateCsvFormat().values}
-                style={{ display: 'flex' }}
-              >
-                <Icon cursor="pointer" as={MdOutlineFileDownload} />
-              </CSVLink>
-            ) : (
-              <> </>
-            )}
-            <Icon
-              cursor="pointer"
-              onClick={toggleFullScreen}
-              as={isFullScreen ? MdFullscreenExit : MdZoomOutMap}
-            />
-          </Box>
-        </Box>
+            <Icon cursor="pointer" as={MdOutlineFileDownload} />
+          </CSVLink>
+          <Icon
+            cursor="pointer"
+            onClick={toggleFullScreen}
+            as={isFullScreen ? MdFullscreenExit : MdFullscreen}
+            boxSize="5"
+          />
+        </HStack>
         <Box
           position="absolute"
           marginTop="40px"
@@ -465,6 +444,6 @@ export default function AreaChart({
           <Icon cursor="pointer" as={MdArrowForward} />
         </Link>
       )}
-    </Container>
+    </Box>
   );
 }

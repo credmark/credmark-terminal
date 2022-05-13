@@ -3,7 +3,11 @@ import useSize from '@react-hook/size';
 import { EChartsInstance } from 'echarts-for-react';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { CSVLink } from 'react-csv';
-import { IoDownloadOutline, IoExpandSharp } from 'react-icons/io5';
+import {
+  MdFullscreen,
+  MdFullscreenExit,
+  MdOutlineFileDownload,
+} from 'react-icons/md';
 
 import { ASSETS } from '~/constants/terminal';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
@@ -131,16 +135,22 @@ export default function LenderChartBox({
   }, [chartLines, metric]);
 
   return (
-    <Box ref={containerRef} rounded="md" border="1px" borderColor="gray.200">
+    <Box
+      ref={containerRef}
+      rounded="md"
+      border="1px"
+      borderColor="#DEDEDE"
+      bg="white"
+      shadow="md"
+    >
       <HStack
-        bg="#D8D8D8"
         px="4"
         py="2"
         roundedTop="md"
         borderBottom="2px"
-        borderColor="gray.200"
+        borderColor="#DEDEDE"
       >
-        <Text>{metric.label} </Text>
+        <Text fontSize="lg">{metric.label} </Text>
         {metric.tooltip && <InfoPopover>{metric.tooltip}</InfoPopover>}
         <Box flex="1" />
         <CSVLink
@@ -149,9 +159,14 @@ export default function LenderChartBox({
           data={csvLinkProps.data}
           style={{ display: 'flex' }}
         >
-          <Icon cursor="pointer" as={IoDownloadOutline} />
+          <Icon cursor="pointer" as={MdOutlineFileDownload} boxSize="5" />
         </CSVLink>
-        <Icon cursor="pointer" onClick={onExpand} as={IoExpandSharp} />
+        <Icon
+          cursor="pointer"
+          onClick={onExpand}
+          as={isExpanded ? MdFullscreenExit : MdFullscreen}
+          boxSize="5"
+        />
       </HStack>
       <Flex bg="white" roundedBottom="md">
         {!isExpanded && (
