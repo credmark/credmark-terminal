@@ -27,7 +27,6 @@ export default function Footer() {
       bg="purple.500"
       color="white"
       w="100%"
-      // w="100vw"
       direction={{ base: 'column', md: 'row' }}
       px="16"
       pt="8"
@@ -39,7 +38,7 @@ export default function Footer() {
         </Box>
         <HStack spacing={4}>
           <Link
-            href="https://discord.com/invite/BJbYSRDdtr"
+            href="https://discord.com/invite/3dSfMqP3d4"
             isExternal
             fontSize="2xl"
             textAlign="center"
@@ -48,7 +47,7 @@ export default function Footer() {
             <Icon as={IoLogoDiscord} />
           </Link>
           <Link
-            href="https://discord.com/invite/BJbYSRDdtr"
+            href="https://t.me/credmark"
             isExternal
             fontSize="2xl"
             textAlign="center"
@@ -66,7 +65,7 @@ export default function Footer() {
             <Icon as={IoLogoTwitter} />
           </Link>
           <Link
-            href="https://discord.com/invite/BJbYSRDdtr"
+            href="https://www.youtube.com/channel/UCdmImsISNfkXTxJPkmCnVNg"
             isExternal
             fontSize="2xl"
             textAlign="center"
@@ -75,7 +74,7 @@ export default function Footer() {
             <Icon as={IoLogoYoutube} />
           </Link>
           <Link
-            href="https://discord.com/invite/BJbYSRDdtr"
+            href="https://www.reddit.com/r/Credmark"
             isExternal
             fontSize="2xl"
             textAlign="center"
@@ -84,7 +83,7 @@ export default function Footer() {
             <Icon as={BsReddit} />
           </Link>
           <Link
-            href="https://discord.com/invite/BJbYSRDdtr"
+            href="https://github.com/credmark"
             isExternal
             fontSize="2xl"
             textAlign="center"
@@ -93,7 +92,7 @@ export default function Footer() {
             <Icon as={BsGithub} />
           </Link>
           <Link
-            href="https://discord.com/invite/BJbYSRDdtr"
+            href="https://blog.credmark.com"
             isExternal
             fontSize="2xl"
             textAlign="center"
@@ -109,28 +108,48 @@ export default function Footer() {
       >
         <Stack align={'flex-start'} spacing="4">
           <ListHeader>Projects</ListHeader>
-          <Link href={'#'}>White Paper</Link>
-          <Link href={'#'}>Credmark Wiki</Link>
-          <Link href={'#'}>Reports</Link>
-          <Link href={'#'}>Risk Terminal</Link>
+          <Link href={'https://docs.credmark.com/credmark'} isExternal>
+            White Paper
+          </Link>
+          <Link href={'https://docs.credmark.com/'} isExternal>
+            Credmark Library
+          </Link>
+          <Link href={'https://credmark.com/reports'} isExternal>
+            Reports
+          </Link>
+          <Link href={'https://app.credmark.com'} isExternal>
+            Credmark Terminal
+          </Link>
         </Stack>
         <Stack align={'flex-start'} spacing="4">
           <ListHeader>Learn</ListHeader>
-          <Link href={'#'}>Blog</Link>
-          <Link href={'#'}>Media</Link>
-          <Link href={'#'}>FAQ</Link>
+          <Link href={'https://credmark.com/blog'} isExternal>
+            Blog
+          </Link>
+          <Link href={'https://credmark.com/media'} isExternal>
+            Media
+          </Link>
+          <Link href={'https://credmark.com/faq'} isExternal>
+            FAQ
+          </Link>
         </Stack>
         <Stack align={'flex-start'} spacing="4">
           <ListHeader>Community</ListHeader>
-          <Link href={'#'}>Contributors</Link>
-          <Link href={'#'}>Work with us</Link>
-          <Link href={'#'}>Our Discord</Link>
+          <Link href={'https://credmark.com/contributors'} isExternal>
+            Contributors
+          </Link>
+          <Link href={'https://credmark.com/careers'} isExternal>
+            Work with us
+          </Link>
+          <Link href={'https://discord.com/invite/3dSfMqP3d4'} isExternal>
+            Our Discord
+          </Link>
         </Stack>
         <Stack align={'flex-start'} spacing="4">
           <ListHeader>Languages</ListHeader>
           <Link href={'#'}>English</Link>
-          <Link href={'#'}>简体中文</Link>
-          <Link href={'#'}>简体中文</Link>
+          {/* <Link href={'#'}>简体中文</Link>
+          <Link href={'#'}>简体中文</Link> */}
         </Stack>
       </SimpleGrid>
     </Stack>
