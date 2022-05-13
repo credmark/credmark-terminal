@@ -1,4 +1,12 @@
-import { Box, Container, Input, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Heading,
+  Input,
+  Spacer,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 import axios from 'axios';
 import {
   chakraComponents,
@@ -16,6 +24,7 @@ import BarChart from '~/components/Charts/BarChart';
 import HistoricalChart, {
   ChartLine,
 } from '~/components/Charts/HistoricalChart';
+import { shortenNumber } from '~/utils/formatTokenAmount';
 
 interface ModelUsage {
   ts: string;
@@ -57,6 +66,7 @@ export default function ModelUsagePage() {
   const [minBarChartDate, maxBarChartDate] = barChartDateRange ?? [];
 
   const color = '#DE1A60';
+  const ALL_MODELS = 'All Models';
 
   useEffect(() => {
     setLoading(true);
@@ -108,7 +118,7 @@ export default function ModelUsagePage() {
 
         setLines([
           {
-            name: 'All Models',
+            name: ALL_MODELS,
             color,
             data: Object.values(allModelsDataMap),
           },
@@ -127,6 +137,10 @@ export default function ModelUsagePage() {
   const barChartData = useMemo(() => {
     const data: Array<{ category: string; value: number }> = [];
     for (const line of lines) {
+      if (line.name === ALL_MODELS) {
+        continue;
+      }
+
       data.push({
         category: line.name,
         value:
@@ -139,8 +153,22 @@ export default function ModelUsagePage() {
     return data;
   }, [barChartDate, lines]);
 
+  const allModelsUsage = useMemo(() => {
+    for (const line of lines) {
+      if (line.name === ALL_MODELS) {
+        return (
+          line.data.find(
+            (datum) => datum.timestamp.valueOf() === barChartDate?.valueOf(),
+          )?.value ?? 0
+        );
+      }
+    }
+
+    return 0;
+  }, [barChartDate, lines]);
+
   const [searchInput, setSearchInput] = useState('');
-  const [slug, setSlug] = useState('All Models');
+  const [slug, setSlug] = useState(ALL_MODELS);
 
   const customComponents = useMemo<
     SelectComponentsConfig<ChartLine, false, GroupBase<ChartLine>>
@@ -166,6 +194,9 @@ export default function ModelUsagePage() {
   return (
     <Container maxW="container.lg" p="8">
       <Card>
+        <Heading as="h2" fontSize="3xl" mb="8">
+          Historical API Calls
+        </Heading>
         <Box maxW="480px">
           <Select<ChartLine, false, GroupBase<ChartLine>>
             placeholder={loading ? 'Loading Models...' : 'Select a Model...'}
@@ -190,30 +221,44 @@ export default function ModelUsagePage() {
           loading={loading}
           lines={lines.filter((line) => line.name === slug)}
           height={300}
+          formatYLabel={(value) => shortenNumber(Number(value), 0)}
           durations={[30, 60, 90]}
           defaultDuration={90}
         />
       </Card>
 
       <Card mt="8">
-        <Box maxW="480px">
-          <Input
-            type="date"
-            value={barChartDate?.toISOString().slice(0, 10)}
-            onChange={(event) => {
-              if (event.target.value) {
-                setBarChartDate(
-                  new Date(`${event.target.value}T00:00:00.000Z`),
-                );
-              } else {
-                setBarChartDate(undefined);
-              }
-            }}
-            mb="8"
-            min={minBarChartDate?.toISOString()?.slice(0, 10)}
-            max={maxBarChartDate?.toISOString()?.slice(0, 10)}
-          />
-        </Box>
+        <Heading as="h2" fontSize="3xl" mb="8">
+          Individual Model API Calls
+        </Heading>
+        <Stack direction={{ base: 'column', lg: 'row' }} mb="4">
+          <Box minW="240px" maxW="480px">
+            <Input
+              type="date"
+              value={barChartDate?.toISOString().slice(0, 10)}
+              onChange={(event) => {
+                if (event.target.value) {
+                  setBarChartDate(
+                    new Date(`${event.target.value}T00:00:00.000Z`),
+                  );
+                } else {
+                  setBarChartDate(undefined);
+                }
+              }}
+              mb="8"
+              min={minBarChartDate?.toISOString()?.slice(0, 10)}
+              max={maxBarChartDate?.toISOString()?.slice(0, 10)}
+            />
+          </Box>
+          <Spacer />
+          <Box>
+            <Text>All Models</Text>
+            <Text fontSize="3xl">
+              {new Intl.NumberFormat().format(allModelsUsage)}
+            </Text>
+          </Box>
+        </Stack>
+
         <BarChart
           loading={loading}
           data={barChartData}
