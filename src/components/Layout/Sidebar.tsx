@@ -173,6 +173,7 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
       { label: 'Model Usage', href: '/models/usage' },
       { label: 'Token Analytics', href: '/info' },
       { label: 'Lenders', href: '/terminal/lenders' },
+      { label: 'Lending Pool Usage', href: '/terminal/lenders/pool-usage' },
       {
         label: 'DEXs',
         isFocused: router.pathname.startsWith('/terminal/dex'),
