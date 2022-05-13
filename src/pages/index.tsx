@@ -4,9 +4,9 @@ import {
   MdApi,
   MdAttachMoney,
   MdBolt,
+  MdCode,
   MdHistory,
   MdInsights,
-  MdLock,
   MdOutlineAnalytics,
   MdOutlineDataExploration,
   MdOutlineFileDownload,
@@ -120,7 +120,7 @@ export default function HomePage() {
               href: 'https://github.com/credmark/credmark-models-py',
               isExternal: true,
               label: 'Get Access',
-              icon: MdLock,
+              icon: MdCode,
             }}
           />
           <FeatureCard
