@@ -9,6 +9,7 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import { EChartsOption } from 'echarts';
 import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
 
@@ -28,6 +29,7 @@ interface HistoricalChartProps extends BoxProps {
   loading?: boolean;
   error?: string;
   formatValue?: (value: number) => string;
+  formatYLabel?: (value: number) => string;
   showLegend?: boolean;
   onChartReady?: (chart: EChartsInstance) => void;
   isAreaChart?: boolean;
@@ -54,12 +56,15 @@ export default function HistoricalChart({
   loading = false,
   error,
   formatValue = (value: number) => String(value),
+  formatYLabel = (value: number | string) => shortenNumber(Number(value), 2),
   showLegend = false,
   onChartReady,
   isAreaChart,
   height = 360,
+
   durations,
   defaultDuration,
+
   showCurrentStats = false,
   currentStats = [],
 
@@ -69,7 +74,7 @@ export default function HistoricalChart({
   const [duration, setDuration] = useState(defaultDuration); // In Days
 
   const series = useMemo(() => {
-    return lines.map((line) => {
+    const series: EChartsOption['series'] = lines.map((line) => {
       let data: [Date, number][] = [];
       if (Array.isArray(durations) && typeof duration === 'number') {
         const lineData = line.data.sort(
@@ -130,10 +135,28 @@ export default function HistoricalChart({
         data: data.sort((a, b) => b[0].valueOf() - a[0].valueOf()),
       };
     });
+
+    return series;
   }, [duration, durations, isAreaChart, lines]);
 
   const option = useMemo(() => {
-    return {
+    const isMonthChanging = (() => {
+      let month: number | undefined = undefined;
+      for (const serie of series) {
+        for (const datum of serie.data as [Date, number][]) {
+          const dMonth = datum[0].getMonth();
+          if (month === undefined) {
+            month = dMonth;
+          } else if (month !== dMonth) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    })();
+
+    const option: EChartsOption = {
       legend: {
         show: showLegend,
         width: legendWidth ? series.length * legendWidth : undefined,
@@ -149,15 +172,14 @@ export default function HistoricalChart({
         axisPointer: {
           type: 'cross',
         },
-        formatter: (
-          params: Array<{
-            seriesName: string;
-            marker: string;
-            data: [number, number];
-          }>,
-        ) => {
-          if (!Array.isArray(params) || params.length === 0) {
-            return;
+        formatter: (params) => {
+          if (
+            !Array.isArray(params) ||
+            params.length === 0 ||
+            !Array.isArray(params[0].data) ||
+            params[0].data.length === 0
+          ) {
+            return '';
           }
 
           const date = new Date(params[0].data[0]).toLocaleDateString(
@@ -173,13 +195,17 @@ export default function HistoricalChart({
 
           for (const param of params) {
             const series = param.seriesName;
+            if (!Array.isArray(param.data)) continue;
+
             const value = param.data[1];
 
             legend += `
               <div style="display: flex; margin-bottom: 2px;">
                 <div>${param.marker}</div>
                 <div style="flex: 1">${series}</div>
-                <strong style="margin-left: 16px">${formatValue(value)}</strong>
+                <strong style="margin-left: 16px">${formatValue(
+                  Number(value),
+                )}</strong>
               </div>
               `;
           }
@@ -211,7 +237,6 @@ export default function HistoricalChart({
         },
         axisTick: {
           show: true,
-          hideOverlap: true,
         },
         minorTick: {
           show: false,
@@ -222,6 +247,31 @@ export default function HistoricalChart({
         axisLabel: {
           show: true,
           hideOverlap: true,
+          // Overriding default behavior when in certain scenarios,
+          // only day is visible with no month information
+          formatter: isMonthChanging
+            ? undefined
+            : {
+                year: '{yyyy}',
+                month: '{bold|{MMM}}',
+                day: '{d} {MMM}',
+                hour: '{HH}:{mm}',
+                minute: '{HH}:{mm}',
+                second: '{HH}:{mm}:{ss}',
+                millisecond: '{hh}:{mm}:{ss} {SSS}',
+                // none: '{yyyy}-{MM}-{dd} {hh}:{mm}:{ss} {SSS}',
+              },
+          // rotate: 22.5,
+          rich: {
+            bold: {
+              // fontStyle: 'italic',
+              fontWeight: 'bold',
+              // fontSize: 10,
+              // // opacity: 0.8,
+              // color: '#3B0065',
+              // height: 8,
+            },
+          },
         },
       },
       yAxis: {
@@ -252,14 +302,14 @@ export default function HistoricalChart({
           show: true,
           showMinLabel: false,
           showMaxLabel: false,
-          formatter: function (value: number | string) {
-            return shortenNumber(Number(value), 2);
-          },
+          formatter: formatYLabel,
         },
       },
       series,
     };
-  }, [formatValue, series, showLegend, legendWidth]);
+
+    return option;
+  }, [showLegend, legendWidth, series, formatYLabel, formatValue]);
 
   const noData =
     lines.reduce((dataLength, line) => dataLength + line.data.length, 0) === 0;
