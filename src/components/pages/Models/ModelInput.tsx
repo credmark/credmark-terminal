@@ -25,6 +25,7 @@ import React, { useCallback, useMemo } from 'react';
 import { MdAdd, MdPlayArrow, MdRemove } from 'react-icons/md';
 import * as Yup from 'yup';
 
+import { PrimaryButton } from '~/components/base';
 import {
   CType,
   CTypeArray,
@@ -369,9 +370,8 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
               getInputFields(modelInput)
             )}
             <Box mt="16" textAlign="center">
-              <Button
+              <PrimaryButton
                 type="submit"
-                colorScheme="pink"
                 size="lg"
                 px="16"
                 rightIcon={<Icon as={MdPlayArrow} />}
@@ -379,7 +379,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
                 loadingText="Running..."
               >
                 Run
-              </Button>
+              </PrimaryButton>
             </Box>
           </Form>
         )}

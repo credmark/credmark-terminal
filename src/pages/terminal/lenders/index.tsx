@@ -180,7 +180,7 @@ export default function LendersPage() {
             </Box>
             <Text>{asset.title}</Text>
             <Switch
-              colorScheme="pink"
+              colorScheme="green"
               isChecked={activeAssets.includes(asset.key)}
               onChange={(event) => {
                 if (event.target.checked) {

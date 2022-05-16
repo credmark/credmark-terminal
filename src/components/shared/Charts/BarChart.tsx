@@ -71,7 +71,7 @@ export default function BarChart({
           },
           type: 'bar',
           data: data?.map((datum) => datum.value),
-          color: '#F7BED2',
+          color: '#00D696',
         },
       ],
     }),

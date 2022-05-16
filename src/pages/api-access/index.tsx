@@ -13,6 +13,8 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 
+import { PrimaryButton } from '~/components/base';
+
 export const Card = chakra('div', {
   baseStyle: {
     shadow: 'md',
@@ -62,7 +64,7 @@ const Membership = () => {
                     fontSize="sm"
                     fontWeight="400"
                     w="full"
-                    colorScheme="pink"
+                    colorScheme="green"
                     maxW={{ base: '', sm: '250px' }}
                   >
                     Add Funds
@@ -215,9 +217,7 @@ const Membership = () => {
           display="flex"
           justifyContent="center"
         >
-          <Button colorScheme="pink" w="full">
-            Mint New Key
-          </Button>
+          <PrimaryButton w="full">Mint New Key</PrimaryButton>
         </GridItem>
       </Grid>
     </Flex>

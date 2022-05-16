@@ -64,18 +64,10 @@ function NavItem({
       px="4"
       py="3"
       rounded="md"
-      bg={isActive ? 'pink.500' : undefined}
-      color={
-        isActive
-          ? 'white'
-          : isFocused
-          ? 'pink.500'
-          : isDisabled
-          ? 'gray.300'
-          : 'purple.500'
-      }
+      bg={isActive ? 'green.500' : undefined}
+      color={isDisabled ? 'gray.300' : 'black'}
       cursor={isActive || (subNav && subNav.length) ? undefined : 'pointer'}
-      borderColor="pink.500"
+      borderColor="green.500"
       borderWidth={isFocused ? '1px' : 0}
       transitionDuration="normal"
       transitionProperty="common"
@@ -83,13 +75,19 @@ function NavItem({
         isActive || (subNav && subNav.length)
           ? {}
           : {
-              bg: 'pink.50',
+              bg: 'green.50',
             }
       }
       {...boxProps}
     >
       {backIcon && <Icon as={IoCaretBackSharp} />}
-      {icon && <Icon as={icon} boxSize="5" />}
+      {icon && (
+        <Icon
+          as={icon}
+          boxSize="5"
+          color={isDisabled ? 'gray.300' : 'purple.500'}
+        />
+      )}
       <Text flex="1">{label}</Text>
       {forwardIcon && <Icon as={IoCaretForwardSharp} />}
       {subNav && subNav.length > 0 && <Icon as={IoCaretDownSharp} />}

@@ -1,5 +1,4 @@
 import {
-  Button,
   HStack,
   Icon,
   Link,
@@ -12,6 +11,7 @@ import NextLink from 'next/link';
 import React from 'react';
 import { IconType } from 'react-icons';
 
+import { PrimaryButton } from '~/components/base';
 import Card from '~/components/base/Card';
 
 interface FeatureCardProps extends BoxProps {
@@ -40,13 +40,12 @@ export default function FeatureCard({
   ...boxProps
 }: FeatureCardProps) {
   const ActionButton = (buttonProps: ButtonProps) => (
-    <Button
-      colorScheme="pink"
+    <PrimaryButton
       leftIcon={actionButton.icon ? <Icon as={actionButton.icon} /> : undefined}
       {...buttonProps}
     >
       {actionButton.label}
-    </Button>
+    </PrimaryButton>
   );
 
   return (

@@ -41,6 +41,7 @@ import {
   MdUnfoldMore,
 } from 'react-icons/md';
 
+import { PrimaryButton } from '~/components/base';
 import {
   CmkLogoIcon,
   CmkTerminalIcon,
@@ -310,16 +311,15 @@ export default function ApiAccessMintPage() {
             </Flex>
           </Box>
           <Box flex="1" pl="8">
-            <Button
+            <PrimaryButton
               w="full"
               size="lg"
               py="30px"
-              colorScheme="pink"
               isDisabled={!cmkAmount || !Number(cmkAmount)}
               onClick={mintNft}
             >
               Mint NFT
-            </Button>
+            </PrimaryButton>
           </Box>
         </HStack>
       </Container>
@@ -648,15 +648,9 @@ export default function ApiAccessMintPage() {
               </Text>
             )}
             {minted && (
-              <Button
-                colorScheme="pink"
-                w="100%"
-                size="lg"
-                mt="1"
-                onClick={signApiKey}
-              >
+              <PrimaryButton w="100%" size="lg" mt="1" onClick={signApiKey}>
                 Sign API Key
-              </Button>
+              </PrimaryButton>
             )}
           </AlertDialogBody>
         </AlertDialogContent>

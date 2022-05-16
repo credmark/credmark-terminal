@@ -33,7 +33,8 @@ function TokenRadioGroup({
           flexShrink="0"
           size="sm"
           rounded="full"
-          colorScheme={!selectedToken ? 'purple' : 'gray'}
+          colorScheme={!selectedToken ? 'green' : 'gray'}
+          color={!selectedToken ? 'purple.500' : undefined}
           onClick={() => setSelectedToken(undefined)}
         >
           ALL
@@ -45,7 +46,8 @@ function TokenRadioGroup({
               size="sm"
               rounded="full"
               key={token.isNative ? 'ETH' : token.address}
-              colorScheme={selectedToken?.equals(token) ? 'purple' : 'gray'}
+              colorScheme={selectedToken?.equals(token) ? 'green' : 'gray'}
+              color={selectedToken?.equals(token) ? 'purple.500' : undefined}
               onClick={() => setSelectedToken(token)}
             >
               {token.symbol}
