@@ -66,7 +66,7 @@ export default function ApiAccessTiersPage() {
             <Box
               textAlign="center"
               w="full"
-              bg={tier.isActive ? 'pink.500' : undefined}
+              bg={tier.isActive ? 'green.500' : undefined}
               color={tier.isActive ? 'white' : undefined}
               py="4"
               fontSize="xl"
@@ -146,7 +146,7 @@ export default function ApiAccessTiersPage() {
                 <Link _hover={{ textDecoration: 'none' }}>
                   <Button
                     size="lg"
-                    colorScheme={tier.isActive ? 'pink' : 'purple'}
+                    colorScheme={tier.isActive ? 'green' : 'purple'}
                     variant={tier.isActive ? 'solid' : 'outline'}
                     rightIcon={<Icon as={MdArrowForward} />}
                     minW="48"

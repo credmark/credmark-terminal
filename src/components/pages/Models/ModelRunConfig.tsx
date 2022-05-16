@@ -27,11 +27,11 @@ export default function ModelRunConfig({
 }: ModelRunConfigProps) {
   return (
     <Accordion allowToggle>
-      <AccordionItem borderColor="pink.500" rounded="base" borderWidth="1px">
+      <AccordionItem borderColor="green.500" rounded="base" borderWidth="1px">
         <AccordionButton
           rounded="base"
-          _expanded={{ bg: 'white', color: 'pink.500' }}
-          _hover={{ bg: 'pink.50' }}
+          _expanded={{ bg: 'white', color: 'green.500' }}
+          _hover={{ bg: 'green.50' }}
         >
           <Icon as={MdSettings} />
           <Box flex="1" textAlign="left" ml="2">

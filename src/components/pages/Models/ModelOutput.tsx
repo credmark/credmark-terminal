@@ -88,7 +88,7 @@ const chakraStyles: ChakraStylesConfig<Key, false, GroupBase<Key>> = {
   option: (provided, state) => ({
     ...provided,
     bg: state.isSelected
-      ? 'pink.500'
+      ? 'green.500'
       : state.isFocused
       ? 'gray.50'
       : provided.bg,

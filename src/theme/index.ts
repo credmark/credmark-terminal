@@ -38,6 +38,18 @@ const theme = extendTheme(
         '800': '#250040',
         '900': '#1E0033',
       },
+      green: {
+        '50': '#E5FFF7',
+        '100': '#AFFFE7',
+        '200': '#79FFD7',
+        '300': '#43FFC7',
+        '400': '#0DFFB7',
+        '500': '#00D696',
+        '600': '#00AD79',
+        '700': '#00855D',
+        '800': '#005C40',
+        '900': '#003324',
+      },
       pink: {
         '50': '#FCE8EF',
         '100': '#F7BED2',
@@ -72,7 +84,7 @@ const theme = extendTheme(
       },
     },
   },
-  withDefaultColorScheme({ colorScheme: 'purple' }),
+  withDefaultColorScheme({ colorScheme: 'green' }),
 );
 
 export default theme;

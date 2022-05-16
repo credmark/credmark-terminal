@@ -75,7 +75,7 @@ export default function AccountDetails({
           </Button>
         )}
         <Button
-          colorScheme="pink"
+          colorScheme="green"
           size="xs"
           onClick={() => {
             openOptions();
@@ -90,7 +90,7 @@ export default function AccountDetails({
             <Badge
               variant="subtle"
               fontSize="md"
-              colorScheme="pink"
+              colorScheme="green"
               px="4"
               roundedLeft="md"
               roundedRight={chainId && NETWORK_LABELS[chainId] ? 'none' : 'md'}
@@ -102,7 +102,7 @@ export default function AccountDetails({
             <Badge
               variant="outline"
               fontSize="md"
-              colorScheme="pink"
+              colorScheme="green"
               px="4"
               roundedLeft="none"
               roundedRight="md"
