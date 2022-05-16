@@ -222,8 +222,10 @@ export default function ModelUsagePage() {
           lines={lines.filter((line) => line.name === slug)}
           height={300}
           formatYLabel={(value) => shortenNumber(Number(value), 0)}
+          formatValue={(value) => new Intl.NumberFormat().format(value)}
           durations={[30, 60, 90]}
           defaultDuration={90}
+          aggregate
         />
       </Card>
 
