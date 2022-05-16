@@ -1,9 +1,8 @@
 import React from 'react';
 
+import AreaChart from '~/components/shared/Charts/Area';
 import { CmkAnalyticsDataPoint } from '~/types/analytics';
 import { shortenNumber } from '~/utils/formatTokenAmount';
-
-import AreaChart from '../../Charts/Area';
 
 interface MarketInfo {
   app: 'uniswap_v3' | 'sushiswap';

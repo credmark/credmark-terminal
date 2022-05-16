@@ -8,3 +8,4 @@ export { default as EtherscanLogoIcon } from './EtherscanLogoIcon';
 
 export { default as MdDiamondIcon } from './MdDiamondIcon';
 export { default as MdRocketLaunchIcon } from './MdRocketLaunchIcon';
+export { default as MdDecentralizedIcon } from './MdDecentralizedIcon';

@@ -1,7 +1,7 @@
 import { WETH9 } from '@uniswap/sdk-core';
 import React from 'react';
 
-import DexPage from '~/components/DexPage';
+import { DexPage } from '~/components/pages/Terminal';
 import { DAI, FRAX, sETH2, USDC, USDT, WBTC } from '~/constants/tokens';
 
 const pools = [

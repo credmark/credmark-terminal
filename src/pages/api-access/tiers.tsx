@@ -22,8 +22,8 @@ import {
   MdLockOpen,
 } from 'react-icons/md';
 
-import FaqModal from '~/components/ApiPortal/FaqModal';
-import { CmkTerminalIcon } from '~/components/Icons';
+import { CmkTerminalIcon } from '~/components/icons';
+import { FaqModal } from '~/components/pages/ApiAccess';
 import { TIERS } from '~/constants/tiers';
 import { useHiddenSidebar } from '~/state/application/hooks';
 

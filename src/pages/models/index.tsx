@@ -13,7 +13,7 @@ import { useRouter } from 'next/router';
 import React, { useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 
-import ModelRunner from '~/components/Models/ModelRunner';
+import { ModelRunner } from '~/components/pages/Models';
 import { CModelMetadata } from '~/types/model';
 
 interface ModelPageProps {

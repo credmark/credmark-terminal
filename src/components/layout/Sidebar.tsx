@@ -23,7 +23,7 @@ import {
   MdOutlineVerified,
 } from 'react-icons/md';
 
-import { CmkTerminalIcon } from '~/components/Icons';
+import { CmkTerminalIcon } from '~/components/icons';
 
 interface NavItemProps extends BoxProps {
   icon?: IconType | typeof Icon;

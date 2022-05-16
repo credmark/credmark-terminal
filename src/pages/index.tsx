@@ -14,9 +14,9 @@ import {
   MdQueryStats,
 } from 'react-icons/md';
 
-import FeatureCard from '~/components/ApiPortal/FeatureCard';
-import { Card } from '~/components/Base';
-import MdDecentralizedIcon from '~/components/Icons/MdDecentralizedIcon';
+import { Card } from '~/components/base';
+import { MdDecentralizedIcon } from '~/components/icons';
+import { FeatureCard } from '~/components/pages/Landing';
 
 export default function HomePage() {
   return (

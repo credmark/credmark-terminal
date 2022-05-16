@@ -1,9 +1,11 @@
 import { Box, Container, Spinner, Grid } from '@chakra-ui/react';
 import React from 'react';
 
-import AreaChart from '~/components/Charts/Area';
-import CmkMarketStatistics from '~/components/CmkAnalytics/CmkMarketStatistics';
-import CmkSupplyDistributions from '~/components/CmkAnalytics/CmkSupplyDistributions';
+import {
+  CmkMarketStatistics,
+  CmkSupplyDistributions,
+} from '~/components/pages/Analytics';
+import AreaChart from '~/components/shared/Charts/Area';
 import {
   useCmkAnalyticsData,
   useStakedCmkAnalyticsData,

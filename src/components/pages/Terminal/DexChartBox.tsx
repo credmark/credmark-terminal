@@ -27,11 +27,10 @@ import {
   MdOutlineFileDownload,
 } from 'react-icons/md';
 
+import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
+import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import { CsvData, useSingleLineChart } from '~/hooks/useChart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
-
-import HistoricalChart from './Charts/HistoricalChart';
-import CurrencyLogo from './CurrencyLogo';
 
 interface DexChartBoxProps {
   dex: 'SUSHISWAP' | 'UNISWAP_V2' | 'UNISWAP_V3' | 'CURVE';

@@ -12,7 +12,7 @@ import {
 import React, { useState } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
-import LenderChartBox from '~/components/LenderChartBox';
+import { LenderChartBox } from '~/components/pages/Terminal';
 import { ASSETS } from '~/constants/terminal';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
 import { useActiveWeb3React } from '~/hooks/web3';

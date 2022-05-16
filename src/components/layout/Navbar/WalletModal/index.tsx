@@ -19,7 +19,7 @@ import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { IoArrowBackSharp } from 'react-icons/io5';
 
-import AccountDetails from '~/components/Layout/Navbar/AccountDetails';
+import AccountDetails from '~/components/layout/Navbar/AccountDetails';
 import { fortmatic, injected, portis } from '~/connectors';
 import { OVERLAY_READY } from '~/connectors/Fortmatic';
 import { SUPPORTED_WALLETS } from '~/constants/wallet';

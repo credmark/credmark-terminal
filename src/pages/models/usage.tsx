@@ -19,11 +19,11 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 
-import { Card } from '~/components/Base';
-import BarChart from '~/components/Charts/BarChart';
+import { Card } from '~/components/base';
+import BarChart from '~/components/shared/Charts/BarChart';
 import HistoricalChart, {
   ChartLine,
-} from '~/components/Charts/HistoricalChart';
+} from '~/components/shared/Charts/HistoricalChart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 interface ModelUsage {
