@@ -24,7 +24,6 @@ import ApplicationUpdater from '~/state/application/updater';
 import MulticallUpdater from '~/state/multicall/updater';
 import TransactionUpdater from '~/state/transactions/updater';
 import theme from '~/theme';
-import Fonts from '~/theme/fonts';
 import getLibrary from '~/utils/getLibrary';
 
 function ReduxUpdaters() {
@@ -112,7 +111,6 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
           <Web3ProviderNetwork getLibrary={getLibrary}>
             <ReduxProvider store={reduxStore}>
               <ReduxUpdaters />
-              <Fonts />
               <Web3ReactManager>
                 <RouteBasedProviders>
                   <Component {...pageProps} />
