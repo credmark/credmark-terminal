@@ -17,7 +17,7 @@ interface MintChartProps {
   setSelectedAmount: (selectedAmount: number) => void;
 }
 
-export default function MintChart({
+function MintChart({
   activeTier,
   rewardCmkPerSecond,
   totalCmkShares,
@@ -310,3 +310,13 @@ export default function MintChart({
     />
   );
 }
+
+export default React.memo(
+  MintChart,
+  (prevProps, nextProps) =>
+    prevProps.activeTier.label === nextProps.activeTier.label &&
+    prevProps.selectedAmount === nextProps.selectedAmount &&
+    prevProps.setSelectedAmount === nextProps.setSelectedAmount &&
+    JSBI.equal(prevProps.rewardCmkPerSecond, nextProps.rewardCmkPerSecond) &&
+    JSBI.equal(prevProps.totalCmkShares, nextProps.totalCmkShares),
+);

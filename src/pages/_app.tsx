@@ -16,7 +16,7 @@ import NProgress from 'nprogress';
 import React, { useEffect } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import Layout from '~/components/Layout';
+import Layout from '~/components/layout';
 import env from '~/env';
 import Web3ReactManager from '~/providers/Web3ReactManager';
 import reduxStore from '~/state';

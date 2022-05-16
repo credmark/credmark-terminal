@@ -32,7 +32,7 @@ import { JSONTree } from 'react-json-tree';
 
 import HistoricalChart, {
   ChartLine,
-} from '~/components/Charts/HistoricalChart';
+} from '~/components/shared/Charts/HistoricalChart';
 import {
   BaseCType,
   CType,

@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 
-import { ChartLine } from '~/components/Charts/HistoricalChart';
+import { ChartLine } from '~/components/shared/Charts/HistoricalChart';
 
 interface UseLineChartProps {
   defaultLines?: ChartLine[];

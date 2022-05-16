@@ -9,12 +9,13 @@ import {
   MdOutlineFileDownload,
 } from 'react-icons/md';
 
+import HistoricalChart, {
+  ChartLine,
+} from '~/components/shared/Charts/HistoricalChart';
+import InfoPopover from '~/components/shared/InfoPopover';
 import { ASSETS } from '~/constants/terminal';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
 import { AssetKey, MetricInfo } from '~/types/terminal';
-
-import HistoricalChart, { ChartLine } from './Charts/HistoricalChart';
-import InfoPopover from './InfoPopover';
 
 interface LenderChartBoxProps {
   metric: MetricInfo;

@@ -41,13 +41,12 @@ import {
   MdUnfoldMore,
 } from 'react-icons/md';
 
-import FaqModal from '~/components/ApiPortal/FaqModal';
-import _MintChart from '~/components/ApiPortal/MintChart';
 import {
   CmkLogoIcon,
   CmkTerminalIcon,
   EtherscanLogoIcon,
-} from '~/components/Icons';
+} from '~/components/icons';
+import { FaqModal, MintChart } from '~/components/pages/ApiAccess';
 import { isValidTierKey, TierKey, TIERS } from '~/constants/tiers';
 import { CMK, USDC } from '~/constants/tokens';
 import useUSDCPrice from '~/hooks/useUSDCPrice';
@@ -55,16 +54,6 @@ import { useActiveWeb3React } from '~/hooks/web3';
 import { useHiddenSidebar } from '~/state/application/hooks';
 import { useTokenBalance } from '~/state/wallet/hooks';
 import { tryParseAmount } from '~/utils/tryParseAmount';
-
-const MintChart = React.memo(
-  _MintChart,
-  (prevProps, nextProps) =>
-    prevProps.activeTier.label === nextProps.activeTier.label &&
-    prevProps.selectedAmount === nextProps.selectedAmount &&
-    prevProps.setSelectedAmount === nextProps.setSelectedAmount &&
-    JSBI.equal(prevProps.rewardCmkPerSecond, nextProps.rewardCmkPerSecond) &&
-    JSBI.equal(prevProps.totalCmkShares, nextProps.totalCmkShares),
-);
 
 const SEC_IN_YEAR = 365 * 24 * 3600;
 

@@ -1,7 +1,11 @@
 import { Box, Button, HStack, Stack, Text } from '@chakra-ui/react';
 import React from 'react';
 
-import { CmkLogoIcon, MdDiamondIcon, MdRocketLaunchIcon } from '../Icons';
+import {
+  CmkLogoIcon,
+  MdDiamondIcon,
+  MdRocketLaunchIcon,
+} from '~/components/icons';
 
 export default function NftBox() {
   return (

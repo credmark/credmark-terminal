@@ -12,7 +12,7 @@ import NextLink from 'next/link';
 import React from 'react';
 import { IconType } from 'react-icons';
 
-import Card from '../Base/Card';
+import Card from '~/components/base/Card';
 
 interface FeatureCardProps extends BoxProps {
   title: string;
