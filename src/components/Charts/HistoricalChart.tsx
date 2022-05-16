@@ -1,9 +1,17 @@
 import {
   Box,
   BoxProps,
+  Button,
   Center,
   chakra,
   HStack,
+  Icon,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItemOption,
+  MenuList,
+  MenuOptionGroup,
   Spacer,
   Spinner,
   Text,
@@ -11,7 +19,8 @@ import {
 } from '@chakra-ui/react';
 import { EChartsOption } from 'echarts';
 import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { MdSettings } from 'react-icons/md';
 
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
@@ -24,6 +33,8 @@ export interface ChartLine {
   }>;
 }
 
+type Aggregator = 'min' | 'max' | 'avg' | 'sum';
+
 interface HistoricalChartProps extends BoxProps {
   lines: ChartLine[];
   loading?: boolean;
@@ -35,6 +46,8 @@ interface HistoricalChartProps extends BoxProps {
   isAreaChart?: boolean;
   height?: number;
   durations?: number[]; // In days
+  aggregate?: boolean; // In days
+  defaultAggregator?: Aggregator; // In days
   defaultDuration?: number;
   showCurrentStats?: boolean;
   currentStats?: Array<{ label: React.ReactNode; value: string }>;
@@ -51,6 +64,63 @@ const ChartOverlay = chakra(Center, {
   },
 });
 
+function filterDataByDuration(data: ChartLine['data'], durationInDays: number) {
+  data.sort((a, b) => a.timestamp.valueOf() - b.timestamp.valueOf());
+
+  const duration = durationInDays * 24 * 3600 * 1000;
+  const startTs =
+    data.length > 0 ? data[data.length - 1].timestamp.valueOf() : 0;
+
+  const endTs = startTs > 0 ? startTs - duration : 0;
+  return data.filter((dp) => dp.timestamp.valueOf() > endTs);
+}
+
+function aggregateData(
+  data: ChartLine['data'],
+  maxTs: number,
+  intervalInDays: number,
+  aggregator: Aggregator,
+) {
+  const interval = intervalInDays * 24 * 3600 * 1000;
+  data.sort((a, b) => a.timestamp.valueOf() - b.timestamp.valueOf());
+
+  const rangedData: { timestamp: Date; data: ChartLine['data'] }[] = [];
+  for (const datum of data) {
+    const i = Math.floor((maxTs - datum.timestamp.valueOf()) / interval);
+    if (!rangedData[i]) {
+      rangedData[i] = {
+        timestamp: new Date(maxTs - interval * i),
+        data: [],
+      };
+    }
+
+    rangedData[i].data.push(datum);
+  }
+
+  return rangedData.map(({ timestamp, data }) => {
+    let value = 0;
+    switch (aggregator) {
+      case 'max':
+        value = Math.max(...data.map((datum) => datum.value));
+        break;
+      case 'min':
+        value = Math.min(...data.map((datum) => datum.value));
+        break;
+      case 'sum':
+        value = data.reduce((sum, datum) => sum + datum.value, 0);
+        break;
+      case 'avg':
+        value = data.reduce((sum, datum) => sum + datum.value, 0) / data.length;
+        break;
+    }
+
+    return {
+      timestamp,
+      value,
+    };
+  });
+}
+
 export default function HistoricalChart({
   lines,
   loading = false,
@@ -65,6 +135,9 @@ export default function HistoricalChart({
   durations,
   defaultDuration,
 
+  aggregate,
+  defaultAggregator = 'sum',
+
   showCurrentStats = false,
   currentStats = [],
 
@@ -72,28 +145,40 @@ export default function HistoricalChart({
 }: HistoricalChartProps): JSX.Element {
   const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
   const [duration, setDuration] = useState(defaultDuration); // In Days
+  const [aggregationInterval, setAggregationInterval] = useState(1); // In Days
+  const [aggregator, setAggregator] = useState<Aggregator>(defaultAggregator); // In Days
 
-  const series = useMemo(() => {
-    const series: EChartsOption['series'] = lines.map((line) => {
-      let data: [Date, number][] = [];
+  const computeLineData = useCallback(
+    (line: ChartLine, maxTs: number): [Date, number][] => {
+      let data: ChartLine['data'];
       if (Array.isArray(durations) && typeof duration === 'number') {
-        const lineData = line.data.sort(
-          (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
-        );
-
-        const startTs =
-          lineData.length > 0
-            ? lineData[lineData.length - 1].timestamp.valueOf()
-            : 0;
-
-        const endTs = startTs > 0 ? startTs - duration * 24 * 3600 * 1000 : 0;
-        data = lineData
-          .filter((dp) => dp.timestamp.valueOf() > endTs)
-          .map(({ timestamp, value }) => [timestamp, value]);
+        data = filterDataByDuration(line.data, duration);
       } else {
-        data = line.data.map(({ timestamp, value }) => [timestamp, value]);
+        data = line.data;
       }
 
+      if (aggregate) {
+        data = aggregateData(data, maxTs, aggregationInterval, aggregator);
+      }
+
+      return (
+        data
+          .map<[Date, number]>(({ timestamp, value }) => [timestamp, value])
+          // Sort data for perfect connecting animation when changing duration
+          .sort((a, b) => b[0].valueOf() - a[0].valueOf())
+      );
+    },
+    [aggregate, aggregationInterval, aggregator, duration, durations],
+  );
+
+  const series = useMemo(() => {
+    const maxTs = Math.max(
+      ...lines.map((line) =>
+        Math.max(...line.data.map((datum) => datum.timestamp.valueOf())),
+      ),
+    );
+
+    const series: EChartsOption['series'] = lines.map((line) => {
       return {
         name: line.name,
         type: 'line',
@@ -131,13 +216,13 @@ export default function HistoricalChart({
         itemStyle: {
           color: line.color,
         },
-        // Sort data for perfect connecting animation when changing duration
-        data: data.sort((a, b) => b[0].valueOf() - a[0].valueOf()),
+
+        data: computeLineData(line, maxTs),
       };
     });
 
     return series;
-  }, [duration, durations, isAreaChart, lines]);
+  }, [computeLineData, isAreaChart, lines]);
 
   const option = useMemo(() => {
     const isMonthChanging = (() => {
@@ -348,6 +433,43 @@ export default function HistoricalChart({
               {days}D
             </Box>
           ))}
+          {aggregate && (
+            <Menu>
+              <MenuButton
+                as={Button}
+                variant="outline"
+                colorScheme="gray"
+                size="sm"
+                leftIcon={<Icon as={MdSettings} />}
+              >
+                Agg
+              </MenuButton>
+              <MenuList minWidth="240px">
+                <MenuOptionGroup
+                  title="Interval"
+                  type="radio"
+                  value={String(aggregationInterval)}
+                  onChange={(value) => setAggregationInterval(Number(value))}
+                >
+                  <MenuItemOption value="1">Daily</MenuItemOption>
+                  <MenuItemOption value="7">Weekly</MenuItemOption>
+                  <MenuItemOption value="30">Monthly</MenuItemOption>
+                </MenuOptionGroup>
+                <MenuDivider />
+                <MenuOptionGroup
+                  title="Aggregator"
+                  type="radio"
+                  value={aggregator}
+                  onChange={(value) => setAggregator(value as Aggregator)}
+                >
+                  <MenuItemOption value="sum">Sum</MenuItemOption>
+                  <MenuItemOption value="avg">Average</MenuItemOption>
+                  <MenuItemOption value="min">Minimum</MenuItemOption>
+                  <MenuItemOption value="max">Maximum</MenuItemOption>
+                </MenuOptionGroup>
+              </MenuList>
+            </Menu>
+          )}
         </HStack>
       )}
       <Box position="relative">
