@@ -1,4 +1,4 @@
-import { HStack, Icon, Img, Spacer, Text, Flex } from '@chakra-ui/react';
+import { HStack, Icon, Spacer, Text, Flex } from '@chakra-ui/react';
 import React from 'react';
 import { CSVLink } from 'react-csv';
 import {
@@ -7,17 +7,24 @@ import {
   MdFullscreen,
 } from 'react-icons/md';
 
+import InfoPopover from '../../InfoPopover';
+
 export interface ChartHeaderProps {
-  logo?: string;
+  logo?: string | React.ReactNode;
   title?: string;
   toggleFullScreen?: () => void;
   isFullScreen?: boolean;
   downloadFileName?: string;
   downloadFileHeaders?: string[];
-  downloadData?: string;
+  // TODO: this data object seems to be abit mixed up in structure,
+  // I will need to identify it and type it properly, so disabling rule for now
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  downloadData?: any;
+  tooltip?: React.ReactNode;
   borderColor?: string;
   textColor?: string;
   backgroundColor?: string;
+  openInNewTab?: React.ReactNode;
 }
 const ChartHeader = ({
   logo,
@@ -30,6 +37,8 @@ const ChartHeader = ({
   borderColor,
   backgroundColor,
   textColor,
+  tooltip,
+  openInNewTab,
 }: ChartHeaderProps) => {
   return (
     <HStack
@@ -42,10 +51,12 @@ const ChartHeader = ({
       backgroundColor={backgroundColor || 'white'}
       borderColor={borderColor || '#DEDEDE'}
     >
-      <Img src={logo} height="20px" />
+      {logo || <></>}
       <Text margin={0} color={textColor || 'gray.900'} fontSize="14px">
         {title}{' '}
       </Text>
+      {tooltip && <InfoPopover>{tooltip}</InfoPopover>}
+      {openInNewTab || <></>}
       <Spacer />
 
       <Flex zIndex={99} alignItems="center" gap="16px">

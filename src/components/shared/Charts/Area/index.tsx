@@ -1,5 +1,5 @@
-import { Box, Center, Flex, Text } from '@chakra-ui/layout';
-import { Spinner, Icon, Link } from '@chakra-ui/react';
+import { Box, Center, Flex, Text, Grid } from '@chakra-ui/layout';
+import { Spinner, Icon, Link, Img } from '@chakra-ui/react';
 import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
@@ -41,6 +41,7 @@ interface AreaChartProps {
   line?: boolean;
   summarySpaced?: boolean;
   info?: ChartInfoProps;
+  chartSidebar?: React.ReactNode;
 }
 
 export default function AreaChart({
@@ -54,6 +55,7 @@ export default function AreaChart({
   headerSummary,
   yLabel,
   minHeight = 400,
+  chartSidebar = null,
   formatValue,
   durations = [1, 7, 30, 'ALL'],
   defaultDuration = 30,
@@ -374,36 +376,44 @@ export default function AreaChart({
       >
         <ChartHeader
           title={title}
-          logo={titleImg}
+          logo={<Img src={titleImg} height="20px" />}
           downloadFileName={`${generateCsvFormat().formattedCsvTitle.toLocaleLowerCase()}.csv`}
           downloadFileHeaders={generateCsvFormat().header}
           downloadData={generateCsvFormat().values}
           isFullScreen={isFullScreen}
           toggleFullScreen={toggleFullScreen}
         />
-        <Box
-          position="absolute"
-          marginTop="40px"
-          top="0"
-          left="45px"
-          bottom="50px"
-          right="10px"
-        >
-          <ReactEChartsCore
-            option={option}
-            notMerge={true}
-            lazyUpdate={true}
-            style={{
-              height: isFullScreen ? '100%' : height + 'px',
-              margin: padding * -1 + 'px',
-            }}
-          />
-        </Box>
-
-        {loading && (
+        {loading ? (
           <Center position="absolute" top="0" left="0" right="0" bottom="0">
             <Spinner color="purple.500" />
           </Center>
+        ) : (
+          <Grid
+            position="relative"
+            gridTemplateColumns={chartSidebar ? `max-content 1fr` : '1fr'}
+          >
+            {chartSidebar || <></>}
+            <Box position="relative" height={'100%'} width={'100%'}>
+              <Box
+                position="absolute"
+                marginTop="40px"
+                top="0"
+                left="45px"
+                bottom="50px"
+                right="10px"
+              >
+                <ReactEChartsCore
+                  option={option}
+                  notMerge={true}
+                  lazyUpdate={true}
+                  style={{
+                    height: isFullScreen ? '100%' : height + 'px',
+                    margin: padding * -1 + 'px',
+                  }}
+                />
+              </Box>
+            </Box>
+          </Grid>
         )}
       </Box>
 
