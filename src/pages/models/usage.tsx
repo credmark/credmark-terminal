@@ -8,22 +8,14 @@ import {
   Text,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import {
-  chakraComponents,
-  ChakraStylesConfig,
-  GroupBase,
-  OptionProps,
-  Select,
-  SelectComponentsConfig,
-} from 'chakra-react-select';
 import React, { useEffect, useMemo, useState } from 'react';
-import Highlighter from 'react-highlight-words';
 
 import { Card } from '~/components/base';
 import BarChart from '~/components/shared/Charts/BarChart';
 import HistoricalChart, {
   ChartLine,
 } from '~/components/shared/Charts/HistoricalChart';
+import SearchSelect from '~/components/shared/Form/SearchSelect';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 interface ModelUsage {
@@ -33,28 +25,6 @@ interface ModelUsage {
   version: string;
   count: string;
 }
-
-const chakraStyles: ChakraStylesConfig<
-  ChartLine,
-  false,
-  GroupBase<ChartLine>
-> = {
-  dropdownIndicator: (provided) => ({
-    ...provided,
-    background: 'transparent',
-    p: 0,
-    w: '40px',
-    borderLeftWidth: 0,
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    bg: state.isSelected
-      ? 'green.500'
-      : state.isFocused
-      ? 'gray.50'
-      : provided.bg,
-  }),
-};
 
 export default function ModelUsagePage() {
   const [loading, setLoading] = useState(false);
@@ -167,29 +137,7 @@ export default function ModelUsagePage() {
     return 0;
   }, [barChartDate, lines]);
 
-  const [searchInput, setSearchInput] = useState('');
   const [slug, setSlug] = useState(ALL_MODELS);
-
-  const customComponents = useMemo<
-    SelectComponentsConfig<ChartLine, false, GroupBase<ChartLine>>
-  >(() => {
-    return {
-      Option: (props: OptionProps<ChartLine, false, GroupBase<ChartLine>>) => (
-        <chakraComponents.Option {...props}>
-          <Box>
-            <Text fontSize="lg">
-              <Highlighter
-                searchWords={[searchInput]}
-                autoEscape={true}
-                textToHighlight={props.data.name}
-                highlightTag={({ children }) => <strong>{children}</strong>}
-              />
-            </Text>
-          </Box>
-        </chakraComponents.Option>
-      ),
-    };
-  }, [searchInput]);
 
   return (
     <Container maxW="container.lg" p="8">
@@ -198,7 +146,7 @@ export default function ModelUsagePage() {
           Historical API Calls
         </Heading>
         <Box maxW="480px">
-          <Select<ChartLine, false, GroupBase<ChartLine>>
+          <SearchSelect<ChartLine>
             placeholder={loading ? 'Loading Models...' : 'Select a Model...'}
             options={lines}
             filterOption={(option, filterValue) =>
@@ -207,14 +155,9 @@ export default function ModelUsagePage() {
                 .includes(filterValue.toLocaleLowerCase().trim())
             }
             getOptionLabel={(option) => option.name}
-            components={customComponents}
             value={lines.find((line) => line.name === slug)}
             onChange={(val) => setSlug(val?.name ?? '')}
             isOptionSelected={(option) => slug === option.name}
-            chakraStyles={chakraStyles}
-            isClearable
-            inputValue={searchInput}
-            onInputChange={(input) => setSearchInput(input)}
           />
         </Box>
         <HistoricalChart
