@@ -33,9 +33,12 @@ export default {
     disabled: {
       control: { type: 'boolean' },
     },
+    content: {
+      control: { type: 'text' },
+    },
   },
 } as ComponentMeta<typeof Button>;
 
 export const Primary: ComponentStory<typeof Button> = (args) => (
-  <Button content="Button" {...args} />
+  <Button content={args.title || 'Button'} {...args} />
 );
