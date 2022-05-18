@@ -48,8 +48,8 @@ const ChartHeader = ({
       py="2"
       roundedTop="md"
       borderBottom="2px"
-      backgroundColor={backgroundColor || 'white'}
       borderColor={borderColor || '#DEDEDE'}
+      backgroundColor={backgroundColor || 'white'}
     >
       {logo || <></>}
       <Text margin={0} color={textColor || 'gray.900'} fontSize="14px">

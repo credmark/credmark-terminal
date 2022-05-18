@@ -6,6 +6,7 @@ import React, { useMemo, useState } from 'react';
 import { MdArrowForward } from 'react-icons/md';
 
 import ChartHeader from '../ChartHeader';
+import ChartSidebar from '../ChartSidebar';
 
 type ChartData = Array<{
   timestamp: Date;
@@ -303,102 +304,94 @@ export default function AreaChart({
       rounded="base"
       position="relative"
       boxSizing="border-box"
+      display="grid"
+      gridTemplateRows="auto 1fr"
+      height="100%"
+      width="100%"
     >
-      <Flex
-        justifyContent="space-between"
-        alignItems="center"
-        position="absolute"
-        width="100%"
-        zIndex={10}
-        top={10}
-        left={1}
-      >
-        {(headerAmount || headerSummary) && (
-          <Text
-            fontSize="sm"
-            pt="1"
-            color="#1A1A1A"
-            paddingLeft="2"
-            paddingBottom="2"
-          >
-            {headerSummary} <strong>{headerAmount}</strong>
-          </Text>
-        )}
-        <Flex>
-          {durations.map((days) => (
-            <Box
-              key={days}
-              p="2"
-              mx="2"
-              fontSize="sm"
-              fontWeight="bold"
-              color={duration === days ? '#1A1A1A' : 'gray.300'}
-              cursor="pointer"
-              onClick={() => setDuration(days as 'ALL')}
-              _hover={
-                duration === days
-                  ? {}
-                  : {
-                      color: '#1A1A1A',
-                    }
-              }
-            >
-              {days === 'ALL' ? 'ALL' : `${days}D`}
-            </Box>
-          ))}
-        </Flex>
-      </Flex>
-
-      <Box
-        shadow="md"
-        position="relative"
-        display="grid"
-        gridTemplateRows="auto 1fr"
-        height="100%"
-        width="100%"
-        boxSizing="border-box"
-      >
-        <ChartHeader
-          title={title}
-          logo={<Img src={titleImg} height="20px" />}
-          downloadFileName={`${generateCsvFormat().formattedCsvTitle.toLocaleLowerCase()}.csv`}
-          downloadFileHeaders={generateCsvFormat().header}
-          downloadData={generateCsvFormat().values}
-          isFullScreen={isFullScreen}
-          toggleFullScreen={toggleFullScreen}
-        />
-        {loading ? (
-          <Center position="absolute" top="0" left="0" right="0" bottom="0">
-            <Spinner color="purple.500" />
-          </Center>
-        ) : (
+      <ChartHeader
+        title={title}
+        logo={<Img src={titleImg} height="20px" />}
+        downloadFileName={`${generateCsvFormat().formattedCsvTitle.toLocaleLowerCase()}.csv`}
+        downloadFileHeaders={generateCsvFormat().header}
+        downloadData={generateCsvFormat().values}
+        isFullScreen={isFullScreen}
+        toggleFullScreen={toggleFullScreen}
+      />
+      {loading ? (
+        <Center position="absolute" top="0" left="0" right="0" bottom="0">
+          <Spinner color="purple.500" />
+        </Center>
+      ) : (
+        <Grid
+          position="relative"
+          gridTemplateColumns={chartSidebar ? `max-content 1fr` : '1fr'}
+          transition="grid-template-column 0.2s ease-in-out"
+        >
+          {chartSidebar ? <ChartSidebar content={chartSidebar} /> : <></>}
           <Grid
             position="relative"
-            gridTemplateColumns={chartSidebar ? `max-content 1fr` : '1fr'}
+            gridTemplateRows={`max-content ${isFullScreen ? '1fr' : '250px'}`}
+            width={'100%'}
+            overflow="hidden"
+            padding={`10px 0px ${info ? '30px' : '10px'} 0px `}
           >
-            {chartSidebar || <></>}
-            <Box
-              id="chartwrapper"
-              position="relative"
-              height={'100%'}
-              width={'100%'}
-              overflow="hidden"
-              padding={`10px 0px ${info ? '30px' : '10px'} 0px `}
+            <Flex
+              justifyContent="space-between"
+              alignItems="center"
+              width="100%"
+              zIndex={10}
             >
-              <ReactEChartsCore
-                option={option}
-                notMerge={true}
-                lazyUpdate={true}
-                style={{
-                  width: '100%',
-                  margin: '0',
-                  height: isFullScreen ? '100%' : '320px',
-                }}
-              />
-            </Box>
+              {(headerAmount || headerSummary) && (
+                <Text
+                  fontSize="sm"
+                  pt="1"
+                  color="#1A1A1A"
+                  paddingLeft="2"
+                  paddingBottom="2"
+                >
+                  {headerSummary} <strong>{headerAmount}</strong>
+                </Text>
+              )}
+              <Flex>
+                {durations.map((days) => (
+                  <Box
+                    key={days}
+                    p="2"
+                    mx="2"
+                    fontSize="sm"
+                    fontWeight="bold"
+                    color={duration === days ? '#1A1A1A' : 'gray.300'}
+                    cursor="pointer"
+                    onClick={() => setDuration(days as 'ALL')}
+                    _hover={
+                      duration === days
+                        ? {}
+                        : {
+                            color: '#1A1A1A',
+                          }
+                    }
+                  >
+                    {days === 'ALL' ? 'ALL' : `${days}D`}
+                  </Box>
+                ))}
+              </Flex>
+            </Flex>
+
+            <ReactEChartsCore
+              option={option}
+              notMerge={true}
+              lazyUpdate={true}
+              style={{
+                width: '100%',
+                margin: '0',
+                height: isFullScreen ? '100%' : '320px',
+                top: isFullScreen ? 0 : '-70px',
+              }}
+            />
           </Grid>
-        )}
-      </Box>
+        </Grid>
+      )}
 
       {info && (
         <Link
