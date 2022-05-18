@@ -129,7 +129,7 @@ export default function AreaChart({
         type: 'time',
         boundaryGap: false,
         axisLine: {
-          show: false,
+          show: true,
         },
         axisPointer: {
           label: {
