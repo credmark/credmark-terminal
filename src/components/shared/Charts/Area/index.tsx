@@ -30,7 +30,6 @@ interface AreaChartProps {
   formatValue?: (value: number) => string;
   durations?: Duration[];
   defaultDuration?: Duration;
-
   height?: number;
   headerSummary?: string;
   lineColor?: string;
@@ -54,14 +53,10 @@ export default function AreaChart({
   lineColor,
   headerSummary,
   yLabel,
-  minHeight = 400,
   chartSidebar = null,
   formatValue,
   durations = [1, 7, 30, 'ALL'],
   defaultDuration = 30,
-  height = 300,
-  summarySpaced = false,
-  padding = 40,
   gradient,
   line = false,
 }: AreaChartProps) {
@@ -268,14 +263,11 @@ export default function AreaChart({
     ],
   );
 
-  const currentPriceHeight = 0;
-
   const pageId = title
     ? title.replace(/\s/g, '-')
     : `cmk-analytics-${Math.random()}`;
 
   const toggleFullScreen = () => {
-    console.log('toggleFullScreen');
     if (!isFullScreen) {
       document?.getElementById(pageId)?.requestFullscreen();
       setIsFullScreen(true);
@@ -286,8 +278,6 @@ export default function AreaChart({
   };
 
   const generateCsvFormat = () => {
-    console.log('twest');
-
     const formattedCsvTitle = `${duration}d-${title?.replace(/\s/g, '-')}`;
 
     if (dataByDuration) {
@@ -312,7 +302,7 @@ export default function AreaChart({
       shadow="md"
       rounded="base"
       position="relative"
-      minHeight={minHeight}
+      boxSizing="border-box"
     >
       <Flex
         justifyContent="space-between"
@@ -364,15 +354,9 @@ export default function AreaChart({
         position="relative"
         display="grid"
         gridTemplateRows="auto 1fr"
-        minHeight={isFullScreen ? '70%' : 340}
-        h={
-          isFullScreen
-            ? '90%'
-            : (summarySpaced ? height + 20 : height) -
-              padding * 2 +
-              currentPriceHeight +
-              'px'
-        }
+        height="100%"
+        width="100%"
+        boxSizing="border-box"
       >
         <ChartHeader
           title={title}
@@ -393,25 +377,24 @@ export default function AreaChart({
             gridTemplateColumns={chartSidebar ? `max-content 1fr` : '1fr'}
           >
             {chartSidebar || <></>}
-            <Box position="relative" height={'100%'} width={'100%'}>
-              <Box
-                position="absolute"
-                marginTop="40px"
-                top="0"
-                left="45px"
-                bottom="50px"
-                right="10px"
-              >
-                <ReactEChartsCore
-                  option={option}
-                  notMerge={true}
-                  lazyUpdate={true}
-                  style={{
-                    height: isFullScreen ? '100%' : height + 'px',
-                    margin: padding * -1 + 'px',
-                  }}
-                />
-              </Box>
+            <Box
+              id="chartwrapper"
+              position="relative"
+              height={'100%'}
+              width={'100%'}
+              overflow="hidden"
+              padding={`10px 0px ${info ? '30px' : '10px'} 0px `}
+            >
+              <ReactEChartsCore
+                option={option}
+                notMerge={true}
+                lazyUpdate={true}
+                style={{
+                  width: '100%',
+                  margin: '0',
+                  height: isFullScreen ? '100%' : '320px',
+                }}
+              />
             </Box>
           </Grid>
         )}
