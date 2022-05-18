@@ -1,15 +1,11 @@
-import { Box, Center, Flex, HStack, Spacer, Text } from '@chakra-ui/layout';
-import { Img, Spinner, Icon, Link } from '@chakra-ui/react';
+import { Box, Center, Flex, Text } from '@chakra-ui/layout';
+import { Spinner, Icon, Link } from '@chakra-ui/react';
 import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import {
-  MdArrowForward,
-  MdOutlineFileDownload,
-  MdFullscreenExit,
-  MdFullscreen,
-} from 'react-icons/md';
+import { MdArrowForward } from 'react-icons/md';
+
+import ChartHeader from '../ChartHeader';
 
 type ChartData = Array<{
   timestamp: Date;
@@ -277,6 +273,7 @@ export default function AreaChart({
     : `cmk-analytics-${Math.random()}`;
 
   const toggleFullScreen = () => {
+    console.log('toggleFullScreen');
     if (!isFullScreen) {
       document?.getElementById(pageId)?.requestFullscreen();
       setIsFullScreen(true);
@@ -287,6 +284,8 @@ export default function AreaChart({
   };
 
   const generateCsvFormat = () => {
+    console.log('twest');
+
     const formattedCsvTitle = `${duration}d-${title?.replace(/\s/g, '-')}`;
 
     if (dataByDuration) {
@@ -373,32 +372,15 @@ export default function AreaChart({
               'px'
         }
       >
-        <HStack
-          px="4"
-          py="2"
-          roundedTop="md"
-          borderBottom="2px"
-          borderColor="#DEDEDE"
-        >
-          <Img src={titleImg} h="4" />
-          <Text fontSize="lg">{title} </Text>
-          <Spacer />
-
-          <CSVLink
-            filename={`${generateCsvFormat().formattedCsvTitle.toLocaleLowerCase()}.csv`}
-            headers={generateCsvFormat().header}
-            data={generateCsvFormat().values}
-            style={{ display: 'flex' }}
-          >
-            <Icon cursor="pointer" as={MdOutlineFileDownload} />
-          </CSVLink>
-          <Icon
-            cursor="pointer"
-            onClick={toggleFullScreen}
-            as={isFullScreen ? MdFullscreenExit : MdFullscreen}
-            boxSize="5"
-          />
-        </HStack>
+        <ChartHeader
+          title={title}
+          logo={titleImg}
+          downloadFileName={`${generateCsvFormat().formattedCsvTitle.toLocaleLowerCase()}.csv`}
+          downloadFileHeaders={generateCsvFormat().header}
+          downloadData={generateCsvFormat().values}
+          isFullScreen={isFullScreen}
+          toggleFullScreen={toggleFullScreen}
+        />
         <Box
           position="absolute"
           marginTop="40px"

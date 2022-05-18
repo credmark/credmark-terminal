@@ -1,10 +1,20 @@
 import React from 'react';
 
 import cmkLogo from '../../public/img/cmk.svg';
-import AreaCharts from '../components/Charts/AreaChart';
+import AreaChart from '../components/shared/Charts/Area';
 
-const AreaChart: React.FC = () => (
-  <AreaCharts
+export default {
+  title: 'Components/Charts/Area',
+  component: AreaChart,
+  argTypes: {
+    backgroundColor: { control: 'color' },
+  },
+};
+
+const Template = () => (
+  <AreaChart
+    gradient={['#08538C', '#3B0065']}
+    yLabel="PRICE"
     lineColor="#825F96"
     data={[
       {
@@ -15,27 +25,15 @@ const AreaChart: React.FC = () => (
       value: 100,
     }))}
     headerSummary="Current Price:"
-    headerAmount={`$1000.00`}
+    headerAmount="$1000.00"
     title="Price of CMK"
     titleImg={cmkLogo}
-    gradient={['#08538C', '#3B0065']}
     line={true}
     formatValue={(val) => '$' + val.toFixed(2)}
-    yLabel="PRICE"
     height={380}
     durations={[30, 60, 90]}
     defaultDuration={60}
   />
 );
-
-export default {
-  title: 'Components/Charts/Area',
-  component: AreaChart,
-  argTypes: {
-    backgroundColor: { control: 'color' },
-  },
-};
-
-const Template = () => <AreaChart />;
 
 export const Primary = Template.bind({});
