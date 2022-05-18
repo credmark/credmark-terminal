@@ -97,28 +97,31 @@ function aggregateData(
     rangedData[i].data.push(datum);
   }
 
-  return rangedData.map(({ timestamp, data }) => {
-    let value = 0;
-    switch (aggregator) {
-      case 'max':
-        value = Math.max(...data.map((datum) => datum.value));
-        break;
-      case 'min':
-        value = Math.min(...data.map((datum) => datum.value));
-        break;
-      case 'sum':
-        value = data.reduce((sum, datum) => sum + datum.value, 0);
-        break;
-      case 'avg':
-        value = data.reduce((sum, datum) => sum + datum.value, 0) / data.length;
-        break;
-    }
+  return rangedData
+    .map(({ timestamp, data }) => {
+      let value = 0;
+      switch (aggregator) {
+        case 'max':
+          value = Math.max(...data.map((datum) => datum.value));
+          break;
+        case 'min':
+          value = Math.min(...data.map((datum) => datum.value));
+          break;
+        case 'sum':
+          value = data.reduce((sum, datum) => sum + datum.value, 0);
+          break;
+        case 'avg':
+          value =
+            data.reduce((sum, datum) => sum + datum.value, 0) / data.length;
+          break;
+      }
 
-    return {
-      timestamp,
-      value,
-    };
-  });
+      return {
+        timestamp,
+        value,
+      };
+    })
+    .filter((val) => !!val);
 }
 
 export default function HistoricalChart({
