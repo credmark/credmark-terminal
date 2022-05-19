@@ -3,19 +3,19 @@ import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import {
-  CAdvancedConfig,
-  CModelMetadata,
-  CModelRunError,
-  CRecord,
+  AnyRecord,
+  ModelMetadata,
+  ModelRunError,
+  ModelRunnerConfig,
 } from '~/types/model';
 
 import ModelInput from './ModelInput';
 import ModelOutput from './ModelOutput';
 import ModelRunConfig from './ModelRunConfig';
-import ModelRunError from './ModelRunError';
+import ModelRunErrorAlert from './ModelRunErrorAlert';
 
 interface ModelRunnerProps {
-  model: CModelMetadata;
+  model: ModelMetadata;
 }
 
 const DEFAULT_CONFIG = {
@@ -26,13 +26,13 @@ const DEFAULT_CONFIG = {
 
 export default function ModelRunner({ model }: ModelRunnerProps) {
   const toast = useToast();
-  const [config, setConfig] = useState<CAdvancedConfig>(DEFAULT_CONFIG);
+  const [config, setConfig] = useState<ModelRunnerConfig>(DEFAULT_CONFIG);
 
-  const [output, setOutput] = useState<CRecord>();
-  const [error, setError] = useState<CModelRunError>();
+  const [output, setOutput] = useState<AnyRecord>();
+  const [error, setError] = useState<ModelRunError>();
 
   const onRun = useCallback(
-    async (inputValues: CRecord): Promise<void> => {
+    async (inputValues: AnyRecord): Promise<void> => {
       setError(undefined);
       setOutput(undefined);
 
@@ -92,7 +92,7 @@ export default function ModelRunner({ model }: ModelRunnerProps) {
       <ModelRunConfig value={config} onChange={setConfig} />
       <ModelInput modelInput={model.input} onRun={onRun} />
       {output && <ModelOutput model={model} result={output} />}
-      {error && <ModelRunError error={error} />}
+      {error && <ModelRunErrorAlert error={error} />}
     </VStack>
   );
 }

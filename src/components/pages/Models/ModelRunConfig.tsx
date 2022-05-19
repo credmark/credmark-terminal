@@ -1,24 +1,24 @@
 import {
   Accordion,
-  AccordionItem,
   AccordionButton,
-  Box,
   AccordionIcon,
+  AccordionItem,
   AccordionPanel,
-  Icon,
+  Box,
   FormControl,
   FormLabel,
+  Icon,
   Input,
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';
 import { MdSettings } from 'react-icons/md';
 
-import { CAdvancedConfig } from '~/types/model';
+import { ModelRunnerConfig } from '~/types/model';
 
 interface ModelRunConfigProps {
-  value: CAdvancedConfig;
-  onChange: (config: CAdvancedConfig) => void;
+  value: ModelRunnerConfig;
+  onChange: (config: ModelRunnerConfig) => void;
 }
 
 export default function ModelRunConfig({

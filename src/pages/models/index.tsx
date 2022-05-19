@@ -6,10 +6,10 @@ import React, { useMemo } from 'react';
 
 import { ModelRunner } from '~/components/pages/Models';
 import SearchSelect from '~/components/shared/Form/SearchSelect';
-import { CModelMetadata } from '~/types/model';
+import { ModelMetadata } from '~/types/model';
 
 interface ModelPageProps {
-  models: CModelMetadata[];
+  models: ModelMetadata[];
 }
 
 export default function ModelsPage({ models }: ModelPageProps) {
@@ -30,7 +30,7 @@ export default function ModelsPage({ models }: ModelPageProps) {
       <Heading mb="8" color="purple.500">
         Credmark Models
       </Heading>
-      <SearchSelect<CModelMetadata>
+      <SearchSelect<ModelMetadata>
         placeholder="Select a model..."
         options={models}
         filterOption={(option, filterValue) =>

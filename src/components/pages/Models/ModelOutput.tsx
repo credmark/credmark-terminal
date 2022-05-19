@@ -34,31 +34,31 @@ import HistoricalChart, {
   ChartLine,
 } from '~/components/shared/Charts/HistoricalChart';
 import {
-  BaseCType,
-  CType,
-  CTypeArray,
-  CTypeBoolean,
-  CTypeInteger,
-  CTypeObject,
-  CTypeString,
-  CModelMetadata,
-  CRecord,
+  AnyRecord,
+  BaseFieldType,
+  FieldType,
+  FieldTypeArray,
+  FieldTypeBoolean,
+  FieldTypeInteger,
+  FieldTypeObject,
+  FieldTypeString,
+  ModelMetadata,
 } from '~/types/model';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 interface ModelOutputProps {
-  model: CModelMetadata;
-  result: CRecord;
+  model: ModelMetadata;
+  result: AnyRecord;
 }
 
 type UnreferenceOutput =
-  | CTypeObject
-  | CTypeArray
-  | CTypeString
-  | CTypeInteger
-  | CTypeBoolean;
+  | FieldTypeObject
+  | FieldTypeArray
+  | FieldTypeString
+  | FieldTypeInteger
+  | FieldTypeBoolean;
 
-interface Key extends BaseCType {
+interface Key extends BaseFieldType {
   absolutePath: string;
   relativePath: string;
   basePath: string;
@@ -71,7 +71,7 @@ interface BlockSeries {
     blockNumber: number;
     blockTimestamp: number;
     sampleTimestamp: number;
-    output: CRecord;
+    output: AnyRecord;
   }>;
 }
 
@@ -101,7 +101,7 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
   const [transformInput, setTransformInput] = useState('');
 
   const getUnreferencedOutput = useCallback(
-    (output: CType): UnreferenceOutput => {
+    (output: FieldType): UnreferenceOutput => {
       if ('$ref' in output) {
         const refKey = Object.keys(model.output.definitions ?? {}).find(
           (def) => def === output.$ref.split('/').pop(),
@@ -123,7 +123,7 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
   );
 
   const chartValueKeys = useMemo(() => {
-    function computeKeys(type: CType, path = '', mathPath = ''): Key[] {
+    function computeKeys(type: FieldType, path = '', mathPath = ''): Key[] {
       const output = getUnreferencedOutput(type);
       switch (output.type) {
         case 'object':
@@ -232,7 +232,10 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
       } catch {}
     }
 
-    function getByKey(record: CRecord, key: Key | undefined): number | string {
+    function getByKey(
+      record: AnyRecord,
+      key: Key | undefined,
+    ): number | string {
       return _get(record, key?.relativePath ?? 0) ?? 0;
     }
 

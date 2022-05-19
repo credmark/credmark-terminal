@@ -27,26 +27,31 @@ import * as Yup from 'yup';
 
 import { PrimaryButton } from '~/components/base';
 import {
-  CType,
-  CTypeArray,
-  CTypeBoolean,
-  CTypeInteger,
-  CTypeObject,
-  CTypeString,
-  CModelMetadata,
-  CRecord,
+  FieldType,
+  FieldTypeArray,
+  FieldTypeBoolean,
+  FieldTypeInteger,
+  FieldTypeObject,
+  FieldTypeString,
+  ModelMetadata,
+  AnyRecord,
 } from '~/types/model';
 
 interface ModelInputProps {
-  modelInput: CModelMetadata['input'];
-  onRun: (input: CRecord) => Promise<void>;
+  modelInput: ModelMetadata['input'];
+  onRun: (input: AnyRecord) => Promise<void>;
 }
 
 export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   const getUnreferencedInput = useCallback(
     (
-      input: CType,
-    ): CTypeObject | CTypeArray | CTypeString | CTypeInteger | CTypeBoolean => {
+      input: FieldType,
+    ):
+      | FieldTypeObject
+      | FieldTypeArray
+      | FieldTypeString
+      | FieldTypeInteger
+      | FieldTypeBoolean => {
       if ('$ref' in input) {
         const refKey = Object.keys(modelInput.definitions ?? {}).find(
           (def) => def === input.$ref.split('/').pop(),
@@ -57,11 +62,11 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
         }
 
         return (modelInput.definitions ?? {})[refKey] as
-          | CTypeObject
-          | CTypeArray
-          | CTypeString
-          | CTypeInteger
-          | CTypeBoolean;
+          | FieldTypeObject
+          | FieldTypeArray
+          | FieldTypeString
+          | FieldTypeInteger
+          | FieldTypeBoolean;
       } else if ('allOf' in input) {
         return getUnreferencedInput(input.allOf[0]);
       }
@@ -72,11 +77,11 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   );
 
   const computeInitialValues = useCallback(
-    (type: CType): CRecord | boolean | string | number | unknown[] => {
+    (type: FieldType): AnyRecord | boolean | string | number | unknown[] => {
       const input = getUnreferencedInput(type);
       switch (input.type) {
         case 'object':
-          return Object.entries(input.properties ?? {}).reduce<CRecord>(
+          return Object.entries(input.properties ?? {}).reduce<AnyRecord>(
             (iv, [key, value]) => ({
               ...iv,
               [key]: computeInitialValues(value),
@@ -99,12 +104,12 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   );
 
   const computeValidationSchema = useCallback(
-    (type: CType, required: string[] = [], key = ''): Yup.BaseSchema => {
+    (type: FieldType, required: string[] = [], key = ''): Yup.BaseSchema => {
       const input = getUnreferencedInput(type);
       switch (input.type) {
         case 'object': {
           return Yup.object().shape(
-            Object.entries(input.properties ?? {}).reduce<CRecord>(
+            Object.entries(input.properties ?? {}).reduce<AnyRecord>(
               (iv, [key, value]) => ({
                 ...iv,
                 [key]: computeValidationSchema(value, input.required, key),
@@ -156,7 +161,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   );
 
   const initialValues = useMemo(() => {
-    return computeInitialValues(modelInput) as CRecord;
+    return computeInitialValues(modelInput) as AnyRecord;
   }, [computeInitialValues, modelInput]);
 
   const validationSchema = useMemo(() => {
@@ -164,14 +169,14 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   }, [computeValidationSchema, modelInput]);
 
   function onSubmit(
-    inputValues: CRecord,
-    actions: FormikHelpers<CRecord>,
+    inputValues: AnyRecord,
+    actions: FormikHelpers<AnyRecord>,
   ): void {
     actions.setSubmitting(true);
     onRun(inputValues).finally(() => actions.setSubmitting(false));
   }
 
-  function getInputFields(type: CType, keyPath = ''): React.ReactNode {
+  function getInputFields(type: FieldType, keyPath = ''): React.ReactNode {
     const input = getUnreferencedInput(type);
     switch (input.type) {
       case 'object':
@@ -307,7 +312,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
       default:
         return (
           <Field key={keyPath} name={keyPath}>
-            {({ field, form }: FieldProps<string, CRecord>) => {
+            {({ field, form }: FieldProps<string, AnyRecord>) => {
               let error = getIn(form.errors, keyPath);
               // When field is a nested object in an array and array
               // itself has failed validation, getIn will return first

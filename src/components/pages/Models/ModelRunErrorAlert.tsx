@@ -1,13 +1,13 @@
-import { VStack, Heading, Box, Text } from '@chakra-ui/react';
+import { Box, Heading, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 
-import { CModelRunError } from '~/types/model';
+import { ModelRunError } from '~/types/model';
 
 interface ModelRunErrorProps {
-  error: CModelRunError;
+  error: ModelRunError;
 }
 
-export default function ModelRunError({ error }: ModelRunErrorProps) {
+export default function ModelRunErrorAlert({ error }: ModelRunErrorProps) {
   return (
     <VStack
       bg="red.50"

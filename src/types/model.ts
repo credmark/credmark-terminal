@@ -1,32 +1,32 @@
-export interface CTypeRef {
+export interface FieldTypeRef {
   $ref: string;
 }
 
-export interface CTypeAllOf {
-  allOf: Array<CType>;
+export interface FieldTypeAllOf {
+  allOf: Array<FieldType>;
 }
 
-export interface BaseCType {
+export interface BaseFieldType {
   title?: string;
   description?: string;
 }
 
-export interface CTypeObject extends BaseCType {
+export interface FieldTypeObject extends BaseFieldType {
   type: 'object';
-  properties?: Record<string, CType>;
+  properties?: Record<string, FieldType>;
   required?: string[];
-  definitions?: Record<string, CType>;
+  definitions?: Record<string, FieldType>;
 }
 
-export interface CTypeArray extends BaseCType {
+export interface FieldTypeArray extends BaseFieldType {
   type: 'array';
-  items: CType | CType[];
+  items: FieldType | FieldType[];
   default?: unknown[];
   minItems?: number;
   maxItems?: number;
 }
 
-export interface CTypeString extends BaseCType {
+export interface FieldTypeString extends BaseFieldType {
   type: 'string';
   pattern?: string;
   format?: 'date' | 'evm-address';
@@ -34,36 +34,36 @@ export interface CTypeString extends BaseCType {
   maxLength?: number;
 }
 
-export interface CTypeInteger extends BaseCType {
+export interface FieldTypeInteger extends BaseFieldType {
   type: 'integer' | 'number';
   default?: number;
 }
 
-export interface CTypeBoolean extends BaseCType {
+export interface FieldTypeBoolean extends BaseFieldType {
   type: 'boolean';
   default?: boolean;
 }
 
-export type CType =
-  | CTypeObject
-  | CTypeArray
-  | CTypeString
-  | CTypeInteger
-  | CTypeBoolean
-  | CTypeAllOf
-  | CTypeRef;
+export type FieldType =
+  | FieldTypeObject
+  | FieldTypeArray
+  | FieldTypeString
+  | FieldTypeInteger
+  | FieldTypeBoolean
+  | FieldTypeAllOf
+  | FieldTypeRef;
 
-export interface CModelMetadata {
+export interface ModelMetadata {
   slug: string;
   displayName: string;
   description?: string;
   developer: string;
-  input: CTypeObject;
-  output: CTypeObject;
-  error: CType;
+  input: FieldTypeObject;
+  output: FieldTypeObject;
+  error: FieldType;
 }
 
-export interface CModelRunError {
+export interface ModelRunError {
   code: string;
   message?: string;
   details?: unknown;
@@ -77,10 +77,19 @@ export interface CModelRunError {
   }>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type CRecord = Record<string, any>;
+export interface ModelRunResponse<O> {
+  slug: string;
+  version: string;
+  chainId: number;
+  blockNumber: number;
+  output: O;
+  error?: ModelRunError;
+}
 
-export interface CAdvancedConfig {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyRecord = Record<string, any>;
+
+export interface ModelRunnerConfig {
   version: string;
   chainId: number;
   blockNumber: number | string;
