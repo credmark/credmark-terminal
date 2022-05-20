@@ -11,11 +11,11 @@ export default {
   component: ChartHeaders,
   argTypes: {
     backgroundColor: {
-      options: ['#00D696', '#DEDEDE', '#BFBFBF', '#FFFFFF'],
+      options: ['green.500', 'gray.400', 'gray.900'],
       control: { type: 'radio' },
     },
     textColor: {
-      options: ['white', 'black'],
+      options: ['white', 'gray.900'],
       control: { type: 'radio' },
     },
     toggleFullScreen: {
@@ -40,5 +40,5 @@ const Template: Story<ChartHeaderProps> = (args) => (
 export const Default = Template.bind({});
 Default.args = {
   textColor: 'black',
-  backgroundColor: '#00D696',
+  backgroundColor: 'green.500',
 };

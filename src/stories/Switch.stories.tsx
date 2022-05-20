@@ -9,7 +9,7 @@ export default {
   component: Switch,
   argTypes: {
     colorScheme: {
-      options: ['#00D696', '#DEDEDE', '#BFBFBF'],
+      options: ['green.500', 'gray.400', 'gray.900'],
       control: { type: 'radio' },
     },
   },

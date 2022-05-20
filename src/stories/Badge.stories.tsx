@@ -8,7 +8,7 @@ export default {
   component: Badge,
   argTypes: {
     backgroundColor: {
-      options: ['#00D696', '#DEDEDE', '#BFBFBF'],
+      options: ['green.500', 'gray.400', 'gray.900'],
       control: { type: 'radio' },
     },
     content: {
@@ -19,7 +19,7 @@ export default {
       control: { type: 'radio' },
     },
     color: {
-      options: ['white', 'black'],
+      options: ['white', 'gray.900'],
       control: { type: 'radio' },
     },
     onClick: {
@@ -33,5 +33,5 @@ const Template: Story<BadgeProps> = (args) => <Badge {...args} />;
 export const Default = Template.bind({});
 Default.args = {
   content: 'Primary',
-  backgroundColor: '#00D696',
+  backgroundColor: 'green.500',
 };

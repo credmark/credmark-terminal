@@ -12,7 +12,7 @@ export default {
   component: Button,
   argTypes: {
     backgroundColor: {
-      options: ['#00D696', '#DEDEDE', '#BFBFBF'],
+      options: ['green.500', 'gray.400', 'gray.900'],
       control: { type: 'radio' },
     },
     fontWeight: {
@@ -24,7 +24,7 @@ export default {
       control: { type: 'radio' },
     },
     color: {
-      options: ['white', 'black'],
+      options: ['white', 'gray.900'],
       control: { type: 'radio' },
     },
     onClick: {

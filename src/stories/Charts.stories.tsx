@@ -16,13 +16,13 @@ const Template = () => {
   const [hasSidebar, showSidebar] = React.useState(false);
   return (
     <Grid gridTemplateRows="50px 1fr" gap="20px">
-      <Button primary size="sm" onClick={() => showSidebar(!hasSidebar)}>
+      <Button size="sm" onClick={() => showSidebar(!hasSidebar)}>
         Show/Hide Sidebar
       </Button>
       <AreaChart
-        gradient={['#08538C', '#3B0065']}
+        gradient={['green.500', 'gray.400']}
         yLabel="PRICE"
-        lineColor="#825F96"
+        lineColor="purple.500"
         data={[
           {
             ts: 1598486400000,
