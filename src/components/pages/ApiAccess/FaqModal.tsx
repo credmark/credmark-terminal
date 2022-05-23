@@ -159,6 +159,7 @@ export default function FaqModal({ isOpen, onClose }: UseDisclosureReturn) {
               href="https://credmark.com/faq"
               isExternal
               textDecoration="underline"
+              aria-label="FAQ"
             >
               Check our full FAQ <Icon as={MdArrowForward} />
             </Link>
@@ -168,6 +169,7 @@ export default function FaqModal({ isOpen, onClose }: UseDisclosureReturn) {
               href="https://discord.com/invite/BJbYSRDdtr"
               isExternal
               textDecoration="underline"
+              aria-label="Discord"
             >
               Visit our Discord
             </Link>{' '}

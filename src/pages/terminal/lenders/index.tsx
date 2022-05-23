@@ -36,6 +36,7 @@ const METRICS: MetricInfo[] = [
           isExternal
           textDecoration="underline"
           pb="1"
+          aria-label="Read more about VaR in Credmark Wiki"
         >
           Read more about VaR in Credmark Wiki <Icon as={FaExternalLinkAlt} />
         </Link>
@@ -66,6 +67,7 @@ const METRICS: MetricInfo[] = [
           isExternal
           textDecoration="underline"
           pb="1"
+          aria-label="Read more about LCR in Credmark Wiki"
         >
           Read more about LCR in Credmark Wiki <Icon as={FaExternalLinkAlt} />
         </Link>

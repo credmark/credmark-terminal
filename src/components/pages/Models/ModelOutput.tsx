@@ -384,6 +384,7 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
                 <Link
                   href="https://mathjs.org/docs/expressions/syntax.html"
                   isExternal
+                  aria-label="math.js"
                 >
                   https://mathjs.org/docs/expressions/syntax.html
                 </Link>

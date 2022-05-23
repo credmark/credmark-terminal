@@ -43,6 +43,8 @@ export default function Footer() {
             fontSize="2xl"
             textAlign="center"
             color="white"
+            aria-label="Credmark on Discord"
+            rel="noopener"
           >
             <Icon as={IoLogoDiscord} />
           </Link>
@@ -52,6 +54,8 @@ export default function Footer() {
             fontSize="2xl"
             textAlign="center"
             color="white"
+            aria-label="Credmark on Telegram"
+            rel="noopener"
           >
             <Icon as={FaTelegramPlane} />
           </Link>
@@ -61,6 +65,8 @@ export default function Footer() {
             fontSize="2xl"
             textAlign="center"
             color="white"
+            aria-label="Credmark on Twitter"
+            rel="noopener"
           >
             <Icon as={IoLogoTwitter} />
           </Link>
@@ -70,6 +76,8 @@ export default function Footer() {
             fontSize="2xl"
             textAlign="center"
             color="white"
+            aria-label="Credmark on Youtube"
+            rel="noopener"
           >
             <Icon as={IoLogoYoutube} />
           </Link>
@@ -79,6 +87,8 @@ export default function Footer() {
             fontSize="2xl"
             textAlign="center"
             color="white"
+            aria-label="Credmark on Reddit"
+            rel="noopener"
           >
             <Icon as={BsReddit} />
           </Link>
@@ -88,6 +98,8 @@ export default function Footer() {
             fontSize="2xl"
             textAlign="center"
             color="white"
+            aria-label="Credmark on Github"
+            rel="noopener"
           >
             <Icon as={BsGithub} />
           </Link>
@@ -97,6 +109,8 @@ export default function Footer() {
             fontSize="2xl"
             textAlign="center"
             color="white"
+            aria-label="Blog"
+            rel="noopener"
           >
             <Icon as={BsMedium} />
           </Link>
@@ -108,40 +122,76 @@ export default function Footer() {
       >
         <Stack align={'flex-start'} spacing="4">
           <ListHeader>Projects</ListHeader>
-          <Link href={'https://docs.credmark.com/credmark'} isExternal>
+          <Link
+            href={'https://docs.credmark.com/credmark'}
+            isExternal
+            aria-label="White Paper"
+          >
             White Paper
           </Link>
-          <Link href={'https://docs.credmark.com/'} isExternal>
+          <Link
+            href={'https://docs.credmark.com/'}
+            isExternal
+            aria-label="Credmark Library"
+          >
             Credmark Library
           </Link>
-          <Link href={'https://credmark.com/reports'} isExternal>
+          <Link
+            href={'https://credmark.com/reports'}
+            isExternal
+            aria-label="Reports"
+          >
             Reports
           </Link>
-          <Link href={'https://app.credmark.com'} isExternal>
+          <Link
+            href={'https://app.credmark.com'}
+            isExternal
+            aria-label="Credmark Terminal"
+          >
             Credmark Terminal
           </Link>
         </Stack>
         <Stack align={'flex-start'} spacing="4">
           <ListHeader>Learn</ListHeader>
-          <Link href={'https://credmark.com/blog'} isExternal>
+          <Link
+            href={'https://credmark.com/blog'}
+            isExternal
+            aria-label="Credmark Blog"
+          >
             Blog
           </Link>
-          <Link href={'https://credmark.com/media'} isExternal>
+          <Link
+            href={'https://credmark.com/media'}
+            isExternal
+            aria-label="Media"
+          >
             Media
           </Link>
-          <Link href={'https://credmark.com/faq'} isExternal>
+          <Link href={'https://credmark.com/faq'} isExternal aria-label="FAQ">
             FAQ
           </Link>
         </Stack>
         <Stack align={'flex-start'} spacing="4">
           <ListHeader>Community</ListHeader>
-          <Link href={'https://credmark.com/contributors'} isExternal>
+          <Link
+            href={'https://credmark.com/contributors'}
+            isExternal
+            aria-label="Contributors"
+          >
             Contributors
           </Link>
-          <Link href={'https://credmark.com/careers'} isExternal>
+          <Link
+            href={'https://credmark.com/careers'}
+            isExternal
+            aria-label="Work with us"
+          >
             Work with us
           </Link>
-          <Link href={'https://discord.com/invite/3dSfMqP3d4'} isExternal>
+          <Link
+            href={'https://discord.com/invite/3dSfMqP3d4'}
+            isExternal
+            aria-label="Discord"
+          >
             Our Discord
           </Link>
         </Stack>

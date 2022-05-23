@@ -42,7 +42,11 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
             boxShadow: 'inner',
           }}
         />
-        <Link href="https://www.credmark.com/" isExternal>
+        <Link
+          href="https://www.credmark.com/"
+          isExternal
+          aria-label="www.credmark.com"
+        >
           <Img src="/img/logo-white-full.svg" alt="Credmark" h="40px" />
         </Link>
         <Box flex="1"></Box>
@@ -51,6 +55,7 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
             color="white"
             href="https://docs.credmark.com/dealing-with-risks/"
             isExternal
+            aria-label="Risk Library"
           >
             Risk library
           </Link>
@@ -95,6 +100,7 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
             color="white"
             href="https://docs.credmark.com/dealing-with-risks/"
             isExternal
+            aria-label="Risk Library"
           >
             Risk Library
           </Link>
