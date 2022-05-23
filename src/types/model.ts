@@ -86,6 +86,11 @@ export interface ModelRunResponse<O> {
   error?: ModelRunError;
 }
 
+export interface ModelSeriesOutput<O> {
+  series: O[];
+  errors?: Array<{ error: { message: string } }>;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyRecord = Record<string, any>;
 
