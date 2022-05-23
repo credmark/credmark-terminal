@@ -65,14 +65,18 @@ const ChartOverlay = chakra(Center, {
 });
 
 function filterDataByDuration(data: ChartLine['data'], durationInDays: number) {
-  data.sort((a, b) => a.timestamp.valueOf() - b.timestamp.valueOf());
+  const sortedData = [...data].sort(
+    (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
+  );
 
   const duration = durationInDays * 24 * 3600 * 1000;
   const startTs =
-    data.length > 0 ? data[data.length - 1].timestamp.valueOf() : 0;
+    sortedData.length > 0
+      ? sortedData[sortedData.length - 1].timestamp.valueOf()
+      : 0;
 
   const endTs = startTs > 0 ? startTs - duration : 0;
-  return data.filter((dp) => dp.timestamp.valueOf() > endTs);
+  return sortedData.filter((dp) => dp.timestamp.valueOf() > endTs);
 }
 
 function aggregateData(
@@ -82,10 +86,12 @@ function aggregateData(
   aggregator: Aggregator,
 ) {
   const interval = intervalInDays * 24 * 3600 * 1000;
-  data.sort((a, b) => a.timestamp.valueOf() - b.timestamp.valueOf());
+  const sortedData = [...data].sort(
+    (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
+  );
 
   const rangedData: { timestamp: Date; data: ChartLine['data'] }[] = [];
-  for (const datum of data) {
+  for (const datum of sortedData) {
     const i = Math.floor((maxTs - datum.timestamp.valueOf()) / interval);
     if (!rangedData[i]) {
       rangedData[i] = {
