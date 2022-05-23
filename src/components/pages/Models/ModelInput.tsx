@@ -227,12 +227,10 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
                     </Text>
                   )}
                   <Box
-                    spacing="8"
                     pl="8"
                     borderLeftWidth="2px"
                     borderColor={!error ? 'purple.500' : 'red.500'}
                     mt="2"
-                    align="stretch"
                   >
                     {items.length > 0 ? (
                       <VStack align="stretch">

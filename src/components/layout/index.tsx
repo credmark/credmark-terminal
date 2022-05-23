@@ -69,8 +69,8 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <>
       <Grid
+        gap={0}
         minH="100vh"
-        spacing="0"
         bg="#F8F8F9"
         maxW="100vw"
         templateColumns={{

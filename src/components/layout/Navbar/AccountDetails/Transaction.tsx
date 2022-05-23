@@ -25,8 +25,6 @@ export default function Transaction({ hash }: { hash: string }): JSX.Element {
       <Link
         href={getExplorerLink(chainId, hash, ExplorerDataType.TRANSACTION)}
         isExternal
-        pending={pending}
-        success={success}
       >
         <HStack>
           <Text flex="1">{summary ?? hash} ↗</Text>
