@@ -1,20 +1,30 @@
 import {
   Box,
+  Button,
   Container,
   Heading,
+  Icon,
   Input,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItemOption,
+  MenuList,
+  MenuOptionGroup,
   Spacer,
   Stack,
   Text,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
+import { MdSettings } from 'react-icons/md';
 
 import { Card } from '~/components/base';
 import BarChart from '~/components/shared/Charts/BarChart';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import SearchSelect from '~/components/shared/Form/SearchSelect';
-import { ChartLine } from '~/types/chart';
+import { Aggregator, ChartLine } from '~/types/chart';
+import { aggregateData } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 interface ModelUsage {
@@ -28,11 +38,12 @@ interface ModelUsage {
 export default function ModelUsagePage() {
   const [loading, setLoading] = useState(false);
   const [lines, setLines] = useState<ChartLine[]>([]);
-  const [barChartDateRange, setBarChartDateRange] = useState<[Date, Date]>();
 
   const [barChartDate, setBarChartDate] = useState<Date>();
-
+  const [barChartDateRange, setBarChartDateRange] = useState<[Date, Date]>();
   const [minBarChartDate, maxBarChartDate] = barChartDateRange ?? [];
+  const [aggregationInterval, setAggregationInterval] = useState(1); // In Days
+  const [aggregator, setAggregator] = useState<Aggregator>('sum');
 
   const color = '#3B0065';
   const ALL_MODELS = 'All Models';
@@ -110,31 +121,54 @@ export default function ModelUsagePage() {
         continue;
       }
 
+      let value = 0;
+      if (barChartDate) {
+        const maxTs = barChartDate.valueOf();
+        const aggregatedData = aggregateData(
+          line.data,
+          maxTs,
+          aggregationInterval,
+          aggregator,
+        );
+
+        value =
+          aggregatedData.find((datum) => datum.timestamp.valueOf() === maxTs)
+            ?.value ?? 0;
+      }
+
       data.push({
         category: line.name,
-        value:
-          line.data.find(
-            (datum) => datum.timestamp.valueOf() === barChartDate?.valueOf(),
-          )?.value ?? 0,
+        value,
       });
     }
 
     return data;
-  }, [barChartDate, lines]);
+  }, [aggregationInterval, aggregator, barChartDate, lines]);
 
   const allModelsUsage = useMemo(() => {
+    if (!barChartDate) {
+      return 0;
+    }
+
     for (const line of lines) {
       if (line.name === ALL_MODELS) {
+        const maxTs = barChartDate.valueOf();
+        const aggregatedData = aggregateData(
+          line.data,
+          maxTs,
+          aggregationInterval,
+          aggregator,
+        );
+
         return (
-          line.data.find(
-            (datum) => datum.timestamp.valueOf() === barChartDate?.valueOf(),
-          )?.value ?? 0
+          aggregatedData.find((datum) => datum.timestamp.valueOf() === maxTs)
+            ?.value ?? 0
         );
       }
     }
 
     return 0;
-  }, [barChartDate, lines]);
+  }, [aggregationInterval, aggregator, barChartDate, lines]);
 
   const [slug, setSlug] = useState(ALL_MODELS);
 
@@ -175,7 +209,7 @@ export default function ModelUsagePage() {
         <Heading as="h2" fontSize="3xl" mb="8">
           Individual Model API Calls
         </Heading>
-        <Stack direction={{ base: 'column', lg: 'row' }} mb="4">
+        <Stack direction={{ base: 'column', lg: 'row' }} mb="4" spacing="4">
           <Box minW="240px" maxW="480px">
             <Input
               type="date"
@@ -189,10 +223,27 @@ export default function ModelUsagePage() {
                   setBarChartDate(undefined);
                 }
               }}
-              mb="8"
               min={minBarChartDate?.toISOString()?.slice(0, 10)}
               max={maxBarChartDate?.toISOString()?.slice(0, 10)}
             />
+            <Text pt="4" px="2" fontSize="sm" color="gray.600">
+              {barChartDate && aggregationInterval > 1
+                ? `${new Intl.DateTimeFormat(undefined, {
+                    dateStyle: 'long',
+                  }).format(
+                    new Date(
+                      barChartDate.valueOf() -
+                        aggregationInterval * 24 * 3600 * 1000,
+                    ),
+                  )} - ${new Intl.DateTimeFormat(undefined, {
+                    dateStyle: 'long',
+                  }).format(barChartDate)}`
+                : barChartDate
+                ? new Intl.DateTimeFormat(undefined, {
+                    dateStyle: 'long',
+                  }).format(barChartDate)
+                : ''}
+            </Text>
           </Box>
           <Spacer />
           <Box>
@@ -201,6 +252,42 @@ export default function ModelUsagePage() {
               {new Intl.NumberFormat().format(allModelsUsage)}
             </Text>
           </Box>
+          <Menu>
+            <MenuButton
+              alignSelf="center"
+              as={Button}
+              variant="outline"
+              colorScheme="gray"
+              size="sm"
+              leftIcon={<Icon as={MdSettings} />}
+            >
+              Agg
+            </MenuButton>
+            <MenuList minWidth="240px">
+              <MenuOptionGroup
+                title="Interval"
+                type="radio"
+                value={String(aggregationInterval)}
+                onChange={(value) => setAggregationInterval(Number(value))}
+              >
+                <MenuItemOption value="1">Last day</MenuItemOption>
+                <MenuItemOption value="7">Last week</MenuItemOption>
+                <MenuItemOption value="30">Last month</MenuItemOption>
+              </MenuOptionGroup>
+              <MenuDivider />
+              <MenuOptionGroup
+                title="Aggregator"
+                type="radio"
+                value={aggregator}
+                onChange={(value) => setAggregator(value as Aggregator)}
+              >
+                <MenuItemOption value="sum">Sum</MenuItemOption>
+                <MenuItemOption value="avg">Average</MenuItemOption>
+                <MenuItemOption value="min">Minimum</MenuItemOption>
+                <MenuItemOption value="max">Maximum</MenuItemOption>
+              </MenuOptionGroup>
+            </MenuList>
+          </Menu>
         </Stack>
 
         <BarChart
