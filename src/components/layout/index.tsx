@@ -36,7 +36,7 @@ function SidebarDrawer({ isOpen, onClose }: SidebarDrawerProps) {
       <DrawerContent>
         <HStack w="100%" bg="purple.500" px={{ base: 4, md: 8 }} py="2">
           <Link href="https://www.credmark.com/" isExternal>
-            <Img src="/img/logo-white-full.svg" h="40px" />
+            <Img src="/img/logo-white-full.svg" alt="Credmark" h="40px" />
           </Link>
           <Box flex="1"></Box>
           <CloseButton

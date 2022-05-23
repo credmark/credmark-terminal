@@ -167,7 +167,7 @@ export default function LenderChartBox({
               >
                 <HStack opacity={activeAssets.includes(asset.key) ? 1 : 0.4}>
                   <Box w="6">
-                    <Img src={asset.logo} />
+                    <Img src={asset.logo} alt={asset.title || 'Credmark'} />
                   </Box>
                   <Text>{asset.title}</Text>
                 </HStack>
@@ -200,7 +200,7 @@ export default function LenderChartBox({
                 mx="2"
               >
                 <Box w="6">
-                  <Img src={asset.logo} />
+                  <Img src={asset.logo} alt={asset.title || 'Credmark'} />
                 </Box>
                 <Text>{asset.title}</Text>
               </HStack>

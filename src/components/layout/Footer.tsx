@@ -34,7 +34,7 @@ export default function Footer() {
     >
       <Stack spacing={4} flex="1">
         <Box>
-          <Img src="/img/logo-white-full.svg" h="60px" />
+          <Img src="/img/logo-white-full.svg" alt="Credmark" h="60px" />
         </Box>
         <HStack spacing={4}>
           <Link

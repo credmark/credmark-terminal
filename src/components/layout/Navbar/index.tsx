@@ -43,7 +43,7 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
           }}
         />
         <Link href="https://www.credmark.com/" isExternal>
-          <Img src="/img/logo-white-full.svg" h="40px" />
+          <Img src="/img/logo-white-full.svg" alt="Credmark" h="40px" />
         </Link>
         <Box flex="1"></Box>
         <HStack spacing="4" display={{ base: 'none', lg: 'flex' }}>
