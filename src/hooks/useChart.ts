@@ -1,10 +1,14 @@
 import { useState, useMemo, useCallback } from 'react';
 
 import { ChartLine } from '~/components/shared/Charts/HistoricalChart';
+import { shortenNumber } from '~/utils/formatTokenAmount';
+
+import { useDeepCompareEffectNoCheck } from './useDeepCompareEffect';
 
 interface UseLineChartProps {
   defaultLines?: ChartLine[];
-  formatValue?: (value: number) => string;
+  formatter?: 'currency' | 'number';
+  fractionDigits?: number;
 }
 
 export interface CsvData extends Record<string, string> {
@@ -13,17 +17,28 @@ export interface CsvData extends Record<string, string> {
 
 export function useLineChart({
   defaultLines = [],
-  formatValue = (value: number) => String(value),
+  formatter,
+  fractionDigits = 2,
 }: UseLineChartProps) {
   const [lines, setLines] = useState<ChartLine[]>(defaultLines);
 
-  const setLine = useCallback((line: ChartLine | undefined) => {
-    setLines(line ? [line] : []);
-  }, []);
+  const formatValue = useCallback(
+    (value: number) => {
+      switch (formatter) {
+        case 'currency':
+          return '$' + shortenNumber(value, fractionDigits);
+        case 'number':
+          return shortenNumber(value, fractionDigits);
+        default:
+          return String(value);
+      }
+    },
+    [formatter, fractionDigits],
+  );
 
   const currentStats = useMemo(() => {
     return lines.map((line) => {
-      const latestDataPoint = (line.data ?? []).sort(
+      const latestDataPoint = [...(line.data ?? [])].sort(
         (a, b) => b.timestamp.valueOf() - a.timestamp.valueOf(),
       )[0];
 
@@ -74,56 +89,60 @@ export function useLineChart({
     return { data, headers };
   }, [formatValue, lines]);
 
-  return { lines, setLines, setLine, currentStats, formatValue, csv };
+  return { lines, setLines, currentStats, formatValue, csv };
 }
 
 interface UseSingleLineChartProps {
-  formatValue?: (value: number) => string;
   name: string;
   color: string;
+  data?: ChartLine['data'];
+  formatter?: 'currency' | 'number';
+  fractionDigits?: number;
 }
 
 export function useSingleLineChart({
-  formatValue,
   name,
   color,
+  data,
+  formatter,
+  fractionDigits,
 }: UseSingleLineChartProps) {
-  const {
-    lines,
-    currentStats,
-    setLine,
-    formatValue: _formatValue,
-    csv,
-  } = useLineChart({
+  const sortedData = [...(data || [])]?.sort(
+    (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
+  );
+
+  const { lines, currentStats, setLines, formatValue, csv } = useLineChart({
     defaultLines: [
       {
         name,
         color,
-        data: [],
+        data: sortedData,
       },
     ],
-    formatValue,
+    formatter,
+    fractionDigits,
   });
 
-  const updateData = useCallback(
-    (data: ChartLine['data']) => {
-      setLine({
-        name,
-        color,
-        data: data.sort(
-          (a, b) => b.timestamp.valueOf() - a.timestamp.valueOf(),
-        ),
-      });
+  const setLine = useCallback(
+    (line: ChartLine | undefined) => {
+      setLines(line ? [line] : []);
     },
-    [color, name, setLine],
+    [setLines],
   );
+
+  useDeepCompareEffectNoCheck(() => {
+    setLine({
+      name,
+      color,
+      data: sortedData,
+    });
+  }, [color, sortedData, name]);
 
   return {
     line: lines[0],
     onChange: setLine,
     currentStats: currentStats[0],
-    formatValue: _formatValue,
-    updateData,
+    formatValue,
     csv,
   };
 }

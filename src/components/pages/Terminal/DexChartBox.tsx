@@ -1,22 +1,16 @@
 import { Box, Center, Flex, Icon, Link, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
-import axios, { AxiosResponse } from 'axios';
 import { EChartsInstance } from 'echarts-for-react';
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { MdOpenInNew } from 'react-icons/md';
 
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import { CsvData, useSingleLineChart } from '~/hooks/useChart';
-import { shortenNumber } from '~/utils/formatTokenAmount';
+import { useModelRunner } from '~/hooks/useModel';
+import { ModelSeriesOutput } from '~/types/model';
 
 interface DexChartBoxProps {
   dex: 'SUSHISWAP' | 'UNISWAP_V2' | 'UNISWAP_V3' | 'CURVE';
@@ -28,32 +22,20 @@ interface DexChartBoxProps {
   isExpanded: boolean;
 }
 
-interface DexModelResponse {
-  slug: string;
-  version: string;
-  chainId: number;
-  blockNumber: number;
-  output: {
-    pool_infos: {
-      series: Array<{
-        blockNumber: number;
-        blockTimestamp: number;
-        sampleTimestamp: number;
-        output: {
-          address: string;
-          name: string;
-          coin_balances: { [key: string]: number };
-          prices: { [key: string]: number };
-          tvl: number;
-          volume24h: number;
-        };
-      }>;
-      errors?: Array<{ error: { message: string } }>;
+interface DexModelOutput {
+  pool_infos: ModelSeriesOutput<{
+    blockNumber: number;
+    blockTimestamp: number;
+    sampleTimestamp: number;
+    output: {
+      address: string;
+      name: string;
+      coin_balances: { [key: string]: number };
+      prices: { [key: string]: number };
+      tvl: number;
+      volume24h: number;
     };
-  };
-  error?: {
-    message: string;
-  };
+  }>;
 }
 
 export default function DexChartBox({
@@ -70,21 +52,6 @@ export default function DexChartBox({
 
   const [containerWidth] = useSize(containerRef);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState();
-
-  const tvlChart = useSingleLineChart({
-    name: 'TVL',
-    color: '#3B0065',
-    formatValue: (val) => '$' + shortenNumber(val, 2),
-  });
-
-  const volumeChart = useSingleLineChart({
-    name: 'Volume',
-    color: '#3B0065',
-    formatValue: (val) => shortenNumber(val, 2),
-  });
-
   useLayoutEffect(() => {
     chartRef.current?.resize();
   }, [containerWidth, isExpanded]);
@@ -93,17 +60,9 @@ export default function DexChartBox({
     a.wrapped.sortsBefore(b.wrapped) ? -1 : 1,
   );
 
-  function convertDate(date: Date) {
-    return `${date.getUTCFullYear()}-${
-      date.getMonth() + 1
-    }-${date.getUTCDate()}`;
-  }
-
-  useEffect(() => {
-    setLoading(true);
-    setError(undefined);
-
-    const abortController = new AbortController();
+  const input = useMemo(() => {
+    const convertDate = (date: Date) =>
+      `${date.getUTCFullYear()}-${date.getMonth() + 1}-${date.getUTCDate()}`;
 
     // today
     const endDate = new Date();
@@ -112,72 +71,61 @@ export default function DexChartBox({
       Math.max(new Date().valueOf() - 90 * 24 * 3600 * 1000, createdAt),
     );
 
-    axios({
-      method: 'POST',
-      url: 'https://gateway.credmark.com/v1/model/run',
-      data: {
-        slug:
-          dex === 'CURVE'
-            ? 'contrib.curve-get-tvl-and-volume-historical'
-            : dex === 'UNISWAP_V3'
-            ? 'contrib.uniswap-get-tvl-and-volume-historical'
-            : 'contrib.sushiswap-get-tvl-and-volume-historical',
-        chainId: 1,
-        blockNumber: 'latest',
-        input: {
-          pool_address: {
-            address: pool,
-          },
-          date_range: [convertDate(startDate), convertDate(endDate)],
-        },
+    return {
+      pool_address: {
+        address: pool,
       },
-      signal: abortController.signal,
-    })
-      .then((resp: AxiosResponse<DexModelResponse>) => {
-        if (resp.data.error) {
-          console.log(resp.data.error);
-          throw new Error(resp.data.error.message);
-        }
-
-        if (
-          Array.isArray(resp.data.output.pool_infos.errors) &&
-          resp.data.output.pool_infos.errors.length > 0
-        ) {
-          console.log(resp.data.output.pool_infos.errors);
-          throw new Error(resp.data.output.pool_infos.errors[0].error.message);
-        }
-
-        // https://github.com/facebook/react/issues/16265
-        tvlChart.updateData.call(
-          undefined,
-          resp.data.output.pool_infos.series.map((item) => ({
-            timestamp: new Date(item.sampleTimestamp * 1000),
-            value: item.output.tvl,
-          })),
-        );
-
-        volumeChart.updateData.call(
-          undefined,
-          resp.data.output.pool_infos.series.map((item) => ({
-            timestamp: new Date(item.sampleTimestamp * 1000),
-            value: item.output.volume24h,
-          })),
-        );
-      })
-      .catch((err) => {
-        if (abortController.signal.aborted) {
-          return;
-        }
-
-        console.log(err);
-        setError(err.message ?? 'Some unexpected error has occurred');
-      })
-      .finally(() => setLoading(false));
-
-    return () => {
-      abortController.abort();
+      date_range: [convertDate(startDate), convertDate(endDate)],
     };
-  }, [tvlChart.updateData, volumeChart.updateData, createdAt, dex, pool]);
+  }, [createdAt, pool]);
+
+  const { loading, errorMessage, output } = useModelRunner<
+    typeof input,
+    DexModelOutput
+  >({
+    slug:
+      dex === 'CURVE'
+        ? 'contrib.curve-get-tvl-and-volume-historical'
+        : dex === 'UNISWAP_V3'
+        ? 'contrib.uniswap-get-tvl-and-volume-historical'
+        : 'contrib.sushiswap-get-tvl-and-volume-historical',
+    input,
+    validateOutput: useCallback((output: DexModelOutput) => {
+      if (
+        Array.isArray(output.pool_infos.errors) &&
+        output.pool_infos.errors.length > 0
+      ) {
+        console.log(output.pool_infos.errors);
+        throw new Error(output.pool_infos.errors[0].error.message);
+      }
+    }, []),
+  });
+
+  const tvlChart = useSingleLineChart({
+    name: 'TVL',
+    color: '#3B0065',
+    formatter: 'currency',
+    fractionDigits: 2,
+    data: output
+      ? output.pool_infos.series.map((item) => ({
+          timestamp: new Date(item.sampleTimestamp * 1000),
+          value: item.output.tvl,
+        }))
+      : undefined,
+  });
+
+  const volumeChart = useSingleLineChart({
+    name: 'Volume',
+    color: '#3B0065',
+    formatter: 'number',
+    fractionDigits: 2,
+    data: output
+      ? output.pool_infos.series.map((item) => ({
+          timestamp: new Date(item.sampleTimestamp * 1000),
+          value: item.output.volume24h,
+        }))
+      : undefined,
+  });
 
   const csv = useMemo(() => {
     function mergeCsvs(...csvs: Array<{ data: CsvData[]; headers: string[] }>) {
@@ -291,7 +239,7 @@ export default function DexChartBox({
           loading={loading}
           formatValue={tvlChart.formatValue}
           onChartReady={(chart) => (chartRef.current = chart)}
-          error={error ? String(error) : undefined}
+          error={errorMessage}
           durations={[30, 60, 90]}
           defaultDuration={30}
           currentStats={[tvlChart.currentStats]}
@@ -307,7 +255,7 @@ export default function DexChartBox({
             lines={[volumeChart.line]}
             loading={loading}
             formatValue={volumeChart.formatValue}
-            error={error ? String(error) : undefined}
+            error={errorMessage}
             durations={[30, 60, 90]}
             defaultDuration={30}
             currentStats={[volumeChart.currentStats]}
