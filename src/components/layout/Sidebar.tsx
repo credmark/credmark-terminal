@@ -28,6 +28,7 @@ import { CmkTerminalIcon } from '~/components/icons';
 interface NavItemProps extends BoxProps {
   icon?: IconType | typeof Icon;
   label: string;
+  isHeader?: boolean;
   isFocused?: boolean;
   isDisabled?: boolean;
   href?: string;
@@ -43,6 +44,7 @@ interface NavItemProps extends BoxProps {
 function NavItem({
   icon,
   label,
+  isHeader = false,
   isFocused = false,
   isDisabled = false,
   href,
@@ -56,6 +58,21 @@ function NavItem({
 }: NavItemProps) {
   const router = useRouter();
   const isActive = href && router.pathname === href;
+
+  if (isHeader) {
+    return (
+      <Text
+        pt="4"
+        pb="2"
+        color="purple.500"
+        fontSize="sm"
+        textTransform="uppercase"
+        fontWeight="bold"
+      >
+        {label}
+      </Text>
+    );
+  }
 
   const inner = (
     <HStack
@@ -168,32 +185,28 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
         onClick: () => setShowTerminalItems(false),
         backIcon: true,
       },
-      { label: 'Model Usage', href: '/models/usage' },
-      { label: 'Token Analytics', href: '/info' },
+
+      { label: 'Financial Metrics', isHeader: true },
+      { label: 'Protocol Analytics', isDisabled: true },
+      { label: 'Sharpe Ratio', isDisabled: true },
+
+      { label: 'Lenders', isHeader: true },
       { label: 'Lenders', href: '/terminal/lenders' },
-      { label: 'Lending Pool Usage', href: '/terminal/lenders/pool-usage' },
+      { label: 'Lending Usage', href: '/terminal/lenders/pool-usage' },
+
       {
         label: 'DEXs',
+        isHeader: true,
         isFocused: router.pathname.startsWith('/terminal/dex'),
-        subNav: [
-          {
-            label: 'Uniswap V2',
-            href: '/terminal/dex/uniswap-v2',
-          },
-          {
-            label: 'Uniswap V3',
-            href: '/terminal/dex/uniswap-v3',
-          },
-          {
-            label: 'Curve',
-            href: '/terminal/dex/curve',
-          },
-          {
-            label: 'Sushiswap',
-            href: '/terminal/dex/sushi',
-          },
-        ],
       },
+      { label: 'Uniswap V2', href: '/terminal/dex/uniswap-v2' },
+      { label: 'Uniswap V3', href: '/terminal/dex/uniswap-v3' },
+      { label: 'Curve', href: '/terminal/dex/curve' },
+      { label: 'Sushiswap', href: '/terminal/dex/sushi' },
+
+      { label: 'Credmark Analytics', isHeader: true },
+      { label: 'Token Analytics', href: '/info' },
+      { label: 'Model Usage', href: '/models/usage' },
     ],
     [router.pathname],
   );
@@ -259,7 +272,7 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
       </VStack>
       <VStack
         align="stretch"
-        spacing="2"
+        spacing="1"
         position="absolute"
         top="0"
         left={showTerminalItems ? 0 : fixedWidth}
