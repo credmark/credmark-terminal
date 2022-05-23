@@ -84,7 +84,8 @@ const Web3ProviderNetwork = dynamic(
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   const { host } = env;
   const title = 'Credmark App';
-  const description = '';
+  const description =
+    'Credmark is a financial modeling platform powered by reliable on-chain data. Validated models are readily composable making rapid prototyping simple.';
   // const img = `${host}/img/smart-pool.png`;
 
   return (
