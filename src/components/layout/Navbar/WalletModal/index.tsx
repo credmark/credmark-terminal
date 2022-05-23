@@ -298,6 +298,7 @@ export default function WalletModal({
                 href="https://github.com/credmark/legal/blob/master/terms-of-service.md"
                 isExternal
                 textDecoration="underline"
+                aria-label="Terms of Service"
               >
                 Terms of Service
               </Link>{' '}
@@ -306,6 +307,7 @@ export default function WalletModal({
                 href="https://github.com/credmark/legal/blob/master/disclaimer.md"
                 isExternal
                 textDecoration="underline"
+                aria-label="Credmark disclaimer"
               >
                 Credmark disclaimer
               </Link>

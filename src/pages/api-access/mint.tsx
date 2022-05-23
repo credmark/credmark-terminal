@@ -565,7 +565,11 @@ export default function ApiAccessMintPage() {
               </HStack>
             </VStack>
             <Box>
-              <NextLink href="/api-access/tiers" passHref>
+              <NextLink
+                href="/api-access/tiers"
+                aria-label="Back to Tier Comparison"
+                passHref
+              >
                 <Link>
                   <Button
                     leftIcon={<Icon as={MdArrowBack} />}
