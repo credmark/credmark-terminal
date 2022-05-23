@@ -1,4 +1,9 @@
+import theme from '../src/theme';
+
 export const parameters = {
+  chakra: {
+    theme: theme,
+  },
   actions: { argTypesRegex: '^on[A-Z].*' },
   controls: {
     matchers: {
