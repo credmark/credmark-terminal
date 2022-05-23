@@ -12,10 +12,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { Card } from '~/components/base';
 import BarChart from '~/components/shared/Charts/BarChart';
-import HistoricalChart, {
-  ChartLine,
-} from '~/components/shared/Charts/HistoricalChart';
+import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import SearchSelect from '~/components/shared/Form/SearchSelect';
+import { ChartLine } from '~/types/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 interface ModelUsage {

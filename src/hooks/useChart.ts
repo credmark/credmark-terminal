@@ -1,6 +1,6 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
-import { ChartLine } from '~/components/shared/Charts/HistoricalChart';
+import { ChartLine } from '~/types/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 import { useDeepCompareEffectNoCheck } from './useDeepCompareEffect';

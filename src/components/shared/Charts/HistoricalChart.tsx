@@ -22,18 +22,9 @@ import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { MdSettings } from 'react-icons/md';
 
+import { Aggregator, ChartLine } from '~/types/chart';
+import { aggregateData, filterDataByDuration } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
-
-export interface ChartLine {
-  name: string;
-  color: string;
-  data: Array<{
-    timestamp: Date;
-    value: number;
-  }>;
-}
-
-type Aggregator = 'min' | 'max' | 'avg' | 'sum';
 
 interface HistoricalChartProps extends BoxProps {
   lines: ChartLine[];
@@ -47,7 +38,7 @@ interface HistoricalChartProps extends BoxProps {
   height?: number;
   durations?: number[]; // In days
   aggregate?: boolean; // In days
-  defaultAggregator?: Aggregator; // In days
+  defaultAggregator?: Aggregator;
   defaultDuration?: number;
   showCurrentStats?: boolean;
   currentStats?: Array<{ label: React.ReactNode; value: string }>;
@@ -63,72 +54,6 @@ const ChartOverlay = chakra(Center, {
     p: 8,
   },
 });
-
-function filterDataByDuration(data: ChartLine['data'], durationInDays: number) {
-  const sortedData = [...data].sort(
-    (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
-  );
-
-  const duration = durationInDays * 24 * 3600 * 1000;
-  const startTs =
-    sortedData.length > 0
-      ? sortedData[sortedData.length - 1].timestamp.valueOf()
-      : 0;
-
-  const endTs = startTs > 0 ? startTs - duration : 0;
-  return sortedData.filter((dp) => dp.timestamp.valueOf() > endTs);
-}
-
-function aggregateData(
-  data: ChartLine['data'],
-  maxTs: number,
-  intervalInDays: number,
-  aggregator: Aggregator,
-) {
-  const interval = intervalInDays * 24 * 3600 * 1000;
-  const sortedData = [...data].sort(
-    (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
-  );
-
-  const rangedData: { timestamp: Date; data: ChartLine['data'] }[] = [];
-  for (const datum of sortedData) {
-    const i = Math.floor((maxTs - datum.timestamp.valueOf()) / interval);
-    if (!rangedData[i]) {
-      rangedData[i] = {
-        timestamp: new Date(maxTs - interval * i),
-        data: [],
-      };
-    }
-
-    rangedData[i].data.push(datum);
-  }
-
-  return rangedData
-    .map(({ timestamp, data }) => {
-      let value = 0;
-      switch (aggregator) {
-        case 'max':
-          value = Math.max(...data.map((datum) => datum.value));
-          break;
-        case 'min':
-          value = Math.min(...data.map((datum) => datum.value));
-          break;
-        case 'sum':
-          value = data.reduce((sum, datum) => sum + datum.value, 0);
-          break;
-        case 'avg':
-          value =
-            data.reduce((sum, datum) => sum + datum.value, 0) / data.length;
-          break;
-      }
-
-      return {
-        timestamp,
-        value,
-      };
-    })
-    .filter((val) => !!val);
-}
 
 export default function HistoricalChart({
   lines,

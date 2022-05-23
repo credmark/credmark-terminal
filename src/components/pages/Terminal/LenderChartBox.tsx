@@ -4,11 +4,10 @@ import { EChartsInstance } from 'echarts-for-react';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
-import HistoricalChart, {
-  ChartLine,
-} from '~/components/shared/Charts/HistoricalChart';
+import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import { ASSETS } from '~/constants/terminal';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
+import { ChartLine } from '~/types/chart';
 import { AssetKey, MetricInfo } from '~/types/terminal';
 
 interface LenderChartBoxProps {

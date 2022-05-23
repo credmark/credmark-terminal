@@ -30,9 +30,8 @@ import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 // import { JSONTree } from 'react-json-tree';
 
-import HistoricalChart, {
-  ChartLine,
-} from '~/components/shared/Charts/HistoricalChart';
+import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
+import { ChartLine } from '~/types/chart';
 import {
   AnyRecord,
   BaseFieldType,
