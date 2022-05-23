@@ -176,7 +176,7 @@ export default function LendersPage() {
         {ASSETS.map((asset) => (
           <HStack key={asset.key}>
             <Box w="6">
-              <Img src={asset.logo} />
+              <Img src={asset.logo} alt={asset.title || 'Credmark'} />
             </Box>
             <Text>{asset.title}</Text>
             <Switch

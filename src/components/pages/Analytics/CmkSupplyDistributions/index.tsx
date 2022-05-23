@@ -224,7 +224,7 @@ export default function CmkSupplyDistributions({
         alignItems="center"
       >
         <HStack bg="transparent">
-          <Img src={titleImg} h="4" />
+          <Img src={titleImg} alt="CMK Supply Distribution" h="4" />
           <Text fontSize="md" color="purple.500">
             CMK Supply Distribution
           </Text>

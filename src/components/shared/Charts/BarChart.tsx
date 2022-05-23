@@ -97,7 +97,7 @@ export default function BarChart({
               border="1px"
               borderColor="gray.100"
             >
-              <Img src={titleImg} h="6" />
+              <Img src={titleImg} alt={title || 'Credmark'} h="6" />
               <Text fontSize="lg" pt="1" color="purple.500">
                 {title}
               </Text>
