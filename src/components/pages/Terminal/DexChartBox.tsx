@@ -1,13 +1,4 @@
-import {
-  Box,
-  Center,
-  Flex,
-  HStack,
-  Icon,
-  Link,
-  Spacer,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Center, Flex, Icon, Link, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import axios, { AxiosResponse } from 'axios';
@@ -19,14 +10,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { CSVLink } from 'react-csv';
-import {
-  MdFullscreen,
-  MdFullscreenExit,
-  MdOpenInNew,
-  MdOutlineFileDownload,
-} from 'react-icons/md';
+import { MdOpenInNew } from 'react-icons/md';
 
+import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import { CsvData, useSingleLineChart } from '~/hooks/useChart';
@@ -237,22 +223,22 @@ export default function DexChartBox({
       bg="white"
       shadow="md"
     >
-      <HStack
-        px="4"
-        py="2"
-        roundedTop="md"
-        borderBottom="2px"
-        borderColor="#DEDEDE"
-      >
-        <HStack>
-          {sortedTokens.map((token) => (
-            <CurrencyLogo currency={token} key={token.symbol} />
-          ))}
-          <Text fontSize="lg">
-            {sortedTokens
-              .map((token) => token.symbol ?? token.name)
-              .join(' / ')}
-          </Text>
+      <ChartHeader
+        title={sortedTokens
+          .map((token) => token.symbol ?? token.name)
+          .join(' / ')}
+        toggleFullScreen={onExpand}
+        downloadFileName={`${tvlChart.line.name.replaceAll(
+          ' ',
+          '_',
+        )}[Credmark].csv`}
+        downloadFileHeaders={csv.headers}
+        downloadData={csv.data}
+        isFullScreen={isExpanded}
+        logo={sortedTokens.map((token) => (
+          <CurrencyLogo currency={token} key={token.symbol} />
+        ))}
+        openInNewTab={
           <Link
             href={`https://etherscan.io/address/${pool}`}
             isExternal
@@ -261,24 +247,9 @@ export default function DexChartBox({
           >
             <Icon as={MdOpenInNew} />
           </Link>
-        </HStack>
+        }
+      />
 
-        <Spacer />
-        <CSVLink
-          filename={`${tvlChart.line.name.replaceAll(' ', '_')}[Credmark].csv`}
-          headers={csv.headers}
-          data={csv.data}
-          style={{ display: 'flex' }}
-        >
-          <Icon cursor="pointer" as={MdOutlineFileDownload} boxSize="5" />
-        </CSVLink>
-        <Icon
-          cursor="pointer"
-          onClick={onExpand}
-          as={isExpanded ? MdFullscreenExit : MdFullscreen}
-          boxSize="5"
-        />
-      </HStack>
       <Flex align="stretch">
         {!isExpanded && (
           <Flex direction="column">

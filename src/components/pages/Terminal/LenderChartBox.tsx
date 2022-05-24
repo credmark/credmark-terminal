@@ -1,18 +1,12 @@
-import { Box, Center, Flex, HStack, Icon, Img, Text } from '@chakra-ui/react';
+import { Box, Center, Flex, HStack, Img, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { EChartsInstance } from 'echarts-for-react';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
-import { CSVLink } from 'react-csv';
-import {
-  MdFullscreen,
-  MdFullscreenExit,
-  MdOutlineFileDownload,
-} from 'react-icons/md';
 
+import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart, {
   ChartLine,
 } from '~/components/shared/Charts/HistoricalChart';
-import InfoPopover from '~/components/shared/InfoPopover';
 import { ASSETS } from '~/constants/terminal';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
 import { AssetKey, MetricInfo } from '~/types/terminal';
@@ -144,31 +138,16 @@ export default function LenderChartBox({
       bg="white"
       shadow="md"
     >
-      <HStack
-        px="4"
-        py="2"
-        roundedTop="md"
-        borderBottom="2px"
-        borderColor="#DEDEDE"
-      >
-        <Text fontSize="lg">{metric.label} </Text>
-        {metric.tooltip && <InfoPopover>{metric.tooltip}</InfoPopover>}
-        <Box flex="1" />
-        <CSVLink
-          filename={`${metric.label.replaceAll(' ', '_')}[Credmark].csv`}
-          headers={csvLinkProps.headers}
-          data={csvLinkProps.data}
-          style={{ display: 'flex' }}
-        >
-          <Icon cursor="pointer" as={MdOutlineFileDownload} boxSize="5" />
-        </CSVLink>
-        <Icon
-          cursor="pointer"
-          onClick={onExpand}
-          as={isExpanded ? MdFullscreenExit : MdFullscreen}
-          boxSize="5"
-        />
-      </HStack>
+      <ChartHeader
+        title={metric.label}
+        toggleFullScreen={onExpand}
+        downloadData={csvLinkProps.data}
+        downloadFileHeaders={csvLinkProps.headers}
+        downloadFileName={`${metric.label.replaceAll(' ', '_')}[Credmark].csv`}
+        isFullScreen={isExpanded}
+        tooltip={metric.tooltip}
+      />
+
       <Flex bg="white" roundedBottom="md">
         {!isExpanded && (
           <Flex
