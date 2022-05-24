@@ -28,7 +28,7 @@ import _set from 'lodash.set';
 import * as _math from 'mathjs';
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
-import { JSONTree } from 'react-json-tree';
+// import { JSONTree } from 'react-json-tree';
 
 import HistoricalChart, {
   ChartLine,
@@ -331,11 +331,12 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
 
         <TabPanels>
           <TabPanel>
-            <JSONTree
+            {/* TODO: Replace with a React 18 compatible component */}
+            {/* <JSONTree
               data={result}
               theme={{ tree: { borderRadius: '4px', padding: '16px 8px' } }}
               hideRoot
-            />
+            /> */}
           </TabPanel>
           <TabPanel>
             <FormControl>

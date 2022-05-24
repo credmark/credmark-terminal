@@ -21,7 +21,7 @@
     "@emotion/styled": "^11.3.0",
     "@fontsource/roboto": "^4.5.1",
     "@react-hook/size": "^2.1.2",
-    "@reduxjs/toolkit": "^1.6.2",
+    "@reduxjs/toolkit": "^1.8.1",
     "@uniswap/sdk-core": "^3.0.1",
     "@uniswap/v3-sdk": "^3.7.0",
     "@web3-react/core": "^6.1.9",
@@ -49,12 +49,11 @@
     "nprogress": "^0.2.0",
     "react": "^18.1.0",
     "react-csv": "^2.2.2",
-    "react-device-detect": "^2.1.2",
+    "react-device-detect": "^2.2.2",
     "react-dom": "^18.1.0",
     "react-highlight-words": "^0.18.0",
     "react-icons": "^4.3.1",
-    "react-json-tree": "^0.16.2",
-    "react-redux": "^7.2.6",
+    "react-redux": "^8.0.2",
     "yup": "^0.32.11"
   },
   "devDependencies": {
