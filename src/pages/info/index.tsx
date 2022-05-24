@@ -56,7 +56,7 @@ export default function AnalyticsPage() {
 
   return (
     <>
-      <SEOHeader title="Credmark Analytics" />
+      <SEOHeader title="Token Analytics - Credmark Terminal" />
       <Container p="8" maxW="full">
         <Grid
           templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}

@@ -2,6 +2,7 @@ import { WETH9 } from '@uniswap/sdk-core';
 import React from 'react';
 
 import { DexPage } from '~/components/pages/Terminal';
+import SEOHeader from '~/components/shared/SEOHeader';
 import { DAI, FRAX, sETH2, USDC, USDT, WBTC } from '~/constants/tokens';
 
 const pools = [
@@ -48,5 +49,10 @@ const pools = [
 ];
 
 export default function UniswapV3DexPage() {
-  return <DexPage dex="UNISWAP_V3" pools={pools} />;
+  return (
+    <>
+      <SEOHeader title="DEXs Uniswap v3 - Credmark Terminal" />
+      <DexPage dex="UNISWAP_V3" pools={pools} />
+    </>
+  );
 }

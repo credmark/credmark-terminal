@@ -34,11 +34,13 @@ export default function CurrencyLogo({
   const h = `${size}px`;
 
   if (currency?.symbol === 'CMK') {
-    return <Image src="/img/cmk.svg" w={w} h={h} rounded="full" />;
+    return <Image src="/img/cmk.svg" alt="CMK" w={w} h={h} rounded="full" />;
   }
 
   if (currency?.isNative) {
-    return <Image src="/img/assets/eth.png" w={w} h={h} rounded="full" />;
+    return (
+      <Image src="/img/assets/eth.png" alt="ETH" w={w} h={h} rounded="full" />
+    );
   }
 
   const src: string | undefined = srcs.find((src) => !BAD_SRCS[src]);

@@ -311,7 +311,7 @@ export default function AreaChart({
     >
       <ChartHeader
         title={title}
-        logo={<Img src={titleImg} height="20px" />}
+        logo={<Img alt={title || 'Credmark'} src={titleImg} height="20px" />}
         downloadFileName={`${generateCsvFormat().formattedCsvTitle.toLocaleLowerCase()}.csv`}
         downloadFileHeaders={generateCsvFormat().header}
         downloadData={generateCsvFormat().values}
