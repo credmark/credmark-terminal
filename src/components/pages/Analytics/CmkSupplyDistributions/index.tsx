@@ -1,14 +1,9 @@
 import { Box } from '@chakra-ui/layout';
-import { Img, HStack, Text, Container, Icon } from '@chakra-ui/react';
+import { Img, Text, Container } from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import {
-  MdOutlineFileDownload,
-  MdZoomOutMap,
-  MdFullscreenExit,
-} from 'react-icons/md';
 
+import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import {
   CmkAnalyticsDataPoint,
   StakedCmkAnalyticsDataPoint,
@@ -214,50 +209,17 @@ export default function CmkSupplyDistributions({
       id="CMK-Supply-Distribution"
       backgroundColor="#fff"
     >
-      <Box
-        borderBottom="1px solid #DEDEDE"
-        display="grid"
-        gridTemplateColumns="1fr max-content"
-        gap="5"
-        paddingLeft="3"
-        paddingRight="1"
-        alignItems="center"
-      >
-        <HStack bg="transparent">
-          <Img src={titleImg} alt="CMK Supply Distribution" h="4" />
-          <Text fontSize="md" color="purple.500">
-            CMK Supply Distribution
-          </Text>
-        </HStack>
-
-        <Box
-          display="flex"
-          gap="3"
-          paddingRight={1}
-          justifyContent="center"
-          alignItems="center"
-          zIndex={99}
-        >
-          {dataToShow?.length > 0 ? (
-            <CSVLink
-              filename={`CMK Supply Distribution.csv`}
-              headers={generateCsvFormat().header}
-              data={generateCsvFormat().values}
-              style={{ display: 'flex' }}
-            >
-              <Icon cursor="pointer" as={MdOutlineFileDownload} />
-            </CSVLink>
-          ) : (
-            <> </>
-          )}
-          <Icon
-            cursor="pointer"
-            onClick={toggleFullScreen}
-            as={isFullScreen ? MdFullscreenExit : MdZoomOutMap}
-          />
-        </Box>
-      </Box>
-
+      <ChartHeader
+        title="CMK Supply Distribution"
+        logo={
+          <Img alt="CMK Supply Distribution" src={titleImg} height="20px" />
+        }
+        downloadFileName={`${generateCsvFormat().header}.csv`}
+        downloadFileHeaders={generateCsvFormat().header}
+        downloadData={generateCsvFormat().values}
+        isFullScreen={isFullScreen}
+        toggleFullScreen={toggleFullScreen}
+      />
       <Box position="relative">
         <Box position="absolute" top={0} left={1}>
           <Text
