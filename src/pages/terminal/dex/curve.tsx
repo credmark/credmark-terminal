@@ -2,6 +2,7 @@ import { WETH9 } from '@uniswap/sdk-core';
 import React from 'react';
 
 import { DexPage } from '~/components/pages/Terminal';
+import SEOHeader from '~/components/shared/SEOHeader';
 import {
   CRV,
   cvxCRV,
@@ -68,5 +69,10 @@ const pools = [
 ];
 
 export default function CurveDexPage() {
-  return <DexPage dex="CURVE" pools={pools} />;
+  return (
+    <>
+      <SEOHeader title="DEXs Curve - Credmark Terminal" />
+      <DexPage dex="CURVE" pools={pools} />
+    </>
+  );
 }

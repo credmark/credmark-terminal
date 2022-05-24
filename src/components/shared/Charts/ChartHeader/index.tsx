@@ -66,6 +66,7 @@ const ChartHeader = ({
             headers={downloadFileHeaders}
             data={downloadData}
             style={{ display: 'flex' }}
+            aria-label="Download"
           >
             <Icon
               width="15px"

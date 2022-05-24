@@ -2,6 +2,7 @@ import { WETH9 } from '@uniswap/sdk-core';
 import React from 'react';
 
 import { DexPage } from '~/components/pages/Terminal';
+import SEOHeader from '~/components/shared/SEOHeader';
 import {
   BIT,
   DAI,
@@ -60,5 +61,10 @@ const pools = [
 ];
 
 export default function SushiswapDexPage() {
-  return <DexPage dex="SUSHISWAP" pools={pools} />;
+  return (
+    <>
+      <SEOHeader title="DEXs Sushi - Credmark Terminal" />
+      <DexPage dex="SUSHISWAP" pools={pools} />
+    </>
+  );
 }

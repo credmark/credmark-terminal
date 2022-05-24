@@ -7,6 +7,7 @@ import React, { useMemo } from 'react';
 import { ModelRunner } from '~/components/pages/Models';
 import SearchSelect from '~/components/shared/Form/SearchSelect';
 import { ModelMetadata } from '~/types/model';
+import SEOHeader from '~/components/shared/SEOHeader';
 
 interface ModelPageProps {
   models: ModelMetadata[];
@@ -26,29 +27,33 @@ export default function ModelsPage({ models }: ModelPageProps) {
   }, [models, slug]);
 
   return (
-    <Container maxW="container.lg" p="8">
-      <Heading mb="8" color="purple.500">
-        Credmark Models
-      </Heading>
-      <SearchSelect<ModelMetadata>
-        placeholder="Select a model..."
-        options={models}
-        filterOption={(option, filterValue) =>
-          (option.data.displayName ?? option.data.slug)
-            .toLocaleLowerCase()
-            .includes(filterValue.toLocaleLowerCase().trim()) ||
-          (option.data.description ?? '')
-            .toLocaleLowerCase()
-            .includes(filterValue.toLocaleLowerCase().trim())
-        }
-        getOptionLabel={(option) => option.displayName}
-        getOptionDescription={(option) => option.description}
-        onChange={(val) => setSlug(val?.slug ?? '')}
-        isOptionSelected={(option) => slug === option.slug}
-        defaultValue={model}
-      />
-      {model && <ModelRunner model={model} key={model.slug} />}
-    </Container>
+    <>
+      <SEOHeader title="Model Usage - Credmark App" />
+
+      <Container maxW="container.lg" p="8">
+        <Heading mb="8" color="purple.500">
+          Credmark Models
+        </Heading>
+        <SearchSelect<ModelMetadata>
+          placeholder="Select a model..."
+          options={models}
+          filterOption={(option, filterValue) =>
+            (option.data.displayName ?? option.data.slug)
+              .toLocaleLowerCase()
+              .includes(filterValue.toLocaleLowerCase().trim()) ||
+            (option.data.description ?? '')
+              .toLocaleLowerCase()
+              .includes(filterValue.toLocaleLowerCase().trim())
+          }
+          getOptionLabel={(option) => option.displayName}
+          getOptionDescription={(option) => option.description}
+          onChange={(val) => setSlug(val?.slug ?? '')}
+          isOptionSelected={(option) => slug === option.slug}
+          defaultValue={model}
+        />
+        {model && <ModelRunner model={model} key={model.slug} />}
+      </Container>
+    </>
   );
 }
 

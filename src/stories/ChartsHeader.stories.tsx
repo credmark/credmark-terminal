@@ -27,7 +27,13 @@ export default {
 const Template: Story<ChartHeaderProps> = (args) => (
   <ChartHeaders
     title="Chart Title"
-    logo={<Img src="https://app.credmark.com/img/logo.svg" width="20px" />}
+    logo={
+      <Img
+        alt="Credmark"
+        src="https://app.credmark.com/img/logo.svg"
+        width="20px"
+      />
+    }
     downloadFileName={`download-file-name.csv`}
     downloadFileHeaders={[]}
     downloadData={[]}

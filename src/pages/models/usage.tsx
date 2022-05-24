@@ -21,10 +21,10 @@ import { MdSettings } from 'react-icons/md';
 
 import { Card } from '~/components/base';
 import BarChart from '~/components/shared/Charts/BarChart';
-import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
-import SearchSelect from '~/components/shared/Form/SearchSelect';
-import { Aggregator, ChartLine } from '~/types/chart';
-import { aggregateData } from '~/utils/chart';
+import HistoricalChart, {
+  ChartLine,
+} from '~/components/shared/Charts/HistoricalChart';
+import SEOHeader from '~/components/shared/SEOHeader';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 interface ModelUsage {
@@ -173,58 +173,32 @@ export default function ModelUsagePage() {
   const [slug, setSlug] = useState(ALL_MODELS);
 
   return (
-    <Container maxW="container.lg" p="8">
-      <Card>
-        <Heading as="h2" fontSize="3xl" mb="8">
-          Historical API Calls
-        </Heading>
-        <Box maxW="480px">
-          <SearchSelect<ChartLine>
-            placeholder={loading ? 'Loading Models...' : 'Select a Model...'}
-            options={lines}
-            filterOption={(option, filterValue) =>
-              option.data.name
-                .toLocaleLowerCase()
-                .includes(filterValue.toLocaleLowerCase().trim())
-            }
-            getOptionLabel={(option) => option.name}
-            value={lines.find((line) => line.name === slug)}
-            onChange={(val) => setSlug(val?.name ?? '')}
-            isOptionSelected={(option) => slug === option.name}
-          />
-        </Box>
-        <HistoricalChart
-          loading={loading}
-          lines={lines.filter((line) => line.name === slug)}
-          height={300}
-          formatYLabel={(value) => shortenNumber(Number(value), 0)}
-          formatValue={(value) => new Intl.NumberFormat().format(value)}
-          durations={[30, 60, 90]}
-          defaultDuration={90}
-          aggregate
-        />
-      </Card>
+    <>
+      <SEOHeader title="Model Usage - Credmark App" />
 
-      <Card mt="8">
-        <Heading as="h2" fontSize="3xl" mb="8">
-          Individual Model API Calls
-        </Heading>
-        <Stack direction={{ base: 'column', lg: 'row' }} mb="4" spacing="4">
-          <Box minW="240px" maxW="480px">
-            <Input
-              type="date"
-              value={barChartDate?.toISOString().slice(0, 10)}
-              onChange={(event) => {
-                if (event.target.value) {
-                  setBarChartDate(
-                    new Date(`${event.target.value}T00:00:00.000Z`),
-                  );
-                } else {
-                  setBarChartDate(undefined);
-                }
-              }}
-              min={minBarChartDate?.toISOString()?.slice(0, 10)}
-              max={maxBarChartDate?.toISOString()?.slice(0, 10)}
+      <Container maxW="container.lg" p="8">
+        <Card>
+          <Heading as="h2" fontSize="3xl" mb="8">
+            Historical API Calls
+          </Heading>
+          <Box maxW="480px">
+            <Select<ChartLine, false, GroupBase<ChartLine>>
+              placeholder={loading ? 'Loading Models...' : 'Select a Model...'}
+              options={lines}
+              filterOption={(option, filterValue) =>
+                option.data.name
+                  .toLocaleLowerCase()
+                  .includes(filterValue.toLocaleLowerCase().trim())
+              }
+              getOptionLabel={(option) => option.name}
+              components={customComponents}
+              value={lines.find((line) => line.name === slug)}
+              onChange={(val) => setSlug(val?.name ?? '')}
+              isOptionSelected={(option) => slug === option.name}
+              chakraStyles={chakraStyles}
+              isClearable
+              inputValue={searchInput}
+              onInputChange={(input) => setSearchInput(input)}
             />
             <Text pt="4" px="2" fontSize="sm" color="gray.600">
               {barChartDate && aggregationInterval > 1
@@ -245,59 +219,59 @@ export default function ModelUsagePage() {
                 : ''}
             </Text>
           </Box>
-          <Spacer />
-          <Box>
-            <Text>All Models</Text>
-            <Text fontSize="3xl">
-              {new Intl.NumberFormat().format(allModelsUsage)}
-            </Text>
-          </Box>
-          <Menu>
-            <MenuButton
-              alignSelf="center"
-              as={Button}
-              variant="outline"
-              colorScheme="gray"
-              size="sm"
-              leftIcon={<Icon as={MdSettings} />}
-            >
-              Agg
-            </MenuButton>
-            <MenuList minWidth="240px">
-              <MenuOptionGroup
-                title="Interval"
-                type="radio"
-                value={String(aggregationInterval)}
-                onChange={(value) => setAggregationInterval(Number(value))}
-              >
-                <MenuItemOption value="1">Last day</MenuItemOption>
-                <MenuItemOption value="7">Last week</MenuItemOption>
-                <MenuItemOption value="30">Last month</MenuItemOption>
-              </MenuOptionGroup>
-              <MenuDivider />
-              <MenuOptionGroup
-                title="Aggregator"
-                type="radio"
-                value={aggregator}
-                onChange={(value) => setAggregator(value as Aggregator)}
-              >
-                <MenuItemOption value="sum">Sum</MenuItemOption>
-                <MenuItemOption value="avg">Average</MenuItemOption>
-                <MenuItemOption value="min">Minimum</MenuItemOption>
-                <MenuItemOption value="max">Maximum</MenuItemOption>
-              </MenuOptionGroup>
-            </MenuList>
-          </Menu>
-        </Stack>
+          <HistoricalChart
+            loading={loading}
+            lines={lines.filter((line) => line.name === slug)}
+            height={300}
+            formatYLabel={(value) => shortenNumber(Number(value), 0)}
+            formatValue={(value) => new Intl.NumberFormat().format(value)}
+            durations={[30, 60, 90]}
+            defaultDuration={90}
+            aggregate
+          />
+        </Card>
 
-        <BarChart
-          loading={loading}
-          data={barChartData}
-          height={Math.max(barChartData.length * 32, 300)}
-          padding={0}
-          onClick={(slug) => setSlug(slug)}
-        />
-      </Card>
-    </Container>
+        <Card mt="8">
+          <Heading as="h2" fontSize="3xl" mb="8">
+            Individual Model API Calls
+          </Heading>
+          <Stack direction={{ base: 'column', lg: 'row' }} mb="4">
+            <Box minW="240px" maxW="480px">
+              <Input
+                type="date"
+                value={barChartDate?.toISOString().slice(0, 10)}
+                onChange={(event) => {
+                  if (event.target.value) {
+                    setBarChartDate(
+                      new Date(`${event.target.value}T00:00:00.000Z`),
+                    );
+                  } else {
+                    setBarChartDate(undefined);
+                  }
+                }}
+                mb="8"
+                min={minBarChartDate?.toISOString()?.slice(0, 10)}
+                max={maxBarChartDate?.toISOString()?.slice(0, 10)}
+              />
+            </Box>
+            <Spacer />
+            <Box>
+              <Text>All Models</Text>
+              <Text fontSize="3xl">
+                {new Intl.NumberFormat().format(allModelsUsage)}
+              </Text>
+            </Box>
+          </Stack>
+
+          <BarChart
+            loading={loading}
+            data={barChartData}
+            height={Math.max(barChartData.length * 32, 300)}
+            padding={0}
+            onClick={(slug) => setSlug(slug)}
+          />
+        </Card>
+      </Container>
+    </>
   );
 }

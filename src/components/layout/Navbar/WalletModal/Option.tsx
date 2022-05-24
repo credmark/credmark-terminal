@@ -44,7 +44,12 @@ export default function Option({
           {subheader && <Text fontSize="sm">{subheader}</Text>}
         </Box>
         <Center>
-          <Image src={icon} w={`${size ?? 32}px`} h={`${size ?? 32}px`} />
+          <Image
+            alt="Credmark"
+            src={icon}
+            w={`${size ?? 32}px`}
+            h={`${size ?? 32}px`}
+          />
         </Center>
       </Flex>
     </Button>

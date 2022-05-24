@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
 import { LenderChartBox } from '~/components/pages/Terminal';
+import SEOHeader from '~/components/shared/SEOHeader';
 import { ASSETS } from '~/constants/terminal';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
 import { useActiveWeb3React } from '~/hooks/web3';
@@ -173,57 +174,60 @@ export default function LendersPage() {
   };
 
   return (
-    <Box p="8">
-      <HStack spacing="8">
-        {ASSETS.map((asset) => (
-          <HStack key={asset.key}>
-            <Box w="6">
-              <Img src={asset.logo} alt={asset.title || 'Credmark'} />
-            </Box>
-            <Text>{asset.title}</Text>
-            <Switch
-              colorScheme="green"
-              isChecked={activeAssets.includes(asset.key)}
-              onChange={(event) => {
-                if (event.target.checked) {
-                  setActiveAssets([...activeAssets, asset.key]);
-                } else {
-                  setActiveAssets(
-                    activeAssets.filter((aa) => aa !== asset.key),
-                  );
+    <>
+      <SEOHeader title="Lenders - Credmark Terminal" />
+      <Box p="8">
+        <HStack spacing="8">
+          {ASSETS.map((asset) => (
+            <HStack key={asset.key}>
+              <Box w="6">
+                <Img src={asset.logo} alt={asset.title || 'Credmark'} />
+              </Box>
+              <Text>{asset.title}</Text>
+              <Switch
+                colorScheme="green"
+                isChecked={activeAssets.includes(asset.key)}
+                onChange={(event) => {
+                  if (event.target.checked) {
+                    setActiveAssets([...activeAssets, asset.key]);
+                  } else {
+                    setActiveAssets(
+                      activeAssets.filter((aa) => aa !== asset.key),
+                    );
+                  }
+                }}
+              />
+            </HStack>
+          ))}
+        </HStack>
+        <Grid
+          templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+          gap="8"
+          mt="6"
+          mb="16"
+        >
+          {METRICS.map((metric) => (
+            <GridItem
+              key={metric.key}
+              minW="0"
+              colSpan={expandedMetric === metric.key ? 2 : 1}
+            >
+              <LenderChartBox
+                metric={metric}
+                activeAssets={activeAssets}
+                lcrData={lcrData}
+                varData={varData}
+                onExpand={() =>
+                  expandedMetric === metric.key
+                    ? setExpandedMetric(undefined)
+                    : setExpandedMetric(metric.key)
                 }
-              }}
-            />
-          </HStack>
-        ))}
-      </HStack>
-      <Grid
-        templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-        gap="8"
-        mt="6"
-        mb="16"
-      >
-        {METRICS.map((metric) => (
-          <GridItem
-            key={metric.key}
-            minW="0"
-            colSpan={expandedMetric === metric.key ? 2 : 1}
-          >
-            <LenderChartBox
-              metric={metric}
-              activeAssets={activeAssets}
-              lcrData={lcrData}
-              varData={varData}
-              onExpand={() =>
-                expandedMetric === metric.key
-                  ? setExpandedMetric(undefined)
-                  : setExpandedMetric(metric.key)
-              }
-              isExpanded={expandedMetric === metric.key}
-            />
-          </GridItem>
-        ))}
-      </Grid>
-    </Box>
+                isExpanded={expandedMetric === metric.key}
+              />
+            </GridItem>
+          ))}
+        </Grid>
+      </Box>
+    </>
   );
 }

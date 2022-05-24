@@ -10,13 +10,13 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { Web3ReactProvider } from '@web3-react/core';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
-import NextHead from 'next/head';
 import { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import React, { useEffect } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
 import Layout from '~/components/layout';
+import SEOHeader from '~/components/shared/SEOHeader';
 import env from '~/env';
 import Web3ReactManager from '~/providers/Web3ReactManager';
 import reduxStore from '~/state';
@@ -82,31 +82,9 @@ const Web3ProviderNetwork = dynamic(
 );
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
-  const { host } = env;
-  const title = 'Credmark App';
-  const description =
-    'Credmark is a financial modeling platform powered by reliable on-chain data. Validated models are readily composable making rapid prototyping simple.';
-  // const img = `${host}/img/smart-pool.png`;
-
   return (
     <>
-      <NextHead>
-        <title>{title}</title>
-        <meta name="title" content={title} />
-        <meta name="description" content={description} />
-
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={host} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        {/* <meta property="og:image" content={img} /> */}
-
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content={host} />
-        <meta property="twitter:title" content={title} />
-        <meta property="twitter:description" content={description} />
-        {/* <meta property="+twitter:image" content={img} /> */}
-      </NextHead>
+      <SEOHeader title="Credmark App" />
       <ChakraProvider resetCSS theme={theme}>
         <Web3ReactProvider getLibrary={getLibrary}>
           <Web3ProviderNetwork getLibrary={getLibrary}>
