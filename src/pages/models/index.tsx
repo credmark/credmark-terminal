@@ -122,22 +122,23 @@ export default function ModelsPage({ models }: ModelPageProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<ModelPageProps> =
-  async () => {
-    try {
-      const resp = await axios({
-        method: 'GET',
-        url: 'https://gateway.credmark.com/v1/models',
-      });
+export const getServerSideProps: GetServerSideProps<
+  ModelPageProps
+> = async () => {
+  try {
+    const resp = await axios({
+      method: 'GET',
+      url: 'https://gateway.credmark.com/v1/models',
+    });
 
-      return {
-        props: {
-          models: resp.data,
-        },
-      };
-    } catch (err) {
-      return {
-        notFound: true,
-      };
-    }
-  };
+    return {
+      props: {
+        models: resp.data,
+      },
+    };
+  } catch (err) {
+    return {
+      notFound: true,
+    };
+  }
+};

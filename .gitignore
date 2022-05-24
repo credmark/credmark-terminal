@@ -34,3 +34,6 @@ env/
 
 # vercel
 .vercel
+
+# yarn.lock, only support for package-lock.json
+yarn.lock
