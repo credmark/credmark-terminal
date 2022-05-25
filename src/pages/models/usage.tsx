@@ -21,10 +21,11 @@ import { MdSettings } from 'react-icons/md';
 
 import { Card } from '~/components/base';
 import BarChart from '~/components/shared/Charts/BarChart';
-import HistoricalChart, {
-  ChartLine,
-} from '~/components/shared/Charts/HistoricalChart';
+import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
+import SearchSelect from '~/components/shared/Form/SearchSelect';
 import SEOHeader from '~/components/shared/SEOHeader';
+import { Aggregator, ChartLine } from '~/types/chart';
+import { aggregateData } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 interface ModelUsage {
@@ -175,14 +176,13 @@ export default function ModelUsagePage() {
   return (
     <>
       <SEOHeader title="Model Usage - Credmark App" />
-
       <Container maxW="container.lg" p="8">
         <Card>
           <Heading as="h2" fontSize="3xl" mb="8">
             Historical API Calls
           </Heading>
           <Box maxW="480px">
-            <Select<ChartLine, false, GroupBase<ChartLine>>
+            <SearchSelect<ChartLine>
               placeholder={loading ? 'Loading Models...' : 'Select a Model...'}
               options={lines}
               filterOption={(option, filterValue) =>
@@ -191,33 +191,10 @@ export default function ModelUsagePage() {
                   .includes(filterValue.toLocaleLowerCase().trim())
               }
               getOptionLabel={(option) => option.name}
-              components={customComponents}
               value={lines.find((line) => line.name === slug)}
               onChange={(val) => setSlug(val?.name ?? '')}
               isOptionSelected={(option) => slug === option.name}
-              chakraStyles={chakraStyles}
-              isClearable
-              inputValue={searchInput}
-              onInputChange={(input) => setSearchInput(input)}
             />
-            <Text pt="4" px="2" fontSize="sm" color="gray.600">
-              {barChartDate && aggregationInterval > 1
-                ? `${new Intl.DateTimeFormat(undefined, {
-                    dateStyle: 'long',
-                  }).format(
-                    new Date(
-                      barChartDate.valueOf() -
-                        aggregationInterval * 24 * 3600 * 1000,
-                    ),
-                  )} - ${new Intl.DateTimeFormat(undefined, {
-                    dateStyle: 'long',
-                  }).format(barChartDate)}`
-                : barChartDate
-                ? new Intl.DateTimeFormat(undefined, {
-                    dateStyle: 'long',
-                  }).format(barChartDate)
-                : ''}
-            </Text>
           </Box>
           <HistoricalChart
             loading={loading}
@@ -235,7 +212,7 @@ export default function ModelUsagePage() {
           <Heading as="h2" fontSize="3xl" mb="8">
             Individual Model API Calls
           </Heading>
-          <Stack direction={{ base: 'column', lg: 'row' }} mb="4">
+          <Stack direction={{ base: 'column', lg: 'row' }} mb="4" spacing="4">
             <Box minW="240px" maxW="480px">
               <Input
                 type="date"
@@ -249,10 +226,27 @@ export default function ModelUsagePage() {
                     setBarChartDate(undefined);
                   }
                 }}
-                mb="8"
                 min={minBarChartDate?.toISOString()?.slice(0, 10)}
                 max={maxBarChartDate?.toISOString()?.slice(0, 10)}
               />
+              <Text pt="4" px="2" fontSize="sm" color="gray.600">
+                {barChartDate && aggregationInterval > 1
+                  ? `${new Intl.DateTimeFormat(undefined, {
+                      dateStyle: 'long',
+                    }).format(
+                      new Date(
+                        barChartDate.valueOf() -
+                          aggregationInterval * 24 * 3600 * 1000,
+                      ),
+                    )} - ${new Intl.DateTimeFormat(undefined, {
+                      dateStyle: 'long',
+                    }).format(barChartDate)}`
+                  : barChartDate
+                  ? new Intl.DateTimeFormat(undefined, {
+                      dateStyle: 'long',
+                    }).format(barChartDate)
+                  : ''}
+              </Text>
             </Box>
             <Spacer />
             <Box>
@@ -261,6 +255,42 @@ export default function ModelUsagePage() {
                 {new Intl.NumberFormat().format(allModelsUsage)}
               </Text>
             </Box>
+            <Menu>
+              <MenuButton
+                alignSelf="center"
+                as={Button}
+                variant="outline"
+                colorScheme="gray"
+                size="sm"
+                leftIcon={<Icon as={MdSettings} />}
+              >
+                Agg
+              </MenuButton>
+              <MenuList minWidth="240px">
+                <MenuOptionGroup
+                  title="Interval"
+                  type="radio"
+                  value={String(aggregationInterval)}
+                  onChange={(value) => setAggregationInterval(Number(value))}
+                >
+                  <MenuItemOption value="1">Last day</MenuItemOption>
+                  <MenuItemOption value="7">Last week</MenuItemOption>
+                  <MenuItemOption value="30">Last month</MenuItemOption>
+                </MenuOptionGroup>
+                <MenuDivider />
+                <MenuOptionGroup
+                  title="Aggregator"
+                  type="radio"
+                  value={aggregator}
+                  onChange={(value) => setAggregator(value as Aggregator)}
+                >
+                  <MenuItemOption value="sum">Sum</MenuItemOption>
+                  <MenuItemOption value="avg">Average</MenuItemOption>
+                  <MenuItemOption value="min">Minimum</MenuItemOption>
+                  <MenuItemOption value="max">Maximum</MenuItemOption>
+                </MenuOptionGroup>
+              </MenuList>
+            </Menu>
           </Stack>
 
           <BarChart
