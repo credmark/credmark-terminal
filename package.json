@@ -6,6 +6,7 @@
     "contracts:compile": "typechain --target ethers-v5 --out-dir src/abis/types './src/abis/**/*.json'",
     "build:staging": "cp env/.env.staging .env && next build",
     "build:production": "cp env/.env.production .env && next build",
+    "build:dev": "cp env/.env.local .env && next build",
     "start": "cp env/.env.local .env && next dev",
     "staging": "cp env/.env.staging .env && next start",
     "production": "cp env/.env.production .env && next start",
@@ -15,7 +16,8 @@
     "postinstall": "npm run contracts:compile",
     "prepare": "husky install",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "postbuild": "cross-env next-sitemap --config next-sitemap.js"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.1.0",
@@ -101,6 +103,7 @@
     "eslint-plugin-storybook": "^0.5.11",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.5",
+    "next-sitemap": "^2.5.25",
     "prettier": "^2.4.1",
     "typechain": "^6.0.2",
     "typescript": "4.4.4",
