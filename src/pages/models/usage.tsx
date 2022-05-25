@@ -175,7 +175,7 @@ export default function ModelUsagePage() {
 
   return (
     <>
-      <SEOHeader title="Model Usage - Credmark App" />
+      <SEOHeader title="Model Usage" />
       <Container maxW="container.lg" p="8">
         <Card>
           <Heading as="h2" fontSize="3xl" mb="8">

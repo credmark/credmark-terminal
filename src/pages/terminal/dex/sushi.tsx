@@ -63,7 +63,7 @@ const pools = [
 export default function SushiswapDexPage() {
   return (
     <>
-      <SEOHeader title="DEXs Sushi - Credmark Terminal" />
+      <SEOHeader title="DEXs Sushi Terminal" />
       <DexPage dex="SUSHISWAP" pools={pools} />
     </>
   );

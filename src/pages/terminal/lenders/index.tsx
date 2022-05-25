@@ -175,7 +175,7 @@ export default function LendersPage() {
 
   return (
     <>
-      <SEOHeader title="Lenders - Credmark Terminal" />
+      <SEOHeader title="Lenders Terminal" />
       <Box p="8">
         <HStack spacing="8">
           {ASSETS.map((asset) => (

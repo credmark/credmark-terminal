@@ -18,6 +18,7 @@ const SEOHeader = ({
   return (
     <NextSeo
       title={title}
+      titleTemplate="%s | Credmark Terminal"
       description={description}
       canonical={url}
       openGraph={{

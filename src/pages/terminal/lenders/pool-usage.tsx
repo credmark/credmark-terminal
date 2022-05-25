@@ -6,7 +6,7 @@ import SEOHeader from '~/components/shared/SEOHeader';
 export default function DashboardPage() {
   return (
     <>
-      <SEOHeader title="Lending Pool Usage - Credmark Terminal" />
+      <SEOHeader title="Lending Pool Usage Terminal" />
       <AspectRatio maxW="100vw" ratio={{ base: 1, lg: 4 / 3, xl: 16 / 9 }}>
         <iframe
           title="AAVE and  COMPOUND Dashboard - Credmark"

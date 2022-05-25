@@ -64,7 +64,7 @@ const pools = [
 export default function UniswapV2DexPage() {
   return (
     <>
-      <SEOHeader title="DEXs Uniswap v2 - Credmark Terminal" />
+      <SEOHeader title="DEXs Uniswap v2 Terminal" />
       <DexPage dex="UNISWAP_V2" pools={pools} />
     </>
   );
