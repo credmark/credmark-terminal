@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-/** @type {import('next-sitemap').IConfig} */
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
-const siteUrl = 'https://jsonplaceholder.typicode.com/';
 
 module.exports = withBundleAnalyzer({
   async redirects() {
@@ -17,16 +15,6 @@ module.exports = withBundleAnalyzer({
     ];
   },
   swcMinify: true,
-  siteUrl: siteUrl,
-  generateRobotsTxt: true,
-  robotsTxtOptions: {
-    policies: [
-      {
-        userAgent: '*',
-        allow: '/',
-      },
-    ],
-  },
   webpack: (config) => {
     // Suppressing abi JSON import warnings in @uniswap/v3-sdk/dist/v3-sdk.esm.js
     // https://webpack.js.org/migrate/5/#using-named-exports-from-json-modules

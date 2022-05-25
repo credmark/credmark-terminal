@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://app.credmark.com
+
+# Sitemaps
+Sitemap: https://app.credmark.com/sitemap.xml

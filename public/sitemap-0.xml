@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<url><loc>https://app.credmark.com</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/api-access</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/api-access/mint</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/api-access/tiers</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/info</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/models</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/models/usage</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/terminal/dex/curve</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/terminal/dex/sushi</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/terminal/dex/uniswap-v2</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/terminal/dex/uniswap-v3</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/terminal/lenders</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+<url><loc>https://app.credmark.com/terminal/lenders/pool-usage</loc><changefreq>daily</changefreq><priority>0.7</priority><lastmod>2022-05-25T11:44:13.147Z</lastmod></url>
+</urlset>
