@@ -28,7 +28,7 @@ export default function ModelsPage({ models }: ModelPageProps) {
 
   return (
     <>
-      <SEOHeader title="Model Usage - Credmark App" />
+      <SEOHeader title="Model Usage" />
       <Container maxW="container.lg" p="8">
         <Heading mb="8" color="purple.500">
           Credmark Models

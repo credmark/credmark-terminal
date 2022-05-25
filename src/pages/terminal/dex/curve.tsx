@@ -71,7 +71,7 @@ const pools = [
 export default function CurveDexPage() {
   return (
     <>
-      <SEOHeader title="DEXs Curve - Credmark Terminal" />
+      <SEOHeader title="DEXs Curve Terminal" />
       <DexPage dex="CURVE" pools={pools} />
     </>
   );

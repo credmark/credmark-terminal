@@ -22,7 +22,7 @@ import SEOHeader from '~/components/shared/SEOHeader';
 export default function HomePage() {
   return (
     <>
-      <SEOHeader title="Credmark App" />
+      <SEOHeader title="App" />
       <VStack spacing="20" py="20">
         <Container maxW="container.lg">
           <Box position="relative">

@@ -84,7 +84,7 @@ const Web3ProviderNetwork = dynamic(
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
-      <SEOHeader title="Credmark App" />
+      <SEOHeader title="App" />
       <ChakraProvider resetCSS theme={theme}>
         <Web3ReactProvider getLibrary={getLibrary}>
           <Web3ProviderNetwork getLibrary={getLibrary}>
