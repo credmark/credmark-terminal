@@ -1,5 +1,6 @@
 # Credmark App
 
+
 ## Development
 
 `npm install`
@@ -13,6 +14,12 @@ Create a env file at `env/.env.local` with these required params:
 - NEXT_PUBLIC_COINBASE_LINK
 
 Run `npm start` to start the UI at `http://localhost:3000`
+
+### Post Build to generate sitemap
+1. You probably need to create a config file manually for windows, seems to fail on windows but should be okay on linux.
+Filename: `next-sitemap.config.js` within your root directory.
+
+2. Generate the sitemap: `npm run postbuild`
 
 ## Deployment (Production/Staging)
 
