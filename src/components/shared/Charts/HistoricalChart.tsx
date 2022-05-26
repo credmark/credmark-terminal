@@ -51,7 +51,9 @@ const ChartOverlay = chakra(Center, {
     left: 0,
     right: 0,
     bottom: 0,
-    p: 8,
+    pl: 10,
+    pr: 8,
+    pb: 16,
   },
 });
 
@@ -339,7 +341,7 @@ export default function HistoricalChart({
         <HStack align="center" p="2">
           {showCurrentStats &&
             currentStats.map(({ label, value }, index) => (
-              <Box key={index} textAlign="left">
+              <Box key={index} textAlign="left" px="2">
                 <Text fontSize="sm">{label}</Text>
                 <Text fontSize="3xl" fontWeight="medium">
                   {value}
@@ -423,8 +425,15 @@ export default function HistoricalChart({
         )}
         {error && (
           <ChartOverlay>
-            <Text bg="red.50" color="red.600" p="4" rounded="md" fontSize="sm">
-              {error}
+            <Text
+              bg="red.50"
+              color="red.600"
+              p="4"
+              rounded="md"
+              fontSize="xs"
+              w="100%"
+            >
+              <pre>{error}</pre>
             </Text>
           </ChartOverlay>
         )}
