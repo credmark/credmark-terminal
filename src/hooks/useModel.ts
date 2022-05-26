@@ -1,7 +1,14 @@
+import { useCallbackRef } from '@chakra-ui/react';
 import axios, { AxiosResponse } from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import { ModelRunResponse } from '~/types/model';
+import {
+  ModelRunError,
+  ModelRunResponse,
+  ModelSeriesOutput,
+} from '~/types/model';
+
+import { useDeepCompareCallback } from './useDeepCompare';
 
 interface ModelRunnerCallbackProps<I> {
   slug: string;
@@ -18,7 +25,8 @@ export function useModelRunnerCallback<I, O>({
   blockNumber = 'latest',
   input,
 }: ModelRunnerCallbackProps<I>) {
-  return useCallback(
+  // Using deep compare callback for input equality
+  return useDeepCompareCallback(
     async (abortSignal?: AbortSignal) => {
       const resp: AxiosResponse<ModelRunResponse<O>> = await axios({
         method: 'POST',
@@ -39,30 +47,104 @@ export function useModelRunnerCallback<I, O>({
   );
 }
 
-interface ModelRunnerProps<I, O> extends ModelRunnerCallbackProps<I> {
+interface SimpleModelRunnerProps<I, O> extends ModelRunnerCallbackProps<I> {
   validateOutput?: (output: O) => void;
 }
 
-export function useModelRunner<I, O>({
-  slug,
-  version,
-  chainId,
-  blockNumber,
-  input,
-  validateOutput,
-}: ModelRunnerProps<I, O>) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<ModelRunResponse<O>['error']>();
-  const [errorMessage, setErrorMessage] = useState<string>();
-  const [output, setOutput] = useState<O>();
+interface HistoricalModelRunnerProps<I, O> extends ModelRunnerCallbackProps<I> {
+  window: number; // In days
+  interval: number; // In days
+  validateRow?: (output: O) => void;
+}
 
-  const runModel = useModelRunnerCallback<I, O>({
-    slug,
-    version,
-    chainId,
-    blockNumber,
-    input,
-  });
+type ModelRunnerProps<I, O> =
+  | SimpleModelRunnerProps<I, O>
+  | HistoricalModelRunnerProps<I, O>;
+
+export function useModelRunner<I, O>(
+  props: SimpleModelRunnerProps<I, O>,
+): {
+  loading: boolean;
+  error: ModelRunError | undefined;
+  errorMessage: string | undefined;
+  output: O;
+};
+
+export function useModelRunner<I, O>(
+  props: HistoricalModelRunnerProps<I, O>,
+): {
+  loading: boolean;
+  error: ModelRunError | undefined;
+  errorMessage: string | undefined;
+  output: ModelSeriesOutput<O>;
+};
+
+export function useModelRunner<I, O>(props: ModelRunnerProps<I, O>) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<ModelRunError>();
+  const [errorMessage, setErrorMessage] = useState<string>();
+  const [output, setOutput] = useState<O | ModelSeriesOutput<O>>();
+
+  const { window, interval, validateRow } = props as HistoricalModelRunnerProps<
+    I,
+    O
+  >;
+
+  const { validateOutput } = props as SimpleModelRunnerProps<I, O>;
+
+  const isHistorical = useMemo(
+    () => typeof window === 'number' && typeof interval === 'number',
+    [interval, window],
+  );
+
+  const runModel = useModelRunnerCallback<unknown, O | ModelSeriesOutput<O>>(
+    isHistorical
+      ? {
+          slug: 'series.time-window-interval',
+          input: {
+            modelSlug: props.slug,
+            modelInput: props.input,
+            modelVersion: props.version,
+            window,
+            interval,
+          },
+          blockNumber: props.blockNumber,
+          chainId: props.chainId,
+        }
+      : {
+          slug: props.slug,
+          version: props.version,
+          chainId: props.chainId,
+          blockNumber: props.blockNumber,
+          input: props.input,
+        },
+  );
+
+  const validateOutputMemoized = useCallbackRef(
+    (output: O | ModelSeriesOutput<O>) => {
+      // using type predicate to narrow output type
+      const isHistoricalOutput = (
+        output: O | ModelSeriesOutput<O>,
+      ): output is ModelSeriesOutput<O> => isHistorical;
+
+      if (isHistoricalOutput(output)) {
+        if (Array.isArray(output.errors) && output.errors.length > 0) {
+          console.log(output.errors);
+          throw new Error(output.errors[0].error.message);
+        }
+
+        if (validateRow) {
+          for (const row of output.series) {
+            validateRow(row.output);
+          }
+        }
+      } else {
+        if (validateOutput) {
+          validateOutput(output);
+        }
+      }
+    },
+  );
 
   useEffect(() => {
     setError(undefined);
@@ -79,7 +161,7 @@ export function useModelRunner<I, O>({
           );
         }
 
-        validateOutput?.(resp.output);
+        validateOutputMemoized(resp.output);
 
         setOutput(resp.output);
       })
@@ -98,7 +180,7 @@ export function useModelRunner<I, O>({
     return () => {
       abortController.abort();
     };
-  }, [runModel, validateOutput]);
+  }, [runModel, validateOutputMemoized]);
 
   return { loading, error, errorMessage, output };
 }
