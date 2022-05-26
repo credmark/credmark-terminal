@@ -2,15 +2,19 @@ import { Box, Center, Flex, Icon, Link, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
-import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { MdOpenInNew } from 'react-icons/md';
 
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
-import { CsvData, useSingleLineChart } from '~/hooks/useChart';
+import { useSingleLineChart } from '~/hooks/useChart';
 import { useModelRunner } from '~/hooks/useModel';
 import { ModelSeriesOutput } from '~/types/model';
+import { mergeCsvs } from '~/utils/chart';
+
+const formatDate = (date: Date) =>
+  `${date.getUTCFullYear()}-${date.getMonth() + 1}-${date.getUTCDate()}`;
 
 interface DexChartBoxProps {
   dex: 'SUSHISWAP' | 'UNISWAP_V2' | 'UNISWAP_V3' | 'CURVE';
@@ -24,18 +28,28 @@ interface DexChartBoxProps {
 
 interface DexModelOutput {
   pool_infos: ModelSeriesOutput<{
-    blockNumber: number;
-    blockTimestamp: number;
-    sampleTimestamp: number;
-    output: {
-      address: string;
-      name: string;
-      coin_balances: { [key: string]: number };
-      prices: { [key: string]: number };
-      tvl: number;
-      volume24h: number;
-    };
+    address: string;
+    name: string;
+    coin_balances: { [key: string]: number };
+    prices: { [key: string]: number };
+    tvl: number;
+    volume24h: number;
   }>;
+}
+
+interface VarModelOutput {
+  pool: { address: string };
+  tokens_address: [string, string];
+  tokens_symbol: [string, string];
+  ratio: number;
+  IL_type: 'V2' | 'V3';
+  range: [] | [number, number];
+  var: Record<
+    number,
+    {
+      var: number;
+    }
+  >;
 }
 
 export default function DexChartBox({
@@ -60,37 +74,29 @@ export default function DexChartBox({
     a.wrapped.sortsBefore(b.wrapped) ? -1 : 1,
   );
 
-  const input = useMemo(() => {
-    const convertDate = (date: Date) =>
-      `${date.getUTCFullYear()}-${date.getMonth() + 1}-${date.getUTCDate()}`;
+  const tvlInput = {
+    pool_address: {
+      address: pool,
+    },
+    date_range: [
+      formatDate(
+        new Date(
+          Math.max(new Date().valueOf() - 90 * 24 * 3600 * 1000, createdAt),
+        ),
+      ),
+      formatDate(new Date()),
+    ],
+  };
 
-    // today
-    const endDate = new Date();
-    // 90 days before today or contract creation time, whichever is latest
-    const startDate = new Date(
-      Math.max(new Date().valueOf() - 90 * 24 * 3600 * 1000, createdAt),
-    );
-
-    return {
-      pool_address: {
-        address: pool,
-      },
-      date_range: [convertDate(startDate), convertDate(endDate)],
-    };
-  }, [createdAt, pool]);
-
-  const { loading, errorMessage, output } = useModelRunner<
-    typeof input,
-    DexModelOutput
-  >({
+  const tvlModel = useModelRunner<typeof tvlInput, DexModelOutput>({
     slug:
       dex === 'CURVE'
         ? 'contrib.curve-get-tvl-and-volume-historical'
         : dex === 'UNISWAP_V3'
         ? 'contrib.uniswap-get-tvl-and-volume-historical'
         : 'contrib.sushiswap-get-tvl-and-volume-historical',
-    input,
-    validateOutput: useCallback((output: DexModelOutput) => {
+    input: tvlInput,
+    validateOutput(output: DexModelOutput) {
       if (
         Array.isArray(output.pool_infos.errors) &&
         output.pool_infos.errors.length > 0
@@ -98,7 +104,7 @@ export default function DexChartBox({
         console.log(output.pool_infos.errors);
         throw new Error(output.pool_infos.errors[0].error.message);
       }
-    }, []),
+    },
   });
 
   const tvlChart = useSingleLineChart({
@@ -106,12 +112,14 @@ export default function DexChartBox({
     color: '#3B0065',
     formatter: 'currency',
     fractionDigits: 2,
-    data: output
-      ? output.pool_infos.series.map((item) => ({
+    data: tvlModel.output
+      ? tvlModel.output.pool_infos.series.map((item) => ({
           timestamp: new Date(item.sampleTimestamp * 1000),
           value: item.output.tvl,
         }))
       : undefined,
+    loading: tvlModel.loading,
+    error: tvlModel.errorMessage,
   });
 
   const volumeChart = useSingleLineChart({
@@ -119,48 +127,56 @@ export default function DexChartBox({
     color: '#3B0065',
     formatter: 'number',
     fractionDigits: 2,
-    data: output
-      ? output.pool_infos.series.map((item) => ({
+    data: tvlModel.output
+      ? tvlModel.output.pool_infos.series.map((item) => ({
           timestamp: new Date(item.sampleTimestamp * 1000),
           value: item.output.volume24h,
         }))
       : undefined,
+    loading: tvlModel.loading,
+    error: tvlModel.errorMessage,
+  });
+
+  const varInput = {
+    window: '280 days',
+    interval: 10,
+    confidences: [0.01],
+    lower_range: 0.01,
+    upper_range: 0.01,
+    pool: {
+      address: pool,
+    },
+  };
+
+  const varModel = useModelRunner<typeof varInput, VarModelOutput>({
+    slug: 'finance.var-dex-lp',
+    input: varInput,
+    window:
+      Math.min(
+        90,
+        Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
+      ) *
+      24 *
+      3600,
+    interval: 24 * 3600,
+  });
+
+  const varChart = useSingleLineChart({
+    name: 'Value at Risk',
+    color: '#3B0065',
+    formatter: 'number',
+    fractionDigits: 4,
+    data: varModel.output?.series?.map((item) => ({
+      timestamp: new Date(item.sampleTimestamp * 1000),
+      value: item.output.var[0.01].var,
+    })),
+    loading: varModel.loading,
+    error: varModel.errorMessage,
   });
 
   const csv = useMemo(() => {
-    function mergeCsvs(...csvs: Array<{ data: CsvData[]; headers: string[] }>) {
-      const dataMap: Record<string, CsvData> = {};
-      const headers: string[] = [];
-      for (const csv of csvs) {
-        for (const header of csv.headers) {
-          if (!headers.includes(header)) {
-            headers.push(header);
-          }
-        }
-
-        for (const datum of csv.data) {
-          const ts = datum['Timestamp'];
-          for (const [key, value] of Object.entries(datum)) {
-            if (key === 'Timestamp') {
-              continue;
-            }
-
-            if (!(ts in dataMap)) {
-              dataMap[ts] = {
-                Timestamp: ts,
-              };
-            }
-
-            dataMap[ts][key] = value;
-          }
-        }
-      }
-
-      return { data: Object.values(dataMap), headers };
-    }
-
-    return mergeCsvs(tvlChart.csv, volumeChart.csv);
-  }, [tvlChart.csv, volumeChart.csv]);
+    return mergeCsvs(tvlChart.csv, varChart.csv, volumeChart.csv);
+  }, [tvlChart.csv, varChart.csv, volumeChart.csv]);
 
   return (
     <Box
@@ -176,7 +192,7 @@ export default function DexChartBox({
           .map((token) => token.symbol ?? token.name)
           .join(' / ')}
         toggleFullScreen={onExpand}
-        downloadFileName={`${tvlChart.line.name.replaceAll(
+        downloadFileName={`${tvlChart.lines[0].name.replaceAll(
           ' ',
           '_',
         )}[Credmark].csv`}
@@ -200,7 +216,7 @@ export default function DexChartBox({
 
       <Flex align="stretch">
         {!isExpanded && (
-          <Flex direction="column">
+          <Flex direction="column" w="200px">
             <Center
               flex="1"
               textAlign="center"
@@ -208,42 +224,52 @@ export default function DexChartBox({
               borderColor="gray.100"
               p="4"
               flexDirection="column"
-              w="160px"
             >
-              <Text fontSize="lg">{tvlChart.currentStats.label}</Text>
+              <Text fontSize="sm">{varChart.currentStats[0].label}</Text>
               <Text fontSize="3xl" fontWeight="medium">
-                {tvlChart.currentStats.value}
+                {varChart.currentStats[0].value}
               </Text>
             </Center>
-            <Center
-              flex="1"
-              textAlign="center"
-              borderTop="2px"
-              borderRight="2px"
-              borderColor="gray.100"
-              p="4"
-              flexDirection="column"
-              w="160px"
-            >
-              <Text fontSize="lg">{volumeChart.currentStats.label}</Text>
-              <Text fontSize="2xl" fontWeight="medium">
-                {volumeChart.currentStats.value}
-              </Text>
-            </Center>
+            <Flex flex="1">
+              <Center
+                flex="1"
+                textAlign="center"
+                borderTop="2px"
+                borderRight="2px"
+                borderColor="gray.100"
+                p="4"
+                flexDirection="column"
+              >
+                <Text fontSize="sm">{tvlChart.currentStats[0].label}</Text>
+                <Text fontSize="2xl" fontWeight="medium">
+                  {tvlChart.currentStats[0].value}
+                </Text>
+              </Center>
+              <Center
+                flex="1"
+                textAlign="center"
+                borderTop="2px"
+                borderRight="2px"
+                borderColor="gray.100"
+                p="4"
+                flexDirection="column"
+              >
+                <Text fontSize="sm">{volumeChart.currentStats[0].label}</Text>
+                <Text fontSize="2xl" fontWeight="medium">
+                  {volumeChart.currentStats[0].value}
+                </Text>
+              </Center>
+            </Flex>
           </Flex>
         )}
         <HistoricalChart
           height={300}
           flex="1"
-          lines={[tvlChart.line]}
-          loading={loading}
-          formatValue={tvlChart.formatValue}
           onChartReady={(chart) => (chartRef.current = chart)}
-          error={errorMessage}
           durations={[30, 60, 90]}
           defaultDuration={30}
-          currentStats={[tvlChart.currentStats]}
           showCurrentStats={isExpanded}
+          {...varChart}
         />
       </Flex>
 
@@ -252,14 +278,20 @@ export default function DexChartBox({
           <HistoricalChart
             height={200}
             flex="1"
-            lines={[volumeChart.line]}
-            loading={loading}
-            formatValue={volumeChart.formatValue}
-            error={errorMessage}
             durations={[30, 60, 90]}
             defaultDuration={30}
-            currentStats={[volumeChart.currentStats]}
             showCurrentStats
+            {...tvlChart}
+          />
+          <HistoricalChart
+            height={200}
+            flex="1"
+            borderLeft="2px"
+            borderColor="gray.100"
+            durations={[30, 60, 90]}
+            defaultDuration={30}
+            showCurrentStats
+            {...volumeChart}
           />
         </Flex>
       )}

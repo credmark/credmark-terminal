@@ -11,7 +11,7 @@ interface UseLineChartProps {
   fractionDigits?: number;
 }
 
-export function useLineChart({
+function useLineChart({
   defaultLines = [],
   formatter,
   fractionDigits = 2,
@@ -94,6 +94,8 @@ interface UseSingleLineChartProps {
   data?: ChartLine['data'];
   formatter?: 'currency' | 'number';
   fractionDigits?: number;
+  loading: boolean;
+  error: string | undefined;
 }
 
 export function useSingleLineChart({
@@ -102,6 +104,8 @@ export function useSingleLineChart({
   data,
   formatter,
   fractionDigits,
+  loading,
+  error,
 }: UseSingleLineChartProps) {
   const sortedData = [...(data || [])]?.sort(
     (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
@@ -132,13 +136,14 @@ export function useSingleLineChart({
       color,
       data: sortedData,
     });
-  }, [color, sortedData, name]);
+  }, [color, sortedData, name, setLine]);
 
   return {
-    line: lines[0],
-    onChange: setLine,
-    currentStats: currentStats[0],
+    lines,
+    currentStats,
     formatValue,
     csv,
+    loading,
+    error,
   };
 }
