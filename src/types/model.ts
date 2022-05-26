@@ -87,7 +87,12 @@ export interface ModelRunResponse<O> {
 }
 
 export interface ModelSeriesOutput<O> {
-  series: O[];
+  series: Array<{
+    blockNumber: number;
+    blockTimestamp: number;
+    sampleTimestamp: number;
+    output: O;
+  }>;
   errors?: Array<{ error: { message: string } }>;
 }
 
