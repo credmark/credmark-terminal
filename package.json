@@ -37,6 +37,7 @@
     "axios": "^0.24.0",
     "chakra-react-select": "^4.0.0",
     "color": "^4.1.0",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.10.7",
     "dequal": "^2.0.2",
     "echarts": "^5.3.1",
