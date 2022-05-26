@@ -1,18 +1,14 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { ChartLine } from '~/types/chart';
+import { ChartLine, CsvData, CsvRow } from '~/types/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
-import { useDeepCompareEffectNoCheck } from './useDeepCompareEffect';
+import { useDeepCompareEffectNoCheck } from './useDeepCompare';
 
 interface UseLineChartProps {
   defaultLines?: ChartLine[];
   formatter?: 'currency' | 'number';
   fractionDigits?: number;
-}
-
-export interface CsvData extends Record<string, string> {
-  Timestamp: string;
 }
 
 export function useLineChart({
@@ -49,7 +45,7 @@ export function useLineChart({
     });
   }, [formatValue, lines]);
 
-  const csv = useMemo(() => {
+  const csv = useMemo<CsvData>(() => {
     const csvDataTsMap: Record<
       string,
       Array<{ key: string; value: string }>
@@ -75,7 +71,7 @@ export function useLineChart({
       }
     }
 
-    const data: Array<CsvData> = [];
+    const data: CsvRow[] = [];
     for (const ts in csvDataTsMap) {
       data.push({
         Timestamp: ts,

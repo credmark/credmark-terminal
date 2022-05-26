@@ -8,3 +8,12 @@ export interface ChartLine {
 }
 
 export type Aggregator = 'min' | 'max' | 'avg' | 'sum';
+
+export interface CsvRow extends Record<string, string> {
+  Timestamp: string;
+}
+
+export interface CsvData {
+  headers: string[];
+  data: CsvRow[];
+}

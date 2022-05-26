@@ -1,4 +1,4 @@
-import { Aggregator, ChartLine } from '~/types/chart';
+import { Aggregator, ChartLine, CsvData, CsvRow } from '~/types/chart';
 
 export function filterDataByDuration(
   data: ChartLine['data'],
@@ -67,4 +67,35 @@ export function aggregateData(
       };
     })
     .filter((val) => !!val);
+}
+
+export function mergeCsvs(...csvs: Array<CsvData>) {
+  const dataMap: Record<string, CsvRow> = {};
+  const headers: string[] = [];
+  for (const csv of csvs) {
+    for (const header of csv.headers) {
+      if (!headers.includes(header)) {
+        headers.push(header);
+      }
+    }
+
+    for (const datum of csv.data) {
+      const ts = datum['Timestamp'];
+      for (const [key, value] of Object.entries(datum)) {
+        if (key === 'Timestamp') {
+          continue;
+        }
+
+        if (!(ts in dataMap)) {
+          dataMap[ts] = {
+            Timestamp: ts,
+          };
+        }
+
+        dataMap[ts][key] = value;
+      }
+    }
+  }
+
+  return { data: Object.values(dataMap), headers };
 }
