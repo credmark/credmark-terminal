@@ -3,12 +3,15 @@ import * as React from 'react';
 
 type UseEffectParams = Parameters<typeof React.useEffect>;
 type EffectCallback = UseEffectParams[0];
-type DependencyList = UseEffectParams[1];
+type EffectDependencyList = UseEffectParams[1];
 // yes, I know it's void, but I like what this communicates about
 // the intent of these functions: It's just like useEffect
 type UseEffectReturn = ReturnType<typeof React.useEffect>;
 
-function checkDeps(deps: DependencyList) {
+type CallbackDependencyList = Parameters<typeof React.useCallback>[1];
+type MemoDependencyList = Parameters<typeof React.useMemo>[1];
+
+function checkDeps(deps: EffectDependencyList) {
   if (!deps || !deps.length) {
     throw new Error(
       'useDeepCompareEffect should not be used with no dependencies. Use React.useEffect instead.',
@@ -33,7 +36,6 @@ export function useDeepCompareMemoize<T>(value: T) {
   const ref = React.useRef<T>(value);
   const signalRef = React.useRef<number>(0);
 
-  console.log(JSON.stringify(value), JSON.stringify(ref.current));
   if (!deepEqual(value, ref.current)) {
     ref.current = value;
     signalRef.current += 1;
@@ -43,9 +45,9 @@ export function useDeepCompareMemoize<T>(value: T) {
   return React.useMemo(() => ref.current, [signalRef.current]);
 }
 
-function useDeepCompareEffect(
+export function useDeepCompareEffect(
   callback: EffectCallback,
-  dependencies: DependencyList,
+  dependencies: EffectDependencyList,
 ): UseEffectReturn {
   if (process.env.NODE_ENV !== 'production') {
     checkDeps(dependencies);
@@ -56,10 +58,52 @@ function useDeepCompareEffect(
 
 export function useDeepCompareEffectNoCheck(
   callback: EffectCallback,
-  dependencies: DependencyList,
+  dependencies: EffectDependencyList,
 ): UseEffectReturn {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return React.useEffect(callback, useDeepCompareMemoize(dependencies));
 }
 
-export default useDeepCompareEffect;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function useDeepCompareCallback<T extends Function>(
+  callback: T,
+  dependencies: CallbackDependencyList,
+): T {
+  if (process.env.NODE_ENV !== 'production') {
+    checkDeps(dependencies);
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return React.useCallback(callback, useDeepCompareMemoize(dependencies));
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function useDeepCompareCallbackNoCheck<T extends Function>(
+  callback: T,
+  dependencies: CallbackDependencyList,
+): T {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return React.useCallback(callback, useDeepCompareMemoize(dependencies));
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function useDeepCompareMemo<T>(
+  factory: () => T,
+  dependencies: MemoDependencyList,
+): T {
+  if (process.env.NODE_ENV !== 'production') {
+    checkDeps(dependencies);
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return React.useMemo(factory, useDeepCompareMemoize(dependencies));
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function useDeepCompareMemoNoCheck<T>(
+  factory: () => T,
+  dependencies: MemoDependencyList,
+): T {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return React.useMemo(factory, useDeepCompareMemoize(dependencies));
+}
