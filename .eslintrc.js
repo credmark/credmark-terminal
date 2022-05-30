@@ -48,11 +48,7 @@ module.exports = {
       'warn',
       {
         additionalHooks:
-          'useDeepCompareEffect\
-          |useDeepCompareEffectNoCheck\
-          |useDeepCompareCallback\
-          |useDeepCompareCallbackNoCheck\
-          |useCallbackRef',
+          'useDeepCompareEffect|useDeepCompareEffectNoCheck|useDeepCompareCallback|useDeepCompareCallbackNoCheck|useCallbackRef',
       },
     ],
   },
