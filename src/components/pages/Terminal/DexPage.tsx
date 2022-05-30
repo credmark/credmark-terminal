@@ -7,7 +7,6 @@ import {
   Grid,
   GridItem,
   HStack,
-  Select,
 } from '@chakra-ui/react';
 import { Currency } from '@uniswap/sdk-core';
 import React, { useMemo, useState } from 'react';
@@ -97,7 +96,7 @@ export default function DexPage({ dex, pools }: DexPageProps) {
   return (
     <Container p="8" maxW="full">
       <Flex align="center">
-        <Select
+        {/* <Select
           w="200px"
           mr="4"
           variant="filled"
@@ -106,7 +105,7 @@ export default function DexPage({ dex, pools }: DexPageProps) {
           borderColor="gray.100"
         >
           <option>TVL</option>
-        </Select>
+        </Select> */}
         <TokenRadioGroup
           flex="1"
           tokens={tokens}
