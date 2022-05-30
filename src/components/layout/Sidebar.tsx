@@ -188,11 +188,15 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
 
       { label: 'Financial Metrics', isHeader: true },
       { label: 'Protocol Analytics', isDisabled: true },
-      { label: 'Sharpe Ratio', isDisabled: true },
+      { label: 'Sharpe Ratio', href: '/terminal/sharpe' },
 
       { label: 'Lenders', isHeader: true },
       { label: 'Lenders', href: '/terminal/lenders' },
-      { label: 'Lending Usage', href: '/terminal/lenders/pool-usage' },
+      { label: 'Lending Usage AAVE', href: '/terminal/lenders/aave-usage' },
+      {
+        label: 'Lending Usage Compound',
+        href: '/terminal/lenders/compound-usage',
+      },
 
       {
         label: 'DEXs',
