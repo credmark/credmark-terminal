@@ -285,12 +285,7 @@ export default function HistoricalChart({
           // rotate: 22.5,
           rich: {
             bold: {
-              // fontStyle: 'italic',
               fontWeight: 'bold',
-              // fontSize: 10,
-              // // opacity: 0.8,
-              // color: '#3B0065',
-              // height: 8,
             },
           },
         },
@@ -298,9 +293,11 @@ export default function HistoricalChart({
       yAxis: {
         type: 'value',
         min: function (value: { min: number }) {
+          if (value.min < 0) return value.min * 1.25;
           return value.min * 0.75;
         },
         max: function (value: { max: number }) {
+          if (value.max < 0) return value.max * 0.75;
           return value.max * 1.25;
         },
         boundaryGap: false,
@@ -426,14 +423,16 @@ export default function HistoricalChart({
         {error && (
           <ChartOverlay>
             <Text
+              as="pre"
               bg="red.50"
               color="red.600"
               p="4"
               rounded="md"
               fontSize="xs"
               w="100%"
+              whiteSpace="break-spaces"
             >
-              <pre>{error}</pre>
+              {error}
             </Text>
           </ChartOverlay>
         )}
