@@ -1,6 +1,7 @@
 import { useCallbackRef } from '@chakra-ui/react';
 import axios, { AxiosResponse } from 'axios';
-import { useEffect, useMemo, useState } from 'react';
+import { Duration } from 'luxon';
+import { useCallback, useMemo, useState } from 'react';
 
 import {
   ModelRunError,
@@ -8,9 +9,9 @@ import {
   ModelSeriesOutput,
 } from '~/types/model';
 
-import { useDeepCompareCallback } from './useDeepCompare';
+import { useDeepCompareEffect } from './useDeepCompare';
 
-interface ModelRunnerCallbackProps<I> {
+export interface ModelRunnerCallbackProps<I> {
   slug: string;
   version?: string;
   chainId?: number;
@@ -18,16 +19,18 @@ interface ModelRunnerCallbackProps<I> {
   input: I;
 }
 
-export function useModelRunnerCallback<I, O>({
-  slug,
-  version,
-  chainId = 1,
-  blockNumber = 'latest',
-  input,
-}: ModelRunnerCallbackProps<I>) {
-  // Using deep compare callback for input equality
-  return useDeepCompareCallback(
-    async (abortSignal?: AbortSignal) => {
+export function useModelRunnerCallback<I, O>() {
+  return useCallback(
+    async (
+      {
+        slug,
+        version,
+        chainId = 1,
+        blockNumber = 'latest',
+        input,
+      }: ModelRunnerCallbackProps<I>,
+      abortSignal?: AbortSignal,
+    ) => {
       const resp: AxiosResponse<ModelRunResponse<O>> = await axios({
         method: 'POST',
         url: 'https://gateway.credmark.com/v1/model/run',
@@ -43,7 +46,7 @@ export function useModelRunnerCallback<I, O>({
 
       return resp.data;
     },
-    [blockNumber, chainId, input, slug, version],
+    [],
   );
 }
 
@@ -52,8 +55,9 @@ interface SimpleModelRunnerProps<I, O> extends ModelRunnerCallbackProps<I> {
 }
 
 interface HistoricalModelRunnerProps<I, O> extends ModelRunnerCallbackProps<I> {
-  window: number; // In days
-  interval: number; // In days
+  window: Duration; // In days
+  interval: Duration; // In days
+  endTime?: Date;
   validateRow?: (output: O) => void;
 }
 
@@ -85,10 +89,15 @@ export function useModelRunner<I, O>(props: ModelRunnerProps<I, O>) {
   const [errorMessage, setErrorMessage] = useState<string>();
   const [output, setOutput] = useState<O | ModelSeriesOutput<O>>();
 
-  const { window, interval, validateRow } = props as HistoricalModelRunnerProps<
-    I,
-    O
-  >;
+  const {
+    validateRow,
+    window: windowDuration,
+    interval: intervalDuration,
+    endTime,
+  } = props as HistoricalModelRunnerProps<I, O>;
+
+  const window = windowDuration?.as('seconds');
+  const interval = intervalDuration?.as('seconds');
 
   const { validateOutput } = props as SimpleModelRunnerProps<I, O>;
 
@@ -97,28 +106,7 @@ export function useModelRunner<I, O>(props: ModelRunnerProps<I, O>) {
     [interval, window],
   );
 
-  const runModel = useModelRunnerCallback<unknown, O | ModelSeriesOutput<O>>(
-    isHistorical
-      ? {
-          slug: 'series.time-window-interval',
-          input: {
-            modelSlug: props.slug,
-            modelInput: props.input,
-            modelVersion: props.version,
-            window,
-            interval,
-          },
-          blockNumber: props.blockNumber,
-          chainId: props.chainId,
-        }
-      : {
-          slug: props.slug,
-          version: props.version,
-          chainId: props.chainId,
-          blockNumber: props.blockNumber,
-          input: props.input,
-        },
-  );
+  const runModel = useModelRunnerCallback<unknown, O | ModelSeriesOutput<O>>();
 
   const validateOutputMemoized = useCallbackRef(
     (output: O | ModelSeriesOutput<O>) => {
@@ -146,13 +134,50 @@ export function useModelRunner<I, O>(props: ModelRunnerProps<I, O>) {
     },
   );
 
-  useEffect(() => {
+  // Using deep compare effect for input object equality
+  useDeepCompareEffect(() => {
     setError(undefined);
     setErrorMessage(undefined);
     setLoading(true);
 
     const abortController = new AbortController();
-    runModel(abortController.signal)
+    runModel(
+      isHistorical
+        ? endTime
+          ? {
+              slug: 'series.time-start-end-interval',
+              input: {
+                modelSlug: props.slug,
+                modelInput: props.input,
+                modelVersion: props.version,
+                start: endTime.valueOf() / 1000 - window,
+                end: endTime.valueOf() / 1000,
+                interval,
+              },
+              blockNumber: props.blockNumber,
+              chainId: props.chainId,
+            }
+          : {
+              slug: 'series.time-window-interval',
+              input: {
+                modelSlug: props.slug,
+                modelInput: props.input,
+                modelVersion: props.version,
+                window,
+                interval,
+              },
+              blockNumber: props.blockNumber,
+              chainId: props.chainId,
+            }
+        : {
+            slug: props.slug,
+            version: props.version,
+            chainId: props.chainId,
+            blockNumber: props.blockNumber,
+            input: props.input,
+          },
+      abortController.signal,
+    )
       .then((resp) => {
         if (resp.error) {
           setError(resp.error);
@@ -180,7 +205,19 @@ export function useModelRunner<I, O>(props: ModelRunnerProps<I, O>) {
     return () => {
       abortController.abort();
     };
-  }, [runModel, validateOutputMemoized]);
+  }, [
+    endTime,
+    interval,
+    isHistorical,
+    props.blockNumber,
+    props.chainId,
+    props.input,
+    props.slug,
+    props.version,
+    runModel,
+    validateOutputMemoized,
+    window,
+  ]);
 
   return { loading, error, errorMessage, output };
 }
