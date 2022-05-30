@@ -2,6 +2,7 @@ import { Box, Center, Flex, Icon, Link, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
+import { Duration } from 'luxon';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { MdOpenInNew } from 'react-icons/md';
 
@@ -151,14 +152,13 @@ export default function DexChartBox({
   const varModel = useModelRunner<typeof varInput, VarModelOutput>({
     slug: 'finance.var-dex-lp',
     input: varInput,
-    window:
-      Math.min(
+    window: Duration.fromObject({
+      days: Math.min(
         90,
         Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
-      ) *
-      24 *
-      3600,
-    interval: 24 * 3600,
+      ),
+    }),
+    interval: Duration.fromObject({ days: 1 }),
   });
 
   const varChart = useSingleLineChart({
