@@ -53,11 +53,11 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
         <HStack spacing="4" display={{ base: 'none', lg: 'flex' }}>
           <Link
             color="white"
-            href="https://docs.credmark.com/dealing-with-risks/"
+            href="https://docs.credmark.com/credmark-wiki/"
             isExternal
             aria-label="Risk Library"
           >
-            Risk library
+            Credmark Wiki
           </Link>
 
           <Web3Status />
@@ -98,11 +98,11 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
         >
           <Link
             color="white"
-            href="https://docs.credmark.com/dealing-with-risks/"
+            href="https://docs.credmark.com/credmark-wiki/"
             isExternal
             aria-label="Risk Library"
           >
-            Risk Library
+            Credmark Wiki
           </Link>
           <Web3Status />
         </HStack>
