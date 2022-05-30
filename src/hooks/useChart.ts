@@ -3,20 +3,28 @@ import { useCallback, useMemo, useState } from 'react';
 import { ChartLine, CsvData, CsvRow } from '~/types/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
-import { useDeepCompareEffectNoCheck } from './useDeepCompare';
+import { useDeepCompareEffect } from './useDeepCompare';
 
 interface UseLineChartProps {
-  defaultLines?: ChartLine[];
+  lines?: ChartLine[];
   formatter?: 'currency' | 'number';
   fractionDigits?: number;
+  loading: boolean;
+  error: string | undefined;
 }
 
-function useLineChart({
-  defaultLines = [],
+export function useLineChart({
+  lines: _lines = [],
   formatter,
   fractionDigits = 2,
+  loading,
+  error,
 }: UseLineChartProps) {
-  const [lines, setLines] = useState<ChartLine[]>(defaultLines);
+  const [lines, setLines] = useState<ChartLine[]>(_lines);
+
+  useDeepCompareEffect(() => {
+    setLines(_lines);
+  }, [_lines]);
 
   const formatValue = useCallback(
     (value: number) => {
@@ -85,7 +93,7 @@ function useLineChart({
     return { data, headers };
   }, [formatValue, lines]);
 
-  return { lines, setLines, currentStats, formatValue, csv };
+  return { lines, currentStats, formatValue, csv, loading, error };
 }
 
 interface UseSingleLineChartProps {
@@ -104,39 +112,27 @@ export function useSingleLineChart({
   data,
   formatter,
   fractionDigits,
-  loading,
-  error,
+  loading: _loading,
+  error: _error,
 }: UseSingleLineChartProps) {
   const sortedData = [...(data || [])]?.sort(
     (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
   );
 
-  const { lines, currentStats, setLines, formatValue, csv } = useLineChart({
-    defaultLines: [
-      {
-        name,
-        color,
-        data: sortedData,
-      },
-    ],
-    formatter,
-    fractionDigits,
-  });
-
-  const setLine = useCallback(
-    (line: ChartLine | undefined) => {
-      setLines(line ? [line] : []);
-    },
-    [setLines],
-  );
-
-  useDeepCompareEffectNoCheck(() => {
-    setLine({
-      name,
-      color,
-      data: sortedData,
+  const { lines, currentStats, formatValue, csv, loading, error } =
+    useLineChart({
+      lines: [
+        {
+          name,
+          color,
+          data: sortedData,
+        },
+      ],
+      formatter,
+      fractionDigits,
+      loading: _loading,
+      error: _error,
     });
-  }, [color, sortedData, name, setLine]);
 
   return {
     lines,
