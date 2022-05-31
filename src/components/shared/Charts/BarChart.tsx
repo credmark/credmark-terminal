@@ -4,13 +4,10 @@ import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
-type ChartData = Array<{
-  category: string;
-  value: number;
-}>;
+import { BarChartData } from '~/types/chart';
 
 interface BarChartProps {
-  data?: ChartData;
+  data?: BarChartData;
   loading?: boolean;
   title?: string;
   titleImg?: string;
@@ -29,52 +26,57 @@ export default function BarChart({
   onClick,
 }: BarChartProps) {
   const option: EChartsOption = useMemo(
-    () => ({
-      grid: {
-        top: 16,
-        bottom: 48,
-        left: 16,
-        right: 16,
-      },
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow',
+    () =>
+      ({
+        grid: {
+          top: 16,
+          bottom: 48,
+          left: 16,
+          right: 16,
         },
-      },
-      legend: {},
-      xAxis: {
-        type: 'value',
-        boundaryGap: [0, 0.01],
-      },
-      yAxis: {
-        type: 'category',
-        data: data?.map((datum) => datum.category),
-        axisLabel: {
-          show: false,
-        },
-        inverse: true,
-      },
-      series: [
-        {
-          realtimeSort: true,
-          name: title,
-          label: {
-            show: true,
-            rotate: 0,
-            align: 'left',
-            verticalAlign: 'middle',
-            position: 'insideLeft',
-            distance: 15,
-            formatter: '{b} {c}',
-            color: 'black',
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow',
           },
-          type: 'bar',
-          data: data?.map((datum) => datum.value),
-          color: '#00D696',
         },
-      ],
-    }),
+        legend: {},
+        xAxis: {
+          type: 'value',
+          boundaryGap: [0, 0.01],
+        },
+        yAxis: {
+          type: 'category',
+          data: data?.map((datum) => datum.category),
+          axisLabel: {
+            show: false,
+          },
+          inverse: true,
+        },
+        series: [
+          {
+            realtimeSort: true,
+            name: title,
+            label: {
+              show: true,
+              rotate: 0,
+              align: 'left',
+              verticalAlign: 'middle',
+              position: 'insideLeft',
+              distance: 15,
+              formatter: (params) => {
+                return `${params.name} ${new Intl.NumberFormat().format(
+                  params.value as number,
+                )}`;
+              },
+              color: 'black',
+            },
+            type: 'bar',
+            data: data?.map((datum) => datum.value),
+            color: '#00D696',
+          },
+        ],
+      } as EChartsOption),
     [data, title],
   );
 

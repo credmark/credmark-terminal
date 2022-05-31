@@ -17,3 +17,8 @@ export interface CsvData {
   headers: string[];
   data: CsvRow[];
 }
+
+export type BarChartData = Array<{
+  category: string;
+  value: number;
+}>;

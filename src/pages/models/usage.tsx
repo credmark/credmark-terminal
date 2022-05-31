@@ -24,7 +24,7 @@ import BarChart from '~/components/shared/Charts/BarChart';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import SearchSelect from '~/components/shared/Form/SearchSelect';
 import SEOHeader from '~/components/shared/SEOHeader';
-import { Aggregator, ChartLine } from '~/types/chart';
+import { Aggregator, BarChartData, ChartLine } from '~/types/chart';
 import { aggregateData } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
@@ -34,6 +34,12 @@ interface ModelUsage {
   slug: string;
   version: string;
   count: string;
+}
+
+type Stat = 'min' | 'max' | 'mean' | 'median';
+interface Runtime extends Record<Stat, number> {
+  slug: string;
+  version: string;
 }
 
 export default function ModelUsagePage() {
@@ -46,6 +52,9 @@ export default function ModelUsagePage() {
   const [aggregationInterval, setAggregationInterval] = useState(1); // In Days
   const [aggregator, setAggregator] = useState<Aggregator>('sum');
 
+  const [runtimes, setRuntimes] = useState<Runtime[]>([]);
+  const [stat, setStat] = useState<Stat>('mean');
+
   const color = '#3B0065';
   const ALL_MODELS = 'All Models';
 
@@ -53,12 +62,12 @@ export default function ModelUsagePage() {
     setLoading(true);
 
     const abortController = new AbortController();
-    axios({
-      method: 'GET',
-      signal: abortController.signal,
-      url: 'https://gateway.credmark.com/v1/usage/requests',
-    })
-      .then((resp) => {
+    Promise.all([
+      axios({
+        method: 'GET',
+        signal: abortController.signal,
+        url: 'https://gateway.credmark.com/v1/usage/requests',
+      }).then((resp) => {
         const list = resp.data as ModelUsage[];
         const slugLineMap: Record<string, ChartLine> = {};
         const allModelsDataMap: Record<number, ChartLine['data'][0]> = {};
@@ -105,10 +114,18 @@ export default function ModelUsagePage() {
           },
           ...Object.values(slugLineMap),
         ]);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      }),
+
+      axios({
+        method: 'GET',
+        signal: abortController.signal,
+        url: 'https://gateway.credmark.com/v1/model/runtime-stats',
+      }).then((resp) => {
+        setRuntimes(resp.data.runtimes);
+      }),
+    ]).finally(() => {
+      setLoading(false);
+    });
 
     return () => {
       abortController.abort();
@@ -116,7 +133,7 @@ export default function ModelUsagePage() {
   }, []);
 
   const barChartData = useMemo(() => {
-    const data: Array<{ category: string; value: number }> = [];
+    const data: BarChartData = [];
     for (const line of lines) {
       if (line.name === ALL_MODELS) {
         continue;
@@ -145,6 +162,13 @@ export default function ModelUsagePage() {
 
     return data;
   }, [aggregationInterval, aggregator, barChartDate, lines]);
+
+  const runtimeBarChartData = useMemo<BarChartData>(() => {
+    return runtimes.map((runtime) => ({
+      category: runtime.slug,
+      value: runtime[stat],
+    }));
+  }, [runtimes, stat]);
 
   const allModelsUsage = useMemo(() => {
     if (!barChartDate) {
@@ -299,6 +323,44 @@ export default function ModelUsagePage() {
             height={Math.max(barChartData.length * 32, 300)}
             padding={0}
             onClick={(slug) => setSlug(slug)}
+          />
+        </Card>
+        <Card mt="8">
+          <Heading as="h2" fontSize="3xl" mb="8">
+            Individual Model Runtime Stats
+          </Heading>
+          <Stack direction={{ base: 'column', lg: 'row' }} mb="4" spacing="4">
+            <Spacer />
+            <Menu>
+              <MenuButton
+                alignSelf="center"
+                as={Button}
+                variant="outline"
+                colorScheme="gray"
+                size="sm"
+                leftIcon={<Icon as={MdSettings} />}
+              >
+                Stat
+              </MenuButton>
+              <MenuList minWidth="240px">
+                <MenuOptionGroup
+                  type="radio"
+                  value={stat}
+                  onChange={(value) => setStat(value as Stat)}
+                >
+                  <MenuItemOption value="min">Min</MenuItemOption>
+                  <MenuItemOption value="max">Max</MenuItemOption>
+                  <MenuItemOption value="mean">Mean</MenuItemOption>
+                  <MenuItemOption value="median">Median</MenuItemOption>
+                </MenuOptionGroup>
+              </MenuList>
+            </Menu>
+          </Stack>
+          <BarChart
+            loading={loading}
+            data={runtimeBarChartData}
+            height={Math.max(runtimeBarChartData.length * 32, 300)}
+            padding={0}
           />
         </Card>
       </Container>
