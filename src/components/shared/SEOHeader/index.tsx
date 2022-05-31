@@ -35,7 +35,7 @@ const SEOHeader = ({
             alt: 'Credmark',
           },
         ],
-        site_name: 'GaryMeehan.ie',
+        site_name: 'app.credmark.com',
         defaultImageWidth: 1200,
         defaultImageHeight: 630,
       }}
