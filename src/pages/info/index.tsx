@@ -1,58 +1,60 @@
-import { Box, Container, Spinner, Grid } from '@chakra-ui/react';
+import { Container, Grid, Icon, Link } from '@chakra-ui/react';
 import React from 'react';
+import { MdArrowForward } from 'react-icons/md';
 
-import {
-  CmkMarketStatistics,
-  CmkSupplyDistributions,
-} from '~/components/pages/Analytics';
-import AreaChart from '~/components/shared/Charts/Area';
+import { CmkSupplyDistributions } from '~/components/pages/Analytics';
+import AnalyticsChartBox from '~/components/pages/Analytics/AnalyticsChartBox';
 import SEOHeader from '~/components/shared/SEOHeader';
 import {
   useCmkAnalyticsData,
   useStakedCmkAnalyticsData,
 } from '~/hooks/useAnalyticsData';
-import { shortenNumber } from '~/utils/formatTokenAmount';
 
-interface LoadingOrShowDataProps {
-  loading: boolean;
-  hasData: boolean;
-  children: React.ReactNode;
+interface MarketInfo {
+  app: 'uniswap_v3' | 'sushiswap';
+  address: string;
+  label: string;
+  titleImg: string;
 }
-const LoadingOrShowData = ({
-  loading,
-  hasData,
-  children,
-}: LoadingOrShowDataProps) => {
-  if (loading || !hasData) {
-    return (
-      <Box
-        bg="white"
-        minWidth="320px"
-        width="100%"
-        height="400px"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        border="1px"
-        borderColor="gray.100"
-        shadow="md"
-        rounded="base"
-      >
-        <Spinner />
-      </Box>
-    );
-  }
-  return <>{children}</>;
-};
+
+const MARKETS: MarketInfo[] = [
+  {
+    app: 'uniswap_v3',
+    address: '0xf7a716e2df2bde4d0ba7656c131b06b1af68513c',
+    label: 'Uniswap (CMK-USDC)',
+    titleImg: '/img/cmk-usd.svg',
+  },
+  {
+    app: 'uniswap_v3',
+    address: '0x59e1f901b5c33ff6fae15b61684ebf17cca7b9b3',
+    label: 'Uniswap (CMK-ETH)',
+    titleImg: '/img/cmk-eth.svg',
+  },
+  {
+    app: 'sushiswap',
+    address: '0x3349217670f9aa55c5640a2b3d806654d27d0569',
+    label: 'Sushiswap (CMK-WETH)',
+    titleImg: '/img/cmk-eth.svg',
+  },
+  {
+    app: 'sushiswap',
+    address: '0xb7b42c9145435ef2432620af3bf82b7734704c75',
+    label: 'Sushiswap (CMK-USDC)',
+    titleImg: '/img/cmk-usd.svg',
+  },
+];
 
 export default function AnalyticsPage() {
   const cmkAnalytics = useCmkAnalyticsData(90);
   const stakedCmkAnalytics = useStakedCmkAnalyticsData(90);
 
-  const latestData = cmkAnalytics.data?.sort((a, b) => b.ts - a.ts)[0];
-  const lateststakedCmkData = stakedCmkAnalytics.data?.sort(
-    (a, b) => b.ts - a.ts,
-  )[0];
+  function getMarketLink(market: MarketInfo) {
+    if (market.app === 'sushiswap') {
+      return `https://analytics.sushi.com/pairs/${market.address}`;
+    } else if (market.app === 'uniswap_v3') {
+      return `https://info.uniswap.org/#/pools/${market.address}`;
+    }
+  }
 
   return (
     <>
@@ -64,217 +66,172 @@ export default function AnalyticsPage() {
           mt="6"
           mb="16"
         >
-          <LoadingOrShowData
+          <AnalyticsChartBox
+            title="Price of CMK"
+            titleImg="/img/cmk.svg"
+            name="Current Price"
             loading={cmkAnalytics.loading}
-            hasData={!!cmkAnalytics.data}
-          >
-            <AreaChart
-              lineColor="#825F96"
-              data={
-                cmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.usdc_price),
-                })) ?? []
-              }
-              headerSummary="Current Price:"
-              headerAmount={`$${Number(latestData?.usdc_price ?? 0).toFixed(
-                2,
-              )}`}
-              title="Price of CMK"
+            data={
+              cmkAnalytics.data?.map((val) => ({
+                timestamp: new Date(val.ts * 1000),
+                value: Number(val.usdc_price),
+              })) ?? []
+            }
+            color="#825F96"
+            formatter="currency"
+            fractionDigits={2}
+          />
+          <AnalyticsChartBox
+            title="Staked CMK"
+            titleImg="/img/xcmk.svg"
+            name="Amount Staked"
+            loading={stakedCmkAnalytics.loading}
+            data={
+              stakedCmkAnalytics.data?.map((val) => ({
+                timestamp: new Date(val.ts * 1000),
+                value: Number(val.amount_staked_usdc),
+              })) ?? []
+            }
+            color="#DB197699"
+            formatter="currency"
+            fractionDigits={2}
+            isArea
+          />
+          <AnalyticsChartBox
+            title="CMK Holders"
+            titleImg="/img/holder.svg"
+            name="Wallets"
+            loading={cmkAnalytics.loading}
+            data={
+              cmkAnalytics.data?.map((val) => ({
+                timestamp: new Date(val.ts * 1000),
+                value: Number(val.total_holders),
+              })) ?? []
+            }
+            color="#825F96"
+            formatter="number"
+            fractionDigits={0}
+            isArea
+          />
+          <AnalyticsChartBox
+            title="Staked Wallets"
+            titleImg="/img/wallet.svg"
+            name="Wallets"
+            loading={stakedCmkAnalytics.loading}
+            data={
+              stakedCmkAnalytics.data?.map((val) => ({
+                timestamp: new Date(val.ts * 1000),
+                value: Number(val.total_holders),
+              })) ?? []
+            }
+            color="#DB197699"
+            formatter="number"
+            fractionDigits={0}
+            isArea
+          />
+          <AnalyticsChartBox
+            title="CMK 24hr Trading Volume"
+            titleImg="/img/cmk.svg"
+            name="Total Volume"
+            loading={cmkAnalytics.loading}
+            data={
+              cmkAnalytics.data?.map((val) => ({
+                timestamp: new Date(val.ts * 1000),
+                value: Number(val.volume_24h) * Number(val.usdc_price),
+              })) ?? []
+            }
+            color="#825F96"
+            formatter="number"
+            fractionDigits={0}
+          />
+          <AnalyticsChartBox
+            title="Avg CMK Staked per Wallet"
+            titleImg="/img/xcmk.svg"
+            name="CMK"
+            loading={stakedCmkAnalytics.loading}
+            data={
+              stakedCmkAnalytics.data?.map((val) => ({
+                timestamp: new Date(val.ts * 1000),
+                value: Number(val.cmk_balance) / Number(val.total_holders),
+              })) ?? []
+            }
+            color="#DB197699"
+            formatter="currency"
+            fractionDigits={2}
+            isArea
+          />
+
+          {cmkAnalytics.data && stakedCmkAnalytics.data && (
+            <CmkSupplyDistributions
               titleImg="/img/cmk.svg"
-              gradient={['#08538C', '#3B0065']}
-              line
-              formatValue={(val) => '$' + val.toFixed(2)}
-              yLabel="PRICE"
-              height={380}
-              durations={[30, 60, 90]}
-              defaultDuration={60}
+              cmkData={cmkAnalytics.data[cmkAnalytics.data.length - 1]}
+              xcmkData={
+                stakedCmkAnalytics.data[stakedCmkAnalytics.data.length - 1]
+              }
+              loading={cmkAnalytics.loading || stakedCmkAnalytics.loading}
             />
-          </LoadingOrShowData>
-          <LoadingOrShowData
+          )}
+          <AnalyticsChartBox
+            title="XCMK APR"
+            titleImg="/img/xcmk.svg"
+            name="Current APR"
             loading={stakedCmkAnalytics.loading}
-            hasData={!!stakedCmkAnalytics.data}
-          >
-            <AreaChart
-              data={
-                stakedCmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.amount_staked_usdc),
-                })) ?? []
-              }
-              headerSummary="Amount Staked:"
-              headerAmount={`$${shortenNumber(
-                Number(lateststakedCmkData?.amount_staked_usdc),
-                0,
-              )}`}
-              title="Staked CMK"
-              titleImg="/img/xcmk.svg"
-              lineColor="#DB197699"
-              gradient={['#e215691a', '#ffffff']}
-              formatValue={(val) => '$' + shortenNumber(val, 2)}
-              yLabel="AMOUNT STAKED"
-              height={380}
-              durations={[30, 60, 90]}
-              defaultDuration={60}
-            />
-          </LoadingOrShowData>
+            data={
+              stakedCmkAnalytics.data?.map((val) => ({
+                timestamp: new Date(val.ts * 1000),
+                value: Number(val.staking_apr_percent),
+              })) ?? []
+            }
+            color="#DB197699"
+            formatter="percent"
+            fractionDigits={2}
+          />
 
-          <LoadingOrShowData
-            loading={cmkAnalytics.loading}
-            hasData={!!cmkAnalytics.data}
-          >
-            <AreaChart
+          {MARKETS.map((market) => (
+            <AnalyticsChartBox
+              key={market.address}
+              title={market.label}
+              titleImg={market.titleImg}
+              name="24hr Volume"
+              loading={cmkAnalytics.loading}
               data={
-                cmkAnalytics.data?.map((val) => ({
+                (cmkAnalytics.data ?? []).map((val) => ({
                   timestamp: new Date(val.ts * 1000),
-                  value: Number(val.total_holders),
+                  value:
+                    Number(
+                      val.markets.find(
+                        (vm) =>
+                          vm.address.toLowerCase() ===
+                          market.address.toLowerCase(),
+                      )?.volume_24h ?? '0',
+                    ) * Number(val.usdc_price),
                 })) ?? []
               }
-              headerSummary="Wallets:"
-              headerAmount={`${shortenNumber(
-                Number(latestData?.total_holders),
-                0,
-              )}`}
-              title="CMK Holders"
-              titleImg="/img/holder.svg"
-              lineColor="#825F96"
-              gradient={['#5b009033', '#ffffff']}
-              formatValue={(val) => val.toFixed(0)}
-              yLabel="HOLDERS"
-              height={380}
-              durations={[30, 60, 90]}
-              defaultDuration={60}
-            />
-          </LoadingOrShowData>
-          <LoadingOrShowData
-            loading={stakedCmkAnalytics.loading}
-            hasData={!!stakedCmkAnalytics.data}
-          >
-            <AreaChart
-              data={
-                stakedCmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.total_holders),
-                })) ?? []
+              color="#825F96"
+              formatter="currency"
+              fractionDigits={2}
+              footer={
+                <Link
+                  isExternal
+                  display="flex"
+                  alignItems="center"
+                  fontSize="sm"
+                  color="purple.500"
+                  href={getMarketLink(market)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View on{' '}
+                  {
+                    { uniswap_v3: 'Uniswap', sushiswap: 'Sushiswap' }[
+                      market.app
+                    ]
+                  }
+                  <Icon cursor="pointer" as={MdArrowForward} />
+                </Link>
               }
-              headerSummary="Wallets:"
-              headerAmount={`${shortenNumber(
-                Number(lateststakedCmkData?.total_holders),
-                0,
-              )}`}
-              title="STAKED WALLETS"
-              titleImg="/img/wallet.svg"
-              lineColor="#DB197699"
-              gradient={['#e215691a', '#ffffff']}
-              formatValue={(val) => val.toFixed(0)}
-              yLabel="WALLETS"
-              height={380}
-              durations={[30, 60, 90]}
-              defaultDuration={60}
             />
-          </LoadingOrShowData>
-
-          <LoadingOrShowData
-            loading={cmkAnalytics.loading}
-            hasData={!!cmkAnalytics.data}
-          >
-            <AreaChart
-              data={
-                cmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.volume_24h) * Number(val.usdc_price),
-                })) ?? []
-              }
-              headerSummary="Total Volume:"
-              headerAmount={`$${shortenNumber(
-                Number(latestData?.volume_24h),
-                0,
-              )}`}
-              title="CMK 24hr Trading Volume"
-              titleImg="/img/cmk.svg"
-              lineColor="#825F96"
-              gradient={['#5b009033', '#ffffff']}
-              formatValue={(val) => '$' + shortenNumber(val, 2)}
-              yLabel="TOTAL VOLUME"
-              height={380}
-              durations={[30, 60, 90]}
-              defaultDuration={60}
-              line
-            />
-          </LoadingOrShowData>
-          <LoadingOrShowData
-            loading={stakedCmkAnalytics.loading}
-            hasData={!!stakedCmkAnalytics.data}
-          >
-            <AreaChart
-              data={
-                stakedCmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.cmk_balance) / Number(val.total_holders),
-                })) ?? []
-              }
-              headerSummary="CMK:"
-              headerAmount={`$${shortenNumber(
-                Number(lateststakedCmkData?.cmk_balance) /
-                  Number(lateststakedCmkData?.total_holders),
-                0,
-              )}`}
-              title="Avg CMK Staked per Wallet"
-              titleImg="/img/xcmk.svg"
-              lineColor="#DB197699"
-              gradient={['#e215691a', '#ffffff']}
-              formatValue={(val) => shortenNumber(val, 2)}
-              yLabel="AMOUNT"
-              height={380}
-              durations={[30, 60, 90]}
-              defaultDuration={60}
-            />
-          </LoadingOrShowData>
-
-          <LoadingOrShowData
-            loading={cmkAnalytics.loading}
-            hasData={!!(cmkAnalytics.data && stakedCmkAnalytics.data)}
-          >
-            {cmkAnalytics.data && stakedCmkAnalytics.data && (
-              <CmkSupplyDistributions
-                titleImg="/img/cmk.svg"
-                cmkData={cmkAnalytics.data[cmkAnalytics.data.length - 1]}
-                xcmkData={
-                  stakedCmkAnalytics.data[stakedCmkAnalytics.data.length - 1]
-                }
-              />
-            )}
-          </LoadingOrShowData>
-          <LoadingOrShowData
-            loading={stakedCmkAnalytics.loading}
-            hasData={!!stakedCmkAnalytics.data}
-          >
-            <AreaChart
-              data={
-                stakedCmkAnalytics.data?.map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value: Number(val.staking_apr_percent),
-                })) ?? []
-              }
-              headerSummary="Current APR:"
-              headerAmount={`${shortenNumber(
-                Number(lateststakedCmkData?.staking_apr_percent),
-                0,
-              )}%`}
-              title="XCMK APR"
-              titleImg="/img/xcmk.svg"
-              lineColor="#DB197699"
-              gradient={['#e215691a', '#ffffff']}
-              formatValue={(val) => val.toFixed(2) + '%'}
-              yLabel="AMOUNT"
-              height={380}
-              durations={[30, 60, 90]}
-              defaultDuration={60}
-              line
-            />
-          </LoadingOrShowData>
-
-          <CmkMarketStatistics data={cmkAnalytics.data ?? []} />
+          ))}
         </Grid>
       </Container>
     </>
