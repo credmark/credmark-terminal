@@ -4,6 +4,7 @@ import {
   Button,
   Center,
   chakra,
+  Grid,
   HStack,
   Icon,
   Menu,
@@ -42,6 +43,8 @@ interface HistoricalChartProps extends BoxProps {
   defaultDuration?: number;
   showCurrentStats?: boolean;
   currentStats?: Array<{ label: React.ReactNode; value: string }>;
+
+  isFullScreen?: boolean;
 }
 
 const ChartOverlay = chakra(Center, {
@@ -77,6 +80,7 @@ export default function HistoricalChart({
   showCurrentStats = false,
   currentStats = [],
 
+  isFullScreen = false,
   ...boxProps
 }: HistoricalChartProps): JSX.Element {
   const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
@@ -333,7 +337,13 @@ export default function HistoricalChart({
     lines.reduce((dataLength, line) => dataLength + line.data.length, 0) === 0;
 
   return (
-    <Box {...boxProps}>
+    <Grid
+      gridTemplateRows={`${
+        Array.isArray(durations) || showCurrentStats ? 'max-content ' : ''
+      }${isFullScreen ? '1fr' : height + 'px'}`}
+      overflow="hidden"
+      {...boxProps}
+    >
       {(Array.isArray(durations) || showCurrentStats) && (
         <HStack align="center" p="2">
           {showCurrentStats &&
@@ -411,7 +421,7 @@ export default function HistoricalChart({
           lazyUpdate={true}
           notMerge={true}
           style={{
-            height: height + 'px',
+            height: isFullScreen ? '100%' : height + 'px',
           }}
           onChartReady={onChartReady}
         />
@@ -437,6 +447,6 @@ export default function HistoricalChart({
           </ChartOverlay>
         )}
       </Box>
-    </Box>
+    </Grid>
   );
 }
