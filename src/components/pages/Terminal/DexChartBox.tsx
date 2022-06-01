@@ -237,11 +237,11 @@ export default function DexChartBox({
                 borderTop="2px"
                 borderRight="2px"
                 borderColor="gray.100"
-                p="4"
+                p="2"
                 flexDirection="column"
               >
                 <Text fontSize="sm">{tvlChart.currentStats[0].label}</Text>
-                <Text fontSize="2xl" fontWeight="medium">
+                <Text fontSize="lg" fontWeight="medium">
                   {tvlChart.currentStats[0].value}
                 </Text>
               </Center>
@@ -251,11 +251,11 @@ export default function DexChartBox({
                 borderTop="2px"
                 borderRight="2px"
                 borderColor="gray.100"
-                p="4"
+                p="2"
                 flexDirection="column"
               >
                 <Text fontSize="sm">{volumeChart.currentStats[0].label}</Text>
-                <Text fontSize="2xl" fontWeight="medium">
+                <Text fontSize="lg" fontWeight="medium">
                   {volumeChart.currentStats[0].value}
                 </Text>
               </Center>

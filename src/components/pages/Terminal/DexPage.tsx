@@ -7,9 +7,12 @@ import {
   Grid,
   GridItem,
   HStack,
+  Skeleton,
 } from '@chakra-ui/react';
 import { Currency } from '@uniswap/sdk-core';
 import React, { useMemo, useState } from 'react';
+
+import LazyLoad from '~/components/shared/LazyLoad';
 
 import DexChartBox from './DexChartBox';
 
@@ -128,18 +131,20 @@ export default function DexPage({ dex, pools }: DexPageProps) {
               colSpan={expandedPool === pool ? 2 : 1}
               key={pool}
             >
-              <DexChartBox
-                dex={dex}
-                pool={pool}
-                tokens={tokens}
-                createdAt={createdAt}
-                isExpanded={expandedPool === pool}
-                onExpand={() =>
-                  expandedPool === pool
-                    ? setExpandedPool(undefined)
-                    : setExpandedPool(pool)
-                }
-              />
+              <LazyLoad placeholder={<Skeleton height="400px" />}>
+                <DexChartBox
+                  dex={dex}
+                  pool={pool}
+                  tokens={tokens}
+                  createdAt={createdAt}
+                  isExpanded={expandedPool === pool}
+                  onExpand={() =>
+                    expandedPool === pool
+                      ? setExpandedPool(undefined)
+                      : setExpandedPool(pool)
+                  }
+                />
+              </LazyLoad>
             </GridItem>
           ))}
       </Grid>
