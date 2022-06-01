@@ -1,7 +1,6 @@
 import {
   Box,
   CloseButton,
-  Flex,
   HStack,
   Icon,
   IconButton,
@@ -28,6 +27,7 @@ import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import { useLineChart } from '~/hooks/useChart';
 import { useDeepCompareEffect } from '~/hooks/useDeepCompare';
+import useFullscreen from '~/hooks/useFullscreen';
 import {
   ModelRunnerCallbackProps,
   useModelRunnerCallback,
@@ -206,14 +206,15 @@ export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
   const containerRef = useRef(null);
 
   const [containerWidth] = useSize(containerRef);
-
-  const [selectedTokens, setSelectedTokens] = useState<string[]>(
-    tokens.slice(0, 3).map((token) => token.address),
-  );
+  const { isFullScreen, toggleFullScreen } = useFullscreen(containerRef);
 
   useLayoutEffect(() => {
     chartRef.current?.resize();
   }, [containerWidth]);
+
+  const [selectedTokens, setSelectedTokens] = useState<string[]>(
+    tokens.slice(0, 3).map((token) => token.address),
+  );
 
   const model = useSharpeRatioModel(selectedTokens);
 
@@ -234,19 +235,8 @@ export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
     fractionDigits: 2,
   });
 
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const toggleFullScreen = () => {
-    if (!isFullScreen) {
-      document?.getElementById('sharpe-chart')?.requestFullscreen();
-      setIsFullScreen(true);
-    } else {
-      document?.exitFullscreen();
-      setIsFullScreen(false);
-    }
-  };
-
   return (
-    <BorderedCard ref={containerRef} id="sharpe-chart">
+    <BorderedCard ref={containerRef} display="flex" flexDirection="column">
       <ChartHeader
         title={'Sharpe Ratio'}
         tooltip={
@@ -356,16 +346,15 @@ export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
           )}
         </HStack>
       </Box>
-      <Flex align="stretch">
-        <HistoricalChart
-          height={600}
-          flex="1"
-          onChartReady={(chart) => (chartRef.current = chart)}
-          durations={[30, 60, 90]}
-          defaultDuration={30}
-          {...sharpeChart}
-        />
-      </Flex>
+      <HistoricalChart
+        flex="1"
+        height={600}
+        onChartReady={(chart) => (chartRef.current = chart)}
+        durations={[30, 60, 90]}
+        defaultDuration={30}
+        isFullScreen={isFullScreen}
+        {...sharpeChart}
+      />
     </BorderedCard>
   );
 }
