@@ -1,4 +1,4 @@
-import { HStack, Icon, Spacer, Text, Flex } from '@chakra-ui/react';
+import { HStack, Icon, Spacer, Text, Flex, Img } from '@chakra-ui/react';
 import React from 'react';
 import { CSVLink } from 'react-csv';
 import {
@@ -51,7 +51,8 @@ const ChartHeader = ({
       borderColor={borderColor || '#DEDEDE'}
       backgroundColor={backgroundColor || 'white'}
     >
-      {logo || <></>}
+      {logo && typeof logo === 'string' && <Img src={logo} alt={title} h="5" />}
+      {logo && typeof logo !== 'string' && <>{logo}</>}
       <Text margin={0} color={textColor || 'gray.900'} fontSize="14px">
         {title}{' '}
       </Text>
