@@ -1,2 +1,2 @@
-export { default as CmkMarketStatistics } from './CmkMarketStatistics';
+export { default as AnalyticsChartBox } from './AnalyticsChartBox';
 export { default as CmkSupplyDistributions } from './CmkSupplyDistributions';

@@ -2,7 +2,7 @@ import { Container } from '@chakra-ui/react';
 import { Token, WETH9 } from '@uniswap/sdk-core';
 import React from 'react';
 
-import SharpeChartBox from '~/components/pages/Terminal/SharpeChartBox';
+import { SharpeChartBox } from '~/components/pages/Terminal';
 import { DAI, USDC, UST, WBTC } from '~/constants/tokens';
 
 const APE = new Token(

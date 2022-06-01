@@ -2,8 +2,10 @@ import { Container, Grid, Icon, Link } from '@chakra-ui/react';
 import React from 'react';
 import { MdArrowForward } from 'react-icons/md';
 
-import { CmkSupplyDistributions } from '~/components/pages/Analytics';
-import AnalyticsChartBox from '~/components/pages/Analytics/AnalyticsChartBox';
+import {
+  AnalyticsChartBox,
+  CmkSupplyDistributions,
+} from '~/components/pages/Analytics';
 import SEOHeader from '~/components/shared/SEOHeader';
 import {
   useCmkAnalyticsData,
