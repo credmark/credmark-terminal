@@ -5,9 +5,11 @@ import { shortenNumber } from '~/utils/formatTokenAmount';
 
 import { useDeepCompareEffect } from './useDeepCompare';
 
+type Formatter = 'currency' | 'number' | 'percent';
+
 interface UseLineChartProps {
   lines?: ChartLine[];
-  formatter?: 'currency' | 'number';
+  formatter?: Formatter;
   fractionDigits?: number;
   loading: boolean;
   error: string | undefined;
@@ -33,6 +35,8 @@ export function useLineChart({
           return '$' + shortenNumber(value, fractionDigits);
         case 'number':
           return shortenNumber(value, fractionDigits);
+        case 'percent':
+          return shortenNumber(value, fractionDigits) + '%';
         default:
           return String(value);
       }
@@ -96,14 +100,14 @@ export function useLineChart({
   return { lines, currentStats, formatValue, csv, loading, error };
 }
 
-interface UseSingleLineChartProps {
+export interface UseSingleLineChartProps {
   name: string;
   color: string;
   data?: ChartLine['data'];
-  formatter?: 'currency' | 'number';
+  formatter?: Formatter;
   fractionDigits?: number;
-  loading: boolean;
-  error: string | undefined;
+  loading?: boolean;
+  error?: string | undefined;
 }
 
 export function useSingleLineChart({
@@ -112,8 +116,8 @@ export function useSingleLineChart({
   data,
   formatter,
   fractionDigits,
-  loading: _loading,
-  error: _error,
+  loading: _loading = false,
+  error: _error = '',
 }: UseSingleLineChartProps) {
   const sortedData = [...(data || [])]?.sort(
     (a, b) => a.timestamp.valueOf() - b.timestamp.valueOf(),
