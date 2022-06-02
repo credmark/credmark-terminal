@@ -9,6 +9,7 @@ import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
+import LoadingNumber from '~/components/shared/LoadingNumber';
 import { useSingleLineChart } from '~/hooks/useChart';
 import { useModelRunner } from '~/hooks/useModel';
 import { ModelSeriesOutput } from '~/types/model';
@@ -139,7 +140,10 @@ export default function DexChartBox({
   });
 
   const varInput = {
-    window: '280 days',
+    window: `${Math.min(
+      30,
+      Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
+    )} days`,
     interval: 10,
     confidences: [0.01],
     lower_range: 0.01,
@@ -227,7 +231,11 @@ export default function DexChartBox({
             >
               <Text fontSize="sm">{varChart.currentStats[0].label}</Text>
               <Text fontSize="3xl" fontWeight="medium">
-                {varChart.currentStats[0].value}
+                {varChart.currentStats[0].value === '-' && varChart.loading ? (
+                  <LoadingNumber />
+                ) : (
+                  varChart.currentStats[0].value
+                )}
               </Text>
             </Center>
             <Flex flex="1">
@@ -242,7 +250,12 @@ export default function DexChartBox({
               >
                 <Text fontSize="sm">{tvlChart.currentStats[0].label}</Text>
                 <Text fontSize="lg" fontWeight="medium">
-                  {tvlChart.currentStats[0].value}
+                  {tvlChart.currentStats[0].value === '-' &&
+                  tvlChart.loading ? (
+                    <LoadingNumber />
+                  ) : (
+                    tvlChart.currentStats[0].value
+                  )}
                 </Text>
               </Center>
               <Center
@@ -256,7 +269,12 @@ export default function DexChartBox({
               >
                 <Text fontSize="sm">{volumeChart.currentStats[0].label}</Text>
                 <Text fontSize="lg" fontWeight="medium">
-                  {volumeChart.currentStats[0].value}
+                  {volumeChart.currentStats[0].value === '-' &&
+                  volumeChart.loading ? (
+                    <LoadingNumber />
+                  ) : (
+                    volumeChart.currentStats[0].value
+                  )}
                 </Text>
               </Center>
             </Flex>

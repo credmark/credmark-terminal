@@ -27,6 +27,8 @@ import { Aggregator, ChartLine } from '~/types/chart';
 import { aggregateData, filterDataByDuration } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
+import LoadingNumber from '../LoadingNumber';
+
 interface HistoricalChartProps extends BoxProps {
   lines: ChartLine[];
   loading?: boolean;
@@ -351,7 +353,7 @@ export default function HistoricalChart({
               <Box key={index} textAlign="left" px="2">
                 <Text fontSize="sm">{label}</Text>
                 <Text fontSize="3xl" fontWeight="medium">
-                  {value}
+                  {value === '-' && loading ? <LoadingNumber /> : value}
                 </Text>
               </Box>
             ))}
