@@ -8,9 +8,9 @@ import {
   Spinner,
   Text,
 } from '@chakra-ui/react';
+import ErrorIcon from '@mui/icons-material/Error';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import React from 'react';
-import { IoWarningSharp } from 'react-icons/io5';
 
 import { injected } from '~/connectors';
 import { SUPPORTED_WALLETS } from '~/constants/wallet';
@@ -35,7 +35,7 @@ export default function PendingView({
       <Box mt="4" mb="2">
         {error ? (
           <Alert status="error" rounded="md">
-            <Icon as={IoWarningSharp} mr="2" color="red.500"></Icon>
+            <Icon as={ErrorIcon} mr="2" color="red.500"></Icon>
             <Text color="red.500">Error connecting</Text>
             <Spacer />
             <Button

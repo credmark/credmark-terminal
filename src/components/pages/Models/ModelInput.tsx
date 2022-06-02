@@ -12,6 +12,9 @@ import {
   Text,
   HStack,
 } from '@chakra-ui/react';
+import AddIcon from '@mui/icons-material/Add';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import RemoveIcon from '@mui/icons-material/Remove';
 import {
   Formik,
   Form,
@@ -22,7 +25,6 @@ import {
   FieldArray,
 } from 'formik';
 import React, { useCallback, useMemo } from 'react';
-import { MdAdd, MdPlayArrow, MdRemove } from 'react-icons/md';
 import * as Yup from 'yup';
 
 import { PrimaryButton } from '~/components/base';
@@ -251,14 +253,14 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
                               <Button
                                 colorScheme="purple"
                                 variant="outline"
-                                leftIcon={<Icon as={MdRemove} />}
+                                leftIcon={<Icon as={RemoveIcon} />}
                                 onClick={() => arrayHelpers.remove(index)}
                               >
                                 Remove
                               </Button>
                               <Button
                                 colorScheme="purple"
-                                leftIcon={<Icon as={MdAdd} />}
+                                leftIcon={<Icon as={AddIcon} />}
                                 onClick={() =>
                                   arrayHelpers.insert(
                                     index,
@@ -279,7 +281,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
                     ) : (
                       <Box>
                         <Button
-                          leftIcon={<Icon as={MdAdd} />}
+                          leftIcon={<Icon as={AddIcon} />}
                           onClick={() =>
                             arrayHelpers.push(
                               computeInitialValues(
@@ -377,7 +379,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
                 type="submit"
                 size="lg"
                 px="16"
-                rightIcon={<Icon as={MdPlayArrow} />}
+                rightIcon={<Icon as={PlayArrowIcon} />}
                 isLoading={isSubmitting}
                 loadingText="Running..."
               >

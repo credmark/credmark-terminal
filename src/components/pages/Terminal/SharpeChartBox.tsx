@@ -13,13 +13,13 @@ import {
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
+import AddIcon from '@mui/icons-material/Add';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
 import { Token } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
 import { DateTime, Duration } from 'luxon';
 import React, { useLayoutEffect, useRef, useState } from 'react';
-import { FaExternalLinkAlt } from 'react-icons/fa';
-import { MdAdd } from 'react-icons/md';
 
 import { BorderedCard } from '~/components/base';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
@@ -258,7 +258,7 @@ export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
               pb="1"
             >
               Read more about Sharpe Ratio in Credmark Wiki{' '}
-              <Icon as={FaExternalLinkAlt} />
+              <Icon color="gray.300" as={OpenInNewIcon} />
             </Link>
           </Text>
         }
@@ -319,7 +319,7 @@ export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
                   as={IconButton}
                   rounded="full"
                   colorScheme="gray"
-                  icon={<Icon as={MdAdd} />}
+                  icon={<Icon as={AddIcon} />}
                 ></MenuButton>
                 <MenuList maxH="300px" overflowY="auto">
                   {tokens

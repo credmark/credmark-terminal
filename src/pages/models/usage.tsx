@@ -15,9 +15,9 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
+import SettingsIcon from '@mui/icons-material/Settings';
 import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
-import { MdSettings } from 'react-icons/md';
 
 import { Card } from '~/components/base';
 import BarChart from '~/components/shared/Charts/BarChart';
@@ -286,7 +286,7 @@ export default function ModelUsagePage() {
                 variant="outline"
                 colorScheme="gray"
                 size="sm"
-                leftIcon={<Icon as={MdSettings} />}
+                leftIcon={<Icon as={SettingsIcon} />}
               >
                 Agg
               </MenuButton>
@@ -338,7 +338,7 @@ export default function ModelUsagePage() {
                 variant="outline"
                 colorScheme="gray"
                 size="sm"
-                leftIcon={<Icon as={MdSettings} />}
+                leftIcon={<Icon as={SettingsIcon} />}
               >
                 Stat
               </MenuButton>

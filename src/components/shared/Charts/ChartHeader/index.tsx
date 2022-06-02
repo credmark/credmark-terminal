@@ -1,11 +1,9 @@
 import { HStack, Icon, Spacer, Text, Flex, Img } from '@chakra-ui/react';
+import FileDownloadIcon from '@mui/icons-material/FileDownloadOutlined';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import React from 'react';
 import { CSVLink } from 'react-csv';
-import {
-  MdOutlineFileDownload,
-  MdFullscreenExit,
-  MdFullscreen,
-} from 'react-icons/md';
 
 import InfoPopover from '../../InfoPopover';
 
@@ -74,7 +72,7 @@ const ChartHeader = ({
               height="15px"
               cursor="pointer"
               marginInlineStart={0}
-              as={MdOutlineFileDownload}
+              as={FileDownloadIcon}
               color={textColor || 'gray.900'}
             />
           </CSVLink>
@@ -84,7 +82,7 @@ const ChartHeader = ({
             height="15px"
             cursor="pointer"
             marginInlineStart="0 !important"
-            as={MdOutlineFileDownload}
+            as={FileDownloadIcon}
             color={textColor || 'gray.900'}
           />
         )}
@@ -92,7 +90,7 @@ const ChartHeader = ({
         <Icon
           cursor="pointer"
           onClick={toggleFullScreen}
-          as={isFullScreen ? MdFullscreenExit : MdFullscreen}
+          as={isFullScreen ? FullscreenExitIcon : FullscreenIcon}
           width="15px"
           height="15px"
           marginInlineStart="0 !important"

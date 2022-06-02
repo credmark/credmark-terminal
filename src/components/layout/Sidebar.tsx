@@ -7,26 +7,22 @@ import {
   Link,
   BoxProps,
 } from '@chakra-ui/react';
+import { SvgIconComponent } from '@mui/icons-material';
+import ApiIcon from '@mui/icons-material/Api';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import CodeIcon from '@mui/icons-material/Code';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { IconType } from 'react-icons';
-import {
-  IoCaretBackSharp,
-  IoCaretDownSharp,
-  IoCaretForwardSharp,
-} from 'react-icons/io5';
-import {
-  MdApi,
-  MdCode,
-  MdOutlineHome,
-  MdOutlineVerified,
-} from 'react-icons/md';
 
 import { CmkTerminalIcon } from '~/components/icons';
 
 interface NavItemProps extends BoxProps {
-  icon?: IconType | typeof Icon;
+  icon?: typeof Icon | SvgIconComponent;
   label: string;
   isHeader?: boolean;
   isFocused?: boolean;
@@ -97,7 +93,7 @@ function NavItem({
       }
       {...boxProps}
     >
-      {backIcon && <Icon as={IoCaretBackSharp} />}
+      {backIcon && <Icon as={ArrowLeftIcon} />}
       {icon && (
         <Icon
           as={icon}
@@ -106,8 +102,8 @@ function NavItem({
         />
       )}
       <Text flex="1">{label}</Text>
-      {forwardIcon && <Icon as={IoCaretForwardSharp} />}
-      {subNav && subNav.length > 0 && <Icon as={IoCaretDownSharp} />}
+      {forwardIcon && <Icon as={ArrowRightIcon} />}
+      {subNav && subNav.length > 0 && <Icon as={KeyboardArrowDownIcon} />}
     </HStack>
   );
 
@@ -152,7 +148,7 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
 
   const homeItems = useMemo<NavItemProps[]>(
     () => [
-      { icon: MdOutlineHome, label: 'Home', href: '/' },
+      { icon: HomeOutlinedIcon, label: 'Home', href: '/' },
       {
         icon: CmkTerminalIcon,
         label: 'Credmark Terminal',
@@ -161,18 +157,22 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
         forwardIcon: true,
       },
       {
-        icon: MdApi,
+        icon: ApiIcon,
         label: 'API Access',
         href: 'https://gateway.credmark.com/api',
         isExternal: true,
       },
       {
-        icon: MdCode,
+        icon: CodeIcon,
         label: 'Model Framework',
         href: 'https://github.com/credmark/credmark-models-py',
         isExternal: true,
       },
-      { icon: MdOutlineVerified, label: 'Model Validation', isDisabled: true },
+      {
+        icon: VerifiedOutlinedIcon,
+        label: 'Model Validation',
+        isDisabled: true,
+      },
     ],
     [router.pathname],
   );
@@ -180,7 +180,7 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
   const terminalItems: NavItemProps[] = useMemo(
     () => [
       {
-        icon: MdOutlineHome,
+        icon: HomeOutlinedIcon,
         label: 'Home',
         onClick: () => setShowTerminalItems(false),
         backIcon: true,

@@ -11,8 +11,8 @@ import {
   Input,
   VStack,
 } from '@chakra-ui/react';
+import SettingsIcon from '@mui/icons-material/Settings';
 import React from 'react';
-import { MdSettings } from 'react-icons/md';
 
 import { ModelRunnerConfig } from '~/types/model';
 
@@ -33,7 +33,7 @@ export default function ModelRunConfig({
           _expanded={{ bg: 'white', color: 'green.500' }}
           _hover={{ bg: 'green.50' }}
         >
-          <Icon as={MdSettings} />
+          <Icon as={SettingsIcon} />
           <Box flex="1" textAlign="left" ml="2">
             Advanced Configuration
           </Box>

@@ -1,12 +1,12 @@
 import { Button, Grid } from '@chakra-ui/react';
 import React from 'react';
 
-import cmkLogo from '../../public/img/cmk.svg';
-import AreaChart from '../components/shared/Charts/Area';
+// import cmkLogo from '../../public/img/cmk.svg';
+// import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 
 export default {
-  title: 'Components/Charts/Area',
-  component: AreaChart,
+  title: 'Components/Charts/Historical',
+  component: <p>to add historical charts</p>,
   argTypes: {
     backgroundColor: { control: 'color' },
   },
@@ -19,7 +19,7 @@ const Template = () => {
       <Button size="sm" onClick={() => showSidebar(!hasSidebar)}>
         Show/Hide Sidebar
       </Button>
-      <AreaChart
+      {/* <AreaChart
         gradient={['green.500', 'gray.400']}
         yLabel="PRICE"
         lineColor="purple.500"
@@ -41,7 +41,7 @@ const Template = () => {
         durations={[30, 60, 90]}
         defaultDuration={60}
         chartSidebar={hasSidebar && <div>Sidebar</div>}
-      />
+      /> */}
     </Grid>
   );
 };

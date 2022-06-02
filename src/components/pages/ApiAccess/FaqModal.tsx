@@ -15,8 +15,8 @@ import {
   UseDisclosureReturn,
   VStack,
 } from '@chakra-ui/react';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import React from 'react';
-import { MdArrowForward } from 'react-icons/md';
 
 const faqs = [
   {
@@ -161,7 +161,7 @@ export default function FaqModal({ isOpen, onClose }: UseDisclosureReturn) {
               textDecoration="underline"
               aria-label="FAQ"
             >
-              Check our full FAQ <Icon as={MdArrowForward} />
+              Check our full FAQ <Icon as={ArrowForwardIcon} />
             </Link>
           </Box>
           <Box mt="4">
@@ -174,7 +174,7 @@ export default function FaqModal({ isOpen, onClose }: UseDisclosureReturn) {
               Visit our Discord
             </Link>{' '}
             to read more, post feedback or join community discussion.{' '}
-            <Icon as={MdArrowForward} />
+            <Icon as={ArrowForwardIcon} />
           </Box>
         </ModalBody>
 

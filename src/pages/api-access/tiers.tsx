@@ -10,17 +10,15 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import ApiOutlinedIcon from '@mui/icons-material/ApiOutlined';
+import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
+import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
+import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
+import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import NextLink from 'next/link';
 import React from 'react';
-import {
-  MdApi,
-  MdArrowForward,
-  MdAttachMoney,
-  MdAutoAwesome,
-  MdCode,
-  MdLock,
-  MdLockOpen,
-} from 'react-icons/md';
 
 import { CmkTerminalIcon } from '~/components/icons';
 import { FaqModal } from '~/components/pages/ApiAccess';
@@ -83,7 +81,11 @@ export default function ApiAccessTiersPage() {
 
             <VStack my="8" px="6" align="stretch" spacing="4">
               <HStack spacing="4">
-                <Icon as={MdAttachMoney} fontSize="2xl" color="purple.500" />
+                <Icon
+                  as={AttachMoneyOutlinedIcon}
+                  fontSize="2xl"
+                  color="purple.500"
+                />
                 <Text>
                   {tier.monthlyFeeUsd
                     ? `$${tier.monthlyFeeUsd} per month*`
@@ -93,7 +95,7 @@ export default function ApiAccessTiersPage() {
 
               <HStack spacing="4">
                 <Icon
-                  as={tier.lockupPeriod ? MdLock : MdLockOpen}
+                  as={tier.lockupPeriod ? LockIcon : LockOpenIcon}
                   fontSize="2xl"
                   color="purple.500"
                 />
@@ -104,7 +106,7 @@ export default function ApiAccessTiersPage() {
                 opacity={!tier.modelFramework ? 0.4 : undefined}
               >
                 <Icon
-                  as={MdCode}
+                  as={CodeOutlinedIcon}
                   fontSize="2xl"
                   color={tier.modelFramework ? 'purple.500' : undefined}
                 />
@@ -125,7 +127,7 @@ export default function ApiAccessTiersPage() {
                 opacity={!tier.apiGatewayAccess ? 0.4 : undefined}
               >
                 <Icon
-                  as={MdApi}
+                  as={ApiOutlinedIcon}
                   fontSize="2xl"
                   color={tier.apiGatewayAccess ? 'purple.500' : undefined}
                 />
@@ -133,7 +135,7 @@ export default function ApiAccessTiersPage() {
               </HStack>
               <HStack spacing="4" opacity={!tier.custom ? 0.4 : undefined}>
                 <Icon
-                  as={MdAutoAwesome}
+                  as={AutoAwesomeOutlinedIcon}
                   fontSize="2xl"
                   color={tier.custom ? 'purple.500' : undefined}
                 />
@@ -148,7 +150,7 @@ export default function ApiAccessTiersPage() {
                     size="lg"
                     colorScheme={tier.isActive ? 'green' : 'purple'}
                     variant={tier.isActive ? 'solid' : 'outline'}
-                    rightIcon={<Icon as={MdArrowForward} />}
+                    rightIcon={<Icon as={ArrowForwardOutlinedIcon} />}
                     minW="48"
                   >
                     Join
@@ -162,7 +164,7 @@ export default function ApiAccessTiersPage() {
       <Box textAlign="center" mt="16" maxW="container.sm" mx="auto">
         <Button
           size="lg"
-          rightIcon={<Icon as={MdArrowForward} />}
+          rightIcon={<Icon as={ArrowForwardOutlinedIcon} />}
           variant="link"
           color="gray.800"
           fontWeight={300}

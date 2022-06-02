@@ -18,10 +18,10 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { EChartsOption } from 'echarts';
 import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
 import React, { useCallback, useMemo, useState } from 'react';
-import { MdSettings } from 'react-icons/md';
 
 import { Aggregator, ChartLine } from '~/types/chart';
 import { aggregateData, filterDataByDuration } from '~/utils/chart';
@@ -383,7 +383,7 @@ export default function HistoricalChart({
                 variant="outline"
                 colorScheme="gray"
                 size="sm"
-                leftIcon={<Icon as={MdSettings} />}
+                leftIcon={<Icon as={SettingsIcon} />}
               >
                 Agg
               </MenuButton>

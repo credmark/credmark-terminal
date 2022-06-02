@@ -9,8 +9,10 @@ import {
   IconButton,
   UseDisclosureReturn,
 } from '@chakra-ui/react';
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
+import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import React from 'react';
-import { IoChevronDown, IoChevronUp, IoMenuSharp } from 'react-icons/io5';
 
 import Web3Status from './Web3Status';
 
@@ -31,7 +33,7 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
           size="sm"
           aria-label="Menu"
           fontSize="2xl"
-          icon={<Icon as={IoMenuSharp} />}
+          icon={<Icon as={MenuOutlinedIcon} />}
           onClick={mobileSidebar.onToggle}
           _hover={{
             transform: 'translateY(-1px)',
@@ -72,9 +74,9 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
           fontSize="2xl"
           icon={
             mobileNav.isOpen ? (
-              <Icon as={IoChevronUp} />
+              <Icon as={KeyboardArrowUpOutlinedIcon} />
             ) : (
-              <Icon as={IoChevronDown} />
+              <Icon as={KeyboardArrowDownOutlinedIcon} />
             )
           }
           onClick={mobileNav.onToggle}
