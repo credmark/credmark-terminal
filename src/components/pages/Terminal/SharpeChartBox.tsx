@@ -194,7 +194,10 @@ function useSharpeRatioModel(tokens: string[]) {
     return () => abortController.abort();
   }, [runSharpeModel, tokenPrices]);
 
-  return { loading: pricesLoading || sharpeLoading, output: sharpeRatios };
+  return {
+    loading: pricesLoading || sharpeLoading,
+    output: tokens.length !== sharpeRatios.length ? [] : sharpeRatios,
+  };
 }
 
 interface SharpeChartBoxProps {
