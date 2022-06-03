@@ -10,11 +10,13 @@ import {
 } from '@chakra-ui/react';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import RedditIcon from '@mui/icons-material/Reddit';
-import SocialDistanceIcon from '@mui/icons-material/SocialDistance';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import React from 'react';
+
+import DiscordIcon from '../icons/DiscordIcon';
+import MediumIcon from '../icons/MediumIcon';
 const ListHeader = ({ children }: { children: React.ReactNode }) => {
   return (
     <Text fontWeight={'500'} fontSize={'lg'} mb={2}>
@@ -48,7 +50,7 @@ export default function Footer() {
             aria-label="Credmark on Discord"
             rel="noopener"
           >
-            <Icon as={SocialDistanceIcon} />
+            <DiscordIcon color="white" fontSize="2rem" />
           </Link>
           <Link
             href="https://t.me/credmark"
@@ -114,7 +116,7 @@ export default function Footer() {
             aria-label="Blog"
             rel="noopener"
           >
-            <Icon as={SocialDistanceIcon} />
+            <MediumIcon color="white" fontSize="2rem" />
           </Link>
         </HStack>
       </Stack>
