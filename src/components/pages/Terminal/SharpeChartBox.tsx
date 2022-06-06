@@ -194,15 +194,22 @@ function useSharpeRatioModel(tokens: string[]) {
     return () => abortController.abort();
   }, [runSharpeModel, tokenPrices]);
 
-  const sharpeRatiosFiltered = sharpeRatios.filter((val) => {
-    return val?.series?.filter((val) =>
-      tokens?.includes(val?.output?.token_address),
-    );
-  });
+  const filterSharpeRatios = () => {
+    const filtered = sharpeRatios.filter((x) => {
+      const hasFoundToken = x.series.some((v) => {
+        return tokens
+          .map((item) => item.toLocaleLowerCase())
+          .includes(v.output.token_address);
+      });
+
+      return hasFoundToken && x;
+    });
+    return filtered;
+  };
 
   return {
     loading: pricesLoading || sharpeLoading,
-    output: sharpeRatiosFiltered,
+    output: filterSharpeRatios(),
   };
 }
 
