@@ -196,7 +196,7 @@ function useSharpeRatioModel(tokens: string[]) {
 
   return {
     loading: pricesLoading || sharpeLoading,
-    output: tokens.length !== sharpeRatios.length ? [] : sharpeRatios,
+    output: sharpeRatios,
   };
 }
 

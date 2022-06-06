@@ -89,7 +89,6 @@ export default function HistoricalChart({
   const [duration, setDuration] = useState(defaultDuration); // In Days
   const [aggregationInterval, setAggregationInterval] = useState(1); // In Days
   const [aggregator, setAggregator] = useState<Aggregator>(defaultAggregator); // In Days
-
   const computeLineData = useCallback(
     (line: ChartLine, maxTs: number): [Date, number][] => {
       let data: ChartLine['data'];
@@ -338,6 +337,22 @@ export default function HistoricalChart({
   const noData =
     lines.reduce((dataLength, line) => dataLength + line.data.length, 0) === 0;
 
+  const memoizedReactEChart = useMemo(
+    () => (
+      <ReactEChartsCore
+        option={option}
+        lazyUpdate={true}
+        notMerge={true}
+        style={{
+          height: isFullScreen ? '100%' : height + 'px',
+        }}
+        onChartReady={onChartReady}
+      />
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [lines?.length],
+  );
+
   return (
     <Grid
       gridTemplateRows={`${
@@ -418,15 +433,7 @@ export default function HistoricalChart({
         </HStack>
       )}
       <Box position="relative">
-        <ReactEChartsCore
-          option={option}
-          lazyUpdate={true}
-          notMerge={true}
-          style={{
-            height: isFullScreen ? '100%' : height + 'px',
-          }}
-          onChartReady={onChartReady}
-        />
+        {memoizedReactEChart}
         {loading && noData && (
           <ChartOverlay>
             <Spinner color="purple.500" />
