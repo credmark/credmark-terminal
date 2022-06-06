@@ -3,7 +3,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
-import { Duration } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
@@ -157,6 +157,7 @@ export default function DexChartBox({
       ),
     }),
     interval: Duration.fromObject({ days: 1 }),
+    endTime: DateTime.utc().startOf('day').toJSDate(),
   });
 
   const varChart = useSingleLineChart({
