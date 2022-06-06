@@ -46,12 +46,9 @@ interface VarModelOutput {
   ratio: number;
   IL_type: 'V2' | 'V3';
   range: [] | [number, number];
-  var: Record<
-    number,
-    {
-      var: number;
-    }
-  >;
+  var: {
+    var: number;
+  };
 }
 
 export default function DexChartBox({
@@ -140,12 +137,9 @@ export default function DexChartBox({
   });
 
   const varInput = {
-    window: `${Math.min(
-      30,
-      Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
-    )} days`,
+    window: '30 days',
     interval: 10,
-    confidences: [0.01],
+    confidence: 0.01,
     lower_range: 0.01,
     upper_range: 0.01,
     pool: {
@@ -172,7 +166,7 @@ export default function DexChartBox({
     fractionDigits: 4,
     data: varModel.output?.series?.map((item) => ({
       timestamp: new Date(item.sampleTimestamp * 1000),
-      value: item.output.var[0.01].var,
+      value: item.output.var.var,
     })),
     loading: varModel.loading,
     error: varModel.errorMessage,
