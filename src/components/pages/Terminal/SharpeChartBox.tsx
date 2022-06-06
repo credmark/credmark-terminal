@@ -222,16 +222,18 @@ export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
   const model = useSharpeRatioModel(selectedTokens);
 
   const sharpeChart = useLineChart({
-    lines: model.output.map((o, i) => ({
-      color: colors[i],
-      name:
-        tokens.find((token) => token.address === selectedTokens[i])?.symbol ??
-        '',
-      data: o.series.map((i) => ({
-        timestamp: new Date(i.sampleTimestamp * 1000),
-        value: i.output.sharpe_ratio,
-      })),
-    })),
+    lines: model.output
+      .map((o, i) => ({
+        color: colors[i],
+        name:
+          tokens.find((token) => token.address === selectedTokens[i])?.symbol ??
+          '',
+        data: o.series.map((i) => ({
+          timestamp: new Date(i.sampleTimestamp * 1000),
+          value: i.output.sharpe_ratio,
+        })),
+      }))
+      .filter((o) => o?.name),
     loading: model.loading,
     error: '',
     formatter: 'number',
