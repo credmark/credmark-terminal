@@ -194,9 +194,15 @@ function useSharpeRatioModel(tokens: string[]) {
     return () => abortController.abort();
   }, [runSharpeModel, tokenPrices]);
 
+  const sharpeRatiosFiltered = sharpeRatios.filter((val) => {
+    return val?.series?.filter((val) =>
+      tokens?.includes(val?.output?.token_address),
+    );
+  });
+
   return {
     loading: pricesLoading || sharpeLoading,
-    output: sharpeRatios,
+    output: sharpeRatiosFiltered,
   };
 }
 
@@ -222,18 +228,16 @@ export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
   const model = useSharpeRatioModel(selectedTokens);
 
   const sharpeChart = useLineChart({
-    lines: model.output
-      .map((o, i) => ({
-        color: colors[i],
-        name:
-          tokens.find((token) => token.address === selectedTokens[i])?.symbol ??
-          '',
-        data: o.series.map((i) => ({
-          timestamp: new Date(i.sampleTimestamp * 1000),
-          value: i.output.sharpe_ratio,
-        })),
-      }))
-      .filter((o) => o?.name),
+    lines: model.output.map((o, i) => ({
+      color: colors[i],
+      name:
+        tokens.find((token) => token.address === selectedTokens[i])?.symbol ??
+        '',
+      data: o.series.map((i) => ({
+        timestamp: new Date(i.sampleTimestamp * 1000),
+        value: i.output.sharpe_ratio,
+      })),
+    })),
     loading: model.loading,
     error: '',
     formatter: 'number',
