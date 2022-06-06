@@ -9,8 +9,8 @@ import {
   Switch,
   Text,
 } from '@chakra-ui/react';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import React, { useState } from 'react';
-import { FaExternalLinkAlt } from 'react-icons/fa';
 
 import { LenderChartBox } from '~/components/pages/Terminal';
 import SEOHeader from '~/components/shared/SEOHeader';
@@ -39,7 +39,8 @@ const METRICS: MetricInfo[] = [
           pb="1"
           aria-label="Read more about VaR in Credmark Wiki"
         >
-          Read more about VaR in Credmark Wiki <Icon as={FaExternalLinkAlt} />
+          Read more about VaR in Credmark Wiki{' '}
+          <Icon color="gray.300" as={OpenInNewIcon} />
         </Link>
       </Text>
     ),
@@ -70,7 +71,8 @@ const METRICS: MetricInfo[] = [
           pb="1"
           aria-label="Read more about LCR in Credmark Wiki"
         >
-          Read more about LCR in Credmark Wiki <Icon as={FaExternalLinkAlt} />
+          Read more about LCR in Credmark Wiki{' '}
+          <Icon color="gray.300" as={OpenInNewIcon} />
         </Link>
       </Text>
     ),

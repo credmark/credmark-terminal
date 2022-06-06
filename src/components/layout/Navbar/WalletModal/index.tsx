@@ -12,12 +12,12 @@ import {
   Box,
   Icon,
 } from '@chakra-ui/react';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
 // import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
-import { IoArrowBackSharp } from 'react-icons/io5';
 
 import AccountDetails from '~/components/layout/Navbar/AccountDetails';
 import { fortmatic, injected, portis } from '~/connectors';
@@ -267,7 +267,7 @@ export default function WalletModal({
           <ModalHeader>
             <Button
               size="sm"
-              leftIcon={<Icon as={IoArrowBackSharp} />}
+              leftIcon={<Icon as={ArrowBackIcon} />}
               variant="outline"
               colorScheme="white"
               onClick={() => {

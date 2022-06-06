@@ -18,6 +18,15 @@ import {
   useOutsideClick,
   VStack,
 } from '@chakra-ui/react';
+import ApiOutlinedIcon from '@mui/icons-material/ApiOutlined';
+import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
+import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
+import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
+import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import NextLink from 'next/link';
@@ -29,17 +38,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  MdApi,
-  MdArrowBack,
-  MdArrowForward,
-  MdAutoAwesome,
-  MdCode,
-  MdLock,
-  MdLockOpen,
-  MdTrendingUp,
-  MdUnfoldMore,
-} from 'react-icons/md';
 
 import { PrimaryButton } from '~/components/base';
 import {
@@ -347,7 +345,7 @@ export default function ApiAccessMintPage() {
               setShowTierSelection(!showTierSelection);
             }}
           >
-            {activeTierKey} <Icon as={MdUnfoldMore} ml="2" />
+            {activeTierKey} <Icon as={UnfoldMoreIcon} ml="2" />
             <Box position="absolute" top="0" left="0" right="0" zIndex="10">
               <Collapse
                 in={showTierSelection}
@@ -389,20 +387,20 @@ export default function ApiAccessMintPage() {
                             : 'Free'}
                         </Text>
                         <Icon
-                          as={tier.lockupPeriod ? MdLock : MdLockOpen}
+                          as={tier.lockupPeriod ? LockIcon : LockOpenIcon}
                           fontSize="1rem"
                         />
                         {tier.modelFramework && (
-                          <Icon as={MdCode} fontSize="1rem" />
+                          <Icon as={CodeOutlinedIcon} fontSize="1rem" />
                         )}
                         {tier.terminalAccess && (
                           <CmkTerminalIcon fontSize="1rem" />
                         )}
                         {tier.apiGatewayAccess && (
-                          <Icon as={MdApi} fontSize="1rem" />
+                          <Icon as={ApiOutlinedIcon} fontSize="1rem" />
                         )}
                         {tier.custom && (
-                          <Icon as={MdAutoAwesome} fontSize="1rem" />
+                          <Icon as={AutoAwesomeOutlinedIcon} fontSize="1rem" />
                         )}
                       </HStack>
                     </Center>
@@ -507,12 +505,12 @@ export default function ApiAccessMintPage() {
           <VStack w="320px" shadow="md" py="8">
             <VStack flex="1" px="6" align="stretch" spacing="6">
               <HStack spacing="4">
-                <Icon as={MdTrendingUp} fontSize="2xl" color="purple.500" />
+                <Icon as={TrendingUpIcon} fontSize="2xl" color="purple.500" />
                 <Text>{activeTier.rewardMultiplier}x Staking Rewards</Text>
               </HStack>
               <HStack spacing="4">
                 <Icon
-                  as={activeTier.lockupPeriod ? MdLock : MdLockOpen}
+                  as={activeTier.lockupPeriod ? LockIcon : LockOpenIcon}
                   fontSize="2xl"
                   color="purple.500"
                 />
@@ -523,7 +521,7 @@ export default function ApiAccessMintPage() {
                 opacity={!activeTier.modelFramework ? 0.4 : undefined}
               >
                 <Icon
-                  as={MdCode}
+                  as={CodeOutlinedIcon}
                   fontSize="2xl"
                   color={activeTier.modelFramework ? 'purple.500' : undefined}
                 />
@@ -544,7 +542,7 @@ export default function ApiAccessMintPage() {
                 opacity={!activeTier.apiGatewayAccess ? 0.4 : undefined}
               >
                 <Icon
-                  as={MdApi}
+                  as={ApiOutlinedIcon}
                   fontSize="2xl"
                   color={activeTier.apiGatewayAccess ? 'purple.500' : undefined}
                 />
@@ -557,7 +555,7 @@ export default function ApiAccessMintPage() {
                 opacity={!activeTier.custom ? 0.4 : undefined}
               >
                 <Icon
-                  as={MdAutoAwesome}
+                  as={AutoAwesomeOutlinedIcon}
                   fontSize="2xl"
                   color={activeTier.custom ? 'purple.500' : undefined}
                 />
@@ -572,7 +570,7 @@ export default function ApiAccessMintPage() {
               >
                 <Link>
                   <Button
-                    leftIcon={<Icon as={MdArrowBack} />}
+                    leftIcon={<Icon as={ArrowBackOutlinedIcon} />}
                     variant="link"
                     colorScheme="gray"
                   >
@@ -608,7 +606,7 @@ export default function ApiAccessMintPage() {
               <Button
                 mt="4"
                 size="lg"
-                rightIcon={<Icon as={MdArrowForward} />}
+                rightIcon={<Icon as={ArrowForwardOutlinedIcon} />}
                 variant="link"
                 color="gray.800"
                 fontWeight={300}

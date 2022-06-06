@@ -1,18 +1,16 @@
 import { Box, Container, Stack, VStack } from '@chakra-ui/react';
+import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
+import ApiOutlinedIcon from '@mui/icons-material/ApiOutlined';
+import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
+import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined';
+import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
+import DataThresholdingOutlinedIcon from '@mui/icons-material/DataThresholdingOutlined';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
+import InsightsOutlinedIcon from '@mui/icons-material/InsightsOutlined';
+import QueryStatsOutlinedIcon from '@mui/icons-material/QueryStatsOutlined';
+import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
 import React from 'react';
-import {
-  MdApi,
-  MdAttachMoney,
-  MdBolt,
-  MdCode,
-  MdHistory,
-  MdInsights,
-  MdOutlineAnalytics,
-  MdOutlineDataExploration,
-  MdOutlineFileDownload,
-  MdOutlineVerified,
-  MdQueryStats,
-} from 'react-icons/md';
 
 import { Card } from '~/components/base';
 import { MdDecentralizedIcon } from '~/components/icons';
@@ -45,19 +43,19 @@ export default function HomePage() {
                 subtitle="Visualize DeFi Analytics with Intuitive Graphs"
                 features={[
                   {
-                    icon: MdInsights,
+                    icon: InsightsOutlinedIcon,
                     text: 'Visualized crypto analytics',
                   },
                   {
-                    icon: MdOutlineDataExploration,
+                    icon: AnalyticsOutlinedIcon,
                     text: 'Market data & risk metrics for various protocols',
                   },
                   {
-                    icon: MdHistory,
+                    icon: HistoryOutlinedIcon,
                     text: 'Historic data up to 90 days',
                   },
                   {
-                    icon: MdOutlineFileDownload,
+                    icon: FileDownloadOutlinedIcon,
                     text: 'Export data to CSV',
                   },
                 ]}
@@ -80,15 +78,15 @@ export default function HomePage() {
               subtitle="High Integrity Risk and Data Models"
               features={[
                 {
-                  icon: MdOutlineAnalytics,
+                  icon: DataThresholdingOutlinedIcon,
                   text: 'Fine-tuned data aggregation and nomination for 1st, 2nd and 3rd order Data',
                 },
                 {
-                  icon: MdHistory,
+                  icon: HistoryOutlinedIcon,
                   text: 'Completed historical data',
                 },
                 {
-                  icon: MdQueryStats,
+                  icon: QueryStatsOutlinedIcon,
                   text: 'Direct query of output from risk models',
                 },
               ]}
@@ -96,7 +94,7 @@ export default function HomePage() {
                 href: 'https://gateway.credmark.com/api',
                 isExternal: true,
                 label: 'Get Access',
-                icon: MdApi,
+                icon: ApiOutlinedIcon,
               }}
             />
             <FeatureCard
@@ -111,11 +109,11 @@ export default function HomePage() {
                   text: 'Abstracts away the complexity of web3 coding',
                 },
                 {
-                  icon: MdHistory,
+                  icon: HistoryOutlinedIcon,
                   text: 'Complete real-time and historical data',
                 },
                 {
-                  icon: MdBolt,
+                  icon: BoltOutlinedIcon,
                   text: 'Model search engine with example scripts to start immediately',
                 },
               ]}
@@ -123,7 +121,7 @@ export default function HomePage() {
                 href: 'https://github.com/credmark/credmark-models-py',
                 isExternal: true,
                 label: 'Get Access',
-                icon: MdCode,
+                icon: CodeOutlinedIcon,
               }}
             />
             <FeatureCard
@@ -134,15 +132,15 @@ export default function HomePage() {
               subtitle="Earn Rewards for Model Assessment"
               features={[
                 {
-                  icon: MdQueryStats,
+                  icon: QueryStatsOutlinedIcon,
                   text: 'Perform quality assessment and curation of new models',
                 },
                 {
-                  icon: MdOutlineVerified,
+                  icon: VerifiedOutlinedIcon,
                   text: 'Vote on new model submissions for implementation',
                 },
                 {
-                  icon: MdAttachMoney,
+                  icon: AttachMoneyOutlinedIcon,
                   text: 'Be rewarded to do the work of validating models',
                 },
               ]}

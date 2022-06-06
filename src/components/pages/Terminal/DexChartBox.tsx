@@ -1,10 +1,10 @@
 import { Box, Center, Flex, Icon, Link, Text } from '@chakra-ui/react';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
 import { Duration } from 'luxon';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
-import { MdOpenInNew } from 'react-icons/md';
 
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
@@ -209,7 +209,7 @@ export default function DexChartBox({
             display="flex"
             alignItems="center"
           >
-            <Icon as={MdOpenInNew} />
+            <Icon color="gray.300" as={OpenInNewIcon} />
           </Link>
         }
       />

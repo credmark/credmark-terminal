@@ -7,9 +7,9 @@ import {
   BoxProps,
   ButtonProps,
 } from '@chakra-ui/react';
+import { SvgIconComponent } from '@mui/icons-material';
 import NextLink from 'next/link';
 import React from 'react';
-import { IconType } from 'react-icons';
 
 import { PrimaryButton } from '~/components/base';
 import Card from '~/components/base/Card';
@@ -17,17 +17,20 @@ import Card from '~/components/base/Card';
 interface FeatureCardProps extends BoxProps {
   title: string;
   subtitle: string;
-  features: Array<{ icon: IconType | typeof Icon; text: string }>;
+  features: Array<{
+    icon: typeof Icon | SvgIconComponent;
+    text: string;
+  }>;
   actionButton:
     | {
         label: string;
-        icon?: IconType | typeof Icon;
+        icon?: typeof Icon | SvgIconComponent;
         isDisabled: true;
       }
     | {
         href: string;
         label: string;
-        icon?: IconType | typeof Icon;
+        icon?: typeof Icon | SvgIconComponent;
         isExternal?: boolean;
       };
 }

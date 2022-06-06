@@ -9,9 +9,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@chakra-ui/react';
+import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';
-import { IoInformationCircleOutline } from 'react-icons/io5';
-
 interface InfoPopoverProps {
   children: React.ReactNode;
   trigger?: React.ReactNode;
@@ -26,7 +25,8 @@ export default function InfoPopover({
   const defaultTrigger = (
     <Center>
       <Icon
-        as={IoInformationCircleOutline}
+        as={InfoIcon}
+        color="gray.300"
         cursor="pointer"
         transitionDuration="normal"
         transitionProperty="transform"

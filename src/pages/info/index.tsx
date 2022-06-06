@@ -1,6 +1,6 @@
 import { Container, Grid, Icon, Link } from '@chakra-ui/react';
+import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
 import React from 'react';
-import { MdArrowForward } from 'react-icons/md';
 
 import {
   AnalyticsChartBox,
@@ -229,7 +229,7 @@ export default function AnalyticsPage() {
                       market.app
                     ]
                   }
-                  <Icon cursor="pointer" as={MdArrowForward} />
+                  <Icon cursor="pointer" as={ArrowForwardOutlinedIcon} />
                 </Link>
               }
             />

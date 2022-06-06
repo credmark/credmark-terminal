@@ -1,7 +1,8 @@
-import { Center, Icon, Image } from '@chakra-ui/react';
+import { Center, Image } from '@chakra-ui/react';
 import { Currency } from '@uniswap/sdk-core';
 import React, { useMemo, useState } from 'react';
-import { FaEthereum } from 'react-icons/fa';
+
+import EthereumIcon from '~/components/icons/EthereumIcon';
 
 export const getTokenLogoURL = (address: string): string =>
   `https://raw.githubusercontent.com/uniswap/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
@@ -56,7 +57,7 @@ export default function CurrencyLogo({
         bg="gray.50"
         color="gray.800"
       >
-        <Icon as={FaEthereum} w={`${size * 0.6}px`} h={`${size * 0.6}px`} />
+        <EthereumIcon fontSize="1rem" />
       </Center>
     );
   }

@@ -8,11 +8,15 @@ import {
   HStack,
   Icon,
 } from '@chakra-ui/react';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import RedditIcon from '@mui/icons-material/Reddit';
+import TelegramIcon from '@mui/icons-material/Telegram';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 import React from 'react';
-import { BsGithub, BsMedium, BsReddit } from 'react-icons/bs';
-import { FaTelegramPlane } from 'react-icons/fa';
-import { IoLogoDiscord, IoLogoTwitter, IoLogoYoutube } from 'react-icons/io5';
 
+import DiscordIcon from '../icons/DiscordIcon';
+import MediumIcon from '../icons/MediumIcon';
 const ListHeader = ({ children }: { children: React.ReactNode }) => {
   return (
     <Text fontWeight={'500'} fontSize={'lg'} mb={2}>
@@ -46,7 +50,7 @@ export default function Footer() {
             aria-label="Credmark on Discord"
             rel="noopener"
           >
-            <Icon as={IoLogoDiscord} />
+            <DiscordIcon color="white" fontSize="2rem" />
           </Link>
           <Link
             href="https://t.me/credmark"
@@ -57,7 +61,7 @@ export default function Footer() {
             aria-label="Credmark on Telegram"
             rel="noopener"
           >
-            <Icon as={FaTelegramPlane} />
+            <Icon as={TelegramIcon} />
           </Link>
           <Link
             href="https://twitter.com/credmarkhq"
@@ -68,7 +72,7 @@ export default function Footer() {
             aria-label="Credmark on Twitter"
             rel="noopener"
           >
-            <Icon as={IoLogoTwitter} />
+            <Icon as={TwitterIcon} />
           </Link>
           <Link
             href="https://www.youtube.com/channel/UCdmImsISNfkXTxJPkmCnVNg"
@@ -79,7 +83,7 @@ export default function Footer() {
             aria-label="Credmark on Youtube"
             rel="noopener"
           >
-            <Icon as={IoLogoYoutube} />
+            <Icon as={YouTubeIcon} />
           </Link>
           <Link
             href="https://www.reddit.com/r/Credmark"
@@ -90,7 +94,7 @@ export default function Footer() {
             aria-label="Credmark on Reddit"
             rel="noopener"
           >
-            <Icon as={BsReddit} />
+            <Icon as={RedditIcon} />
           </Link>
           <Link
             href="https://github.com/credmark"
@@ -101,7 +105,7 @@ export default function Footer() {
             aria-label="Credmark on Github"
             rel="noopener"
           >
-            <Icon as={BsGithub} />
+            <Icon as={GitHubIcon} />
           </Link>
           <Link
             href="https://blog.credmark.com"
@@ -112,7 +116,7 @@ export default function Footer() {
             aria-label="Blog"
             rel="noopener"
           >
-            <Icon as={BsMedium} />
+            <MediumIcon color="white" fontSize="2rem" />
           </Link>
         </HStack>
       </Stack>
