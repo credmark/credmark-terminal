@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Heading,
+  Center,
   Icon,
   Input,
   Menu,
@@ -15,6 +16,8 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SettingsIcon from '@mui/icons-material/Settings';
 import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -44,6 +47,8 @@ interface Runtime extends Record<Stat, number> {
 
 export default function ModelUsagePage() {
   const [loading, setLoading] = useState(false);
+  const [showLessCalls, setShowLessCalls] = useState(true);
+  const [showLessRuntime, setShowLessRuntime] = useState(true);
   const [lines, setLines] = useState<ChartLine[]>([]);
 
   const [barChartDate, setBarChartDate] = useState<Date>();
@@ -132,7 +137,7 @@ export default function ModelUsagePage() {
     };
   }, []);
 
-  const barChartData = useMemo(() => {
+  const barChartDataMemoized = useMemo(() => {
     const data: BarChartData = [];
     for (const line of lines) {
       if (line.name === ALL_MODELS) {
@@ -163,12 +168,19 @@ export default function ModelUsagePage() {
     return data;
   }, [aggregationInterval, aggregator, barChartDate, lines]);
 
-  const runtimeBarChartData = useMemo<BarChartData>(() => {
+  const barChartData = showLessCalls
+    ? barChartDataMemoized.sort((a, b) => b.value - a.value).slice(0, 10)
+    : barChartDataMemoized;
+
+  const runtimeBarChartDataMemoized = useMemo<BarChartData>(() => {
     return runtimes.map((runtime) => ({
       category: runtime.slug,
       value: runtime[stat],
     }));
   }, [runtimes, stat]);
+  const runtimeBarChartData = showLessRuntime
+    ? runtimeBarChartDataMemoized.sort((a, b) => b.value - a.value).slice(0, 10)
+    : runtimeBarChartDataMemoized;
 
   const allModelsUsage = useMemo(() => {
     if (!barChartDate) {
@@ -324,6 +336,24 @@ export default function ModelUsagePage() {
             padding={0}
             onClick={(slug) => setSlug(slug)}
           />
+
+          <Center>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowLessCalls(!showLessCalls)}
+              rightIcon={
+                showLessCalls ? (
+                  <Icon as={ExpandMoreIcon} />
+                ) : (
+                  <Icon as={ExpandLessIcon} />
+                )
+              }
+            >
+              {showLessCalls ? 'Show More' : 'Show Less'}
+            </Button>
+          </Center>
         </Card>
         <Card mt="8">
           <Heading as="h2" fontSize="3xl" mb="8">
@@ -362,6 +392,23 @@ export default function ModelUsagePage() {
             height={Math.max(runtimeBarChartData.length * 32, 300)}
             padding={0}
           />
+          <Center>
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={() => setShowLessRuntime(!showLessRuntime)}
+              rightIcon={
+                showLessRuntime ? (
+                  <Icon as={ExpandMoreIcon} />
+                ) : (
+                  <Icon as={ExpandLessIcon} />
+                )
+              }
+            >
+              {showLessRuntime ? 'Show More' : 'Show Less'}
+            </Button>
+          </Center>
         </Card>
       </Container>
     </>
