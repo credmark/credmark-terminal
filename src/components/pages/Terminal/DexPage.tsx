@@ -12,6 +12,7 @@ import {
 import { Currency } from '@uniswap/sdk-core';
 import React, { useMemo, useState } from 'react';
 
+import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import LazyLoad from '~/components/shared/LazyLoad';
 
 import DexChartBox from './DexChartBox';
@@ -51,6 +52,7 @@ function TokenRadioGroup({
               colorScheme={selectedToken?.equals(token) ? 'green' : 'gray'}
               color={selectedToken?.equals(token) ? 'purple.500' : undefined}
               onClick={() => setSelectedToken(token)}
+              leftIcon={<CurrencyLogo currency={token} size={20} />}
             >
               {token.symbol}
             </Button>
