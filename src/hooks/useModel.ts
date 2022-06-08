@@ -51,10 +51,12 @@ export function useModelRunnerCallback<O>() {
 }
 
 interface SimpleModelRunnerProps<O> extends ModelRunnerCallbackProps {
+  suspended?: boolean;
   validateOutput?: (output: O) => void;
 }
 
 interface HistoricalModelRunnerProps<O> extends ModelRunnerCallbackProps {
+  suspended?: boolean;
   window: Duration; // In days
   interval: Duration; // In days
   endTime?: Date;
@@ -132,6 +134,10 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
 
   // Using deep compare effect for input object equality
   useDeepCompareEffect(() => {
+    if (props.suspended) {
+      return;
+    }
+
     setError(undefined);
     setErrorMessage(undefined);
     setLoading(true);
@@ -209,6 +215,7 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
     props.chainId,
     props.input,
     props.slug,
+    props.suspended,
     props.version,
     runModel,
     validateOutputMemoized,
