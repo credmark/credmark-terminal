@@ -15,6 +15,9 @@ src/abis/types
 /.next/
 /out/
 
+#vscode
+/.vscode
+
 # production
 /build
 
