@@ -8,7 +8,7 @@ import React, { useLayoutEffect, useMemo, useRef } from 'react';
 
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
-import CurrencyLogo from '~/components/shared/CurrencyLogo';
+import { CurrenciesLogo } from '~/components/shared/CurrencyLogo';
 import { useSingleLineChart } from '~/hooks/useChart';
 import { useModelRunner } from '~/hooks/useModel';
 import { mergeCsvs } from '~/utils/chart';
@@ -228,9 +228,7 @@ export default function DexChartBox({
         downloadFileHeaders={csv.headers}
         downloadData={csv.data}
         isFullScreen={isExpanded}
-        logo={sortedTokens.map((token) => (
-          <CurrencyLogo currency={token} key={token.symbol} />
-        ))}
+        logo={<CurrenciesLogo currencies={sortedTokens} />}
         openInNewTab={
           <Link
             href={`https://etherscan.io/address/${pool}`}
