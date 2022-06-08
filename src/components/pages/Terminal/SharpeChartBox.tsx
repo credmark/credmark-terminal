@@ -60,12 +60,8 @@ function useSharpeRatioModel(tokens: string[]) {
   const [pricesLoading, setPricesLoading] = useState(false);
   const [sharpeLoading, setSharpeLoading] = useState(false);
 
-  const runPriceModel = useModelRunnerCallback<
-    unknown,
-    ModelSeriesOutput<TokenPrice>
-  >();
-
-  const runSharpeModel = useModelRunnerCallback<unknown, SharpeRatio>();
+  const runPriceModel = useModelRunnerCallback<ModelSeriesOutput<TokenPrice>>();
+  const runSharpeModel = useModelRunnerCallback<SharpeRatio>();
 
   const [tokenPrices, setTokenPrices] = useState<
     Record<string, ModelSeriesOutput<TokenPrice>>
@@ -142,7 +138,7 @@ function useSharpeRatioModel(tokens: string[]) {
             sortedPrices.length - SHARPE_WINDOW + i,
           );
 
-          const runProps: ModelRunnerCallbackProps<unknown> = {
+          const runProps: ModelRunnerCallbackProps = {
             slug: 'finance.sharpe-ratio-token',
             blockNumber: inputPrices[0].blockNumber,
             input: {

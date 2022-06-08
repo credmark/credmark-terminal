@@ -11,15 +11,15 @@ import {
 
 import { useDeepCompareEffect } from './useDeepCompare';
 
-export interface ModelRunnerCallbackProps<I> {
+export interface ModelRunnerCallbackProps {
   slug: string;
   version?: string;
   chainId?: number;
   blockNumber?: number | 'latest';
-  input: I;
+  input: unknown;
 }
 
-export function useModelRunnerCallback<I, O>() {
+export function useModelRunnerCallback<O>() {
   return useCallback(
     async (
       {
@@ -28,7 +28,7 @@ export function useModelRunnerCallback<I, O>() {
         chainId = 1,
         blockNumber = 'latest',
         input,
-      }: ModelRunnerCallbackProps<I>,
+      }: ModelRunnerCallbackProps,
       abortSignal?: AbortSignal,
     ) => {
       const resp: AxiosResponse<ModelRunResponse<O>> = await axios({
@@ -50,40 +50,36 @@ export function useModelRunnerCallback<I, O>() {
   );
 }
 
-interface SimpleModelRunnerProps<I, O> extends ModelRunnerCallbackProps<I> {
+interface SimpleModelRunnerProps<O> extends ModelRunnerCallbackProps {
   validateOutput?: (output: O) => void;
 }
 
-interface HistoricalModelRunnerProps<I, O> extends ModelRunnerCallbackProps<I> {
+interface HistoricalModelRunnerProps<O> extends ModelRunnerCallbackProps {
   window: Duration; // In days
   interval: Duration; // In days
   endTime?: Date;
   validateRow?: (output: O) => void;
 }
 
-type ModelRunnerProps<I, O> =
-  | SimpleModelRunnerProps<I, O>
-  | HistoricalModelRunnerProps<I, O>;
+type ModelRunnerProps<O> =
+  | SimpleModelRunnerProps<O>
+  | HistoricalModelRunnerProps<O>;
 
-export function useModelRunner<I, O>(
-  props: SimpleModelRunnerProps<I, O>,
-): {
+export function useModelRunner<O>(props: SimpleModelRunnerProps<O>): {
   loading: boolean;
   error: ModelRunError | undefined;
   errorMessage: string | undefined;
   output: O;
 };
 
-export function useModelRunner<I, O>(
-  props: HistoricalModelRunnerProps<I, O>,
-): {
+export function useModelRunner<O>(props: HistoricalModelRunnerProps<O>): {
   loading: boolean;
   error: ModelRunError | undefined;
   errorMessage: string | undefined;
   output: ModelSeriesOutput<O>;
 };
 
-export function useModelRunner<I, O>(props: ModelRunnerProps<I, O>) {
+export function useModelRunner<O>(props: ModelRunnerProps<O>) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ModelRunError>();
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -94,19 +90,19 @@ export function useModelRunner<I, O>(props: ModelRunnerProps<I, O>) {
     window: windowDuration,
     interval: intervalDuration,
     endTime,
-  } = props as HistoricalModelRunnerProps<I, O>;
+  } = props as HistoricalModelRunnerProps<O>;
 
   const window = windowDuration?.as('seconds');
   const interval = intervalDuration?.as('seconds');
 
-  const { validateOutput } = props as SimpleModelRunnerProps<I, O>;
+  const { validateOutput } = props as SimpleModelRunnerProps<O>;
 
   const isHistorical = useMemo(
     () => typeof window === 'number' && typeof interval === 'number',
     [interval, window],
   );
 
-  const runModel = useModelRunnerCallback<unknown, O | ModelSeriesOutput<O>>();
+  const runModel = useModelRunnerCallback<O | ModelSeriesOutput<O>>();
 
   const validateOutputMemoized = useCallbackRef(
     (output: O | ModelSeriesOutput<O>) => {

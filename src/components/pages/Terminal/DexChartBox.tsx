@@ -86,7 +86,7 @@ export default function DexChartBox({
     ],
   };
 
-  const tvlModel = useModelRunner<typeof tvlInput, DexModelOutput>({
+  const tvlModel = useModelRunner<DexModelOutput>({
     slug:
       dex === 'CURVE'
         ? 'contrib.curve-get-tvl-and-volume-historical'
@@ -146,7 +146,7 @@ export default function DexChartBox({
     },
   };
 
-  const varModel = useModelRunner<typeof varInput, VarModelOutput>({
+  const varModel = useModelRunner<VarModelOutput>({
     slug: 'finance.var-dex-lp',
     input: varInput,
     window: Duration.fromObject({
