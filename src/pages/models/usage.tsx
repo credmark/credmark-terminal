@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Heading,
+  Center,
   Icon,
   Input,
   Menu,
@@ -15,6 +16,8 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SettingsIcon from '@mui/icons-material/Settings';
 import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -49,7 +52,9 @@ interface TopModels {
 export default function ModelUsagePage() {
   const [loading, setLoading] = useState(false);
   const [lines, setLines] = useState<ChartLine[]>([]);
-
+  const [showLessCalls, setShowLessCalls] = useState(true);
+  const [showLessRuntime, setShowLessRuntime] = useState(true);
+  const [showLessTopModels, setShowLessTopModels] = useState(true);
   const [barChartDate, setBarChartDate] = useState<Date>();
   const [barChartDateRange, setBarChartDateRange] = useState<[Date, Date]>();
   const [minBarChartDate, maxBarChartDate] = barChartDateRange ?? [];
@@ -59,7 +64,6 @@ export default function ModelUsagePage() {
   const [runtimes, setRuntimes] = useState<Runtime[]>([]);
   const [topModels, setTopModels] = useState<TopModels[]>([]);
   const [stat, setStat] = useState<Stat>('mean');
-  const [topModelStat, setTopModelStat] = useState<string>('10');
 
   const color = '#3B0065';
   const ALL_MODELS = 'All Models';
@@ -174,15 +178,20 @@ export default function ModelUsagePage() {
       });
     }
 
-    return data;
-  }, [aggregationInterval, aggregator, barChartDate, lines]);
+    return data
+      .sort((a, b) => b.value - a.value)
+      .slice(0, showLessCalls ? 10 : Infinity);
+  }, [aggregationInterval, aggregator, barChartDate, lines, showLessCalls]);
 
   const runtimeBarChartData = useMemo<BarChartData>(() => {
-    return runtimes.map((runtime) => ({
-      category: runtime.slug,
-      value: runtime[stat],
-    }));
-  }, [runtimes, stat]);
+    return runtimes
+      .map((runtime) => ({
+        category: runtime.slug,
+        value: runtime[stat],
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, showLessRuntime ? 10 : Infinity);
+  }, [runtimes, stat, showLessRuntime]);
 
   const topModelsData = useMemo<BarChartData>(() => {
     return topModels
@@ -191,8 +200,8 @@ export default function ModelUsagePage() {
         value: topModel.count,
       }))
       .sort((a, b) => b.value - a.value)
-      .slice(0, parseInt(topModelStat, 10));
-  }, [topModels, topModelStat]);
+      .slice(0, showLessTopModels ? 10 : Infinity);
+  }, [topModels, showLessTopModels]);
 
   const allModelsUsage = useMemo(() => {
     if (!barChartDate) {
@@ -348,6 +357,23 @@ export default function ModelUsagePage() {
             padding={0}
             onClick={(slug) => setSlug(slug)}
           />
+          <Center>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowLessCalls(!showLessCalls)}
+              rightIcon={
+                showLessCalls ? (
+                  <Icon as={ExpandMoreIcon} />
+                ) : (
+                  <Icon as={ExpandLessIcon} />
+                )
+              }
+            >
+              {showLessCalls ? 'Show More' : 'Show Less'}
+            </Button>
+          </Center>
         </Card>
         <Card mt="8">
           <Heading as="h2" fontSize="3xl" mb="8">
@@ -386,68 +412,52 @@ export default function ModelUsagePage() {
             height={Math.max(runtimeBarChartData.length * 32, 300)}
             padding={0}
           />
+          <Center>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowLessRuntime(!showLessRuntime)}
+              rightIcon={
+                showLessRuntime ? (
+                  <Icon as={ExpandMoreIcon} />
+                ) : (
+                  <Icon as={ExpandLessIcon} />
+                )
+              }
+            >
+              {showLessRuntime ? 'Show More' : 'Show Less'}
+            </Button>
+          </Center>
         </Card>
         <Card mt="8">
           <Heading as="h2" fontSize="3xl" mb="8">
             Top Models
           </Heading>
-          <Stack direction={{ base: 'column', lg: 'row' }} mb="4" spacing="4">
-            <Spacer />
-            <Menu>
-              <MenuButton
-                alignSelf="center"
-                as={Button}
-                variant="outline"
-                colorScheme="gray"
-                size="sm"
-                leftIcon={<Icon as={SettingsIcon} />}
-              >
-                Filter
-              </MenuButton>
-              <MenuList minWidth="240px">
-                <MenuOptionGroup
-                  type="radio"
-                  value={stat}
-                  onChange={(value) => {
-                    setTopModelStat(value as string);
-                  }}
-                >
-                  <MenuItemOption
-                    value={'10'}
-                    backgroundColor={
-                      topModelStat === '10' ? 'gray.100' : 'transparent'
-                    }
-                  >
-                    Top 10
-                  </MenuItemOption>
-                  <MenuItemOption
-                    value={'30'}
-                    backgroundColor={
-                      topModelStat === '30' ? 'gray.100' : 'transparent'
-                    }
-                  >
-                    Top 30
-                  </MenuItemOption>
-                  <MenuItemOption
-                    value={topModels.length.toString()}
-                    backgroundColor={
-                      topModelStat === topModels.length.toString()
-                        ? 'gray.100'
-                        : 'transparent'
-                    }
-                  >
-                    All
-                  </MenuItemOption>
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
-          </Stack>
+
           <BarChart
             loading={loading}
             data={topModelsData}
             height={Math.max(topModelsData.length * 32, 300)}
             padding={0}
           />
+          <Center>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowLessTopModels(!showLessTopModels)}
+              rightIcon={
+                showLessTopModels ? (
+                  <Icon as={ExpandMoreIcon} />
+                ) : (
+                  <Icon as={ExpandLessIcon} />
+                )
+              }
+            >
+              {showLessTopModels ? 'Show More' : 'Show Less'}
+            </Button>
+          </Center>
         </Card>
       </Container>
     </>
