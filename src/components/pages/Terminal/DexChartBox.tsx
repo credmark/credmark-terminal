@@ -1,5 +1,4 @@
-import { Box, Center, Flex, Icon, Link, Text } from '@chakra-ui/react';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { Box, Center, Flex, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
@@ -18,6 +17,7 @@ interface DexChartBoxProps {
   pool: string;
   tokens: Currency[];
   createdAt?: number;
+  fee?: number;
 
   onExpand: () => void;
   isExpanded: boolean;
@@ -77,6 +77,7 @@ export default function DexChartBox({
   pool,
   tokens,
   createdAt = 0,
+  fee,
 
   onExpand,
   isExpanded,
@@ -220,6 +221,7 @@ export default function DexChartBox({
         title={sortedTokens
           .map((token) => token.symbol ?? token.name)
           .join(' / ')}
+        subtitle={fee ? fee + '%' : ''}
         toggleFullScreen={onExpand}
         downloadFileName={`${tvlChart.lines[0].name.replaceAll(
           ' ',
@@ -229,16 +231,7 @@ export default function DexChartBox({
         downloadData={csv.data}
         isFullScreen={isExpanded}
         logo={<CurrenciesLogo currencies={sortedTokens} />}
-        openInNewTab={
-          <Link
-            href={`https://etherscan.io/address/${pool}`}
-            isExternal
-            display="flex"
-            alignItems="center"
-          >
-            <Icon color="gray.300" as={OpenInNewIcon} />
-          </Link>
-        }
+        openInNewTab={`https://etherscan.io/address/${pool}`}
       />
 
       <Flex align="stretch">

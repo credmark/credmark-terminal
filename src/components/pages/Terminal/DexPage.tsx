@@ -65,7 +65,12 @@ function TokenRadioGroup({
 
 interface DexPageProps {
   dex: 'SUSHISWAP' | 'UNISWAP_V2' | 'UNISWAP_V3' | 'CURVE';
-  pools: Array<{ pool: string; tokens: Currency[]; createdAt?: number }>;
+  pools: Array<{
+    pool: string;
+    tokens: Currency[];
+    createdAt?: number;
+    fee?: number;
+  }>;
 }
 
 export default function DexPage({ dex, pools }: DexPageProps) {
@@ -127,7 +132,7 @@ export default function DexPage({ dex, pools }: DexPageProps) {
       >
         {pools
           .filter((pool) => isPoolTokenSelected(pool.tokens))
-          .map(({ pool, tokens, createdAt }) => (
+          .map(({ pool, tokens, createdAt, fee }) => (
             <GridItem
               minW="0"
               colSpan={expandedPool === pool ? 2 : 1}
@@ -139,6 +144,7 @@ export default function DexPage({ dex, pools }: DexPageProps) {
                   pool={pool}
                   tokens={tokens}
                   createdAt={createdAt}
+                  fee={fee}
                   isExpanded={expandedPool === pool}
                   onExpand={() =>
                     expandedPool === pool
