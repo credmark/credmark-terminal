@@ -11,11 +11,7 @@ import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import { useSingleLineChart } from '~/hooks/useChart';
 import { useModelRunner } from '~/hooks/useModel';
-import { ModelSeriesOutput } from '~/types/model';
 import { mergeCsvs } from '~/utils/chart';
-
-const formatDate = (date: Date) =>
-  `${date.getUTCFullYear()}-${date.getMonth() + 1}-${date.getUTCDate()}`;
 
 interface DexChartBoxProps {
   dex: 'SUSHISWAP' | 'UNISWAP_V2' | 'UNISWAP_V3' | 'CURVE';
@@ -27,15 +23,23 @@ interface DexChartBoxProps {
   isExpanded: boolean;
 }
 
-interface DexModelOutput {
-  pool_infos: ModelSeriesOutput<{
-    address: string;
-    name: string;
-    coin_balances: { [key: string]: number };
-    prices: { [key: string]: number };
-    tvl: number;
-    volume24h: number;
+interface TvlModelOutput {
+  address: string;
+  name: string;
+  portfolio: {
+    positions: Array<{
+      amount: number;
+      asset: {
+        address: number;
+      };
+    }>;
+  };
+  prices: Array<{
+    price: number;
+    src: string;
   }>;
+  tokens_symbol: string[];
+  tvl: number;
 }
 
 interface VarModelOutput {
@@ -48,6 +52,24 @@ interface VarModelOutput {
   var: {
     var: number;
   };
+}
+
+interface VolumeModelOutput {
+  tokenVolumes: Array<{
+    token: {
+      address: string;
+    };
+    sellAmount: number;
+    buyAmount: number;
+    sellValue: number;
+    buyValue: number;
+  }>;
+}
+
+interface BlockNumberOutput {
+  blockNumber: number;
+  blockTimestamp: number;
+  sampleTimestamp: number;
 }
 
 export default function DexChartBox({
@@ -72,37 +94,25 @@ export default function DexChartBox({
     a.wrapped.sortsBefore(b.wrapped) ? -1 : 1,
   );
 
-  const tvlInput = {
-    pool_address: {
+  const blockNumberModel = useModelRunner<BlockNumberOutput>({
+    slug: 'rpc.get-blocknumber',
+    input: { timestamp: DateTime.utc().startOf('day').toSeconds() },
+  });
+
+  const tvlModel = useModelRunner<TvlModelOutput>({
+    slug: dex === 'CURVE' ? 'curve-fi.pool-tvl' : 'uniswap-v2.pool-tvl',
+    input: {
       address: pool,
     },
-    date_range: [
-      formatDate(
-        new Date(
-          Math.max(new Date().valueOf() - 90 * 24 * 3600 * 1000, createdAt),
-        ),
+    window: Duration.fromObject({
+      days: Math.min(
+        90,
+        Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
       ),
-      formatDate(new Date()),
-    ],
-  };
-
-  const tvlModel = useModelRunner<DexModelOutput>({
-    slug:
-      dex === 'CURVE'
-        ? 'contrib.curve-get-tvl-and-volume-historical'
-        : dex === 'UNISWAP_V3'
-        ? 'contrib.uniswap-get-tvl-and-volume-historical'
-        : 'contrib.sushiswap-get-tvl-and-volume-historical',
-    input: tvlInput,
-    validateOutput(output: DexModelOutput) {
-      if (
-        Array.isArray(output.pool_infos.errors) &&
-        output.pool_infos.errors.length > 0
-      ) {
-        console.log(output.pool_infos.errors);
-        throw new Error(output.pool_infos.errors[0].error.message);
-      }
-    },
+    }),
+    interval: Duration.fromObject({ days: 1 }),
+    suspended: !blockNumberModel.output,
+    blockNumber: blockNumberModel.output?.blockNumber,
   });
 
   const tvlChart = useSingleLineChart({
@@ -111,44 +121,23 @@ export default function DexChartBox({
     formatter: 'currency',
     fractionDigits: 2,
     data: tvlModel.output
-      ? tvlModel.output.pool_infos.series.map((item) => ({
+      ? tvlModel.output.series.map((item) => ({
           timestamp: new Date(item.sampleTimestamp * 1000),
           value: item.output.tvl,
         }))
       : undefined,
-    loading: tvlModel.loading,
+    loading: tvlModel.loading || blockNumberModel.loading,
     error: tvlModel.errorMessage,
   });
 
-  const volumeChart = useSingleLineChart({
-    name: 'Volume',
-    color: '#3B0065',
-    formatter: 'number',
-    fractionDigits: 2,
-    data: tvlModel.output
-      ? tvlModel.output.pool_infos.series.map((item) => ({
-          timestamp: new Date(item.sampleTimestamp * 1000),
-          value: item.output.volume24h,
-        }))
-      : undefined,
-    loading: tvlModel.loading,
-    error: tvlModel.errorMessage,
-  });
-
-  const varInput = {
-    window: '30 days',
-    interval: 10,
-    confidence: 0.01,
-    lower_range: 0.01,
-    upper_range: 0.01,
-    pool: {
+  const volumeModel = useModelRunner<VolumeModelOutput>({
+    slug: 'dex.pool-volume',
+    input: {
+      pool_info_model:
+        dex === 'CURVE' ? 'curve-fi.pool-tvl' : 'uniswap-v2.pool-tvl',
+      block_offset: -7200,
       address: pool,
     },
-  };
-
-  const varModel = useModelRunner<VarModelOutput>({
-    slug: 'finance.var-dex-lp',
-    input: varInput,
     window: Duration.fromObject({
       days: Math.min(
         90,
@@ -156,7 +145,49 @@ export default function DexChartBox({
       ),
     }),
     interval: Duration.fromObject({ days: 1 }),
-    endTime: DateTime.utc().startOf('day').toJSDate(),
+    suspended: !blockNumberModel.output,
+    blockNumber: blockNumberModel.output?.blockNumber,
+  });
+
+  const volumeChart = useSingleLineChart({
+    name: 'Volume',
+    color: '#3B0065',
+    formatter: 'currency',
+    fractionDigits: 2,
+    data: volumeModel.output
+      ? volumeModel.output.series.map((item) => ({
+          timestamp: new Date(item.sampleTimestamp * 1000),
+          value: item.output.tokenVolumes.reduce(
+            (total, tv) => total + tv.buyValue,
+            0,
+          ),
+        }))
+      : undefined,
+    loading: volumeModel.loading || blockNumberModel.loading,
+    error: volumeModel.errorMessage,
+  });
+
+  const varModel = useModelRunner<VarModelOutput>({
+    slug: 'finance.var-dex-lp',
+    input: {
+      window: '30 days',
+      interval: 10,
+      confidence: 0.01,
+      lower_range: 0.01,
+      upper_range: 0.01,
+      pool: {
+        address: pool,
+      },
+    },
+    window: Duration.fromObject({
+      days: Math.min(
+        90,
+        Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
+      ),
+    }),
+    interval: Duration.fromObject({ days: 1 }),
+    suspended: !blockNumberModel.output,
+    blockNumber: blockNumberModel.output?.blockNumber,
   });
 
   const varChart = useSingleLineChart({
@@ -168,7 +199,7 @@ export default function DexChartBox({
       timestamp: new Date(item.sampleTimestamp * 1000),
       value: item.output.var.var,
     })),
-    loading: varModel.loading,
+    loading: varModel.loading || blockNumberModel.loading,
     error: varModel.errorMessage,
   });
 
@@ -223,9 +254,9 @@ export default function DexChartBox({
               p="4"
               flexDirection="column"
             >
-              <Text fontSize="sm">{varChart.currentStats[0].label}</Text>
+              <Text fontSize="sm">{tvlChart.currentStats[0].label}</Text>
               <Text fontSize="3xl" fontWeight="medium">
-                {varChart.currentStats[0].value}
+                {tvlChart.currentStats[0].value}
               </Text>
             </Center>
             <Flex flex="1">
@@ -238,9 +269,9 @@ export default function DexChartBox({
                 p="2"
                 flexDirection="column"
               >
-                <Text fontSize="sm">{tvlChart.currentStats[0].label}</Text>
+                <Text fontSize="sm">{varChart.currentStats[0].label}</Text>
                 <Text fontSize="lg" fontWeight="medium">
-                  {tvlChart.currentStats[0].value}
+                  {varChart.currentStats[0].value}
                 </Text>
               </Center>
               <Center
@@ -267,7 +298,7 @@ export default function DexChartBox({
           durations={[30, 60, 90]}
           defaultDuration={30}
           showCurrentStats={isExpanded}
-          {...varChart}
+          {...tvlChart}
         />
       </Flex>
 
@@ -279,7 +310,7 @@ export default function DexChartBox({
             durations={[30, 60, 90]}
             defaultDuration={30}
             showCurrentStats
-            {...tvlChart}
+            {...varChart}
           />
           <HistoricalChart
             height={200}

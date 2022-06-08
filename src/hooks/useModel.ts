@@ -59,7 +59,6 @@ interface HistoricalModelRunnerProps<O> extends ModelRunnerCallbackProps {
   suspended?: boolean;
   window: Duration; // In days
   interval: Duration; // In days
-  endTime?: Date;
   validateRow?: (output: O) => void;
 }
 
@@ -69,16 +68,16 @@ type ModelRunnerProps<O> =
 
 export function useModelRunner<O>(props: SimpleModelRunnerProps<O>): {
   loading: boolean;
-  error: ModelRunError | undefined;
-  errorMessage: string | undefined;
-  output: O;
+  error?: ModelRunError | undefined;
+  errorMessage?: string | undefined;
+  output?: O;
 };
 
 export function useModelRunner<O>(props: HistoricalModelRunnerProps<O>): {
   loading: boolean;
-  error: ModelRunError | undefined;
-  errorMessage: string | undefined;
-  output: ModelSeriesOutput<O>;
+  error?: ModelRunError | undefined;
+  errorMessage?: string | undefined;
+  output?: ModelSeriesOutput<O>;
 };
 
 export function useModelRunner<O>(props: ModelRunnerProps<O>) {
@@ -91,20 +90,25 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
     validateRow,
     window: windowDuration,
     interval: intervalDuration,
-    endTime,
   } = props as HistoricalModelRunnerProps<O>;
 
-  const window = windowDuration?.as('seconds');
-  const interval = intervalDuration?.as('seconds');
+  const window = windowDuration
+    ? `${windowDuration.as('days')} days`
+    : undefined;
+  const interval = intervalDuration
+    ? `${intervalDuration.as('days')} days`
+    : undefined;
 
   const { validateOutput } = props as SimpleModelRunnerProps<O>;
 
   const isHistorical = useMemo(
-    () => typeof window === 'number' && typeof interval === 'number',
+    () => typeof window === 'string' && typeof interval === 'string',
     [interval, window],
   );
 
-  const runModel = useModelRunnerCallback<O | ModelSeriesOutput<O>>();
+  const runModel = useModelRunnerCallback<
+    O | { result: ModelSeriesOutput<O> }
+  >();
 
   const validateOutputMemoized = useCallbackRef(
     (output: O | ModelSeriesOutput<O>) => {
@@ -145,32 +149,18 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
     const abortController = new AbortController();
     runModel(
       isHistorical
-        ? endTime
-          ? {
-              slug: 'series.time-start-end-interval',
-              input: {
-                modelSlug: props.slug,
-                modelInput: props.input,
-                modelVersion: props.version,
-                start: endTime.valueOf() / 1000 - window,
-                end: endTime.valueOf() / 1000,
-                interval,
-              },
-              blockNumber: props.blockNumber,
-              chainId: props.chainId,
-            }
-          : {
-              slug: 'series.time-window-interval',
-              input: {
-                modelSlug: props.slug,
-                modelInput: props.input,
-                modelVersion: props.version,
-                window,
-                interval,
-              },
-              blockNumber: props.blockNumber,
-              chainId: props.chainId,
-            }
+        ? {
+            slug: 'historical.run-model',
+            input: {
+              model_slug: props.slug,
+              model_input: props.input,
+              model_version: props.version,
+              window,
+              interval,
+            },
+            blockNumber: props.blockNumber,
+            chainId: props.chainId,
+          }
         : {
             slug: props.slug,
             version: props.version,
@@ -188,9 +178,12 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
           );
         }
 
-        validateOutputMemoized(resp.output);
+        const _output = isHistorical
+          ? (resp.output as { result: ModelSeriesOutput<O> }).result
+          : (resp.output as O);
 
-        setOutput(resp.output);
+        validateOutputMemoized(_output);
+        setOutput(_output);
       })
       .catch((err) => {
         if (abortController.signal.aborted) {
@@ -198,6 +191,7 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
         }
 
         console.log(err);
+        setOutput(undefined);
         setErrorMessage(err.message ?? '');
       })
       .finally(() => {
@@ -208,7 +202,6 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
       abortController.abort();
     };
   }, [
-    endTime,
     interval,
     isHistorical,
     props.blockNumber,
