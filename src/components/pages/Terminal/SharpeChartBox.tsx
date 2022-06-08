@@ -26,7 +26,10 @@ import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import { useLineChart } from '~/hooks/useChart';
-import { useDeepCompareEffect } from '~/hooks/useDeepCompare';
+import {
+  useDeepCompareEffect,
+  useDeepCompareMemo,
+} from '~/hooks/useDeepCompare';
 import useFullscreen from '~/hooks/useFullscreen';
 import {
   ModelRunnerCallbackProps,
@@ -194,7 +197,7 @@ function useSharpeRatioModel(tokens: string[]) {
     return () => abortController.abort();
   }, [runSharpeModel, tokenPrices]);
 
-  const filterSharpeRatios = () => {
+  const filterSharpeRatios = useDeepCompareMemo(() => {
     const filtered = sharpeRatios.filter((x) => {
       const hasFoundToken = x.series.some((v) => {
         return tokens
@@ -205,11 +208,11 @@ function useSharpeRatioModel(tokens: string[]) {
       return hasFoundToken && x;
     });
     return filtered;
-  };
+  }, [sharpeRatios, tokens]);
 
   return {
     loading: pricesLoading || sharpeLoading,
-    output: filterSharpeRatios(),
+    output: filterSharpeRatios,
   };
 }
 
