@@ -1,13 +1,17 @@
-import { Center, Image } from '@chakra-ui/react';
+import { Center, Icon, Image } from '@chakra-ui/react';
+import HelpIcon from '@mui/icons-material/Help';
 import { Currency } from '@uniswap/sdk-core';
 import React, { useMemo, useState } from 'react';
 
-import EthereumIcon from '~/components/icons/EthereumIcon';
+export const getTokenLogoURLs = (address: string): string[] => [
+  `https://raw.githubusercontent.com/uniswap/assets/master/blockchains/ethereum/assets/${address}/logo.png`,
+  `https://raw.githubusercontent.com/sushiswap/logos/main/network/ethereum/${address}.jpg`,
+  `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/ethereum/assets/${address}/logo.png`,
+  `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`,
+  `https://raw.githubusercontent.com/curvefi/curve-assets/main/images/assets/${address.toLowerCase()}.png`,
+];
 
-export const getTokenLogoURL = (address: string): string =>
-  `https://raw.githubusercontent.com/uniswap/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
-
-const BAD_SRCS: { [tokenAddress: string]: true } = {};
+const BAD_SRCS: { [badTokenLogoUrl: string]: true } = {};
 
 interface CurrencyLogoProps {
   currency?: Currency;
@@ -25,7 +29,7 @@ export default function CurrencyLogo({
 
     if (currency.isToken) {
       const defaultUrls =
-        currency.chainId === 1 ? [getTokenLogoURL(currency.address)] : [];
+        currency.chainId === 1 ? getTokenLogoURLs(currency.address) : [];
       return defaultUrls;
     }
     return [];
@@ -57,7 +61,7 @@ export default function CurrencyLogo({
         bg="gray.50"
         color="gray.800"
       >
-        <EthereumIcon fontSize="1rem" />
+        <Icon as={HelpIcon} />
       </Center>
     );
   }
