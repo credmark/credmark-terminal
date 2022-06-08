@@ -1,7 +1,17 @@
-import { HStack, Icon, Spacer, Text, Flex, Img } from '@chakra-ui/react';
+import {
+  HStack,
+  Icon,
+  Spacer,
+  Text,
+  Flex,
+  Img,
+  Tag,
+  Link,
+} from '@chakra-ui/react';
 import FileDownloadIcon from '@mui/icons-material/FileDownloadOutlined';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import React from 'react';
 import { CSVLink } from 'react-csv';
 
@@ -10,6 +20,7 @@ import InfoPopover from '../../InfoPopover';
 export interface ChartHeaderProps {
   logo?: string | React.ReactNode;
   title?: string;
+  subtitle?: string;
   toggleFullScreen?: () => void;
   isFullScreen?: boolean;
   downloadFileName?: string;
@@ -19,43 +30,46 @@ export interface ChartHeaderProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   downloadData?: any;
   tooltip?: React.ReactNode;
-  borderColor?: string;
-  textColor?: string;
-  backgroundColor?: string;
-  openInNewTab?: React.ReactNode;
+  openInNewTab?: string;
 }
 const ChartHeader = ({
   logo,
   title,
+  subtitle,
   toggleFullScreen,
   downloadData,
   downloadFileName,
   downloadFileHeaders,
   isFullScreen,
-  borderColor,
-  backgroundColor,
-  textColor,
   tooltip,
   openInNewTab,
 }: ChartHeaderProps) => {
   return (
     <HStack
       minH="30px"
-      borderRadius="4px 4px 0px 0px"
+      roundedTop="md"
       px="4"
       py="2"
-      roundedTop="md"
       borderBottom="2px"
-      borderColor={borderColor || '#DEDEDE'}
-      backgroundColor={backgroundColor || 'white'}
+      borderColor="#DEDEDE"
+      bg="white"
     >
       {logo && typeof logo === 'string' && <Img src={logo} alt={title} h="5" />}
       {logo && typeof logo !== 'string' && <>{logo}</>}
-      <Text margin={0} color={textColor || 'gray.900'} fontSize="14px">
-        {title}{' '}
+      <Text margin={0} color="gray.900" fontSize="14px">
+        {title}
       </Text>
+      {subtitle && (
+        <Tag colorScheme="gray" size="sm">
+          {subtitle}
+        </Tag>
+      )}
       {tooltip && <InfoPopover>{tooltip}</InfoPopover>}
-      {openInNewTab || <></>}
+      {openInNewTab && (
+        <Link href={openInNewTab} isExternal display="flex" alignItems="center">
+          <Icon color="gray.300" as={OpenInNewIcon} boxSize={4} />
+        </Link>
+      )}
       <Spacer />
 
       <Flex zIndex={99} alignItems="center" gap="16px">
@@ -73,7 +87,7 @@ const ChartHeader = ({
               cursor="pointer"
               marginInlineStart={0}
               as={FileDownloadIcon}
-              color={textColor || 'gray.900'}
+              color="gray.900"
             />
           </CSVLink>
         ) : (
@@ -83,7 +97,7 @@ const ChartHeader = ({
             cursor="pointer"
             marginInlineStart="0 !important"
             as={FileDownloadIcon}
-            color={textColor || 'gray.900'}
+            color="gray.900"
           />
         )}
 
@@ -94,7 +108,7 @@ const ChartHeader = ({
           width="15px"
           height="15px"
           marginInlineStart="0 !important"
-          color={textColor || 'gray.900'}
+          color="gray.900"
         />
       </Flex>
     </HStack>

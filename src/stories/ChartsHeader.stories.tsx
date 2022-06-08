@@ -10,14 +10,6 @@ export default {
   title: 'Components/Charts/ChartHeader',
   component: ChartHeaders,
   argTypes: {
-    backgroundColor: {
-      options: ['green.500', 'gray.400', 'gray.900'],
-      control: { type: 'radio' },
-    },
-    textColor: {
-      options: ['white', 'gray.900'],
-      control: { type: 'radio' },
-    },
     toggleFullScreen: {
       action: 'clicked',
     },
@@ -44,7 +36,4 @@ const Template: Story<ChartHeaderProps> = (args) => (
 );
 
 export const Default = Template.bind({});
-Default.args = {
-  textColor: 'black',
-  backgroundColor: 'green.500',
-};
+Default.args = {};
