@@ -27,8 +27,6 @@ import { Aggregator, ChartLine } from '~/types/chart';
 import { aggregateData, filterDataByDuration } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
-import LoadingNumber from '../LoadingNumber';
-
 interface HistoricalChartProps extends BoxProps {
   lines: ChartLine[];
   loading?: boolean;
@@ -44,7 +42,7 @@ interface HistoricalChartProps extends BoxProps {
   defaultAggregator?: Aggregator;
   defaultDuration?: number;
   showCurrentStats?: boolean;
-  currentStats?: Array<{ label: React.ReactNode; value: string }>;
+  currentStats?: Array<{ label: React.ReactNode; value: React.ReactNode }>;
 
   isFullScreen?: boolean;
 }
@@ -353,7 +351,7 @@ export default function HistoricalChart({
               <Box key={index} textAlign="left" px="2">
                 <Text fontSize="sm">{label}</Text>
                 <Text fontSize="3xl" fontWeight="medium">
-                  {value === '-' && loading ? <LoadingNumber /> : value}
+                  {value}
                 </Text>
               </Box>
             ))}

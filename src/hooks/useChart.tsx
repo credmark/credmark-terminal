@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
+import LoadingNumber from '~/components/shared/LoadingNumber';
 import { ChartLine, CsvData, CsvRow } from '~/types/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
@@ -52,10 +53,16 @@ export function useLineChart({
 
       return {
         label: line.name,
-        value: latestDataPoint ? formatValue(latestDataPoint.value) : '-',
+        value: latestDataPoint ? (
+          formatValue(latestDataPoint.value)
+        ) : loading ? (
+          <LoadingNumber />
+        ) : (
+          <>&nbsp;</>
+        ),
       };
     });
-  }, [formatValue, lines]);
+  }, [formatValue, lines, loading]);
 
   const csv = useMemo<CsvData>(() => {
     const csvDataTsMap: Record<
