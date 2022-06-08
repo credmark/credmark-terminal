@@ -41,6 +41,10 @@ interface Runtime extends Record<Stat, number> {
   slug: string;
   version: string;
 }
+interface TopModels {
+  slug: string;
+  count: number;
+}
 
 export default function ModelUsagePage() {
   const [loading, setLoading] = useState(false);
@@ -53,7 +57,9 @@ export default function ModelUsagePage() {
   const [aggregator, setAggregator] = useState<Aggregator>('sum');
 
   const [runtimes, setRuntimes] = useState<Runtime[]>([]);
+  const [topModels, setTopModels] = useState<TopModels[]>([]);
   const [stat, setStat] = useState<Stat>('mean');
+  const [topModelStat, setTopModelStat] = useState<string>('10');
 
   const color = '#3B0065';
   const ALL_MODELS = 'All Models';
@@ -123,6 +129,14 @@ export default function ModelUsagePage() {
       }).then((resp) => {
         setRuntimes(resp.data.runtimes);
       }),
+
+      axios({
+        method: 'GET',
+        signal: abortController.signal,
+        url: 'https://gateway.credmark.com/v1/usage/top',
+      }).then((resp) => {
+        setTopModels(resp.data);
+      }),
     ]).finally(() => {
       setLoading(false);
     });
@@ -169,6 +183,16 @@ export default function ModelUsagePage() {
       value: runtime[stat],
     }));
   }, [runtimes, stat]);
+
+  const topModelsData = useMemo<BarChartData>(() => {
+    return topModels
+      ?.map((topModel) => ({
+        category: topModel.slug,
+        value: topModel.count,
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, parseInt(topModelStat, 10));
+  }, [topModels, topModelStat]);
 
   const allModelsUsage = useMemo(() => {
     if (!barChartDate) {
@@ -360,6 +384,68 @@ export default function ModelUsagePage() {
             loading={loading}
             data={runtimeBarChartData}
             height={Math.max(runtimeBarChartData.length * 32, 300)}
+            padding={0}
+          />
+        </Card>
+        <Card mt="8">
+          <Heading as="h2" fontSize="3xl" mb="8">
+            Top Models
+          </Heading>
+          <Stack direction={{ base: 'column', lg: 'row' }} mb="4" spacing="4">
+            <Spacer />
+            <Menu>
+              <MenuButton
+                alignSelf="center"
+                as={Button}
+                variant="outline"
+                colorScheme="gray"
+                size="sm"
+                leftIcon={<Icon as={SettingsIcon} />}
+              >
+                Filter
+              </MenuButton>
+              <MenuList minWidth="240px">
+                <MenuOptionGroup
+                  type="radio"
+                  value={stat}
+                  onChange={(value) => {
+                    setTopModelStat(value as string);
+                  }}
+                >
+                  <MenuItemOption
+                    value={'10'}
+                    backgroundColor={
+                      topModelStat === '10' ? 'gray.100' : 'transparent'
+                    }
+                  >
+                    Top 10
+                  </MenuItemOption>
+                  <MenuItemOption
+                    value={'30'}
+                    backgroundColor={
+                      topModelStat === '30' ? 'gray.100' : 'transparent'
+                    }
+                  >
+                    Top 30
+                  </MenuItemOption>
+                  <MenuItemOption
+                    value={topModels.length.toString()}
+                    backgroundColor={
+                      topModelStat === topModels.length.toString()
+                        ? 'gray.100'
+                        : 'transparent'
+                    }
+                  >
+                    All
+                  </MenuItemOption>
+                </MenuOptionGroup>
+              </MenuList>
+            </Menu>
+          </Stack>
+          <BarChart
+            loading={loading}
+            data={topModelsData}
+            height={Math.max(topModelsData.length * 32, 300)}
             padding={0}
           />
         </Card>
