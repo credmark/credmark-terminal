@@ -15,7 +15,8 @@ import React, { useMemo, useState } from 'react';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import LazyLoad from '~/components/shared/LazyLoad';
 
-import DexChartBox from './DexChartBox';
+import CurveDexChartBox from './CurveDexChartBox';
+import UniDexChartBox from './UniDexChartBox';
 
 interface TokenRadioGroupProps extends BoxProps {
   tokens: Currency[];
@@ -103,6 +104,8 @@ export default function DexPage({ dex, pools }: DexPageProps) {
     return false;
   }
 
+  const DexChartBox = dex === 'CURVE' ? CurveDexChartBox : UniDexChartBox;
+
   return (
     <Container p="8" maxW="full">
       <Flex align="center">
@@ -140,7 +143,6 @@ export default function DexPage({ dex, pools }: DexPageProps) {
             >
               <LazyLoad placeholder={<Skeleton height="400px" />}>
                 <DexChartBox
-                  dex={dex}
                   pool={pool}
                   tokens={tokens}
                   createdAt={createdAt}

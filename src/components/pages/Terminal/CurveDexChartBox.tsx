@@ -13,7 +13,6 @@ import { useModelRunner } from '~/hooks/useModel';
 import { mergeCsvs } from '~/utils/chart';
 
 interface DexChartBoxProps {
-  dex: 'SUSHISWAP' | 'UNISWAP_V2' | 'UNISWAP_V3' | 'CURVE';
   pool: string;
   tokens: Currency[];
   createdAt?: number;
@@ -42,16 +41,25 @@ interface TvlModelOutput {
   tvl: number;
 }
 
-interface VarModelOutput {
-  pool: { address: string };
-  tokens_address: [string, string];
-  tokens_symbol: [string, string];
+interface CurvePoolInfoOutput {
+  address: string;
+  virtualPrice: number;
+  tokens: { tokens: Array<{ address: string }> };
+  tokens_symbol: string[];
+  balances: number[];
+  balances_token: number[];
+  admin_fees: number[];
+  underlying_tokens: { tokens: Array<{ address: string }> };
+  underlying_tokens_symbol: string[];
+  A: number;
+  chi: number;
   ratio: number;
-  IL_type: 'V2' | 'V3';
-  range: [] | [number, number];
-  var: {
-    var: number;
-  };
+  is_meta: boolean;
+  name: string;
+  lp_token_name: string;
+  lp_token_addr: string;
+  pool_token_name: string;
+  pool_token_addr: string;
 }
 
 interface VolumeModelOutput {
@@ -72,8 +80,7 @@ interface BlockNumberOutput {
   sampleTimestamp: number;
 }
 
-export default function DexChartBox({
-  dex,
+export default function CurveDexChartBox({
   pool,
   tokens,
   createdAt = 0,
@@ -101,7 +108,7 @@ export default function DexChartBox({
   });
 
   const tvlModel = useModelRunner<TvlModelOutput>({
-    slug: dex === 'CURVE' ? 'curve-fi.pool-tvl' : 'uniswap-v2.pool-tvl',
+    slug: 'curve-fi.pool-tvl',
     input: {
       address: pool,
     },
@@ -134,8 +141,7 @@ export default function DexChartBox({
   const volumeModel = useModelRunner<VolumeModelOutput>({
     slug: 'dex.pool-volume',
     input: {
-      pool_info_model:
-        dex === 'CURVE' ? 'curve-fi.pool-tvl' : 'uniswap-v2.pool-tvl',
+      pool_info_model: 'curve-fi.pool-tvl',
       block_offset: -7200,
       address: pool,
     },
@@ -168,17 +174,10 @@ export default function DexChartBox({
     error: volumeModel.errorMessage,
   });
 
-  const varModel = useModelRunner<VarModelOutput>({
-    slug: 'finance.var-dex-lp',
+  const poolInfoModel = useModelRunner<CurvePoolInfoOutput>({
+    slug: 'curve-fi.pool-info',
     input: {
-      window: '30 days',
-      interval: 10,
-      confidence: 0.01,
-      lower_range: 0.01,
-      upper_range: 0.01,
-      pool: {
-        address: pool,
-      },
+      address: pool,
     },
     window: Duration.fromObject({
       days: Math.min(
@@ -191,22 +190,22 @@ export default function DexChartBox({
     blockNumber: blockNumberModel.output?.blockNumber,
   });
 
-  const varChart = useSingleLineChart({
-    name: 'Value at Risk',
+  const peggingRatioChart = useSingleLineChart({
+    name: 'Pegging Ratio',
     color: '#3B0065',
     formatter: 'number',
     fractionDigits: 4,
-    data: varModel.output?.series?.map((item) => ({
+    data: poolInfoModel.output?.series?.map((item) => ({
       timestamp: new Date(item.sampleTimestamp * 1000),
-      value: item.output.var.var,
+      value: item.output.ratio ?? 0,
     })),
-    loading: varModel.loading || blockNumberModel.loading,
-    error: varModel.errorMessage,
+    loading: poolInfoModel.loading || blockNumberModel.loading,
+    error: poolInfoModel.errorMessage,
   });
 
   const csv = useMemo(() => {
-    return mergeCsvs(tvlChart.csv, varChart.csv, volumeChart.csv);
-  }, [tvlChart.csv, varChart.csv, volumeChart.csv]);
+    return mergeCsvs(tvlChart.csv, peggingRatioChart.csv, volumeChart.csv);
+  }, [tvlChart.csv, peggingRatioChart.csv, volumeChart.csv]);
 
   return (
     <Box
@@ -260,9 +259,11 @@ export default function DexChartBox({
                 p="2"
                 flexDirection="column"
               >
-                <Text fontSize="sm">{varChart.currentStats[0].label}</Text>
+                <Text fontSize="sm">
+                  {peggingRatioChart.currentStats[0].label}
+                </Text>
                 <Text fontSize="lg" fontWeight="medium">
-                  {varChart.currentStats[0].value}
+                  {peggingRatioChart.currentStats[0].value}
                 </Text>
               </Center>
               <Center
@@ -301,7 +302,7 @@ export default function DexChartBox({
             durations={[30, 60, 90]}
             defaultDuration={30}
             showCurrentStats
-            {...varChart}
+            {...peggingRatioChart}
           />
           <HistoricalChart
             height={200}
