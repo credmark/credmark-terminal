@@ -1,4 +1,4 @@
-import { Center, Icon, Image } from '@chakra-ui/react';
+import { BoxProps, Center, Flex, Icon, Image } from '@chakra-ui/react';
 import HelpIcon from '@mui/icons-material/Help';
 import { Currency } from '@uniswap/sdk-core';
 import React, { useMemo, useState } from 'react';
@@ -13,7 +13,7 @@ export const getTokenLogoURLs = (address: string): string[] => [
 
 const BAD_SRCS: { [badTokenLogoUrl: string]: true } = {};
 
-interface CurrencyLogoProps {
+interface CurrencyLogoProps extends BoxProps {
   currency?: Currency;
   size?: number;
 }
@@ -21,6 +21,8 @@ interface CurrencyLogoProps {
 export default function CurrencyLogo({
   currency,
   size = 24,
+
+  ...boxProps
 }: CurrencyLogoProps): JSX.Element {
   const [, refresh] = useState<number>(0);
 
@@ -39,12 +41,28 @@ export default function CurrencyLogo({
   const h = `${size}px`;
 
   if (currency?.symbol === 'CMK') {
-    return <Image src="/img/cmk.svg" alt="CMK" w={w} h={h} rounded="full" />;
+    return (
+      <Image
+        src="/img/cmk.svg"
+        alt="CMK"
+        w={w}
+        h={h}
+        rounded="full"
+        {...boxProps}
+      />
+    );
   }
 
   if (currency?.isNative) {
     return (
-      <Image src="/img/assets/eth.png" alt="ETH" w={w} h={h} rounded="full" />
+      <Image
+        src="/img/assets/eth.png"
+        alt="ETH"
+        w={w}
+        h={h}
+        rounded="full"
+        {...boxProps}
+      />
     );
   }
 
@@ -60,6 +78,7 @@ export default function CurrencyLogo({
         h={h}
         bg="gray.50"
         color="gray.800"
+        {...boxProps}
       >
         <Icon as={HelpIcon} />
       </Center>
@@ -76,6 +95,30 @@ export default function CurrencyLogo({
         if (src) BAD_SRCS[src] = true;
         refresh((i) => i + 1);
       }}
+      {...boxProps}
     />
+  );
+}
+
+interface CurrenciesLogoProps {
+  currencies?: Currency[];
+  size?: number;
+}
+
+export function CurrenciesLogo({
+  currencies = [],
+  size = 24,
+}: CurrenciesLogoProps): JSX.Element {
+  return (
+    <Flex position="relative">
+      {currencies.map((currency, i) => (
+        <CurrencyLogo
+          key={i}
+          currency={currency}
+          ml={size * -0.2 + 'px'}
+          size={size}
+        />
+      ))}
+    </Flex>
   );
 }
