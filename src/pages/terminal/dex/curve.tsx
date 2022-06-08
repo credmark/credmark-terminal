@@ -4,6 +4,7 @@ import React from 'react';
 import { DexPage } from '~/components/pages/Terminal';
 import SEOHeader from '~/components/shared/SEOHeader';
 import {
+  AL_USD,
   CRV,
   cvxCRV,
   cvxFXS,
@@ -20,7 +21,6 @@ import {
   THREE_CRV,
   USDC,
   USDT,
-  UST,
   WBTC,
 } from '~/constants/tokens';
 
@@ -38,8 +38,8 @@ const pools = [
     tokens: [FRAX, THREE_CRV],
   },
   {
-    pool: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
-    tokens: [UST, THREE_CRV],
+    pool: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+    tokens: [AL_USD, THREE_CRV],
   },
   {
     pool: '0x5a6A4D54456819380173272A5E8E9B9904BdF41B',

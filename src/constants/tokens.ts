@@ -293,6 +293,14 @@ export const FNK = new Token(
   'Finiko',
 );
 
+export const AL_USD = new Token(
+  1,
+  '0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9',
+  18,
+  'alUSD',
+  'Alchemix USD',
+);
+
 export const UNI: { [chainId: number]: Token } = {
   [1]: new Token(1, UNI_ADDRESS[1], 18, 'UNI', 'Uniswap'),
   [4]: new Token(4, UNI_ADDRESS[4], 18, 'UNI', 'Uniswap'),
