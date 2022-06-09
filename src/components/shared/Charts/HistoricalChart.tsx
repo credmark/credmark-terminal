@@ -17,6 +17,7 @@ import {
   Spinner,
   Text,
   useBreakpointValue,
+  VStack,
 } from '@chakra-ui/react';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { EChartsOption } from 'echarts';
@@ -43,7 +44,7 @@ interface HistoricalChartProps extends BoxProps {
   defaultDuration?: number;
   showCurrentStats?: boolean;
   currentStats?: Array<{ label: React.ReactNode; value: React.ReactNode }>;
-
+  actions?: React.ReactNode;
   isFullScreen?: boolean;
 }
 
@@ -79,6 +80,8 @@ export default function HistoricalChart({
 
   showCurrentStats = false,
   currentStats = [],
+
+  actions,
 
   isFullScreen = false,
   ...boxProps
@@ -357,25 +360,30 @@ export default function HistoricalChart({
             ))}
           <Spacer />
           {loading && !noData && <Spinner color="purple.500" />}
-          {(durations ?? []).map((days) => (
-            <Box
-              key={days}
-              p="2"
-              fontWeight="bold"
-              color={duration === days ? 'gray.900' : 'gray.300'}
-              cursor="pointer"
-              onClick={() => setDuration(days)}
-              _hover={
-                duration === days
-                  ? {}
-                  : {
-                      color: 'gray.700',
-                    }
-              }
-            >
-              {days}D
-            </Box>
-          ))}
+          <VStack spacing="1">
+            {actions}
+            <HStack>
+              {(durations ?? []).map((days) => (
+                <Box
+                  key={days}
+                  p="2"
+                  fontWeight="bold"
+                  color={duration === days ? 'gray.900' : 'gray.300'}
+                  cursor="pointer"
+                  onClick={() => setDuration(days)}
+                  _hover={
+                    duration === days
+                      ? {}
+                      : {
+                          color: 'gray.700',
+                        }
+                  }
+                >
+                  {days}D
+                </Box>
+              ))}
+            </HStack>
+          </VStack>
           {aggregate && (
             <Menu>
               <MenuButton
