@@ -18,6 +18,7 @@ interface DexChartBoxProps {
   tokens: Currency[];
   createdAt?: number;
   fee?: number;
+  varStartTime?: number;
 
   onExpand: () => void;
   isExpanded: boolean;
@@ -76,6 +77,7 @@ export default function DexChartBox({
   pool,
   tokens,
   createdAt = 0,
+  varStartTime = 0,
   fee,
 
   onExpand,
@@ -166,10 +168,15 @@ export default function DexChartBox({
     error: volumeModel.errorMessage,
   });
 
+  const WINDOW_DAYS = 90;
   const varModel = useModelRunner<VarModelOutput>({
     slug: 'finance.var-dex-lp',
     input: {
-      window: '30 days',
+      window: `${Math.min(
+        180,
+        Math.floor((Date.now().valueOf() - varStartTime) / (24 * 3600 * 1000)) -
+          WINDOW_DAYS,
+      )} days`,
       interval: 10,
       confidence: 0.01,
       lower_range: 0.01,
@@ -180,7 +187,7 @@ export default function DexChartBox({
     },
     window: Duration.fromObject({
       days: Math.min(
-        90,
+        WINDOW_DAYS,
         Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
       ),
     }),
@@ -218,7 +225,7 @@ export default function DexChartBox({
     fractionDigits: 2,
     data: varModel.output?.series?.map((item) => ({
       timestamp: new Date(item.sampleTimestamp * 1000),
-      value: item.output.var.var,
+      value: item.output.var.var * 100,
     })),
     loading: varModel.loading || blockNumberModel.loading,
     error: varModel.errorMessage,

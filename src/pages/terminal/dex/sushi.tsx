@@ -20,6 +20,7 @@ const pools = [
   {
     pool: '0x6a091a3406E0073C3CD6340122143009aDac0EDa',
     tokens: [ILV, WETH9[1]],
+    varStartTime: 1641772800000,
   },
   {
     pool: '0x397ff1542f962076d0bfe58ea045ffa2d347aca0',
@@ -44,6 +45,7 @@ const pools = [
   {
     pool: '0x055475920a8c93cffb64d039a8205f7acc7722d3',
     tokens: [OHM, DAI],
+    varStartTime: 1641772800000,
   },
   {
     pool: '0xc3d03e4f041fd4cd388c549ee2a29a9e5075882f',
@@ -53,6 +55,7 @@ const pools = [
     pool: '0xdB06a76733528761Eda47d356647297bC35a98BD',
     tokens: [JPEG, WETH9[1]],
     createdAt: 1649376000000,
+    varStartTime: 1644364800000,
   },
   {
     pool: '0x795065dcc9f64b5614c407a6efdc400da6221fb0',

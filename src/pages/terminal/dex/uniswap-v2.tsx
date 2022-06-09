@@ -45,6 +45,7 @@ const pools = [
   {
     pool: '0xccb63225a7b19dcf66717e4d40c9a72b39331d61',
     tokens: [MC, WETH9[1]],
+    varStartTime: 1636588800000,
   },
   {
     pool: '0x3041cbd36888becc7bbcbc0045e3b1f144466f5f',

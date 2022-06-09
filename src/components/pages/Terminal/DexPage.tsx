@@ -71,6 +71,7 @@ interface DexPageProps {
     pool: string;
     tokens: Currency[];
     createdAt?: number;
+    varStartTime?: number;
     fee?: number;
   }>;
 }
@@ -136,7 +137,7 @@ export default function DexPage({ dex, pools }: DexPageProps) {
       >
         {pools
           .filter((pool) => isPoolTokenSelected(pool.tokens))
-          .map(({ pool, tokens, createdAt, fee }) => (
+          .map(({ pool, tokens, createdAt, fee, varStartTime }) => (
             <GridItem
               minW="0"
               colSpan={expander.isExpanded(pool) ? 2 : 1}
@@ -149,6 +150,7 @@ export default function DexPage({ dex, pools }: DexPageProps) {
                   tokens={tokens}
                   createdAt={createdAt}
                   fee={fee}
+                  varStartTime={varStartTime}
                   isExpanded={expander.isExpanded(pool)}
                   onExpand={() => expander.onExpand(pool)}
                 />
