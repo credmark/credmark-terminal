@@ -1,6 +1,8 @@
+import { HStack, Text } from '@chakra-ui/react';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import LoadingNumber from '~/components/shared/LoadingNumber';
+import StatusPopover from '~/components/shared/StatusPopover';
 import { ChartLine, CsvData, CsvRow } from '~/types/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
@@ -52,8 +54,23 @@ export function useLineChart({
       )[0];
 
       return {
-        label: line.name,
-        value: latestDataPoint ? (
+        label: (
+          <HStack spacing={1}>
+            <Text as="span">{line.name}</Text>
+            {line.description && (
+              <StatusPopover iconProps={{ boxSize: 4, color: 'gray.300' }}>
+                {line.description}
+              </StatusPopover>
+            )}
+          </HStack>
+        ),
+        value: error ? (
+          <StatusPopover status="error">
+            <Text as="pre" p="4" fontSize="xs" whiteSpace="break-spaces">
+              {error}
+            </Text>
+          </StatusPopover>
+        ) : latestDataPoint ? (
           formatValue(latestDataPoint.value)
         ) : loading ? (
           <LoadingNumber />
@@ -62,7 +79,7 @@ export function useLineChart({
         ),
       };
     });
-  }, [formatValue, lines, loading]);
+  }, [error, formatValue, lines, loading]);
 
   const csv = useMemo<CsvData>(() => {
     const csvDataTsMap: Record<
@@ -107,9 +124,7 @@ export function useLineChart({
   return { lines, currentStats, formatValue, csv, loading, error };
 }
 
-export interface UseSingleLineChartProps {
-  name: string;
-  color: string;
+export interface UseSingleLineChartProps extends Omit<ChartLine, 'data'> {
   data?: ChartLine['data'];
   formatter?: Formatter;
   fractionDigits?: number;
@@ -119,6 +134,7 @@ export interface UseSingleLineChartProps {
 
 export function useSingleLineChart({
   name,
+  description,
   color,
   data,
   formatter,
@@ -135,6 +151,7 @@ export function useSingleLineChart({
       lines: [
         {
           name,
+          description,
           color,
           data: sortedData,
         },

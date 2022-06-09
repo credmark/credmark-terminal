@@ -1,5 +1,8 @@
+import React from 'react';
+
 export interface ChartLine {
   name: string;
+  description?: React.ReactNode;
   color: string;
   data: Array<{
     timestamp: Date;
