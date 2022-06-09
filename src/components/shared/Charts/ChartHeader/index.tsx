@@ -15,7 +15,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import React from 'react';
 import { CSVLink } from 'react-csv';
 
-import InfoPopover from '../../InfoPopover';
+import StatusPopover from '../../StatusPopover';
 
 export interface ChartHeaderProps {
   logo?: string | React.ReactNode;
@@ -64,7 +64,14 @@ const ChartHeader = ({
           {subtitle}
         </Tag>
       )}
-      {tooltip && <InfoPopover>{tooltip}</InfoPopover>}
+      {tooltip && (
+        <StatusPopover
+          status="info"
+          iconProps={{ color: 'gray.300', boxSize: 5 }}
+        >
+          {tooltip}
+        </StatusPopover>
+      )}
       {openInNewTab && (
         <Link href={openInNewTab} isExternal display="flex" alignItems="center">
           <Icon color="gray.300" as={OpenInNewIcon} boxSize={4} />

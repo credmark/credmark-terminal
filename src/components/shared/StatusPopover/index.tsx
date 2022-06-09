@@ -9,41 +9,44 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@chakra-ui/react';
+import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
 import React from 'react';
-interface InfoPopoverProps {
+
+interface StatusPopoverProps {
   children: React.ReactNode;
-  trigger?: React.ReactNode;
-  triggerIconProps?: IconProps;
+  iconProps?: IconProps;
+  status?: 'info' | 'error';
 }
 
-export default function InfoPopover({
+export default function StatusPopover({
   children,
-  trigger,
-  triggerIconProps = {},
-}: InfoPopoverProps) {
-  const defaultTrigger = (
-    <Center>
-      <Icon
-        as={InfoIcon}
-        color="gray.300"
-        cursor="pointer"
-        transitionDuration="normal"
-        transitionProperty="transform"
-        _active={{
-          transform: 'scale(0.98)',
-        }}
-        {...triggerIconProps}
-      />
-    </Center>
-  );
+  iconProps = {},
+  status = 'info',
+}: StatusPopoverProps) {
+  const color = { info: 'purple.500', error: 'red.500' }[status];
+  const icon = { info: InfoIcon, error: ErrorIcon }[status];
 
   return (
     <Popover placement="bottom-start" offset={[-10, 8]} flip={false}>
-      <PopoverTrigger>{trigger ?? defaultTrigger}</PopoverTrigger>
-      <PopoverContent color="purple.500" bg="white" borderColor="purple.500">
+      <PopoverTrigger>
+        <Center>
+          <Icon
+            as={icon}
+            color={color}
+            cursor="pointer"
+            transitionDuration="normal"
+            transitionProperty="transform"
+            _active={{
+              transform: 'scale(0.98)',
+            }}
+            {...iconProps}
+          />
+        </Center>
+      </PopoverTrigger>
+      <PopoverContent color={color} bg="white" borderColor={color}>
         <PopoverArrow
-          borderColor="purple.500"
+          borderColor={color}
           borderLeft="1px"
           borderTop="1px"
           boxShadow="none !important"
@@ -51,11 +54,11 @@ export default function InfoPopover({
         <PopoverCloseButton
           top="-2"
           right="-2"
-          bg="purple.500"
+          bg={color}
           color="white"
           rounded="full"
           _hover={{
-            bg: 'purple.500',
+            bg: color,
             transform: 'translateY(-2px)',
             shadow: 'lg',
           }}
