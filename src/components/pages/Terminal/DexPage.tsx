@@ -14,6 +14,7 @@ import React, { useMemo, useState } from 'react';
 
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import LazyLoad from '~/components/shared/LazyLoad';
+import useExpander from '~/hooks/useExpander';
 
 import CurveDexChartBox from './CurveDexChartBox';
 import UniDexChartBox from './UniDexChartBox';
@@ -76,7 +77,7 @@ interface DexPageProps {
 
 export default function DexPage({ dex, pools }: DexPageProps) {
   const [selectedToken, setSelectedToken] = useState<Currency>();
-  const [expandedPool, setExpandedPool] = useState<string>();
+  const expander = useExpander();
 
   const tokens = useMemo(
     () =>
@@ -138,8 +139,9 @@ export default function DexPage({ dex, pools }: DexPageProps) {
           .map(({ pool, tokens, createdAt, fee }) => (
             <GridItem
               minW="0"
-              colSpan={expandedPool === pool ? 2 : 1}
+              colSpan={expander.isExpanded(pool) ? 2 : 1}
               key={pool}
+              ref={expander.refByKey(pool)}
             >
               <LazyLoad placeholder={<Skeleton height="400px" />}>
                 <DexChartBox
@@ -147,12 +149,8 @@ export default function DexPage({ dex, pools }: DexPageProps) {
                   tokens={tokens}
                   createdAt={createdAt}
                   fee={fee}
-                  isExpanded={expandedPool === pool}
-                  onExpand={() =>
-                    expandedPool === pool
-                      ? setExpandedPool(undefined)
-                      : setExpandedPool(pool)
-                  }
+                  isExpanded={expander.isExpanded(pool)}
+                  onExpand={() => expander.onExpand(pool)}
                 />
               </LazyLoad>
             </GridItem>

@@ -15,6 +15,7 @@ import React, { useState } from 'react';
 import { LenderChartBox } from '~/components/pages/Terminal';
 import SEOHeader from '~/components/shared/SEOHeader';
 import { ASSETS } from '~/constants/terminal';
+import useExpander from '~/hooks/useExpander';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
 import { useActiveWeb3React } from '~/hooks/web3';
 import { AssetKey, MetricInfo, MetricKey } from '~/types/terminal';
@@ -161,7 +162,7 @@ export default function LendersPage() {
     'COMPOUND',
   ]);
 
-  const [expandedMetric, setExpandedMetric] = useState<MetricKey>();
+  const expander = useExpander<MetricKey>();
 
   const dummy = !onMainnet;
 
@@ -211,20 +212,17 @@ export default function LendersPage() {
           {METRICS.map((metric) => (
             <GridItem
               key={metric.key}
+              ref={expander.refByKey(metric.key)}
               minW="0"
-              colSpan={expandedMetric === metric.key ? 2 : 1}
+              colSpan={expander.isExpanded(metric.key) ? 2 : 1}
             >
               <LenderChartBox
                 metric={metric}
                 activeAssets={activeAssets}
                 lcrData={lcrData}
                 varData={varData}
-                onExpand={() =>
-                  expandedMetric === metric.key
-                    ? setExpandedMetric(undefined)
-                    : setExpandedMetric(metric.key)
-                }
-                isExpanded={expandedMetric === metric.key}
+                isExpanded={expander.isExpanded(metric.key)}
+                onExpand={() => expander.onExpand(metric.key)}
               />
             </GridItem>
           ))}
