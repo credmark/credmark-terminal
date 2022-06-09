@@ -31,11 +31,11 @@ import {
   useDeepCompareMemo,
 } from '~/hooks/useDeepCompare';
 import useFullscreen from '~/hooks/useFullscreen';
-import {
-  ModelRunnerCallbackProps,
-  useModelRunnerCallback,
-} from '~/hooks/useModel';
+import { useModelRunner, useModelRunnerCallback } from '~/hooks/useModel';
 import { ModelSeriesOutput } from '~/types/model';
+
+const PRICE_CACHE: Record<string, ModelSeriesOutput<TokenPrice>> = {};
+const SHARPE_RATIO_CACHE: Record<string, ModelSeriesOutput<SharpeRatio>> = {};
 
 interface TokenPrice {
   price: number;
@@ -56,12 +56,29 @@ interface SharpeRatio {
   blockTimestamp: number;
 }
 
+interface BlockNumberOutput {
+  blockNumber: number;
+  blockTimestamp: number;
+  sampleTimestamp: number;
+}
+
 function useSharpeRatioModel(tokens: string[]) {
   const [pricesLoading, setPricesLoading] = useState(false);
   const [sharpeLoading, setSharpeLoading] = useState(false);
 
-  const runPriceModel = useModelRunnerCallback<ModelSeriesOutput<TokenPrice>>();
-  const runSharpeModel = useModelRunnerCallback<SharpeRatio>();
+  const blockNumberModel = useModelRunner<BlockNumberOutput>({
+    slug: 'rpc.get-blocknumber',
+    input: { timestamp: DateTime.utc().startOf('day').toSeconds() },
+  });
+
+  const blockNumber = blockNumberModel.output?.blockNumber;
+
+  const runPriceModel = useModelRunnerCallback<{
+    result: ModelSeriesOutput<TokenPrice>;
+  }>();
+  const runSharpeModel = useModelRunnerCallback<{
+    results: Array<{ output: SharpeRatio }>;
+  }>();
 
   const [tokenPrices, setTokenPrices] = useState<
     Record<string, ModelSeriesOutput<TokenPrice>>
@@ -71,32 +88,37 @@ function useSharpeRatioModel(tokens: string[]) {
     ModelSeriesOutput<SharpeRatio>[]
   >([]);
 
-  const PRICE_WINDOW = 30;
-  const SHARPE_WINDOW = 10;
+  const PRICE_WINDOW = 180;
+  const SHARPE_WINDOW = 90;
 
   useDeepCompareEffect(() => {
     setPricesLoading(true);
+    if (!blockNumber) return;
+
     const abortController = new AbortController();
     const window = Duration.fromObject({ days: PRICE_WINDOW }).as('seconds');
     const interval = Duration.fromObject({ days: 1 }).as('seconds');
-    const endTime = DateTime.now().startOf('day').toJSDate();
+
     Promise.all(
       tokens.map((tokenAddress) =>
-        tokenAddress in tokenPrices
-          ? Promise.resolve(tokenPrices[tokenAddress])
+        tokenAddress in PRICE_CACHE
+          ? Promise.resolve(PRICE_CACHE[tokenAddress])
           : runPriceModel(
               {
-                slug: 'series.time-start-end-interval',
+                slug: 'historical.run-model',
                 input: {
-                  modelSlug: 'chainlink.price-usd',
-                  modelInput: { address: tokenAddress },
-                  start: endTime.valueOf() / 1000 - window,
-                  end: endTime.valueOf() / 1000,
-                  interval,
+                  model_slug: 'chainlink.price-usd',
+                  model_input: { address: tokenAddress },
+                  window: `${window} seconds`,
+                  interval: `${interval} seconds`,
                 },
+                blockNumber,
               },
               abortController.signal,
-            ).then((result) => result.output),
+            ).then((result) => {
+              PRICE_CACHE[tokenAddress] = result.output.result;
+              return result.output.result;
+            }),
       ),
     )
       .then((resp) => {
@@ -107,6 +129,13 @@ function useSharpeRatioModel(tokens: string[]) {
 
         setTokenPrices(map);
       })
+      .catch((err) => {
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        throw err;
+      })
       .finally(() => {
         setPricesLoading(false);
       });
@@ -114,7 +143,7 @@ function useSharpeRatioModel(tokens: string[]) {
     return () => {
       abortController.abort();
     };
-  }, [runPriceModel, tokens, tokenPrices]);
+  }, [runPriceModel, tokens, blockNumber]);
 
   useDeepCompareEffect(() => {
     setSharpeLoading(true);
@@ -124,65 +153,73 @@ function useSharpeRatioModel(tokens: string[]) {
       prices: ModelSeriesOutput<TokenPrice>,
     ): Promise<ModelSeriesOutput<SharpeRatio>> {
       return new Promise((resolve) => {
-        const series: ModelSeriesOutput<SharpeRatio>['series'] = [];
-        const errors: ModelSeriesOutput<SharpeRatio>['errors'] = [];
         // Oldest first
         const sortedPrices = [...prices.series].sort(
           (a, b) => b.blockNumber - a.blockNumber,
         );
 
-        const promises: Promise<unknown>[] = [];
+        const modelInputs: Array<{
+          token: { address: string };
+          prices: ModelSeriesOutput<TokenPrice>;
+          risk_free_rate: number;
+        }> = [];
         for (let i = 0; i < SHARPE_WINDOW; i++) {
           const inputPrices = sortedPrices.slice(
             i,
             sortedPrices.length - SHARPE_WINDOW + i,
           );
 
-          const runProps: ModelRunnerCallbackProps = {
-            slug: 'finance.sharpe-ratio-token',
-            blockNumber: inputPrices[0].blockNumber,
-            input: {
-              token: { address: tokenAddress },
-              prices: {
-                series: inputPrices,
-                errors: [],
-              },
-              risk_free_rate: 0.02,
+          modelInputs.push({
+            token: { address: tokenAddress },
+            prices: {
+              series: inputPrices,
+              errors: [],
             },
-          };
-
-          promises.push(
-            runSharpeModel(runProps, abortController.signal)
-              .then((result) => {
-                series[i] = {
-                  blockNumber: inputPrices[0].blockNumber,
-                  blockTimestamp: inputPrices[0].blockTimestamp,
-                  sampleTimestamp: inputPrices[0].sampleTimestamp,
-                  output: result.output,
-                };
-              })
-              .catch((err) => {
-                errors[i] = {
-                  error: {
-                    message: err?.message ?? 'Some unexpected error occured',
-                  },
-                };
-              }),
-          );
+            risk_free_rate: 0.02,
+          });
         }
 
-        Promise.all(promises).then(() => {
-          resolve({
-            series,
-            errors,
+        runSharpeModel(
+          {
+            slug: 'compose.map-inputs',
+            input: {
+              modelSlug: 'finance.sharpe-ratio-token',
+              modelInputs,
+            },
+          },
+          abortController.signal,
+        )
+          .then((mapRes) => {
+            resolve({
+              series: mapRes.output.results.map((output, index) => ({
+                blockNumber: modelInputs[index].prices.series[0].blockNumber,
+                blockTimestamp:
+                  modelInputs[index].prices.series[0].blockTimestamp,
+                sampleTimestamp:
+                  modelInputs[index].prices.series[0].sampleTimestamp,
+                output: output.output,
+              })),
+              errors: [],
+            });
+          })
+          .catch((err) => {
+            if (abortController.signal.aborted) {
+              return;
+            }
+
+            throw err;
           });
-        });
       });
     }
 
     Promise.all(
       Object.entries(tokenPrices).map(([tokenAddress, tokenPrice]) =>
-        foo(tokenAddress, tokenPrice),
+        tokenAddress in SHARPE_RATIO_CACHE
+          ? Promise.resolve(SHARPE_RATIO_CACHE[tokenAddress])
+          : foo(tokenAddress, tokenPrice).then((sharpeRatio) => {
+              SHARPE_RATIO_CACHE[tokenAddress] = sharpeRatio;
+              return sharpeRatio;
+            }),
       ),
     )
       .then(setSharpeRatios)
@@ -232,7 +269,6 @@ export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
   );
 
   const model = useSharpeRatioModel(selectedTokens);
-
   const sharpeChart = useLineChart({
     lines: model.output.map((o, i) => ({
       color: colors[i],
@@ -302,7 +338,6 @@ export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
                 <HStack w="100%" justifyContent="center">
                   <CurrencyLogo currency={token} /> <Text>{token.symbol}</Text>{' '}
                   <CloseButton
-                    isDisabled={model.loading}
                     size="sm"
                     opacity={0.5}
                     _groupHover={{ opacity: 1 }}
