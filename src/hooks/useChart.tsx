@@ -13,6 +13,8 @@ type Formatter = 'currency' | 'number' | 'percent';
 interface UseLineChartProps {
   lines?: ChartLine[];
   formatter?: Formatter;
+  formatPrefix?: string;
+  formatSuffix?: string;
   fractionDigits?: number;
   loading: boolean;
   error: string | undefined;
@@ -21,6 +23,8 @@ interface UseLineChartProps {
 export function useLineChart({
   lines: _lines = [],
   formatter,
+  formatPrefix = '',
+  formatSuffix = '',
   fractionDigits = 2,
   loading,
   error,
@@ -33,18 +37,24 @@ export function useLineChart({
 
   const formatValue = useCallback(
     (value: number) => {
+      let formatted: string;
       switch (formatter) {
         case 'currency':
-          return '$' + shortenNumber(value, fractionDigits);
+          formatted = '$' + shortenNumber(value, fractionDigits);
+          break;
         case 'number':
-          return shortenNumber(value, fractionDigits);
+          formatted = shortenNumber(value, fractionDigits);
+          break;
         case 'percent':
-          return shortenNumber(value, fractionDigits) + '%';
+          formatted = shortenNumber(value, fractionDigits) + '%';
+          break;
         default:
-          return String(value);
+          formatted = String(value);
       }
+
+      return formatPrefix + formatted + formatSuffix;
     },
-    [formatter, fractionDigits],
+    [formatPrefix, formatSuffix, formatter, fractionDigits],
   );
 
   const currentStats = useMemo(() => {
@@ -127,6 +137,8 @@ export function useLineChart({
 export interface UseSingleLineChartProps extends Omit<ChartLine, 'data'> {
   data?: ChartLine['data'];
   formatter?: Formatter;
+  formatPrefix?: string;
+  formatSuffix?: string;
   fractionDigits?: number;
   loading?: boolean;
   error?: string | undefined;
@@ -138,6 +150,8 @@ export function useSingleLineChart({
   color,
   data,
   formatter,
+  formatPrefix,
+  formatSuffix,
   fractionDigits,
   loading: _loading = false,
   error: _error = '',
@@ -157,6 +171,8 @@ export function useSingleLineChart({
         },
       ],
       formatter,
+      formatPrefix,
+      formatSuffix,
       fractionDigits,
       loading: _loading,
       error: _error,
