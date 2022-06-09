@@ -1,4 +1,5 @@
-import { Box, Center, Flex, Text } from '@chakra-ui/react';
+import { Box, Center, Flex, Icon, Link, Text } from '@chakra-ui/react';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
@@ -190,6 +191,28 @@ export default function DexChartBox({
 
   const varChart = useSingleLineChart({
     name: 'Value at Risk',
+    description: useMemo(
+      () => (
+        <React.Fragment>
+          Value at Risk in this case refers to the percentage of your LP
+          position at risk in terms of a worst-case scenario for a given holding
+          period.
+          <br />
+          <br />
+          <Link
+            href="https://docs.credmark.com/dealing-with-risks/market-risk/value-at-risk-var"
+            isExternal
+            textDecoration="underline"
+            pb="1"
+            aria-label="Read more about VaR in Credmark Wiki"
+          >
+            Read more about VaR in Credmark Wiki{' '}
+            <Icon color="gray.300" as={OpenInNewIcon} />
+          </Link>
+        </React.Fragment>
+      ),
+      [],
+    ),
     color: '#3B0065',
     formatter: 'percent',
     fractionDigits: 2,

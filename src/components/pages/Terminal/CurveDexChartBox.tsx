@@ -1,4 +1,5 @@
-import { Box, Center, Flex, Text } from '@chakra-ui/react';
+import { Box, Center, Flex, Icon, Link, Text } from '@chakra-ui/react';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
@@ -192,6 +193,27 @@ export default function CurveDexChartBox({
 
   const peggingRatioChart = useSingleLineChart({
     name: 'Pegging Ratio',
+    description: useMemo(
+      () => (
+        <React.Fragment>
+          Shows the imbalance of a pool and how far it deviates from 1
+          (perfectly pegged)
+          <br />
+          <br />
+          <Link
+            href="https://docs.credmark.com/dealing-with-risks/defi-and-crypto-specific-risks/depegging-risk"
+            isExternal
+            textDecoration="underline"
+            pb="1"
+            aria-label="Read more about Depegging Risk in our Credmark Wiki"
+          >
+            Read more about Depegging Risk in our Credmark Wiki{' '}
+            <Icon color="gray.300" as={OpenInNewIcon} />
+          </Link>
+        </React.Fragment>
+      ),
+      [],
+    ),
     color: '#3B0065',
     formatter: 'number',
     fractionDigits: 4,
