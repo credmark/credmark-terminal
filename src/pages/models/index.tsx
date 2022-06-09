@@ -1,12 +1,20 @@
-import { Container, Heading } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Heading,
+  Input,
+  SimpleGrid,
+  Tag,
+  Text,
+} from '@chakra-ui/react';
 import axios from 'axios';
+import Fuse from 'fuse.js';
 import { GetServerSideProps } from 'next';
-import { useRouter } from 'next/router';
-import React, { useMemo } from 'react';
+import React, { useRef, useState } from 'react';
 
-import { ModelRunner } from '~/components/pages/Models';
-import SearchSelect from '~/components/shared/Form/SearchSelect';
 import SEOHeader from '~/components/shared/SEOHeader';
+import useDebounce from '~/hooks/useDebounce';
+import { useDeepCompareMemo } from '~/hooks/useDeepCompare';
 import { ModelMetadata } from '~/types/model';
 
 interface ModelPageProps {
@@ -14,43 +22,53 @@ interface ModelPageProps {
 }
 
 export default function ModelsPage({ models }: ModelPageProps) {
-  const router = useRouter();
-  const slug = router.query.slug;
-  const setSlug = (newSlug: string | undefined) => {
-    if (newSlug)
-      router.push(`/models?slug=${newSlug}`, undefined, { shallow: true });
-    else router.push('/models', undefined, { shallow: true });
-  };
+  const [input, setInput] = useState('');
+  const debouncedInput = useDebounce(input, 100);
 
-  const model = useMemo(() => {
-    return models.find((model) => model.slug === slug);
-  }, [models, slug]);
+  const fuseRef = useRef(
+    new Fuse(models, {
+      keys: ['slug', 'displayName', 'description', 'developer'],
+      isCaseSensitive: true,
+      minMatchCharLength: 2,
+      threshold: 0.4,
+    }),
+  );
+
+  const searchedModels = useDeepCompareMemo(() => {
+    if (!debouncedInput) return models;
+    return fuseRef.current.search(debouncedInput).map((r) => r.item);
+  }, [debouncedInput, models]);
 
   return (
     <>
-      <SEOHeader title="Model Usage" />
+      <SEOHeader title="Models" />
       <Container maxW="container.lg" p="8">
         <Heading mb="8" color="purple.500">
           Credmark Models
         </Heading>
-        <SearchSelect<ModelMetadata>
-          placeholder="Select a model..."
-          options={models}
-          filterOption={(option, filterValue) =>
-            (option.data.displayName ?? option.data.slug)
-              .toLocaleLowerCase()
-              .includes(filterValue.toLocaleLowerCase().trim()) ||
-            (option.data.description ?? '')
-              .toLocaleLowerCase()
-              .includes(filterValue.toLocaleLowerCase().trim())
-          }
-          getOptionLabel={(option) => option.displayName}
-          getOptionDescription={(option) => option.description}
-          onChange={(val) => setSlug(val?.slug ?? '')}
-          isOptionSelected={(option) => slug === option.slug}
-          defaultValue={model}
+        <Input
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+          shadow="xl"
+          placeholder="Search..."
         />
-        {model && <ModelRunner model={model} key={model.slug} />}
+        <SimpleGrid columns={{ sm: 1, md: 2 }} spacing={4} mt="8">
+          {searchedModels.map((model) => (
+            <Box key={model.slug} p="4">
+              <Tag>{model.slug}</Tag>
+              <Heading as="h3" fontSize="xl" mt="1">
+                {model.displayName}
+              </Heading>
+              <Text mt="2">{model.description}</Text>
+              {model.developer && (
+                <Text fontSize="sm" color="gray.600">
+                  {' '}
+                  - {model.developer}
+                </Text>
+              )}
+            </Box>
+          ))}
+        </SimpleGrid>
       </Container>
     </>
   );

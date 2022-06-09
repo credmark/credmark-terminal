@@ -47,6 +47,7 @@
     "focus-visible": "^5.2.0",
     "formik": "^2.2.9",
     "framer-motion": "^4.1.17",
+    "fuse.js": "^6.6.2",
     "jsbi": "^3.2.5",
     "lodash.flatmap": "^4.5.0",
     "lodash.get": "^4.4.2",
