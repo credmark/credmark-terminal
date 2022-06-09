@@ -15,6 +15,8 @@ interface AnalyticsChartBoxProps extends UseSingleLineChartProps {
 
   isArea?: boolean;
   footer?: React.ReactNode;
+
+  actions?: React.ReactNode;
 }
 
 export default function AnalyticsChartBox({
@@ -27,8 +29,11 @@ export default function AnalyticsChartBox({
   loading,
   error,
   formatter,
+  formatPrefix,
+  formatSuffix,
   fractionDigits,
   footer,
+  actions,
 }: AnalyticsChartBoxProps) {
   const chartRef = useRef<EChartsInstance>();
   const containerRef = useRef(null);
@@ -47,6 +52,8 @@ export default function AnalyticsChartBox({
     loading,
     error,
     formatter,
+    formatPrefix,
+    formatSuffix,
     fractionDigits,
   });
 
@@ -68,6 +75,7 @@ export default function AnalyticsChartBox({
         showCurrentStats
         onChartReady={(chart) => (chartRef.current = chart)}
         isFullScreen={isFullScreen}
+        actions={actions}
         {...chart}
       />
       {footer && (

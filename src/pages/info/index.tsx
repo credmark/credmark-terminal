@@ -1,6 +1,14 @@
-import { Container, Grid, Icon, Link } from '@chakra-ui/react';
+import {
+  Container,
+  Grid,
+  Icon,
+  Link,
+  Radio,
+  RadioGroup,
+  Stack,
+} from '@chakra-ui/react';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   AnalyticsChartBox,
@@ -58,6 +66,8 @@ export default function AnalyticsPage() {
     }
   }
 
+  const [stakedCmkUnit, setStakedCmkUnit] = useState<'CMK' | 'USDC'>('CMK');
+
   return (
     <>
       <SEOHeader title="Token Analytics Terminal" />
@@ -86,16 +96,35 @@ export default function AnalyticsPage() {
           <AnalyticsChartBox
             title="Staked CMK"
             titleImg="/img/xcmk.svg"
+            actions={
+              <RadioGroup
+                onChange={(val: 'CMK' | 'USDC') => setStakedCmkUnit(val)}
+                value={stakedCmkUnit}
+              >
+                <Stack direction="row" spacing="3">
+                  <Radio value="CMK" colorScheme="purple">
+                    CMK
+                  </Radio>
+                  <Radio value="USDC" colorScheme="green">
+                    USDC
+                  </Radio>
+                </Stack>
+              </RadioGroup>
+            }
             name="Amount Staked"
             loading={stakedCmkAnalytics.loading}
             data={
               stakedCmkAnalytics.data?.map((val) => ({
                 timestamp: new Date(val.ts * 1000),
-                value: Number(val.amount_staked_usdc),
+                value:
+                  stakedCmkUnit === 'CMK'
+                    ? Number(val.cmk_balance)
+                    : Number(val.amount_staked_usdc),
               })) ?? []
             }
             color="#DB197699"
-            formatter="currency"
+            formatter={stakedCmkUnit === 'CMK' ? 'number' : 'currency'}
+            formatSuffix={stakedCmkUnit === 'CMK' ? ' CMK' : ''}
             fractionDigits={2}
             isArea
           />
