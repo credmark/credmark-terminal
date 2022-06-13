@@ -192,12 +192,12 @@ export default function CurveDexChartBox({
   });
 
   const peggingRatioChart = useSingleLineChart({
-    name: 'Pegging Ratio',
+    name: 'Balance Ratio',
     description: useMemo(
       () => (
         <React.Fragment>
           Shows the imbalance of a pool and how far it deviates from 1
-          (perfectly pegged)
+          (perfectly balanced)
           <br />
           <br />
           <Link
