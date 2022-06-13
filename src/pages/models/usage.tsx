@@ -28,26 +28,14 @@ import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import SearchSelect from '~/components/shared/Form/SearchSelect';
 import SEOHeader from '~/components/shared/SEOHeader';
 import { Aggregator, BarChartData, ChartLine } from '~/types/chart';
+import {
+  ModelRuntime,
+  ModelRuntimeStat,
+  ModelUsage,
+  TopModels,
+} from '~/types/model';
 import { aggregateData } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
-
-interface ModelUsage {
-  ts: string;
-  type: string;
-  slug: string;
-  version: string;
-  count: string;
-}
-
-type Stat = 'min' | 'max' | 'mean' | 'median';
-interface Runtime extends Record<Stat, number> {
-  slug: string;
-  version: string;
-}
-interface TopModels {
-  slug: string;
-  count: number;
-}
 
 export default function ModelUsagePage() {
   const [loading, setLoading] = useState(false);
@@ -61,9 +49,9 @@ export default function ModelUsagePage() {
   const [aggregationInterval, setAggregationInterval] = useState(1); // In Days
   const [aggregator, setAggregator] = useState<Aggregator>('sum');
 
-  const [runtimes, setRuntimes] = useState<Runtime[]>([]);
+  const [runtimes, setRuntimes] = useState<ModelRuntime[]>([]);
   const [topModels, setTopModels] = useState<TopModels[]>([]);
-  const [stat, setStat] = useState<Stat>('mean');
+  const [stat, setStat] = useState<ModelRuntimeStat>('mean');
 
   const color = '#3B0065';
   const ALL_MODELS = 'All Models';
@@ -396,7 +384,7 @@ export default function ModelUsagePage() {
                 <MenuOptionGroup
                   type="radio"
                   value={stat}
-                  onChange={(value) => setStat(value as Stat)}
+                  onChange={(value) => setStat(value as ModelRuntimeStat)}
                 >
                   <MenuItemOption value="min">Min</MenuItemOption>
                   <MenuItemOption value="max">Max</MenuItemOption>

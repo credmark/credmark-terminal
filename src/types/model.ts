@@ -104,3 +104,21 @@ export interface ModelRunnerConfig {
   chainId: number;
   blockNumber: number | string;
 }
+
+export interface ModelUsage {
+  ts: string;
+  type: string;
+  slug: string;
+  version: string;
+  count: string;
+}
+
+export type ModelRuntimeStat = 'min' | 'max' | 'mean' | 'median';
+export interface ModelRuntime extends Record<ModelRuntimeStat, number> {
+  slug: string;
+  version: string;
+}
+export interface TopModels {
+  slug: string;
+  count: number;
+}
