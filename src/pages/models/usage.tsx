@@ -49,7 +49,6 @@ const getName = (slugRef: string, modelsFullInformation: ModelMetadata[]) => {
   );
   return {
     name: filteredData?.displayName || 'Credmark Model',
-    description: filteredData?.description || '',
   };
 };
 
@@ -182,7 +181,6 @@ export default function ModelUsagePage(props: ModelPageProps) {
         moreInfo: {
           slug: line.name,
           name: getName(line.name, modelsFullInformation).name,
-          description: getName(line.name, modelsFullInformation).description,
         },
         value,
       });
@@ -208,7 +206,6 @@ export default function ModelUsagePage(props: ModelPageProps) {
         moreInfo: {
           name: getName(runtime.slug, modelsFullInformation).name,
           slug: runtime.slug,
-          description: getName(runtime.slug, modelsFullInformation).description,
         },
       }))
       .sort((a, b) => b.value - a.value)
@@ -222,8 +219,6 @@ export default function ModelUsagePage(props: ModelPageProps) {
         moreInfo: {
           slug: topModel.slug,
           name: getName(topModel.slug, modelsFullInformation).name,
-          description: getName(topModel.slug, modelsFullInformation)
-            .description,
         },
         value: topModel.count,
       }))
