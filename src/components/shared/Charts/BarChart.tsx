@@ -35,9 +35,17 @@ export default function BarChart({
           right: 16,
         },
         tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow',
+          trigger: 'item',
+
+          formatter: (params: { name: string; value: number }) => {
+            const { name, value } = params;
+            return `
+              <div>
+                <strong>${name}</strong>
+                <br/>
+                <em>${new Intl.NumberFormat().format(value as number)}</em>
+              </div>
+            `;
           },
         },
         legend: {},

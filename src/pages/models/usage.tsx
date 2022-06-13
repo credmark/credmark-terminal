@@ -20,6 +20,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SettingsIcon from '@mui/icons-material/Settings';
 import axios from 'axios';
+import { GetServerSideProps } from 'next';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { Card } from '~/components/base';
@@ -33,11 +34,24 @@ import {
   ModelRuntimeStat,
   ModelUsage,
   TopModels,
+  ModelMetadata,
 } from '~/types/model';
 import { aggregateData } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
-export default function ModelUsagePage() {
+interface ModelPageProps {
+  models: ModelMetadata[];
+}
+
+const getName = (slugRef: string, modelsFullInformation: ModelMetadata[]) => {
+  return (
+    modelsFullInformation?.find((model) => model?.slug === slugRef)
+      ?.displayName ?? 'Credmark Model'
+  );
+};
+
+export default function ModelUsagePage(props: ModelPageProps) {
+  const { models: modelsFullInformation } = props;
   const [loading, setLoading] = useState(false);
   const [lines, setLines] = useState<ChartLine[]>([]);
   const [showLessCalls, setShowLessCalls] = useState(true);
@@ -161,7 +175,11 @@ export default function ModelUsagePage() {
       }
 
       data.push({
-        category: line.name,
+        category: getName(line.name, modelsFullInformation),
+        moreInfo: {
+          slug: line.name,
+          description: '',
+        },
         value,
       });
     }
@@ -169,27 +187,42 @@ export default function ModelUsagePage() {
     return data
       .sort((a, b) => b.value - a.value)
       .slice(0, showLessCalls ? 10 : Infinity);
-  }, [aggregationInterval, aggregator, barChartDate, lines, showLessCalls]);
+  }, [
+    aggregationInterval,
+    aggregator,
+    barChartDate,
+    lines,
+    showLessCalls,
+    modelsFullInformation,
+  ]);
 
   const runtimeBarChartData = useMemo<BarChartData>(() => {
     return runtimes
       .map((runtime) => ({
-        category: runtime.slug,
+        category: getName(runtime.slug, modelsFullInformation),
         value: runtime[stat],
+        moreInfo: {
+          slug: runtime.slug,
+          description: '',
+        },
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, showLessRuntime ? 10 : Infinity);
-  }, [runtimes, stat, showLessRuntime]);
+  }, [runtimes, stat, showLessRuntime, modelsFullInformation]);
 
   const topModelsData = useMemo<BarChartData>(() => {
     return topModels
       ?.map((topModel) => ({
-        category: topModel.slug,
+        category: getName(topModel.slug, modelsFullInformation),
+        moreInfo: {
+          slug: topModel.slug,
+          description: '',
+        },
         value: topModel.count,
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, showLessTopModels ? 10 : Infinity);
-  }, [topModels, showLessTopModels]);
+  }, [topModels, showLessTopModels, modelsFullInformation]);
 
   const allModelsUsage = useMemo(() => {
     if (!barChartDate) {
@@ -451,3 +484,22 @@ export default function ModelUsagePage() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  try {
+    const resp = await axios({
+      method: 'GET',
+      url: 'https://gateway.credmark.com/v1/models',
+    });
+
+    return {
+      props: {
+        models: resp.data,
+      },
+    };
+  } catch (err) {
+    return {
+      notFound: true,
+    };
+  }
+};
