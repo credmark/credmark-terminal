@@ -20,7 +20,6 @@ interface BarChartProps {
 interface BarChartInfo {
   info: {
     slug?: string;
-    description?: string;
     name?: string;
   };
 }
@@ -59,11 +58,8 @@ export default function BarChart({
             const { info } = data?.find((item: BarChartInfo) => item.info);
             return `
                     <div>
-                      <strong>${info?.name}</strong>
-                      <br/>
+                      <strong><p>${info?.name}</p></strong>
                       <code>${info?.slug}</code>
-                      <br/>
-                      <small><em>${info?.description}</em></small>
                       <br/>
                       <em>${new Intl.NumberFormat().format(
                         data[0] as number,
