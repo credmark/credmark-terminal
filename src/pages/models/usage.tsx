@@ -44,10 +44,13 @@ interface ModelPageProps {
 }
 
 const getName = (slugRef: string, modelsFullInformation: ModelMetadata[]) => {
-  return (
-    modelsFullInformation?.find((model) => model?.slug === slugRef)
-      ?.displayName ?? 'Credmark Model'
+  const filteredData = modelsFullInformation?.find(
+    (model) => model?.slug === slugRef,
   );
+  return {
+    name: filteredData?.displayName || 'Credmark Model',
+    description: filteredData?.description || '',
+  };
 };
 
 export default function ModelUsagePage(props: ModelPageProps) {
@@ -175,10 +178,11 @@ export default function ModelUsagePage(props: ModelPageProps) {
       }
 
       data.push({
-        category: getName(line.name, modelsFullInformation),
+        category: line.name,
         moreInfo: {
           slug: line.name,
-          description: '',
+          name: getName(line.name, modelsFullInformation).name,
+          description: getName(line.name, modelsFullInformation).description,
         },
         value,
       });
@@ -199,11 +203,12 @@ export default function ModelUsagePage(props: ModelPageProps) {
   const runtimeBarChartData = useMemo<BarChartData>(() => {
     return runtimes
       .map((runtime) => ({
-        category: getName(runtime.slug, modelsFullInformation),
+        category: runtime.slug,
         value: runtime[stat],
         moreInfo: {
+          name: getName(runtime.slug, modelsFullInformation).name,
           slug: runtime.slug,
-          description: '',
+          description: getName(runtime.slug, modelsFullInformation).description,
         },
       }))
       .sort((a, b) => b.value - a.value)
@@ -213,10 +218,12 @@ export default function ModelUsagePage(props: ModelPageProps) {
   const topModelsData = useMemo<BarChartData>(() => {
     return topModels
       ?.map((topModel) => ({
-        category: getName(topModel.slug, modelsFullInformation),
+        category: topModel.slug,
         moreInfo: {
           slug: topModel.slug,
-          description: '',
+          name: getName(topModel.slug, modelsFullInformation).name,
+          description: getName(topModel.slug, modelsFullInformation)
+            .description,
         },
         value: topModel.count,
       }))

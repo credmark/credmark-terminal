@@ -4,6 +4,7 @@ import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
+import { useDeepCompareMemo } from '~/hooks/useDeepCompare';
 import { BarChartData } from '~/types/chart';
 
 interface BarChartProps {
@@ -16,6 +17,17 @@ interface BarChartProps {
   onClick?: (category: string) => void;
 }
 
+interface BarChartInfo {
+  info: {
+    slug?: string;
+    description?: string;
+    name?: string;
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ResolvedBarDataType = Record<string, string | any>;
+
 export default function BarChart({
   data,
   loading,
@@ -25,42 +37,50 @@ export default function BarChart({
   titleImg,
   onClick,
 }: BarChartProps) {
+  const reducedData = useDeepCompareMemo(() => {
+    return (
+      data?.reduce<ResolvedBarDataType[]>((acc, curr) => {
+        return [
+          ...acc,
+          [curr?.value, curr?.category, { info: curr?.moreInfo }],
+        ];
+      }, []) ?? []
+    );
+  }, [data]);
+
   const option: EChartsOption = useMemo(
     () =>
       ({
-        grid: {
-          top: 16,
-          bottom: 48,
-          left: 16,
-          right: 16,
-        },
+        legend: {},
         tooltip: {
           trigger: 'item',
-
-          formatter: (params: { name: string; value: number }) => {
-            const { name, value } = params;
+          formatter: (params: { name: string; data: ResolvedBarDataType }) => {
+            const { data } = params;
+            const { info } = data?.find((item: BarChartInfo) => item.info);
             return `
-              <div>
-                <strong>${name}</strong>
-                <br/>
-                <em>${new Intl.NumberFormat().format(value as number)}</em>
-              </div>
-            `;
+                    <div>
+                      <strong>${info?.name}</strong>
+                      <br/>
+                      <code>${info?.slug}</code>
+                      <br/>
+                      <small><em>${info?.description}</em></small>
+                      <br/>
+                      <em>${new Intl.NumberFormat().format(
+                        data[0] as number,
+                      )}</em>
+                    </div>
+                  `;
           },
         },
-        legend: {},
-        xAxis: {
-          type: 'value',
-          boundaryGap: [0, 0.01],
+        dataset: {
+          source: [
+            ['amount', 'model'],
+            ...reducedData.sort((a, b) => b[0] - a[0]),
+          ],
         },
-        yAxis: {
-          type: 'category',
-          data: data?.map((datum) => datum.category),
-          axisLabel: {
-            show: false,
-          },
-          inverse: true,
-        },
+        grid: { containLabel: true },
+        xAxis: { name: 'value' },
+        yAxis: { type: 'category', axisLabel: { show: false }, inverse: true },
         series: [
           {
             realtimeSort: true,
@@ -72,20 +92,26 @@ export default function BarChart({
               verticalAlign: 'middle',
               position: 'insideLeft',
               distance: 15,
-              formatter: (params) => {
+              formatter: (params: {
+                name: string;
+                value: Record<string, number>;
+              }) => {
                 return `${params.name} ${new Intl.NumberFormat().format(
-                  params.value as number,
+                  params.value[0],
                 )}`;
               },
               color: 'black',
             },
             type: 'bar',
-            data: data?.map((datum) => datum.value),
+            encode: {
+              x: 'value',
+              y: 'model',
+            },
             color: '#00D696',
           },
         ],
       } as EChartsOption),
-    [data, title],
+    [title, reducedData],
   );
 
   const currentPriceHeight = 0;
