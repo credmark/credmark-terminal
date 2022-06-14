@@ -210,6 +210,7 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
 
       { label: 'Credmark Analytics', isHeader: true },
       { label: 'Token Analytics', href: '/info' },
+      { label: 'Model Overview', href: '/models' },
       { label: 'Model Usage', href: '/models/usage' },
     ],
     [router.pathname],
