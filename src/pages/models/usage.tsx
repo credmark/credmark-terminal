@@ -279,7 +279,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
           <HistoricalChart
             loading={loading}
             lines={lines.filter((line) => line.name === slug)}
-            height={300}
+            height={335}
             formatYLabel={(value) => shortenNumber(Number(value), 0)}
             formatValue={(value) => new Intl.NumberFormat().format(value)}
             durations={[30, 60, 90]}
@@ -376,7 +376,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
           <BarChart
             loading={loading}
             data={barChartData}
-            height={Math.max(barChartData.length * 32, 300)}
+            height={Math.max(barChartData.length * 32, 335)}
             padding={0}
             onClick={(slug) => setSlug(slug)}
           />
@@ -432,7 +432,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
           <BarChart
             loading={loading}
             data={runtimeBarChartData}
-            height={Math.max(runtimeBarChartData.length * 32, 300)}
+            height={Math.max(runtimeBarChartData.length * 32, 335)}
             padding={0}
           />
           <Center>
@@ -461,7 +461,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
           <BarChart
             loading={loading}
             data={topModelsData}
-            height={Math.max(topModelsData.length * 32, 300)}
+            height={Math.max(topModelsData.length * 32, 335)}
             padding={0}
           />
           <Center>

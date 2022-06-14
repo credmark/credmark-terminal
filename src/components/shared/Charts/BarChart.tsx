@@ -30,7 +30,7 @@ type ResolvedBarDataType = Record<string, string | any>;
 export default function BarChart({
   data,
   loading,
-  height = 400,
+  height = 300,
   padding = 40,
   title,
   titleImg,
