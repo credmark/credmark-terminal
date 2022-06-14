@@ -82,7 +82,7 @@ export default function BarChart({
           right: 50,
           height: 'auto',
         },
-        xAxis: { name: 'value' },
+        xAxis: { name: '' },
         yAxis: { type: 'category', axisLabel: { show: false }, inverse: true },
         series: [
           {
