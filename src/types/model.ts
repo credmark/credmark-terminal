@@ -56,6 +56,7 @@ export type FieldType =
 export interface ModelMetadata {
   slug: string;
   displayName: string;
+  category: string;
   description?: string;
   developer: string;
   input: FieldTypeObject;
@@ -121,4 +122,19 @@ export interface ModelRuntime extends Record<ModelRuntimeStat, number> {
 export interface TopModels {
   slug: string;
   count: number;
+}
+
+export interface ModelInfo {
+  slug: string;
+  hSlug?: React.ReactNode;
+  displayName: string;
+  hDisplayName?: React.ReactNode;
+  category: string;
+  description?: string;
+  hDescription?: React.ReactNode;
+  developer: string;
+  hDeveloper?: React.ReactNode;
+  monthlyUsage: number;
+  runtime: Record<ModelRuntimeStat, number> | null;
+  allTimeUsageRank: number;
 }
