@@ -30,7 +30,7 @@ type ResolvedBarDataType = Record<string, string | any>;
 export default function BarChart({
   data,
   loading,
-  height = 300,
+  height = 400,
   padding = 40,
   title,
   titleImg,
@@ -74,7 +74,14 @@ export default function BarChart({
             ...reducedData.sort((a, b) => b[0] - a[0]),
           ],
         },
-        grid: { containLabel: true },
+        grid: {
+          containLabel: true,
+          top: 0,
+          bottom: 0,
+          left: 10,
+          right: 50,
+          height: 'auto',
+        },
         xAxis: { name: 'value' },
         yAxis: { type: 'category', axisLabel: { show: false }, inverse: true },
         series: [
@@ -113,7 +120,7 @@ export default function BarChart({
   const currentPriceHeight = 0;
 
   return (
-    <Box p={padding + 'px'}>
+    <Box p={padding + 'px'} marginBottom="20px">
       <Box
         position="relative"
         h={height - padding * 2 + currentPriceHeight + 'px'}
