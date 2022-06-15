@@ -186,8 +186,17 @@ export default function ModelUsagePage(props: ModelPageProps) {
       });
     }
 
-    return data
-      .sort((a, b) => b.value - a.value)
+    const reducedData: Array<Record<string, number>> =
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data?.reduce((acc: any, curr) => {
+        return [
+          ...acc,
+          [curr?.value, curr?.category, { info: curr?.moreInfo }],
+        ];
+      }, []) ?? [];
+
+    return reducedData
+      .sort((a, b) => b[0] - a[0])
       .slice(0, showLessCalls ? 10 : Infinity);
   }, [
     aggregationInterval,
@@ -198,33 +207,53 @@ export default function ModelUsagePage(props: ModelPageProps) {
     modelsFullInformation,
   ]);
 
-  const runtimeBarChartData = useMemo<BarChartData>(() => {
-    return runtimes
-      .map((runtime) => ({
-        category: runtime.slug,
-        value: runtime[stat],
-        moreInfo: {
-          name: getName(runtime.slug, modelsFullInformation).name,
-          slug: runtime.slug,
-        },
-      }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, showLessRuntime ? 10 : Infinity);
-  }, [runtimes, stat, showLessRuntime, modelsFullInformation]);
+  const runtimeBarChartData = useMemo(() => {
+    const reducedData: Array<Record<string, number>> =
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      runtimes?.reduce((acc: any, curr) => {
+        return [
+          ...acc,
+          [
+            curr[stat],
+            curr?.slug,
+            {
+              info: {
+                name: getName(curr.slug, modelsFullInformation).name,
+                slug: curr.slug,
+              },
+            },
+          ],
+        ];
+      }, []) ?? [];
 
-  const topModelsData = useMemo<BarChartData>(() => {
-    return topModels
-      ?.map((topModel) => ({
-        category: topModel.slug,
-        moreInfo: {
-          slug: topModel.slug,
-          name: getName(topModel.slug, modelsFullInformation).name,
-        },
-        value: topModel.count,
-      }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, showLessTopModels ? 10 : Infinity);
-  }, [topModels, showLessTopModels, modelsFullInformation]);
+    return reducedData
+      .sort((a, b) => b[0] - a[0])
+      .slice(0, showLessCalls ? 10 : Infinity);
+  }, [runtimes, stat, showLessCalls, modelsFullInformation]);
+
+  const topModelsData = useMemo(() => {
+    const reducedData: Array<Record<string, number>> =
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      topModels?.reduce((acc: any, curr) => {
+        return [
+          ...acc,
+          [
+            curr.count,
+            curr?.slug,
+            {
+              info: {
+                name: getName(curr.slug, modelsFullInformation).name,
+                slug: curr.slug,
+              },
+            },
+          ],
+        ];
+      }, []) || [];
+
+    return reducedData
+      .sort((a, b) => b[0] - a[0])
+      .slice(0, showLessCalls ? 10 : Infinity);
+  }, [topModels, modelsFullInformation, showLessCalls]);
 
   const allModelsUsage = useMemo(() => {
     if (!barChartDate) {
@@ -375,10 +404,12 @@ export default function ModelUsagePage(props: ModelPageProps) {
 
           <BarChart
             loading={loading}
-            data={barChartData}
+            dataset={barChartData}
             height={Math.max(barChartData.length * 32, 335)}
             padding={0}
             onClick={(slug) => setSlug(slug)}
+            // xAxisKey="value"
+            // yAxisKey="value"
           />
           <Center>
             <Button
@@ -431,7 +462,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
           </Stack>
           <BarChart
             loading={loading}
-            data={runtimeBarChartData}
+            dataset={runtimeBarChartData}
             height={Math.max(runtimeBarChartData.length * 32, 335)}
             padding={0}
           />
@@ -460,7 +491,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
 
           <BarChart
             loading={loading}
-            data={topModelsData}
+            dataset={topModelsData}
             height={Math.max(topModelsData.length * 32, 335)}
             padding={0}
           />

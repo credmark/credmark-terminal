@@ -4,12 +4,11 @@ import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
-import { useDeepCompareMemo } from '~/hooks/useDeepCompare';
-import { BarChartData } from '~/types/chart';
-
-interface BarChartProps {
-  data?: BarChartData;
+interface BarChartProps<T> {
+  dataset?: T[];
   loading?: boolean;
+  xAxisKey?: keyof T;
+  yAxisKey?: keyof T;
   title?: string;
   titleImg?: string;
   height?: number;
@@ -17,45 +16,35 @@ interface BarChartProps {
   onClick?: (category: string) => void;
 }
 
-interface BarChartInfo {
-  info: {
-    slug?: string;
-    name?: string;
-  };
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ResolvedBarDataType = Record<string, string | any>;
+type ResolvedBarDataType = Record<string, string | number | any>;
 
-export default function BarChart({
-  data,
+export default function BarChart<T>({
+  dataset,
   loading,
   height = 300,
   padding = 40,
   title,
   titleImg,
+  xAxisKey,
+  yAxisKey,
   onClick,
-}: BarChartProps) {
-  const reducedData = useDeepCompareMemo(() => {
-    return (
-      data?.reduce<ResolvedBarDataType[]>((acc, curr) => {
-        return [
-          ...acc,
-          [curr?.value, curr?.category, { info: curr?.moreInfo }],
-        ];
-      }, []) ?? []
-    );
-  }, [data]);
-
+}: BarChartProps<T>) {
   const option: EChartsOption = useMemo(
     () =>
       ({
         legend: {},
         tooltip: {
           trigger: 'item',
-          formatter: (params: { name: string; data: ResolvedBarDataType }) => {
+          formatter: (params: {
+            data: ResolvedBarDataType;
+            name: string;
+            value: Record<string, number>;
+          }) => {
             const { data } = params;
-            const { info } = data?.find((item: BarChartInfo) => item.info);
+            const { info } = data?.find(
+              (item: { info: { slug: string; name: string } }) => item.info,
+            );
             return `
                     <div>
                       <strong><p>${info?.name}</p></strong>
@@ -69,10 +58,7 @@ export default function BarChart({
           },
         },
         dataset: {
-          source: [
-            ['amount', 'model'],
-            ...reducedData.sort((a, b) => b[0] - a[0]),
-          ],
+          source: dataset,
         },
         grid: {
           containLabel: true,
@@ -96,25 +82,26 @@ export default function BarChart({
               position: 'insideLeft',
               distance: 15,
               formatter: (params: {
+                data: ResolvedBarDataType;
                 name: string;
                 value: Record<string, number>;
               }) => {
                 return `${params.name} ${new Intl.NumberFormat().format(
-                  params.value[0],
+                  Number(params.data[0]) ?? 0,
                 )}`;
               },
               color: 'black',
             },
             type: 'bar',
             encode: {
-              x: 'value',
-              y: 'model',
+              x: xAxisKey,
+              y: yAxisKey,
             },
             color: '#00D696',
           },
         ],
       } as EChartsOption),
-    [title, reducedData],
+    [title, dataset, xAxisKey, yAxisKey],
   );
 
   const currentPriceHeight = 0;
