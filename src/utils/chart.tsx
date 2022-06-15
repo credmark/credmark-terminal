@@ -1,3 +1,8 @@
+import { HStack, Text } from '@chakra-ui/react';
+import React from 'react';
+
+import LoadingNumber from '~/components/shared/LoadingNumber';
+import StatusPopover from '~/components/shared/StatusPopover';
 import { Aggregator, ChartLine, CsvData, CsvRow } from '~/types/chart';
 
 export function filterDataByDuration(
@@ -98,4 +103,52 @@ export function mergeCsvs(...csvs: Array<CsvData>) {
   }
 
   return { data: Object.values(dataMap), headers };
+}
+
+export function getCurrentStats({
+  name,
+  description,
+  error,
+  value,
+  loading,
+}: {
+  name: string;
+  description?: React.ReactNode;
+  error?: string;
+  value?: string;
+  loading: boolean;
+}) {
+  const label = (
+    <HStack spacing={1}>
+      <Text as="span">{name}</Text>
+      {description && (
+        <StatusPopover iconProps={{ boxSize: 4, color: 'gray.300' }}>
+          {description}
+        </StatusPopover>
+      )}
+    </HStack>
+  );
+
+  if (error) {
+    return {
+      label,
+      value: (
+        <StatusPopover status="error">
+          <Text as="pre" p="4" fontSize="xs" whiteSpace="break-spaces">
+            {error}
+          </Text>
+        </StatusPopover>
+      ),
+    };
+  }
+
+  if (value) {
+    return { label, value };
+  }
+
+  if (loading) {
+    return { label, value: <LoadingNumber /> };
+  }
+
+  return { label, value: <>&nbsp;</> };
 }

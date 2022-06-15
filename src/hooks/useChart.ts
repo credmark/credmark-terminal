@@ -1,9 +1,7 @@
-import { HStack, Text } from '@chakra-ui/react';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
-import LoadingNumber from '~/components/shared/LoadingNumber';
-import StatusPopover from '~/components/shared/StatusPopover';
 import { ChartLine, CsvData, CsvRow } from '~/types/chart';
+import { getCurrentStats } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 import { useDeepCompareEffect } from './useDeepCompare';
@@ -63,31 +61,13 @@ export function useLineChart({
         (a, b) => b.timestamp.valueOf() - a.timestamp.valueOf(),
       )[0];
 
-      return {
-        label: (
-          <HStack spacing={1}>
-            <Text as="span">{line.name}</Text>
-            {line.description && (
-              <StatusPopover iconProps={{ boxSize: 4, color: 'gray.300' }}>
-                {line.description}
-              </StatusPopover>
-            )}
-          </HStack>
-        ),
-        value: error ? (
-          <StatusPopover status="error">
-            <Text as="pre" p="4" fontSize="xs" whiteSpace="break-spaces">
-              {error}
-            </Text>
-          </StatusPopover>
-        ) : latestDataPoint ? (
-          formatValue(latestDataPoint.value)
-        ) : loading ? (
-          <LoadingNumber />
-        ) : (
-          <>&nbsp;</>
-        ),
-      };
+      return getCurrentStats({
+        name: line.name,
+        description: line.description,
+        error,
+        loading,
+        value: latestDataPoint ? formatValue(latestDataPoint.value) : undefined,
+      });
     });
   }, [error, formatValue, lines, loading]);
 
