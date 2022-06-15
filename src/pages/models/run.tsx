@@ -18,8 +18,10 @@ export default function ModelsPage({ models }: ModelPageProps) {
   const slug = router.query.slug;
   const setSlug = (newSlug: string | undefined) => {
     if (newSlug)
-      router.push(`/models?slug=${newSlug}`, undefined, { shallow: true });
-    else router.push('/models', undefined, { shallow: true });
+      router.push(`${router.pathname}?slug=${newSlug}`, undefined, {
+        shallow: true,
+      });
+    else router.push(router.pathname, undefined, { shallow: true });
   };
 
   const model = useMemo(() => {
@@ -45,7 +47,11 @@ export default function ModelsPage({ models }: ModelPageProps) {
               .includes(filterValue.toLocaleLowerCase().trim())
           }
           getOptionLabel={(option) => option.displayName}
-          getOptionDescription={(option) => option.description}
+          getOptionDescription={(option) =>
+            [`[${option.slug}]`, option.description]
+              .filter((val) => !!val)
+              .join(' ')
+          }
           onChange={(val) => setSlug(val?.slug ?? '')}
           isOptionSelected={(option) => slug === option.slug}
           defaultValue={model}
