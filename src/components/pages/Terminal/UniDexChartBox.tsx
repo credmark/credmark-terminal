@@ -132,13 +132,50 @@ export default function DexChartBox({
     error: tvlModel.errorMessage,
   });
 
-  const volumeModel = useModelRunner<VolumeModelOutput>({
+  const volumeModelCommonProps = {
+    blockNumber: blockNumberModel.output?.blockNumber,
     slug: 'dex.pool-volume',
     input: {
       pool_info_model: 'uniswap-v2.pool-tvl',
       block_offset: -7200,
       address: pool,
     },
+  };
+
+  const volumeChartCommonProps = {
+    name: 'Volume',
+    color: '#3B0065',
+    formatter: 'currency' as const,
+    fractionDigits: 2,
+  };
+
+  const currentVolumeModel = useModelRunner<VolumeModelOutput>({
+    ...volumeModelCommonProps,
+    suspended: !blockNumberModel.output,
+  });
+
+  const currentVolumeChart = useSingleLineChart({
+    ...volumeChartCommonProps,
+    data:
+      currentVolumeModel.output && blockNumberModel.output
+        ? [
+            {
+              timestamp: new Date(
+                blockNumberModel.output.sampleTimestamp * 1000,
+              ),
+              value: currentVolumeModel.output.tokenVolumes.reduce(
+                (total, tv) => total + tv.buyValue,
+                0,
+              ),
+            },
+          ]
+        : [],
+    loading: currentVolumeModel.loading || blockNumberModel.loading,
+    error: currentVolumeModel.errorMessage,
+  });
+
+  const volumeModel = useModelRunner<VolumeModelOutput>({
+    ...volumeModelCommonProps,
     window: Duration.fromObject({
       days: Math.min(
         90,
@@ -146,15 +183,11 @@ export default function DexChartBox({
       ),
     }),
     interval: Duration.fromObject({ days: 1 }),
-    suspended: !blockNumberModel.output,
-    blockNumber: blockNumberModel.output?.blockNumber,
+    suspended: !blockNumberModel.output || !isExpanded,
   });
 
   const volumeChart = useSingleLineChart({
-    name: 'Volume',
-    color: '#3B0065',
-    formatter: 'currency',
-    fractionDigits: 2,
+    ...volumeChartCommonProps,
     data: volumeModel.output
       ? volumeModel.output.series.map((item) => ({
           timestamp: new Date(item.sampleTimestamp * 1000),
@@ -169,7 +202,9 @@ export default function DexChartBox({
   });
 
   const WINDOW_DAYS = 90;
-  const varModel = useModelRunner<VarModelOutput>({
+
+  const varModelCommonProps = {
+    blockNumber: blockNumberModel.output?.blockNumber,
     slug: 'finance.var-dex-lp',
     input: {
       window: `${Math.min(
@@ -185,18 +220,9 @@ export default function DexChartBox({
         address: pool,
       },
     },
-    window: Duration.fromObject({
-      days: Math.min(
-        WINDOW_DAYS,
-        Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
-      ),
-    }),
-    interval: Duration.fromObject({ days: 1 }),
-    suspended: !blockNumberModel.output,
-    blockNumber: blockNumberModel.output?.blockNumber,
-  });
+  };
 
-  const varChart = useSingleLineChart({
+  const varChartCommonProps = {
     name: 'Value at Risk',
     description: useMemo(
       () => (
@@ -221,8 +247,46 @@ export default function DexChartBox({
       [],
     ),
     color: '#3B0065',
-    formatter: 'percent',
+    formatter: 'percent' as const,
     fractionDigits: 2,
+  };
+
+  const currentVarModel = useModelRunner<VarModelOutput>({
+    ...varModelCommonProps,
+    suspended: !blockNumberModel.output,
+  });
+
+  const currentVarChart = useSingleLineChart({
+    ...varChartCommonProps,
+    data:
+      currentVarModel.output && blockNumberModel.output
+        ? [
+            {
+              timestamp: new Date(
+                blockNumberModel.output.sampleTimestamp * 1000,
+              ),
+              value: currentVarModel.output.var.var * 100,
+            },
+          ]
+        : [],
+    loading: currentVarModel.loading || blockNumberModel.loading,
+    error: currentVarModel.errorMessage,
+  });
+
+  const varModel = useModelRunner<VarModelOutput>({
+    ...varModelCommonProps,
+    window: Duration.fromObject({
+      days: Math.min(
+        WINDOW_DAYS,
+        Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
+      ),
+    }),
+    interval: Duration.fromObject({ days: 1 }),
+    suspended: !blockNumberModel.output || !isExpanded,
+  });
+
+  const varChart = useSingleLineChart({
+    ...varChartCommonProps,
     data: varModel.output?.series?.map((item) => ({
       timestamp: new Date(item.sampleTimestamp * 1000),
       value: item.output.var.var * 100,
@@ -288,9 +352,11 @@ export default function DexChartBox({
                 p="2"
                 flexDirection="column"
               >
-                <Text fontSize="sm">{varChart.currentStats[0].label}</Text>
+                <Text fontSize="sm">
+                  {currentVarChart.currentStats[0].label}
+                </Text>
                 <Text fontSize="lg" fontWeight="medium">
-                  {varChart.currentStats[0].value}
+                  {currentVarChart.currentStats[0].value}
                 </Text>
               </Center>
               <Center
@@ -302,9 +368,11 @@ export default function DexChartBox({
                 p="2"
                 flexDirection="column"
               >
-                <Text fontSize="sm">{volumeChart.currentStats[0].label}</Text>
+                <Text fontSize="sm">
+                  {currentVolumeChart.currentStats[0].label}
+                </Text>
                 <Text fontSize="lg" fontWeight="medium">
-                  {volumeChart.currentStats[0].value}
+                  {currentVolumeChart.currentStats[0].value}
                 </Text>
               </Center>
             </Flex>

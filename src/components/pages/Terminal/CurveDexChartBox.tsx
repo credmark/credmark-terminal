@@ -139,13 +139,50 @@ export default function CurveDexChartBox({
     error: tvlModel.errorMessage,
   });
 
-  const volumeModel = useModelRunner<VolumeModelOutput>({
+  const volumeModelCommonProps = {
+    blockNumber: blockNumberModel.output?.blockNumber,
     slug: 'dex.pool-volume',
     input: {
       pool_info_model: 'curve-fi.pool-tvl',
       block_offset: -7200,
       address: pool,
     },
+  };
+
+  const volumeChartCommonProps = {
+    name: 'Volume',
+    color: '#3B0065',
+    formatter: 'currency' as const,
+    fractionDigits: 2,
+  };
+
+  const currentVolumeModel = useModelRunner<VolumeModelOutput>({
+    ...volumeModelCommonProps,
+    suspended: !blockNumberModel.output,
+  });
+
+  const currentVolumeChart = useSingleLineChart({
+    ...volumeChartCommonProps,
+    data:
+      currentVolumeModel.output && blockNumberModel.output
+        ? [
+            {
+              timestamp: new Date(
+                blockNumberModel.output.sampleTimestamp * 1000,
+              ),
+              value: currentVolumeModel.output.tokenVolumes.reduce(
+                (total, tv) => total + tv.buyValue,
+                0,
+              ),
+            },
+          ]
+        : [],
+    loading: currentVolumeModel.loading || blockNumberModel.loading,
+    error: currentVolumeModel.errorMessage,
+  });
+
+  const volumeModel = useModelRunner<VolumeModelOutput>({
+    ...volumeModelCommonProps,
     window: Duration.fromObject({
       days: Math.min(
         90,
@@ -153,15 +190,11 @@ export default function CurveDexChartBox({
       ),
     }),
     interval: Duration.fromObject({ days: 1 }),
-    suspended: !blockNumberModel.output,
-    blockNumber: blockNumberModel.output?.blockNumber,
+    suspended: !blockNumberModel.output || !isExpanded,
   });
 
   const volumeChart = useSingleLineChart({
-    name: 'Volume',
-    color: '#3B0065',
-    formatter: 'currency',
-    fractionDigits: 2,
+    ...volumeChartCommonProps,
     data: volumeModel.output
       ? volumeModel.output.series.map((item) => ({
           timestamp: new Date(item.sampleTimestamp * 1000),
@@ -175,23 +208,15 @@ export default function CurveDexChartBox({
     error: volumeModel.errorMessage,
   });
 
-  const poolInfoModel = useModelRunner<CurvePoolInfoOutput>({
+  const poolInfoModelCommonProps = {
+    blockNumber: blockNumberModel.output?.blockNumber,
     slug: 'curve-fi.pool-info',
     input: {
       address: pool,
     },
-    window: Duration.fromObject({
-      days: Math.min(
-        90,
-        Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
-      ),
-    }),
-    interval: Duration.fromObject({ days: 1 }),
-    suspended: !blockNumberModel.output,
-    blockNumber: blockNumberModel.output?.blockNumber,
-  });
+  };
 
-  const peggingRatioChart = useSingleLineChart({
+  const peggingRatioChartCommonProps = {
     name: 'Balance Ratio',
     description: useMemo(
       () => (
@@ -215,8 +240,46 @@ export default function CurveDexChartBox({
       [],
     ),
     color: '#3B0065',
-    formatter: 'number',
+    formatter: 'number' as const,
     fractionDigits: 4,
+  };
+
+  const currentPoolInfoModel = useModelRunner<CurvePoolInfoOutput>({
+    ...poolInfoModelCommonProps,
+    suspended: !blockNumberModel.output,
+  });
+
+  const currentPeggingRatioChart = useSingleLineChart({
+    ...peggingRatioChartCommonProps,
+    data:
+      currentPoolInfoModel.output && blockNumberModel.output
+        ? [
+            {
+              timestamp: new Date(
+                blockNumberModel.output.sampleTimestamp * 1000,
+              ),
+              value: currentPoolInfoModel.output.ratio,
+            },
+          ]
+        : [],
+    loading: currentPoolInfoModel.loading || blockNumberModel.loading,
+    error: currentPoolInfoModel.errorMessage,
+  });
+
+  const poolInfoModel = useModelRunner<CurvePoolInfoOutput>({
+    ...poolInfoModelCommonProps,
+    window: Duration.fromObject({
+      days: Math.min(
+        90,
+        Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
+      ),
+    }),
+    interval: Duration.fromObject({ days: 1 }),
+    suspended: !blockNumberModel.output || !isExpanded,
+  });
+
+  const peggingRatioChart = useSingleLineChart({
+    ...peggingRatioChartCommonProps,
     data: poolInfoModel.output?.series?.map((item) => ({
       timestamp: new Date(item.sampleTimestamp * 1000),
       value: item.output.ratio ?? 0,
@@ -283,10 +346,10 @@ export default function CurveDexChartBox({
                 flexDirection="column"
               >
                 <Text fontSize="sm">
-                  {peggingRatioChart.currentStats[0].label}
+                  {currentPeggingRatioChart.currentStats[0].label}
                 </Text>
                 <Text fontSize="lg" fontWeight="medium">
-                  {peggingRatioChart.currentStats[0].value}
+                  {currentPeggingRatioChart.currentStats[0].value}
                 </Text>
               </Center>
               <Center
@@ -298,9 +361,11 @@ export default function CurveDexChartBox({
                 p="2"
                 flexDirection="column"
               >
-                <Text fontSize="sm">{volumeChart.currentStats[0].label}</Text>
+                <Text fontSize="sm">
+                  {currentVolumeChart.currentStats[0].label}
+                </Text>
                 <Text fontSize="lg" fontWeight="medium">
-                  {volumeChart.currentStats[0].value}
+                  {currentVolumeChart.currentStats[0].value}
                 </Text>
               </Center>
             </Flex>
