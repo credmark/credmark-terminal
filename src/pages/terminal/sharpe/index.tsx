@@ -225,7 +225,7 @@ const tokens: Token[] = [
 export default function SharpeRatioPage() {
   return (
     <Container p="8" maxW="container.xl">
-      <SharpeChartBox tokens={tokens} />
+      <SharpeChartBox tokens={tokens} defaultTokens={[WBTC, WETH9[1]]} />
     </Container>
   );
 }

@@ -251,9 +251,13 @@ function useSharpeRatioModel(tokens: string[]) {
 
 interface SharpeChartBoxProps {
   tokens: Token[];
+  defaultTokens?: Token[];
 }
 
-export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
+export default function SharpeChartBox({
+  tokens,
+  defaultTokens = [],
+}: SharpeChartBoxProps) {
   const chartRef = useRef<EChartsInstance>();
   const containerRef = useRef(null);
 
@@ -265,7 +269,7 @@ export default function SharpeChartBox({ tokens }: SharpeChartBoxProps) {
   }, [containerWidth]);
 
   const [selectedTokens, setSelectedTokens] = useState<string[]>(
-    tokens.slice(0, 3).map((token) => token.address),
+    defaultTokens.map((token) => token.address),
   );
 
   const model = useSharpeRatioModel(selectedTokens);
