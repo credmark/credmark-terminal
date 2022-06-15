@@ -42,6 +42,8 @@ import { shortenNumber } from '~/utils/formatTokenAmount';
 interface ModelPageProps {
   models: ModelMetadata[];
 }
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
+type BarChartDataAccumulator = Record<string, any>;
 
 const getName = (slugRef: string, modelsFullInformation: ModelMetadata[]) => {
   const filteredData = modelsFullInformation?.find(
@@ -178,21 +180,14 @@ export default function ModelUsagePage(props: ModelPageProps) {
 
       data.push({
         category: line.name,
-        moreInfo: {
-          slug: line.name,
-          name: getName(line.name, modelsFullInformation).name,
-        },
+        name: getName(line.name, modelsFullInformation).name,
         value,
       });
     }
 
-    const reducedData: Array<Record<string, number>> =
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data?.reduce((acc: any, curr) => {
-        return [
-          ...acc,
-          [curr?.value, curr?.category, { info: curr?.moreInfo }],
-        ];
+    const reducedData =
+      data?.reduce((acc: BarChartDataAccumulator[], curr) => {
+        return [...acc, [curr?.value, curr?.category, curr?.name]];
       }, []) ?? [];
 
     return reducedData
@@ -208,20 +203,14 @@ export default function ModelUsagePage(props: ModelPageProps) {
   ]);
 
   const runtimeBarChartData = useMemo(() => {
-    const reducedData: Array<Record<string, number>> =
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      runtimes?.reduce((acc: any, curr) => {
+    const reducedData =
+      runtimes?.reduce((acc: BarChartDataAccumulator[], curr) => {
         return [
           ...acc,
           [
             curr[stat],
             curr?.slug,
-            {
-              info: {
-                name: getName(curr.slug, modelsFullInformation).name,
-                slug: curr.slug,
-              },
-            },
+            getName(curr.slug, modelsFullInformation).name,
           ],
         ];
       }, []) ?? [];
@@ -232,20 +221,14 @@ export default function ModelUsagePage(props: ModelPageProps) {
   }, [runtimes, stat, showLessCalls, modelsFullInformation]);
 
   const topModelsData = useMemo(() => {
-    const reducedData: Array<Record<string, number>> =
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      topModels?.reduce((acc: any, curr) => {
+    const reducedData =
+      topModels?.reduce((acc: BarChartDataAccumulator[], curr) => {
         return [
           ...acc,
           [
             curr.count,
             curr?.slug,
-            {
-              info: {
-                name: getName(curr.slug, modelsFullInformation).name,
-                slug: curr.slug,
-              },
-            },
+            getName(curr.slug, modelsFullInformation).name,
           ],
         ];
       }, []) || [];

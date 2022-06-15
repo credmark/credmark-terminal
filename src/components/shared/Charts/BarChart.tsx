@@ -42,13 +42,10 @@ export default function BarChart<T>({
             value: Record<string, number>;
           }) => {
             const { data } = params;
-            const { info } = data?.find(
-              (item: { info: { slug: string; name: string } }) => item.info,
-            );
             return `
                     <div>
-                      <strong><p>${info?.name}</p></strong>
-                      <code>${info?.slug}</code>
+                      <strong><p>${data[2]}</p></strong>
+                      <code>${data[1]}</code>
                       <br/>
                       <em>${new Intl.NumberFormat().format(
                         data[0] as number,
