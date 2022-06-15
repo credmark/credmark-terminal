@@ -294,34 +294,37 @@ export default function SharpeChartBox({
     <BorderedCard ref={containerRef} display="flex" flexDirection="column">
       <ChartHeader
         title={'Sharpe Ratio'}
-        tooltip={
-          <Text>
-            Sharpe ratio is a traditional measure of risk-adjusted returns, that
-            allows the comparison of different assets and portfolios. In
-            traditional finance, the following decision making is applied when
-            using Sharpe ratio:
-            <UnorderedList>
-              <ListItem>Under 1.0 is considered bad</ListItem>
-              <ListItem>1.0 is considered acceptable or good</ListItem>
-              <ListItem>2.0 or higher is rated as very good</ListItem>
-            </UnorderedList>
-            <br />
-            <Link
-              href="https://docs.credmark.com/smart-money-in-defi/investment-concepts/sharpe-ratio-in-defi"
-              isExternal
-              textDecoration="underline"
-              pb="1"
-            >
-              Read more about Sharpe Ratio in Credmark Wiki{' '}
-              <Icon color="gray.300" as={OpenInNewIcon} />
-            </Link>
-          </Text>
-        }
-        downloadFileName={`Sharpe Ratio [Credmark].csv`}
-        downloadFileHeaders={sharpeChart.csv.headers}
-        downloadData={sharpeChart.csv.data}
-        isFullScreen={isFullScreen}
-        toggleFullScreen={toggleFullScreen}
+        tooltip={{
+          content: (
+            <Text>
+              Sharpe ratio is a traditional measure of risk-adjusted returns,
+              that allows the comparison of different assets and portfolios. In
+              traditional finance, the following decision making is applied when
+              using Sharpe ratio:
+              <UnorderedList>
+                <ListItem>Under 1.0 is considered bad</ListItem>
+                <ListItem>1.0 is considered acceptable or good</ListItem>
+                <ListItem>2.0 or higher is rated as very good</ListItem>
+              </UnorderedList>
+              <br />
+              <Link
+                href="https://docs.credmark.com/smart-money-in-defi/investment-concepts/sharpe-ratio-in-defi"
+                isExternal
+                textDecoration="underline"
+                pb="1"
+              >
+                Read more about Sharpe Ratio in Credmark Wiki{' '}
+                <Icon color="gray.300" as={OpenInNewIcon} />
+              </Link>
+            </Text>
+          ),
+        }}
+        downloadCsv={{
+          filename: `Sharpe Ratio [Credmark].csv`,
+          ...sharpeChart.csv,
+        }}
+        isExpanded={isFullScreen}
+        toggleExpand={toggleFullScreen}
       />
       <Box overflowX="auto" py="2">
         <HStack>

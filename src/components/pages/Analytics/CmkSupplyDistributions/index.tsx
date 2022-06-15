@@ -2,7 +2,7 @@ import { Box, Center, Grid, HStack, Spacer } from '@chakra-ui/layout';
 import { chakra, Img, Spinner, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useLayoutEffect, useMemo, useRef } from 'react';
 
 import { BorderedCard } from '~/components/base';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
@@ -194,7 +194,7 @@ export default function CmkSupplyDistributions({
     chartRef.current?.resize();
   }, [containerWidth]);
 
-  const generateCsvFormat = () => {
+  const csv = useMemo(() => {
     if (dataToShow && dataToShow.length > 0) {
       const header = dataToShow.map((item) => item.name);
       const values = dataToShow.map((item) => item.value).toString();
@@ -205,7 +205,7 @@ export default function CmkSupplyDistributions({
       header: [],
       values: '',
     };
-  };
+  }, [dataToShow]);
 
   const showCurrentStats = true;
   const currentStats = [
@@ -227,11 +227,13 @@ export default function CmkSupplyDistributions({
         logo={
           <Img alt="CMK Supply Distribution" src={titleImg} height="20px" />
         }
-        downloadFileName={`${generateCsvFormat().header}.csv`}
-        downloadFileHeaders={generateCsvFormat().header}
-        downloadData={generateCsvFormat().values}
-        isFullScreen={isFullScreen}
-        toggleFullScreen={toggleFullScreen}
+        downloadCsv={{
+          filename: `${csv.header}.csv`,
+          headers: csv.header,
+          data: csv.values,
+        }}
+        isExpanded={isFullScreen}
+        toggleExpand={toggleFullScreen}
       />
       <Grid
         gridTemplateRows={`${showCurrentStats ? 'max-content ' : ''}${

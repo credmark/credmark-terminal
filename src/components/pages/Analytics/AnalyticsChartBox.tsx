@@ -62,11 +62,12 @@ export default function AnalyticsChartBox({
       <ChartHeader
         logo={titleImg}
         title={title}
-        downloadFileName={`${title?.replace(/\s/g, '-')}.csv`}
-        downloadFileHeaders={chart.csv.headers}
-        downloadData={chart.csv.data}
-        isFullScreen={isFullScreen}
-        toggleFullScreen={toggleFullScreen}
+        downloadCsv={{
+          filename: `${title?.replace(/\s/g, '-')}.csv`,
+          ...chart.csv,
+        }}
+        isExpanded={isFullScreen}
+        toggleExpand={toggleFullScreen}
       />
       <HistoricalChart
         durations={[30, 60, 90]}

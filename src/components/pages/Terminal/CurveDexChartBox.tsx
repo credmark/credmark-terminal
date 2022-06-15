@@ -239,20 +239,21 @@ export default function CurveDexChartBox({
       shadow="md"
     >
       <ChartHeader
+        logo={<CurrenciesLogo currencies={sortedTokens} />}
         title={sortedTokens
           .map((token) => token.symbol ?? token.name)
           .join(' / ')}
         subtitle={fee ? fee + '%' : ''}
-        toggleFullScreen={onExpand}
-        downloadFileName={`${tvlChart.lines[0].name.replaceAll(
-          ' ',
-          '_',
-        )}[Credmark].csv`}
-        downloadFileHeaders={csv.headers}
-        downloadData={csv.data}
-        isFullScreen={isExpanded}
-        logo={<CurrenciesLogo currencies={sortedTokens} />}
-        openInNewTab={`https://etherscan.io/address/${pool}`}
+        toggleExpand={onExpand}
+        isExpanded={isExpanded}
+        downloadCsv={{
+          filename: `${tvlChart.lines[0].name.replaceAll(
+            ' ',
+            '_',
+          )}[Credmark].csv`,
+          ...csv,
+        }}
+        externalLink={`https://etherscan.io/address/${pool}`}
       />
 
       <Flex align="stretch">

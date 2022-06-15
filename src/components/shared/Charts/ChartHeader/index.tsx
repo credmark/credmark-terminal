@@ -7,6 +7,7 @@ import {
   Img,
   Tag,
   Link,
+  IconProps,
 } from '@chakra-ui/react';
 import FileDownloadIcon from '@mui/icons-material/FileDownloadOutlined';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -21,28 +22,31 @@ export interface ChartHeaderProps {
   logo?: string | React.ReactNode;
   title?: string;
   subtitle?: string;
-  toggleFullScreen?: () => void;
-  isFullScreen?: boolean;
-  downloadFileName?: string;
-  downloadFileHeaders?: string[];
-  // TODO: this data object seems to be abit mixed up in structure,
-  // I will need to identify it and type it properly, so disabling rule for now
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  downloadData?: any;
-  tooltip?: React.ReactNode;
-  openInNewTab?: string;
+  toggleExpand?: () => void;
+  isExpanded?: boolean;
+  downloadCsv?: {
+    filename: string;
+    headers: string[];
+    data: string | Record<string, unknown>[];
+  };
+  tooltip?: {
+    content: React.ReactNode;
+    status?: 'info' | 'error';
+    iconProps?: IconProps;
+  };
+  info?: React.ReactNode;
+  externalLink?: string;
 }
+
 const ChartHeader = ({
   logo,
   title,
   subtitle,
-  toggleFullScreen,
-  downloadData,
-  downloadFileName,
-  downloadFileHeaders,
-  isFullScreen,
+  toggleExpand,
+  isExpanded,
+  downloadCsv,
   tooltip,
-  openInNewTab,
+  externalLink,
 }: ChartHeaderProps) => {
   return (
     <HStack
@@ -56,7 +60,7 @@ const ChartHeader = ({
     >
       {logo && typeof logo === 'string' && <Img src={logo} alt={title} h="5" />}
       {logo && typeof logo !== 'string' && <>{logo}</>}
-      <Text margin={0} color="gray.900" fontSize="14px">
+      <Text color="gray.900" fontSize="14px">
         {title}
       </Text>
       {subtitle && (
@@ -67,24 +71,29 @@ const ChartHeader = ({
       {tooltip && (
         <StatusPopover
           status="info"
-          iconProps={{ color: 'gray.300', boxSize: 5 }}
+          iconProps={{
+            color: 'gray.300',
+            boxSize: 5,
+            ...(tooltip.iconProps ?? {}),
+          }}
         >
-          {tooltip}
+          {tooltip.content}
         </StatusPopover>
       )}
-      {openInNewTab && (
-        <Link href={openInNewTab} isExternal display="flex" alignItems="center">
+      {externalLink && (
+        <Link href={externalLink} isExternal display="flex" alignItems="center">
           <Icon color="gray.300" as={OpenInNewIcon} boxSize={4} />
         </Link>
       )}
+
       <Spacer />
 
       <Flex zIndex={99} alignItems="center" gap="16px">
-        {downloadData && downloadData?.length > 0 ? (
+        {downloadCsv && (
           <CSVLink
-            filename={downloadFileName}
-            headers={downloadFileHeaders}
-            data={downloadData}
+            filename={downloadCsv.filename}
+            headers={downloadCsv.headers}
+            data={downloadCsv.data}
             style={{ display: 'flex' }}
             aria-label="Download"
           >
@@ -97,26 +106,19 @@ const ChartHeader = ({
               color="gray.900"
             />
           </CSVLink>
-        ) : (
+        )}
+
+        {toggleExpand && (
           <Icon
+            cursor="pointer"
+            onClick={toggleExpand}
+            as={isExpanded ? FullscreenExitIcon : FullscreenIcon}
             width="15px"
             height="15px"
-            cursor="pointer"
             marginInlineStart="0 !important"
-            as={FileDownloadIcon}
             color="gray.900"
           />
         )}
-
-        <Icon
-          cursor="pointer"
-          onClick={toggleFullScreen}
-          as={isFullScreen ? FullscreenExitIcon : FullscreenIcon}
-          width="15px"
-          height="15px"
-          marginInlineStart="0 !important"
-          color="gray.900"
-        />
       </Flex>
     </HStack>
   );

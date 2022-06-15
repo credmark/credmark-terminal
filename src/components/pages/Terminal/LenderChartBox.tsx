@@ -7,7 +7,7 @@ import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import { ASSETS } from '~/constants/terminal';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
-import { ChartLine } from '~/types/chart';
+import { ChartLine, CsvRow } from '~/types/chart';
 import { AssetKey, MetricInfo } from '~/types/terminal';
 
 interface LenderChartBoxProps {
@@ -88,7 +88,7 @@ export default function LenderChartBox({
     !!Object.values(lcrData).find(({ loading }) => loading) ||
     !!Object.values(varData).find(({ loading }) => loading);
 
-  const csvLinkProps = useMemo(() => {
+  const csv = useMemo(() => {
     const csvDataTsMap: Record<
       string,
       Array<{ key: string; value: string }>
@@ -114,7 +114,7 @@ export default function LenderChartBox({
       }
     }
 
-    const data: Array<object> = [];
+    const data: Array<CsvRow> = [];
     for (const ts in csvDataTsMap) {
       data.push({
         Timestamp: ts,
@@ -139,12 +139,13 @@ export default function LenderChartBox({
     >
       <ChartHeader
         title={metric.label}
-        toggleFullScreen={onExpand}
-        downloadData={csvLinkProps.data}
-        downloadFileHeaders={csvLinkProps.headers}
-        downloadFileName={`${metric.label.replaceAll(' ', '_')}[Credmark].csv`}
-        isFullScreen={isExpanded}
-        tooltip={metric.tooltip}
+        toggleExpand={onExpand}
+        isExpanded={isExpanded}
+        downloadCsv={{
+          filename: `${metric.label.replaceAll(' ', '_')}[Credmark].csv`,
+          ...csv,
+        }}
+        tooltip={{ status: 'info', content: metric.tooltip }}
       />
 
       <Flex bg="white" roundedBottom="md">
