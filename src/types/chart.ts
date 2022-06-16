@@ -24,4 +24,5 @@ export interface CsvData {
 export type BarChartData = Array<{
   category: string;
   value: number;
+  name: string;
 }>;

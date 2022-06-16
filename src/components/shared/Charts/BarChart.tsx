@@ -4,11 +4,11 @@ import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
-import { BarChartData } from '~/types/chart';
-
-interface BarChartProps {
-  data?: BarChartData;
+interface BarChartProps<T> {
+  dataset?: T[];
   loading?: boolean;
+  xAxisKey?: keyof T;
+  yAxisKey?: keyof T;
   title?: string;
   titleImg?: string;
   height?: number;
@@ -16,43 +16,58 @@ interface BarChartProps {
   onClick?: (category: string) => void;
 }
 
-export default function BarChart({
-  data,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ResolvedBarDataType = Record<string, string | number | any>;
+
+export default function BarChart<T>({
+  dataset,
   loading,
   height = 300,
   padding = 40,
   title,
   titleImg,
+  xAxisKey,
+  yAxisKey,
   onClick,
-}: BarChartProps) {
+}: BarChartProps<T>) {
   const option: EChartsOption = useMemo(
     () =>
       ({
-        grid: {
-          top: 16,
-          bottom: 48,
-          left: 16,
-          right: 16,
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow',
-          },
-        },
         legend: {},
-        xAxis: {
-          type: 'value',
-          boundaryGap: [0, 0.01],
-        },
-        yAxis: {
-          type: 'category',
-          data: data?.map((datum) => datum.category),
-          axisLabel: {
-            show: false,
+        tooltip: {
+          trigger: 'item',
+          formatter: (params: {
+            data: ResolvedBarDataType;
+            name: string;
+            value: Record<string, number>;
+          }) => {
+            const { data } = params;
+            return `
+                    <div>
+                      <strong><p>${data?.name}</p></strong>
+                      <code>${data?.category}</code>
+                      <br/>
+                      <em>${new Intl.NumberFormat().format(
+                        data?.value as number,
+                      )}</em>
+                    </div>
+                  `;
           },
-          inverse: true,
         },
+        dimensions: [yAxisKey, xAxisKey],
+        dataset: {
+          source: dataset,
+        },
+        grid: {
+          containLabel: true,
+          top: 0,
+          bottom: 0,
+          left: 10,
+          right: 50,
+          height: 'auto',
+        },
+        xAxis: { name: '' },
+        yAxis: { type: yAxisKey, axisLabel: { show: false }, inverse: true },
         series: [
           {
             realtimeSort: true,
@@ -64,26 +79,33 @@ export default function BarChart({
               verticalAlign: 'middle',
               position: 'insideLeft',
               distance: 15,
-              formatter: (params) => {
+              formatter: (params: {
+                data: ResolvedBarDataType;
+                name: string;
+                value: Record<string, number>;
+              }) => {
                 return `${params.name} ${new Intl.NumberFormat().format(
-                  params.value as number,
+                  Number(params.data?.value) ?? 0,
                 )}`;
               },
               color: 'black',
             },
             type: 'bar',
-            data: data?.map((datum) => datum.value),
+            encode: {
+              x: xAxisKey,
+              y: yAxisKey,
+            },
             color: '#00D696',
           },
         ],
       } as EChartsOption),
-    [data, title],
+    [title, dataset, xAxisKey, yAxisKey],
   );
 
   const currentPriceHeight = 0;
 
   return (
-    <Box p={padding + 'px'}>
+    <Box p={padding + 'px'} marginBottom="20px">
       <Box
         position="relative"
         h={height - padding * 2 + currentPriceHeight + 'px'}

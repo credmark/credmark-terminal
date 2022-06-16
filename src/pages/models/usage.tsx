@@ -20,6 +20,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SettingsIcon from '@mui/icons-material/Settings';
 import axios from 'axios';
+import { GetServerSideProps } from 'next';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { Card } from '~/components/base';
@@ -33,11 +34,26 @@ import {
   ModelRuntimeStat,
   ModelUsage,
   TopModels,
+  ModelMetadata,
 } from '~/types/model';
 import { aggregateData } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
-export default function ModelUsagePage() {
+interface ModelPageProps {
+  models: ModelMetadata[];
+}
+
+const getName = (slugRef: string, modelsFullInformation: ModelMetadata[]) => {
+  const filteredData = modelsFullInformation?.find(
+    (model) => model?.slug === slugRef,
+  );
+  return {
+    name: filteredData?.displayName || 'Credmark Model',
+  };
+};
+
+export default function ModelUsagePage(props: ModelPageProps) {
+  const { models: modelsFullInformation } = props;
   const [loading, setLoading] = useState(false);
   const [lines, setLines] = useState<ChartLine[]>([]);
   const [showLessCalls, setShowLessCalls] = useState(true);
@@ -162,6 +178,7 @@ export default function ModelUsagePage() {
 
       data.push({
         category: line.name,
+        name: getName(line.name, modelsFullInformation).name,
         value,
       });
     }
@@ -169,27 +186,36 @@ export default function ModelUsagePage() {
     return data
       .sort((a, b) => b.value - a.value)
       .slice(0, showLessCalls ? 10 : Infinity);
-  }, [aggregationInterval, aggregator, barChartDate, lines, showLessCalls]);
+  }, [
+    aggregationInterval,
+    aggregator,
+    barChartDate,
+    lines,
+    showLessCalls,
+    modelsFullInformation,
+  ]);
 
-  const runtimeBarChartData = useMemo<BarChartData>(() => {
+  const runtimeBarChartData = useMemo(() => {
     return runtimes
-      .map((runtime) => ({
-        category: runtime.slug,
-        value: runtime[stat],
+      ?.map((data) => ({
+        value: data[stat],
+        category: data?.slug,
+        name: getName(data.slug, modelsFullInformation).name,
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, showLessRuntime ? 10 : Infinity);
-  }, [runtimes, stat, showLessRuntime]);
+  }, [runtimes, stat, showLessRuntime, modelsFullInformation]);
 
-  const topModelsData = useMemo<BarChartData>(() => {
+  const topModelsData = useMemo(() => {
     return topModels
-      ?.map((topModel) => ({
-        category: topModel.slug,
-        value: topModel.count,
+      ?.map((data) => ({
+        value: data.count,
+        category: data?.slug,
+        name: getName(data.slug, modelsFullInformation).name,
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, showLessTopModels ? 10 : Infinity);
-  }, [topModels, showLessTopModels]);
+  }, [topModels, modelsFullInformation, showLessTopModels]);
 
   const allModelsUsage = useMemo(() => {
     if (!barChartDate) {
@@ -244,7 +270,7 @@ export default function ModelUsagePage() {
           <HistoricalChart
             loading={loading}
             lines={lines.filter((line) => line.name === slug)}
-            height={300}
+            height={335}
             formatYLabel={(value) => shortenNumber(Number(value), 0)}
             formatValue={(value) => new Intl.NumberFormat().format(value)}
             durations={[30, 60, 90]}
@@ -340,10 +366,12 @@ export default function ModelUsagePage() {
 
           <BarChart
             loading={loading}
-            data={barChartData}
-            height={Math.max(barChartData.length * 32, 300)}
+            dataset={barChartData}
+            height={Math.max(barChartData.length * 32, 335)}
             padding={0}
             onClick={(slug) => setSlug(slug)}
+            yAxisKey="category"
+            xAxisKey="value"
           />
           <Center>
             <Button
@@ -396,9 +424,11 @@ export default function ModelUsagePage() {
           </Stack>
           <BarChart
             loading={loading}
-            data={runtimeBarChartData}
-            height={Math.max(runtimeBarChartData.length * 32, 300)}
+            dataset={runtimeBarChartData}
+            height={Math.max(runtimeBarChartData.length * 32, 335)}
             padding={0}
+            yAxisKey="category"
+            xAxisKey="value"
           />
           <Center>
             <Button
@@ -425,9 +455,11 @@ export default function ModelUsagePage() {
 
           <BarChart
             loading={loading}
-            data={topModelsData}
-            height={Math.max(topModelsData.length * 32, 300)}
+            dataset={topModelsData}
+            height={Math.max(topModelsData.length * 32, 335)}
             padding={0}
+            yAxisKey="category"
+            xAxisKey="value"
           />
           <Center>
             <Button
@@ -451,3 +483,22 @@ export default function ModelUsagePage() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  try {
+    const resp = await axios({
+      method: 'GET',
+      url: 'https://gateway.credmark.com/v1/models',
+    });
+
+    return {
+      props: {
+        models: resp.data,
+      },
+    };
+  } catch (err) {
+    return {
+      notFound: true,
+    };
+  }
+};
