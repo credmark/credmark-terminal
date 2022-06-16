@@ -42,8 +42,6 @@ import { shortenNumber } from '~/utils/formatTokenAmount';
 interface ModelPageProps {
   models: ModelMetadata[];
 }
-//eslint-disable-next-line @typescript-eslint/no-explicit-any
-type BarChartDataAccumulator = Record<string, any>;
 
 const getName = (slugRef: string, modelsFullInformation: ModelMetadata[]) => {
   const filteredData = modelsFullInformation?.find(
@@ -185,13 +183,8 @@ export default function ModelUsagePage(props: ModelPageProps) {
       });
     }
 
-    const reducedData =
-      data?.reduce((acc: BarChartDataAccumulator[], curr) => {
-        return [...acc, [curr?.value, curr?.category, curr?.name]];
-      }, []) ?? [];
-
-    return reducedData
-      .sort((a, b) => b[0] - a[0])
+    return data
+      .sort((a, b) => b.value - a.value)
       .slice(0, showLessCalls ? 10 : Infinity);
   }, [
     aggregationInterval,
@@ -203,40 +196,26 @@ export default function ModelUsagePage(props: ModelPageProps) {
   ]);
 
   const runtimeBarChartData = useMemo(() => {
-    const reducedData =
-      runtimes?.reduce((acc: BarChartDataAccumulator[], curr) => {
-        return [
-          ...acc,
-          [
-            curr[stat],
-            curr?.slug,
-            getName(curr.slug, modelsFullInformation).name,
-          ],
-        ];
-      }, []) ?? [];
-
-    return reducedData
-      .sort((a, b) => b[0] - a[0])
-      .slice(0, showLessCalls ? 10 : Infinity);
-  }, [runtimes, stat, showLessCalls, modelsFullInformation]);
+    return runtimes
+      ?.map((data) => ({
+        value: data[stat],
+        category: data?.slug,
+        name: getName(data.slug, modelsFullInformation).name,
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, showLessRuntime ? 10 : Infinity);
+  }, [runtimes, stat, showLessRuntime, modelsFullInformation]);
 
   const topModelsData = useMemo(() => {
-    const reducedData =
-      topModels?.reduce((acc: BarChartDataAccumulator[], curr) => {
-        return [
-          ...acc,
-          [
-            curr.count,
-            curr?.slug,
-            getName(curr.slug, modelsFullInformation).name,
-          ],
-        ];
-      }, []) || [];
-
-    return reducedData
-      .sort((a, b) => b[0] - a[0])
-      .slice(0, showLessCalls ? 10 : Infinity);
-  }, [topModels, modelsFullInformation, showLessCalls]);
+    return topModels
+      ?.map((data) => ({
+        value: data.count,
+        category: data?.slug,
+        name: getName(data.slug, modelsFullInformation).name,
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, showLessTopModels ? 10 : Infinity);
+  }, [topModels, modelsFullInformation, showLessTopModels]);
 
   const allModelsUsage = useMemo(() => {
     if (!barChartDate) {
@@ -391,8 +370,8 @@ export default function ModelUsagePage(props: ModelPageProps) {
             height={Math.max(barChartData.length * 32, 335)}
             padding={0}
             onClick={(slug) => setSlug(slug)}
-            // xAxisKey="value"
-            // yAxisKey="value"
+            yAxisKey="category"
+            xAxisKey="value"
           />
           <Center>
             <Button
@@ -448,6 +427,8 @@ export default function ModelUsagePage(props: ModelPageProps) {
             dataset={runtimeBarChartData}
             height={Math.max(runtimeBarChartData.length * 32, 335)}
             padding={0}
+            yAxisKey="category"
+            xAxisKey="value"
           />
           <Center>
             <Button
@@ -477,6 +458,8 @@ export default function ModelUsagePage(props: ModelPageProps) {
             dataset={topModelsData}
             height={Math.max(topModelsData.length * 32, 335)}
             padding={0}
+            yAxisKey="category"
+            xAxisKey="value"
           />
           <Center>
             <Button

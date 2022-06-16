@@ -44,16 +44,17 @@ export default function BarChart<T>({
             const { data } = params;
             return `
                     <div>
-                      <strong><p>${data[2]}</p></strong>
-                      <code>${data[1]}</code>
+                      <strong><p>${data?.name}</p></strong>
+                      <code>${data?.category}</code>
                       <br/>
                       <em>${new Intl.NumberFormat().format(
-                        data[0] as number,
+                        data?.value as number,
                       )}</em>
                     </div>
                   `;
           },
         },
+        dimensions: [yAxisKey, xAxisKey],
         dataset: {
           source: dataset,
         },
@@ -66,7 +67,7 @@ export default function BarChart<T>({
           height: 'auto',
         },
         xAxis: { name: '' },
-        yAxis: { type: 'category', axisLabel: { show: false }, inverse: true },
+        yAxis: { type: yAxisKey, axisLabel: { show: false }, inverse: true },
         series: [
           {
             realtimeSort: true,
@@ -84,7 +85,7 @@ export default function BarChart<T>({
                 value: Record<string, number>;
               }) => {
                 return `${params.name} ${new Intl.NumberFormat().format(
-                  Number(params.data[0]) ?? 0,
+                  Number(params.data?.value) ?? 0,
                 )}`;
               },
               color: 'black',
