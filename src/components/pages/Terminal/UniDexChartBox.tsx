@@ -11,6 +11,7 @@ import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import { CurrenciesLogo } from '~/components/shared/CurrencyLogo';
 import { useSingleLineChart } from '~/hooks/useChart';
 import { useModelRunner } from '~/hooks/useModel';
+import { ModelSeriesOutput } from '~/types/model';
 import { mergeCsvs } from '~/utils/chart';
 
 interface DexChartBoxProps {
@@ -132,16 +133,6 @@ export default function DexChartBox({
     error: tvlModel.errorMessage,
   });
 
-  const volumeModelCommonProps = {
-    blockNumber: blockNumberModel.output?.blockNumber,
-    slug: 'dex.pool-volume',
-    input: {
-      pool_info_model: 'uniswap-v2.pool-tvl',
-      block_offset: -7200,
-      address: pool,
-    },
-  };
-
   const volumeChartCommonProps = {
     name: 'Volume',
     color: '#3B0065',
@@ -150,7 +141,13 @@ export default function DexChartBox({
   };
 
   const currentVolumeModel = useModelRunner<VolumeModelOutput>({
-    ...volumeModelCommonProps,
+    blockNumber: blockNumberModel.output?.blockNumber,
+    slug: 'dex.pool-volume',
+    input: {
+      pool_info_model: 'uniswap-v2.pool-tvl',
+      interval: 7200,
+      address: pool,
+    },
     suspended: !blockNumberModel.output,
   });
 
@@ -174,15 +171,18 @@ export default function DexChartBox({
     error: currentVolumeModel.errorMessage,
   });
 
-  const volumeModel = useModelRunner<VolumeModelOutput>({
-    ...volumeModelCommonProps,
-    window: Duration.fromObject({
-      days: Math.min(
+  const volumeModel = useModelRunner<ModelSeriesOutput<VolumeModelOutput>>({
+    blockNumber: blockNumberModel.output?.blockNumber,
+    slug: 'dex.pool-volume-historical',
+    input: {
+      pool_info_model: 'uniswap-v2.pool-tvl',
+      interval: 7200,
+      address: pool,
+      count: Math.min(
         90,
         Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
       ),
-    }),
-    interval: Duration.fromObject({ days: 1 }),
+    },
     suspended: !blockNumberModel.output || !isExpanded,
   });
 
