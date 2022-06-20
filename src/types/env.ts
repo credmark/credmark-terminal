@@ -9,4 +9,6 @@ export interface Env {
 
   gaTrackingId?: string;
   hotjarId?: string;
+
+  isBeta: boolean;
 }

@@ -15,6 +15,8 @@ import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutl
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import React from 'react';
 
+import env from '~/env';
+
 import Web3Status from './Web3Status';
 
 interface NavbarProps {
@@ -52,9 +54,11 @@ export default function Navbar({ mobileSidebar }: NavbarProps) {
         >
           <Img src="/img/logo-white-full.svg" alt="Credmark" h="40px" />
         </Link>
-        <Tag size="sm" bg="green.500" color="purple.500">
-          Beta
-        </Tag>
+        {env.isBeta && (
+          <Tag size="sm" bg="green.500" color="purple.500">
+            Beta
+          </Tag>
+        )}
         <Box flex="1"></Box>
         <HStack spacing="4" display={{ base: 'none', lg: 'flex' }}>
           <Link

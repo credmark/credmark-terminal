@@ -12,6 +12,7 @@ Create a env file at `env/.env.local` with these required params:
 - NEXT_PUBLIC_FORMATIC_KEY
 - NEXT_PUBLIC_PORTIS_ID
 - NEXT_PUBLIC_COINBASE_LINK
+- NEXT_PUBLIC_BETA
 
 Run `npm start` to start the UI at `http://localhost:3000`
 
