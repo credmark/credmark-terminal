@@ -19,10 +19,32 @@ const dataset = [
   { value: 33, category: 'shib', name: 'Shiba Inu' },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const tooltipFormatter = (params: any, isTitle = false) => {
+  if (isTitle) {
+    return `${params?.name} ${new Intl.NumberFormat().format(
+      Number(params?.data?.value) ?? 0,
+    )}`;
+  }
+  return `
+        <div>
+          <strong><p>${params?.name}</p></strong>
+          <code>${params?.category}</code>
+          <br/>
+          <em>${new Intl.NumberFormat().format(params?.value as number)}</em>
+        </div>
+      `;
+};
+
 const Template = () => {
   return (
     <Grid gridTemplateRows="50px 1fr" gap="20px">
-      <BarChart dataset={dataset} xAxisKey="value" yAxisKey="category" />
+      <BarChart
+        tooltipFormatter={tooltipFormatter}
+        dataset={dataset}
+        xAxisKey="value"
+        yAxisKey="category"
+      />
     </Grid>
   );
 };
