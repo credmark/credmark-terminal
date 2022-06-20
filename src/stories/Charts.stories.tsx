@@ -1,4 +1,4 @@
-import { Button, Grid } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import React from 'react';
 
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
@@ -52,12 +52,8 @@ const lines = [
   },
 ];
 const Template = () => {
-  const [hasSidebar, showSidebar] = React.useState(false);
   return (
-    <Grid gridTemplateRows="50px 1fr" gap="20px">
-      <Button size="sm" onClick={() => showSidebar(!hasSidebar)}>
-        Show/Hide Sidebar
-      </Button>
+    <Box>
       <HistoricalChart
         height={200}
         flex="1"
@@ -68,7 +64,7 @@ const Template = () => {
         showCurrentStats
         lines={lines}
       />
-    </Grid>
+    </Box>
   );
 };
 
