@@ -17,15 +17,17 @@ import React from 'react';
 
 import { BorderedCard } from '~/components/base';
 import {
+  GlobalStakeInfo,
   StakePanel,
   UnstakePanel,
-  GlobalStakeInfo,
+  WalletStatus,
   XCmkFaq,
 } from '~/components/pages/Stake';
 
 export default function StakePage() {
   return (
     <Container maxW="container.lg">
+      <WalletStatus />
       <VStack
         h="100%"
         position="relative"
