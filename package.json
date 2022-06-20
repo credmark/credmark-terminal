@@ -25,6 +25,7 @@
     "@emotion/styled": "^11.3.0",
     "@fontsource/roboto": "^4.5.1",
     "@mui/icons-material": "^5.8.2",
+    "@mui/material": "^5.8.4",
     "@react-hook/size": "^2.1.2",
     "@reduxjs/toolkit": "^1.8.1",
     "@uniswap/sdk-core": "^3.0.1",
