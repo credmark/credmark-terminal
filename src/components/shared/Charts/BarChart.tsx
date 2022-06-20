@@ -2,6 +2,7 @@ import { Box, Center, HStack, Text } from '@chakra-ui/layout';
 import { Img, Spinner } from '@chakra-ui/react';
 import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react';
+import { CallbackDataParams } from 'echarts/types/src/util/types.d';
 import React, { useMemo } from 'react';
 
 interface BarChartProps<T> {
@@ -14,10 +15,8 @@ interface BarChartProps<T> {
   height?: number;
   padding?: number;
   onClick?: (category: string) => void;
+  tooltipFormatter: (data: T | CallbackDataParams, isTitle?: boolean) => string;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ResolvedBarDataType = Record<string, string | number | any>;
 
 export default function BarChart<T>({
   dataset,
@@ -29,29 +28,24 @@ export default function BarChart<T>({
   xAxisKey,
   yAxisKey,
   onClick,
+  tooltipFormatter,
 }: BarChartProps<T>) {
   const option: EChartsOption = useMemo(
     () =>
       ({
         legend: {},
         tooltip: {
-          trigger: 'item',
-          formatter: (params: {
-            data: ResolvedBarDataType;
-            name: string;
-            value: Record<string, number>;
-          }) => {
-            const { data } = params;
-            return `
-                    <div>
-                      <strong><p>${data?.name}</p></strong>
-                      <code>${data?.category}</code>
-                      <br/>
-                      <em>${new Intl.NumberFormat().format(
-                        data?.value as number,
-                      )}</em>
-                    </div>
-                  `;
+          trigger: 'axis',
+          formatter: (params) => {
+            if (
+              !Array.isArray(params) ||
+              params.length === 0 ||
+              !params[0].data
+            ) {
+              return '';
+            }
+
+            return tooltipFormatter(params[0].data as T);
           },
         },
         dimensions: [yAxisKey, xAxisKey],
@@ -79,15 +73,7 @@ export default function BarChart<T>({
               verticalAlign: 'middle',
               position: 'insideLeft',
               distance: 15,
-              formatter: (params: {
-                data: ResolvedBarDataType;
-                name: string;
-                value: Record<string, number>;
-              }) => {
-                return `${params.name} ${new Intl.NumberFormat().format(
-                  Number(params.data?.value) ?? 0,
-                )}`;
-              },
+              formatter: (params) => tooltipFormatter(params, true),
               color: 'black',
             },
             type: 'bar',
@@ -99,7 +85,7 @@ export default function BarChart<T>({
           },
         ],
       } as EChartsOption),
-    [title, dataset, xAxisKey, yAxisKey],
+    [title, dataset, xAxisKey, yAxisKey, tooltipFormatter],
   );
 
   const currentPriceHeight = 0;

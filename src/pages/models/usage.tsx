@@ -52,6 +52,23 @@ const getName = (slugRef: string, modelsFullInformation: ModelMetadata[]) => {
   };
 };
 
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
+const tooltipFormatter = (params: any, isTitle = false) => {
+  if (isTitle) {
+    return `${params?.name} ${new Intl.NumberFormat().format(
+      Number(params?.data?.value) ?? 0,
+    )}`;
+  }
+  return `
+        <div>
+          <strong><p>${params?.name}</p></strong>
+          <code>${params?.category}</code>
+          <br/>
+          <em>${new Intl.NumberFormat().format(params?.value as number)}</em>
+        </div>
+      `;
+};
+
 export default function ModelUsagePage(props: ModelPageProps) {
   const { models: modelsFullInformation } = props;
   const [loading, setLoading] = useState(false);
@@ -372,6 +389,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
             onClick={(slug) => setSlug(slug)}
             yAxisKey="category"
             xAxisKey="value"
+            tooltipFormatter={tooltipFormatter}
           />
           <Center>
             <Button
@@ -429,6 +447,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
             padding={0}
             yAxisKey="category"
             xAxisKey="value"
+            tooltipFormatter={tooltipFormatter}
           />
           <Center>
             <Button
@@ -460,6 +479,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
             padding={0}
             yAxisKey="category"
             xAxisKey="value"
+            tooltipFormatter={tooltipFormatter}
           />
           <Center>
             <Button
