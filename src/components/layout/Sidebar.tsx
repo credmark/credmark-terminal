@@ -19,7 +19,7 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { CmkTerminalIcon } from '~/components/icons';
+import { CmkLogoIcon, CmkTerminalIcon } from '~/components/icons';
 
 interface NavItemProps extends BoxProps {
   icon?: typeof Icon | SvgIconComponent;
@@ -172,6 +172,11 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
         icon: VerifiedOutlinedIcon,
         label: 'Model Validation',
         isDisabled: true,
+      },
+      {
+        icon: CmkLogoIcon,
+        label: 'Stake',
+        href: '/stake',
       },
     ],
     [router.pathname],
