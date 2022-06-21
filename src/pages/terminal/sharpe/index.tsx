@@ -3,7 +3,7 @@ import { Token, WETH9 } from '@uniswap/sdk-core';
 import React from 'react';
 
 import { SharpeChartBox } from '~/components/pages/Terminal';
-import { DAI, USDC, UST, WBTC } from '~/constants/tokens';
+import { WBTC } from '~/constants/tokens';
 
 const APE = new Token(
   1,
@@ -40,13 +40,6 @@ const SUSHI = new Token(
   'SUSHI',
   'SushiToken',
 );
-const USDT = new Token(
-  1,
-  '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-  6,
-  'USDT',
-  'Tether USD',
-);
 const CRV = new Token(
   1,
   '0xD533a949740bb3306d119CC777fa900bA034cd52',
@@ -60,13 +53,6 @@ const CVX = new Token(
   18,
   'CVX',
   'Convex Token',
-);
-const FRAX = new Token(
-  1,
-  '0x853d955aCEf822Db058eb8505911ED77F175b99e',
-  18,
-  'FRAX',
-  'Frax',
 );
 const FXS = new Token(
   1,
@@ -191,18 +177,13 @@ const YFI = new Token(
 const tokens: Token[] = [
   WBTC,
   WETH9[1],
-  UST,
-  USDC[1],
-  DAI,
   APE,
   AAVE,
   COMP,
   UNI,
   SUSHI,
-  USDT,
   CRV,
   CVX,
-  FRAX,
   FXS,
   SHIB,
   MATIC,
