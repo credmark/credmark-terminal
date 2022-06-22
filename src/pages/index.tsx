@@ -20,7 +20,10 @@ import SEOHeader from '~/components/shared/SEOHeader';
 export default function HomePage() {
   return (
     <>
-      <SEOHeader title="App" />
+      <SEOHeader
+        title="Credmark Terminal - Actionable DeFi Data"
+        titleTemplate=""
+      />
       <VStack spacing="20" py="20">
         <Container maxW="container.lg">
           <Box position="relative">

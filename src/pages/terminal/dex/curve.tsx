@@ -71,7 +71,7 @@ const pools = [
 export default function CurveDexPage() {
   return (
     <>
-      <SEOHeader title="DEXs Curve Terminal" />
+      <SEOHeader title="Curve" />
       <DexPage dex="CURVE" pools={pools} />
     </>
   );

@@ -3,6 +3,7 @@ import { Token, WETH9 } from '@uniswap/sdk-core';
 import React from 'react';
 
 import { SharpeChartBox } from '~/components/pages/Terminal';
+import SEOHeader from '~/components/shared/SEOHeader';
 import { WBTC } from '~/constants/tokens';
 import {
   Avalanche,
@@ -282,8 +283,11 @@ const tokens: ExtendedCurrency[] = [
 
 export default function SharpeRatioPage() {
   return (
-    <Container p="8" maxW="container.xl">
-      <SharpeChartBox tokens={tokens} defaultTokens={[WBTC, WETH9[1]]} />
-    </Container>
+    <>
+      <SEOHeader title="Sharpe Ratio" />
+      <Container p="8" maxW="container.xl">
+        <SharpeChartBox tokens={tokens} defaultTokens={[WBTC, WETH9[1]]} />
+      </Container>
+    </>
   );
 }

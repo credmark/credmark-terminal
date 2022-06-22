@@ -305,7 +305,7 @@ export default function ModelsPage({ models }: ModelPageProps) {
 
   return (
     <>
-      <SEOHeader title="Models" />
+      <SEOHeader title="Model Overview" />
       <Container maxW="container.lg" p="8">
         <Heading mb="8" color="purple.500">
           Credmark Models

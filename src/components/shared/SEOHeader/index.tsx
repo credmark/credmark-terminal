@@ -4,27 +4,29 @@ import React from 'react';
 import env from '~/env';
 
 interface SEOHeaderProps {
-  title?: string;
+  title: string;
+  titleTemplate?: string;
   description?: string;
   url?: string;
   image?: string;
 }
-const SEOHeader = ({
+export default function SEOHeader({
   url = 'https://app.credmark.com/',
-  title = 'Credmark App',
-  image = `${env?.host}/img/credmark-wallpaper.jpg`,
-  description = 'Credmark is a financial modeling platform powered by reliable on-chain data. Validated models are readily composable making rapid prototyping simple.',
-}: SEOHeaderProps) => {
+  title,
+  titleTemplate = '%s | Credmark Terminal - Actionable DeFi Data',
+  image = `${env.host}/img/credmark-terminal.png`,
+  description = "Analyze lending protocol health and assess crypto risk and reward with a variety of metrics powered by Credmark's API",
+}: SEOHeaderProps) {
   return (
     <NextSeo
       title={title}
-      titleTemplate="%s | Credmark Terminal"
+      titleTemplate={titleTemplate}
       description={description}
       canonical={url}
       openGraph={{
         type: 'website',
         locale: 'en_US',
-        url: 'https://app.credmark.com',
+        url: env.host,
         title,
         description,
         images: [
@@ -46,6 +48,4 @@ const SEOHeader = ({
       }}
     />
   );
-};
-
-export default SEOHeader;
+}

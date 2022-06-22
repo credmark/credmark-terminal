@@ -65,7 +65,7 @@ const pools = [
 export default function UniswapV2DexPage() {
   return (
     <>
-      <SEOHeader title="DEXs Uniswap v2 Terminal" />
+      <SEOHeader title="Uniswap v2" />
       <DexPage dex="UNISWAP_V2" pools={pools} />
     </>
   );

@@ -70,7 +70,7 @@ export default function AnalyticsPage() {
 
   return (
     <>
-      <SEOHeader title="Token Analytics Terminal" />
+      <SEOHeader title="CMK Analytics" />
       <Container p="8" maxW="full">
         <Grid
           templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}

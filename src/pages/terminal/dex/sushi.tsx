@@ -66,7 +66,7 @@ const pools = [
 export default function SushiswapDexPage() {
   return (
     <>
-      <SEOHeader title="DEXs Sushi Terminal" />
+      <SEOHeader title="Sushiswap" />
       <DexPage dex="SUSHISWAP" pools={pools} />
     </>
   );
