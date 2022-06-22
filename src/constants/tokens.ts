@@ -301,6 +301,14 @@ export const AL_USD = new Token(
   'Alchemix USD',
 );
 
+export const PAXG = new Token(
+  1,
+  '0x45804880De22913dAFE09f4980848ECE6EcbAf78',
+  18,
+  'PAXG',
+  'Paxos Gold',
+);
+
 export const UNI: { [chainId: number]: Token } = {
   [1]: new Token(1, UNI_ADDRESS[1], 18, 'UNI', 'Uniswap'),
   [4]: new Token(4, UNI_ADDRESS[4], 18, 'UNI', 'Uniswap'),

@@ -5,12 +5,13 @@ import { DexPage } from '~/components/pages/Terminal';
 import SEOHeader from '~/components/shared/SEOHeader';
 import {
   DAI,
+  ETH,
   FEI,
   FNK,
   FRAX,
   FXS,
   MC,
-  SYN,
+  PAXG,
   TRIBE,
   USDC,
   USDT,
@@ -52,9 +53,8 @@ const pools = [
     tokens: [USDC[1], USDT],
   },
   {
-    pool: '0x9fae36a18ef8ac2b43186ade5e2b07403dc742b1',
-    tokens: [SYN, FRAX],
-    createdAt: 1645833600000,
+    pool: '0x9c4fe5ffd9a9fc5678cfbd93aa2d4fd684b67c4c',
+    tokens: [PAXG, ETH[1]],
   },
   {
     pool: '0x61b62c5d56ccd158a38367ef2f539668a06356ab',
