@@ -1,4 +1,4 @@
-import { Box, Center, Flex, Icon, Link, Text } from '@chakra-ui/react';
+import { Box, Center, Flex, Icon, Link } from '@chakra-ui/react';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
@@ -337,10 +337,10 @@ export default function DexChartBox({
               p="4"
               flexDirection="column"
             >
-              <Text fontSize="sm">{tvlChart.currentStats[0].label}</Text>
-              <Text fontSize="3xl" fontWeight="medium">
+              <Box fontSize="sm">{tvlChart.currentStats[0].label}</Box>
+              <Box fontSize="3xl" fontWeight="medium" as="div">
                 {tvlChart.currentStats[0].value}
-              </Text>
+              </Box>
             </Center>
             <Flex flex="1">
               <Center
@@ -352,12 +352,10 @@ export default function DexChartBox({
                 p="2"
                 flexDirection="column"
               >
-                <Text fontSize="sm">
-                  {currentVarChart.currentStats[0].label}
-                </Text>
-                <Text fontSize="lg" fontWeight="medium">
+                <Box fontSize="sm">{currentVarChart.currentStats[0].label}</Box>
+                <Box fontSize="lg" fontWeight="medium">
                   {currentVarChart.currentStats[0].value}
-                </Text>
+                </Box>
               </Center>
               <Center
                 flex="1"
@@ -368,12 +366,12 @@ export default function DexChartBox({
                 p="2"
                 flexDirection="column"
               >
-                <Text fontSize="sm">
+                <Box fontSize="sm">
                   {currentVolumeChart.currentStats[0].label}
-                </Text>
-                <Text fontSize="lg" fontWeight="medium">
+                </Box>
+                <Box fontSize="lg" fontWeight="medium">
                   {currentVolumeChart.currentStats[0].value}
-                </Text>
+                </Box>
               </Center>
             </Flex>
           </Flex>
