@@ -4,6 +4,12 @@ import React from 'react';
 
 import { SharpeChartBox } from '~/components/pages/Terminal';
 import { WBTC } from '~/constants/tokens';
+import {
+  Avalanche,
+  ExtendedCurrency,
+  ExtendedToken,
+  Solana,
+} from '~/utils/currency';
 
 const APE = new Token(
   1,
@@ -174,7 +180,69 @@ const YFI = new Token(
   'yearn.finance',
 );
 
-const tokens: Token[] = [
+const SOL = new Solana(101, 'sol-usd.data.eth');
+
+const SNX = new Token(
+  1,
+  '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
+  18,
+  'SNX',
+  'Synthetix Network Token',
+);
+
+const TRX = new ExtendedToken(
+  56,
+  '0x85EAC5Ac2F758618dFa09bDbe0cf174e7d574D5B',
+  18,
+  'TRX',
+  'TRON',
+  'TRXB-2E6',
+  'trx-usd.data.eth',
+);
+
+const ADA = new ExtendedToken(
+  56,
+  '0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47',
+  18,
+  'ADA',
+  'Cardano',
+  'ADA-9F4',
+  'ada-usd.data.eth',
+);
+
+const AVAX = new Avalanche(43114, 'avax-usd.data.eth');
+
+const BNB = new ExtendedToken(
+  1,
+  '0xB8c77482e45F1F44dE1745F52C74426C631bDD52',
+  18,
+  'BNB',
+  'Binance',
+  undefined,
+  'bnb-usd.data.eth',
+);
+
+const DOT = new ExtendedToken(
+  56,
+  '0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402',
+  18,
+  'DOT',
+  'Polkadot',
+  'DOT-64C',
+  'dot-usd.data.eth',
+);
+
+const DOGE = new ExtendedToken(
+  56,
+  '0xba2ae424d960c26247dd6c32edc70b295c744c43',
+  8,
+  'DOGE',
+  'Dogecoin',
+  'DOGE-B67',
+  'doge-usd.data.eth',
+);
+
+const tokens: ExtendedCurrency[] = [
   WBTC,
   WETH9[1],
   APE,
@@ -201,6 +269,15 @@ const tokens: Token[] = [
   AXS,
   AUDIO,
   YFI,
+
+  SOL,
+  SNX,
+  TRX,
+  ADA,
+  AVAX,
+  BNB,
+  DOT,
+  DOGE,
 ];
 
 export default function SharpeRatioPage() {
