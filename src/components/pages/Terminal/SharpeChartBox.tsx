@@ -16,7 +16,6 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
-import { Token } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
 import { DateTime, Duration } from 'luxon';
 import React, { useLayoutEffect, useRef, useState } from 'react';
@@ -26,16 +25,17 @@ import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import { useLineChart } from '~/hooks/useChart';
-import {
-  useDeepCompareEffect,
-  useDeepCompareMemo,
-} from '~/hooks/useDeepCompare';
+import { useDeepCompareEffect } from '~/hooks/useDeepCompare';
 import useFullscreen from '~/hooks/useFullscreen';
 import { useModelRunner, useModelRunnerCallback } from '~/hooks/useModel';
 import { ModelSeriesOutput } from '~/types/model';
+import { ExtendedCurrency } from '~/utils/currency';
 
 const PRICE_CACHE: Record<string, ModelSeriesOutput<TokenPrice>> = {};
 const SHARPE_RATIO_CACHE: Record<string, ModelSeriesOutput<SharpeRatio>> = {};
+
+const tokenKey = (token: ExtendedCurrency) =>
+  `${token.chainId}_${token.isNative ? token.symbol : token.address}`;
 
 interface TokenPrice {
   price: number;
@@ -45,7 +45,6 @@ interface TokenPrice {
 const colors = ['#00d696', '#00a1ed', '#8342af', '#ff447d', '#ffa727'];
 
 interface SharpeRatio {
-  token_address: string;
   sharpe_ratio: number;
   avg_return: number;
   risk_free_rate: number;
@@ -62,7 +61,7 @@ interface BlockNumberOutput {
   sampleTimestamp: number;
 }
 
-function useSharpeRatioModel(tokens: string[]) {
+function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
   const [pricesLoading, setPricesLoading] = useState(false);
   const [sharpeLoading, setSharpeLoading] = useState(false);
 
@@ -81,8 +80,8 @@ function useSharpeRatioModel(tokens: string[]) {
   }>();
 
   const [tokenPrices, setTokenPrices] = useState<
-    Record<string, ModelSeriesOutput<TokenPrice>>
-  >({});
+    Array<{ token: ExtendedCurrency; price: ModelSeriesOutput<TokenPrice> }>
+  >([]);
 
   const [sharpeRatios, setSharpeRatios] = useState<
     ModelSeriesOutput<SharpeRatio>[]
@@ -100,15 +99,21 @@ function useSharpeRatioModel(tokens: string[]) {
     const interval = Duration.fromObject({ days: 1 }).as('seconds');
 
     Promise.all(
-      tokens.map((tokenAddress) =>
-        tokenAddress in PRICE_CACHE
-          ? Promise.resolve(PRICE_CACHE[tokenAddress])
+      tokens.map((token) =>
+        tokenKey(token) in PRICE_CACHE
+          ? Promise.resolve(PRICE_CACHE[tokenKey(token)])
           : runPriceModel(
               {
                 slug: 'historical.run-model',
                 input: {
-                  model_slug: 'chainlink.price-usd',
-                  model_input: { address: tokenAddress },
+                  model_slug: token.priceEns
+                    ? 'chainlink.price-by-ens'
+                    : 'chainlink.price-usd',
+                  model_input: token.priceEns
+                    ? { domain: token.priceEns }
+                    : token.isNative
+                    ? { symbol: token.symbol }
+                    : { address: token.address },
                   window: `${window} seconds`,
                   interval: `${interval} seconds`,
                 },
@@ -116,18 +121,21 @@ function useSharpeRatioModel(tokens: string[]) {
               },
               abortController.signal,
             ).then((result) => {
-              PRICE_CACHE[tokenAddress] = result.output.result;
+              if (!abortController.signal.aborted && result?.output?.result) {
+                PRICE_CACHE[tokenKey(token)] = result.output.result;
+              }
+
               return result.output.result;
             }),
       ),
     )
       .then((resp) => {
-        const map: Record<string, ModelSeriesOutput<TokenPrice>> = {};
+        const list: typeof tokenPrices = [];
         for (let i = 0; i < resp.length; i++) {
-          map[tokens[i]] = resp[i];
+          list.push({ token: tokens[i], price: resp[i] });
         }
 
-        setTokenPrices(map);
+        setTokenPrices(list);
       })
       .catch((err) => {
         if (abortController.signal.aborted) {
@@ -148,8 +156,8 @@ function useSharpeRatioModel(tokens: string[]) {
   useDeepCompareEffect(() => {
     setSharpeLoading(true);
     const abortController = new AbortController();
-    function foo(
-      tokenAddress: string,
+    function computeSharpeRatio(
+      token: ExtendedCurrency,
       prices: ModelSeriesOutput<TokenPrice>,
     ): Promise<ModelSeriesOutput<SharpeRatio>> {
       return new Promise((resolve) => {
@@ -159,7 +167,7 @@ function useSharpeRatioModel(tokens: string[]) {
         );
 
         const modelInputs: Array<{
-          token: { address: string };
+          token: { address?: string; symbol?: string };
           prices: ModelSeriesOutput<TokenPrice>;
           risk_free_rate: number;
         }> = [];
@@ -170,7 +178,8 @@ function useSharpeRatioModel(tokens: string[]) {
           );
 
           modelInputs.push({
-            token: { address: tokenAddress },
+            // Just a placeholder address not being used in the model
+            token: { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' },
             prices: {
               series: inputPrices,
               errors: [],
@@ -213,11 +222,14 @@ function useSharpeRatioModel(tokens: string[]) {
     }
 
     Promise.all(
-      Object.entries(tokenPrices).map(([tokenAddress, tokenPrice]) =>
-        tokenAddress in SHARPE_RATIO_CACHE
-          ? Promise.resolve(SHARPE_RATIO_CACHE[tokenAddress])
-          : foo(tokenAddress, tokenPrice).then((sharpeRatio) => {
-              SHARPE_RATIO_CACHE[tokenAddress] = sharpeRatio;
+      tokenPrices.map(({ token, price }) =>
+        tokenKey(token) in SHARPE_RATIO_CACHE
+          ? Promise.resolve(SHARPE_RATIO_CACHE[tokenKey(token)])
+          : computeSharpeRatio(token, price).then((sharpeRatio) => {
+              if (!abortController.signal.aborted && sharpeRatio) {
+                SHARPE_RATIO_CACHE[tokenKey(token)] = sharpeRatio;
+              }
+
               return sharpeRatio;
             }),
       ),
@@ -230,28 +242,15 @@ function useSharpeRatioModel(tokens: string[]) {
     return () => abortController.abort();
   }, [runSharpeModel, tokenPrices]);
 
-  const filterSharpeRatios = useDeepCompareMemo(() => {
-    const filtered = sharpeRatios.filter((x) => {
-      const hasFoundToken = x.series.some((v) => {
-        return tokens
-          .map((item) => item.toLocaleLowerCase())
-          .includes(v.output.token_address);
-      });
-
-      return hasFoundToken && x;
-    });
-    return filtered;
-  }, [sharpeRatios, tokens]);
-
   return {
     loading: pricesLoading || sharpeLoading,
-    output: filterSharpeRatios,
+    output: sharpeRatios,
   };
 }
 
 interface SharpeChartBoxProps {
-  tokens: Token[];
-  defaultTokens?: Token[];
+  tokens: ExtendedCurrency[];
+  defaultTokens?: ExtendedCurrency[];
 }
 
 export default function SharpeChartBox({
@@ -268,17 +267,16 @@ export default function SharpeChartBox({
     chartRef.current?.resize();
   }, [containerWidth]);
 
-  const [selectedTokens, setSelectedTokens] = useState<string[]>(
-    defaultTokens.map((token) => token.address),
-  );
+  const [selectedTokens, setSelectedTokens] = useState(defaultTokens);
 
   const model = useSharpeRatioModel(selectedTokens);
   const sharpeChart = useLineChart({
     lines: model.output.map((o, i) => ({
       color: colors[i],
       name:
-        tokens.find((token) => token.address === selectedTokens[i])?.symbol ??
-        '',
+        tokens.find(
+          (token) => selectedTokens[i] && token.equals(selectedTokens[i]),
+        )?.symbol ?? '',
       data: o.series.map((i) => ({
         timestamp: new Date(i.sampleTimestamp * 1000),
         value: i.output.sharpe_ratio,
@@ -296,7 +294,7 @@ export default function SharpeChartBox({
         title={'Sharpe Ratio'}
         tooltip={{
           content: (
-            <Text>
+            <Box>
               Sharpe ratio is a traditional measure of risk-adjusted returns,
               that allows the comparison of different assets and portfolios. In
               traditional finance, the following decision making is applied when
@@ -316,7 +314,7 @@ export default function SharpeChartBox({
                 Read more about Sharpe Ratio in Credmark Wiki{' '}
                 <Icon color="gray.300" as={OpenInNewIcon} />
               </Link>
-            </Text>
+            </Box>
           ),
         }}
         downloadCsv={{
@@ -328,10 +326,8 @@ export default function SharpeChartBox({
       />
       <Box overflowX="auto" py="2">
         <HStack>
-          {selectedTokens.map((tokenAddress, index) => {
-            const token = tokens.find(
-              (token) => token.address === tokenAddress,
-            );
+          {selectedTokens.map((selectedToken, index) => {
+            const token = tokens.find((token) => token.equals(selectedToken));
             if (!token) throw Error('Invalid token address');
 
             return (
@@ -339,7 +335,7 @@ export default function SharpeChartBox({
                 textAlign="center"
                 px="4"
                 py="2"
-                key={token.address}
+                key={token.symbol}
                 role="group"
               >
                 <HStack w="100%" justifyContent="center">
@@ -351,7 +347,7 @@ export default function SharpeChartBox({
                     onClick={() =>
                       setSelectedTokens(
                         selectedTokens.filter(
-                          (tokenAddress) => token.address !== tokenAddress,
+                          (selectedToken) => !token.equals(selectedToken),
                         ),
                       )
                     }
@@ -359,15 +355,15 @@ export default function SharpeChartBox({
                 </HStack>
                 <HStack w="100%" justifyContent="center">
                   <Box w="4" h="4" rounded="full" bg={colors[index]} />
-                  <Text fontSize="2xl">
+                  <Box fontSize="2xl">
                     {sharpeChart.currentStats?.[index]?.value ?? '-'}
-                  </Text>
+                  </Box>
                 </HStack>
               </Box>
             );
           })}
           {tokens.length > selectedTokens.length && selectedTokens.length < 5 && (
-            <Box textAlign="center">
+            <Box textAlign="center" px="2">
               <Text fontSize="xs" mb="2">
                 Add Token
               </Text>
@@ -380,15 +376,20 @@ export default function SharpeChartBox({
                 ></MenuButton>
                 <MenuList maxH="300px" overflowY="auto">
                   {tokens
-                    .filter((token) => !selectedTokens.includes(token.address))
+                    .filter(
+                      (token) =>
+                        !selectedTokens.find((selectedToken) =>
+                          selectedToken.equals(token),
+                        ),
+                    )
                     .sort((a, b) =>
                       (a.symbol ?? '')?.localeCompare(b.symbol ?? ''),
                     )
                     .map((token) => (
                       <MenuItem
-                        key={token.address}
+                        key={token.symbol}
                         onClick={() => {
-                          setSelectedTokens([...selectedTokens, token.address]);
+                          setSelectedTokens([...selectedTokens, token]);
                         }}
                       >
                         <HStack>
