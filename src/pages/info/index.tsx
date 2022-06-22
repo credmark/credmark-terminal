@@ -187,7 +187,8 @@ export default function AnalyticsPage() {
               })) ?? []
             }
             color="#DB197699"
-            formatter="currency"
+            formatter="number"
+            formatSuffix=" CMK"
             fractionDigits={2}
             isArea
           />
