@@ -6,7 +6,6 @@
     "contracts:compile": "typechain --target ethers-v5 --out-dir src/abis/types './src/abis/**/*.json'",
     "build:staging": "cp env/.env.staging .env && next build",
     "build:production": "cp env/.env.production .env && next build",
-    "build:dev": "cp env/.env.local .env && next build",
     "start": "cp env/.env.local .env && next dev",
     "staging": "cp env/.env.staging .env && next start",
     "production": "cp env/.env.production .env && next start",
@@ -17,7 +16,7 @@
     "prepare": "husky install",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "postbuild": "next-sitemap --config next-sitemap.config.js"
+    "generate-sitemap": "npm run build:production && next-sitemap --config next-sitemap.config.js"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.1.0",
