@@ -91,8 +91,8 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
   const SHARPE_WINDOW = 90;
 
   useDeepCompareEffect(() => {
-    setPricesLoading(true);
     if (!blockNumber) return;
+    setPricesLoading(true);
 
     const abortController = new AbortController();
     const window = Duration.fromObject({ days: PRICE_WINDOW }).as('seconds');
@@ -243,7 +243,7 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
   }, [runSharpeModel, tokenPrices]);
 
   return {
-    loading: pricesLoading || sharpeLoading,
+    loading: blockNumberModel.loading || pricesLoading || sharpeLoading,
     output: sharpeRatios,
   };
 }
