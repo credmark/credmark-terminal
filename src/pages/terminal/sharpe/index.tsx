@@ -243,6 +243,26 @@ const DOGE = new ExtendedToken(
   'doge-usd.data.eth',
 );
 
+const BNT = new ExtendedToken(
+  1,
+  '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C',
+  18,
+  'BNT',
+  'Bancor Network Token',
+  undefined,
+  'bnt-usd.data.eth',
+);
+
+const XRP = new ExtendedToken(
+  56,
+  '0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE',
+  18,
+  'XRP',
+  'XRP Token',
+  'XRP-BF2',
+  'xrp-usd.data.eth',
+);
+
 const tokens: ExtendedCurrency[] = [
   WBTC,
   WETH9[1],
@@ -279,6 +299,8 @@ const tokens: ExtendedCurrency[] = [
   BNB,
   DOT,
   DOGE,
+  BNT,
+  XRP,
 ];
 
 export default function SharpeRatioPage() {
