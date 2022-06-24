@@ -27,7 +27,7 @@ export interface ChartHeaderProps {
   downloadCsv?: {
     filename: string;
     headers: string[];
-    data: string | Record<string, unknown>[];
+    data: string | number | Record<string, unknown>[];
   };
   tooltip?: {
     content: React.ReactNode;
@@ -36,6 +36,7 @@ export interface ChartHeaderProps {
   };
   info?: React.ReactNode;
   externalLink?: string;
+  noShadow?: boolean;
 }
 
 const ChartHeader = ({
@@ -47,6 +48,7 @@ const ChartHeader = ({
   downloadCsv,
   tooltip,
   externalLink,
+  noShadow = false,
 }: ChartHeaderProps) => {
   return (
     <HStack
@@ -54,8 +56,8 @@ const ChartHeader = ({
       roundedTop="md"
       px="4"
       py="2"
-      borderBottom="2px"
-      borderColor="#DEDEDE"
+      borderBottom={noShadow ? 'none' : '2px'}
+      borderColor={noShadow ? 'none' : '#DEDEDE'}
       bg="white"
     >
       {logo && typeof logo === 'string' && <Img src={logo} alt={title} h="5" />}
