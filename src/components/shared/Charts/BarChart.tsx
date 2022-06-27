@@ -15,6 +15,8 @@ interface BarChartProps<T> {
   height?: number;
   grouped?: boolean;
   showLegend?: boolean;
+  showYaxisLabel?: boolean;
+  showXaxisLabel?: boolean;
   padding?: number;
   onClick?: (category: string) => void;
   tooltipFormatter: (data: T | CallbackDataParams, isTitle?: boolean) => string;
@@ -33,12 +35,17 @@ export default function BarChart<T>({
   tooltipFormatter,
   grouped = false,
   showLegend = false,
+  showXaxisLabel = false,
+  showYaxisLabel = false,
 }: BarChartProps<T>) {
   const option: EChartsOption = useMemo(
     () =>
       ({
         legend: {
           show: showLegend,
+          icon: 'circle',
+          left: 'left',
+          padding: [0, 0, 0, 20],
         },
         tooltip: grouped
           ? {}
@@ -63,22 +70,25 @@ export default function BarChart<T>({
             },
         grid: {
           containLabel: true,
-          top: 0,
+          top: 40,
           bottom: 0,
-          left: 10,
+          left: 0,
           right: 50,
           height: 'auto',
+          width: '100%',
+          align: 'left',
         },
-        scales: {
-          xAxes: [
-            {
-              barPercentage: 1,
-              categoryPercentage: 1,
-            },
-          ],
+
+        xAxis: {
+          type: xAxisKey,
+          name: '',
+          axisLabel: { show: showXaxisLabel },
         },
-        xAxis: grouped ? { type: 'category' } : { name: '' },
-        yAxis: grouped ? {} : { type: yAxisKey, axisLabel: { show: false } },
+        yAxis: {
+          type: yAxisKey,
+          axisLabel: { show: showYaxisLabel },
+          inverse: !grouped,
+        },
         series: grouped
           ? [
               {
@@ -86,28 +96,21 @@ export default function BarChart<T>({
                 color: '#00D696',
                 barGap: 0,
                 barWidth: '100%',
-                barMaxWidth: '10%',
+                barMaxWidth: '15%',
               },
               {
                 type: 'bar',
                 color: '#00BFCA',
                 barGap: 0,
                 barWidth: '100%',
-                barMaxWidth: '10%',
+                barMaxWidth: '15%',
               },
               {
                 type: 'bar',
                 color: '#8342AF',
                 barGap: 0,
                 barWidth: '100%',
-                barMaxWidth: '10%',
-              },
-              {
-                type: 'bar',
-                color: '#FF447D',
-                barGap: 0,
-                barWidth: '100%',
-                barMaxWidth: '10%',
+                barMaxWidth: '15%',
               },
             ]
           : [
@@ -133,7 +136,17 @@ export default function BarChart<T>({
               },
             ],
       } as EChartsOption),
-    [title, dataset, xAxisKey, yAxisKey, tooltipFormatter, grouped, showLegend],
+    [
+      title,
+      dataset,
+      xAxisKey,
+      yAxisKey,
+      tooltipFormatter,
+      grouped,
+      showLegend,
+      showXaxisLabel,
+      showYaxisLabel,
+    ],
   );
 
   const currentPriceHeight = 0;

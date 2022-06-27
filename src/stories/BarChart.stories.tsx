@@ -19,35 +19,31 @@ const dataset = [
   { value: 33, category: 'shib', name: 'Shiba Inu' },
 ];
 const datasetGrouped = {
-  dimensions: ['coin', 'uniswap-v2', 'uniswap-v3', 'curve'],
+  dimensions: ['category', 'uniswap-v2', 'uniswap-v3', 'curve'],
   source: [
     {
-      coin: 'USDC/DAI',
+      category: 'USDC/DAI',
       'uniswap-v2': 43.3,
       'uniswap-v3': 85.8,
       curve: 93.7,
-      sushiswap: 39.1,
     },
     {
-      coin: 'BTC/WBTC',
+      category: 'BTC/WBTC',
       'uniswap-v2': 83.1,
       'uniswap-v3': 73.4,
       curve: 55.1,
-      sushiswap: 87.1,
     },
     {
-      coin: 'USDT/DAI',
+      category: 'USDT/DAI',
       'uniswap-v2': 86.4,
       'uniswap-v3': 65.2,
       curve: 82.5,
-      sushiswap: 13.1,
     },
     {
-      coin: 'ETH/USTC',
+      category: 'ETH/USTC',
       'uniswap-v2': 72.4,
       'uniswap-v3': 53.9,
       curve: 39.1,
-      sushiswap: 99.1,
     },
   ],
 };
@@ -93,6 +89,19 @@ const Template = () => {
         xAxisKey="value"
         yAxisKey="category"
         grouped
+        showYaxisLabel
+        showXaxisLabel
+        showLegend
+      />
+      <BarChart
+        tooltipFormatter={tooltipFormatter}
+        dataset={datasetGrouped}
+        xAxisKey="category"
+        yAxisKey="value"
+        grouped
+        showYaxisLabel
+        showXaxisLabel
+        showLegend
       />
     </Grid>
   );
