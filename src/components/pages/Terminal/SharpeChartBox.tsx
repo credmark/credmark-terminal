@@ -108,12 +108,14 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
                 input: {
                   model_slug: token.priceEns
                     ? 'chainlink.price-by-ens'
-                    : 'chainlink.price-usd',
+                    : 'price.quote',
                   model_input: token.priceEns
                     ? { domain: token.priceEns }
-                    : token.isNative
-                    ? { symbol: token.symbol }
-                    : { address: token.address },
+                    : {
+                        base: token.isNative
+                          ? { symbol: token.symbol }
+                          : { address: token.address },
+                      },
                   window: `${window} seconds`,
                   interval: `${interval} seconds`,
                 },
