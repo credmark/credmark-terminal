@@ -78,6 +78,7 @@ export class ExtendedToken extends BaseCurrency {
   public readonly address: string;
   public readonly id?: string;
   public readonly priceEns?: string;
+  public readonly createdAt?: Date;
 
   public constructor(
     chainId: number,
@@ -87,11 +88,13 @@ export class ExtendedToken extends BaseCurrency {
     name?: string,
     id?: string,
     priceEns?: string,
+    createdAt?: Date,
   ) {
     super(chainId, decimals, symbol, name);
     this.address = address;
     this.id = id;
     this.priceEns = priceEns;
+    this.createdAt = createdAt;
   }
 
   /**
