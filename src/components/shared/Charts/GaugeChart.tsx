@@ -5,13 +5,13 @@ import React, { useMemo } from 'react';
 import ChartHeader from './ChartHeader';
 
 interface GaugeChart {
-  datasetA: {
+  datasetA?: {
     value: number;
     category: string;
     color: string;
     name: string;
   };
-  datasetB: {
+  datasetB?: {
     value: number;
     category: string;
     color: string;
@@ -24,6 +24,7 @@ interface GaugeChart {
   onClick?: (category: string) => void;
   chartHeaderLabelBackgroundColor?: string;
   chartHeaderLabelName?: string;
+  gaugeType?: 'double' | 'top' | 'bottom';
 }
 
 const sharedProperties = {
@@ -66,6 +67,7 @@ const GaugeChart = ({
   title,
   chartHeaderLabelBackgroundColor,
   chartHeaderLabelName,
+  gaugeType,
 }: GaugeChart) => {
   const baseValue = useMemo(
     () =>
@@ -106,9 +108,11 @@ const GaugeChart = ({
             },
             valueAnimation: true,
             formatter: function (value: number) {
-              return (
-                `{unit|${datasetA.name}}\n{value|` + value.toFixed(0) + '%}'
-              );
+              if (datasetA)
+                return (
+                  `{unit|${datasetA.name}}\n{value|` + value.toFixed(0) + '%}'
+                );
+              return '';
             },
             rich: {
               borderColor: 'none',
@@ -144,7 +148,7 @@ const GaugeChart = ({
           min: 0,
           max: baseValue,
           itemStyle: {
-            color: datasetB?.color || '#FF7154',
+            color: (datasetB || datasetA)?.color || '#FF7154',
             shadowColor: 'rgba(0,138,255,0.45)',
             shadowBlur: 10,
             shadowOffsetX: 2,
@@ -167,15 +171,16 @@ const GaugeChart = ({
             },
             valueAnimation: true,
             formatter: function (value: number) {
-              return (
-                `{unit|${datasetB.name}}\n{value|` + value.toFixed(0) + '%}'
-              );
+              const data = datasetB || datasetA;
+              if (data)
+                return `{unit|${data.name}}\n{value|` + value.toFixed(0) + '%}';
+              return '';
             },
             rich: {
               borderColor: 'none',
               value: {
                 fontSize: 32,
-                color: datasetB?.color || '#FF7154',
+                color: (datasetB || datasetA)?.color || '#FF7154',
                 fontWeight: 'bold',
               },
               unit: {
@@ -187,13 +192,13 @@ const GaugeChart = ({
           },
           data: [
             {
-              value: datasetB?.value || 0,
+              value: (datasetB || datasetA)?.value || 0,
             },
           ],
         },
       ],
     }),
-    [datasetB, baseValue],
+    [datasetB, datasetA, baseValue],
   );
   return (
     <Box
@@ -208,7 +213,15 @@ const GaugeChart = ({
         title={title}
         downloadCsv={{
           filename: `${title?.replace(/\s/g, '-')}.csv`,
-          data: [{ value: datasetA.value }, { value: datasetB.value }],
+          data:
+            datasetA && datasetB
+              ? [{ value: datasetA.value }, { value: datasetB.value }]
+              : datasetA
+              ? [{ value: datasetA.value }]
+              : datasetB
+              ? [{ value: datasetB.value }]
+              : [],
+
           headers: [seriesName],
         }}
         noShadow={true}
@@ -234,20 +247,42 @@ const GaugeChart = ({
           gridTemplateColumns="1fr"
           overflow="hidden"
         >
-          <Box>
-            <ReactEChartsCore
-              option={optionA}
-              notMerge={true}
-              lazyUpdate={true}
-            />
-          </Box>
-          <Box mt="-180px">
-            <ReactEChartsCore
-              option={optionB}
-              notMerge={true}
-              lazyUpdate={true}
-            />
-          </Box>
+          {gaugeType === 'double' ? (
+            <>
+              <Box>
+                <ReactEChartsCore
+                  option={optionA}
+                  notMerge={true}
+                  lazyUpdate={true}
+                />
+              </Box>
+              <Box mt="-180px">
+                <ReactEChartsCore
+                  option={optionB}
+                  notMerge={true}
+                  lazyUpdate={true}
+                />
+              </Box>
+            </>
+          ) : gaugeType === 'top' ? (
+            <Box>
+              <ReactEChartsCore
+                option={optionA}
+                notMerge={true}
+                lazyUpdate={true}
+              />
+            </Box>
+          ) : gaugeType === 'bottom' ? (
+            <Box>
+              <ReactEChartsCore
+                option={optionB}
+                notMerge={true}
+                lazyUpdate={true}
+              />
+            </Box>
+          ) : (
+            <></>
+          )}
         </Grid>
       </Box>
     </Box>

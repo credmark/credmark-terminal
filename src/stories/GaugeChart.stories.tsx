@@ -22,16 +22,10 @@ const datasetB = {
   color: '#FF7154',
 };
 const datasetC = {
-  value: 10,
+  value: 67,
   category: 'var-tvl',
   name: 'VaR/TVL',
-  color: '#FF7154',
-};
-const datasetD = {
-  value: 60,
-  category: 'lcr',
-  name: 'LCR',
-  color: '#FFDD00',
+  color: '#5470c6',
 };
 
 const Template = () => {
@@ -49,13 +43,21 @@ const Template = () => {
         datasetB={datasetB}
         chartHeaderLabelBackgroundColor={daiUsdcUsdtLabel}
         chartHeaderLabelName="Balancer"
+        gaugeType="double"
       />
       <GaugeChart
         titleImg={daiUsdcUsdt}
-        datasetA={datasetC}
-        datasetB={datasetD}
+        datasetA={datasetB}
         chartHeaderLabelBackgroundColor={daiUsdcUsdtLabel}
         chartHeaderLabelName="Balancer"
+        gaugeType="top"
+      />
+      <GaugeChart
+        titleImg={daiUsdcUsdt}
+        datasetB={datasetC}
+        chartHeaderLabelBackgroundColor={daiUsdcUsdtLabel}
+        chartHeaderLabelName="Balancer"
+        gaugeType="bottom"
       />
     </Flex>
   );
