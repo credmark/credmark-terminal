@@ -263,6 +263,14 @@ const XRP = new ExtendedToken(
   'xrp-usd.data.eth',
 );
 
+const DPI = new Token(
+  1,
+  '0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b',
+  18,
+  'DPI',
+  'DefiPulse Index',
+);
+
 const tokens: ExtendedCurrency[] = [
   WBTC,
   WETH9[1],
@@ -290,7 +298,6 @@ const tokens: ExtendedCurrency[] = [
   AXS,
   AUDIO,
   YFI,
-
   SOL,
   SNX,
   TRX,
@@ -301,6 +308,7 @@ const tokens: ExtendedCurrency[] = [
   DOGE,
   BNT,
   XRP,
+  DPI,
 ];
 
 export default function SharpeRatioPage() {
