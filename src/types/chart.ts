@@ -8,6 +8,7 @@ export interface ChartLine {
     timestamp: Date;
     value: number;
   }>;
+  error?: string;
 }
 
 export type Aggregator = 'min' | 'max' | 'avg' | 'sum';

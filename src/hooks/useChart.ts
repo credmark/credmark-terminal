@@ -64,7 +64,7 @@ export function useLineChart({
       return getCurrentStats({
         name: line.name,
         description: line.description,
-        error,
+        error: line.error ?? error,
         loading,
         value: latestDataPoint ? formatValue(latestDataPoint.value) : undefined,
       });
