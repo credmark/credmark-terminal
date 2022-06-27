@@ -95,8 +95,21 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
     setPricesLoading(true);
 
     const abortController = new AbortController();
-    const window = Duration.fromObject({ days: PRICE_WINDOW }).as('seconds');
-    const interval = Duration.fromObject({ days: 1 }).as('seconds');
+    const window = (token: ExtendedCurrency) =>
+      Duration.fromObject({
+        days: Math.min(
+          PRICE_WINDOW,
+          Math.floor(
+            (Date.now().valueOf() -
+              (token.isToken && token.createdAt
+                ? token.createdAt.valueOf()
+                : 0)) /
+              (24 * 3600 * 1000),
+          ),
+        ),
+      });
+
+    const interval = Duration.fromObject({ days: 1 });
 
     Promise.all(
       tokens.map((token) =>
@@ -116,8 +129,8 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
                           ? { symbol: token.symbol }
                           : { address: token.address },
                       },
-                  window: `${window} seconds`,
-                  interval: `${interval} seconds`,
+                  window: `${window(token).as('days')} days`,
+                  interval: `${interval.as('days')} days`,
                 },
                 blockNumber,
               },
@@ -158,14 +171,19 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
   useDeepCompareEffect(() => {
     setSharpeLoading(true);
     const abortController = new AbortController();
+
     function computeSharpeRatio(
-      token: ExtendedCurrency,
       prices: ModelSeriesOutput<TokenPrice>,
     ): Promise<ModelSeriesOutput<SharpeRatio>> {
       return new Promise((resolve) => {
-        // Oldest first
+        if (prices.errors && prices.errors.length > 0) {
+          resolve({ errors: prices.errors, series: [] });
+          return;
+        }
+
+        // Oldest to newest
         const sortedPrices = [...prices.series].sort(
-          (a, b) => b.blockNumber - a.blockNumber,
+          (a, b) => a.blockNumber - b.blockNumber,
         );
 
         const modelInputs: Array<{
@@ -173,10 +191,16 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
           prices: ModelSeriesOutput<TokenPrice>;
           risk_free_rate: number;
         }> = [];
-        for (let i = 0; i < SHARPE_WINDOW; i++) {
+
+        const sharpeWindow = Math.min(SHARPE_WINDOW, sortedPrices.length - 10);
+        for (
+          let end = sortedPrices.length;
+          end > sortedPrices.length - sharpeWindow;
+          end--
+        ) {
           const inputPrices = sortedPrices.slice(
-            i,
-            sortedPrices.length - SHARPE_WINDOW + i,
+            Math.max(0, end - sharpeWindow),
+            end,
           );
 
           modelInputs.push({
@@ -202,12 +226,10 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
         )
           .then((mapRes) => {
             resolve({
-              series: mapRes.output.results.map((output, index) => ({
-                blockNumber: modelInputs[index].prices.series[0].blockNumber,
-                blockTimestamp:
-                  modelInputs[index].prices.series[0].blockTimestamp,
-                sampleTimestamp:
-                  modelInputs[index].prices.series[0].sampleTimestamp,
+              series: mapRes.output.results.map((output) => ({
+                blockNumber: output.output.block_number,
+                blockTimestamp: output.output.blockTimestamp,
+                sampleTimestamp: output.output.blockTimestamp,
                 output: output.output,
               })),
               errors: [],
@@ -227,7 +249,7 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
       tokenPrices.map(({ token, price }) =>
         tokenKey(token) in SHARPE_RATIO_CACHE
           ? Promise.resolve(SHARPE_RATIO_CACHE[tokenKey(token)])
-          : computeSharpeRatio(token, price).then((sharpeRatio) => {
+          : computeSharpeRatio(price).then((sharpeRatio) => {
               if (!abortController.signal.aborted && sharpeRatio) {
                 SHARPE_RATIO_CACHE[tokenKey(token)] = sharpeRatio;
               }
@@ -279,10 +301,14 @@ export default function SharpeChartBox({
         tokens.find(
           (token) => selectedTokens[i] && token.equals(selectedTokens[i]),
         )?.symbol ?? '',
-      data: o.series.map((i) => ({
-        timestamp: new Date(i.sampleTimestamp * 1000),
-        value: i.output.sharpe_ratio,
-      })),
+      data:
+        o.errors && o.errors.length > 1
+          ? []
+          : o.series.map((i) => ({
+              timestamp: new Date(i.sampleTimestamp * 1000),
+              value: i.output.sharpe_ratio,
+            })),
+      error: o.errors && o.errors.length > 1 ? o.errors[0].error.message : '',
     })),
     loading: model.loading,
     error: '',
@@ -356,9 +382,11 @@ export default function SharpeChartBox({
                   />
                 </HStack>
                 <HStack w="100%" justifyContent="center">
-                  <Box w="4" h="4" rounded="full" bg={colors[index]} />
+                  {!sharpeChart.lines?.[index]?.error && (
+                    <Box w="4" h="4" rounded="full" bg={colors[index]} />
+                  )}
                   <Box fontSize="2xl">
-                    {sharpeChart.currentStats?.[index]?.value ?? '-'}
+                    {sharpeChart.currentStats?.[index]?.value}
                   </Box>
                 </HStack>
               </Box>
