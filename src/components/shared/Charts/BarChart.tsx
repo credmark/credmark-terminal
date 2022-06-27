@@ -6,13 +6,15 @@ import { CallbackDataParams } from 'echarts/types/src/util/types.d';
 import React, { useMemo } from 'react';
 
 interface BarChartProps<T> {
-  dataset?: T[];
+  dataset?: T[] | T;
   loading?: boolean;
   xAxisKey?: keyof T;
   yAxisKey?: keyof T;
   title?: string;
   titleImg?: string;
   height?: number;
+  grouped?: boolean;
+  showLegend?: boolean;
   padding?: number;
   onClick?: (category: string) => void;
   tooltipFormatter: (data: T | CallbackDataParams, isTitle?: boolean) => string;
@@ -29,29 +31,36 @@ export default function BarChart<T>({
   yAxisKey,
   onClick,
   tooltipFormatter,
+  grouped = false,
+  showLegend = false,
 }: BarChartProps<T>) {
   const option: EChartsOption = useMemo(
     () =>
       ({
-        legend: {},
-        tooltip: {
-          trigger: 'axis',
-          formatter: (params) => {
-            if (
-              !Array.isArray(params) ||
-              params.length === 0 ||
-              !params[0].data
-            ) {
-              return '';
-            }
-
-            return tooltipFormatter(params[0].data as T);
-          },
+        legend: {
+          show: showLegend,
         },
+        tooltip: grouped
+          ? {}
+          : {
+              trigger: 'axis',
+              formatter: (params) => {
+                if (
+                  !Array.isArray(params) ||
+                  params.length === 0 ||
+                  !params[0].data
+                ) {
+                  return '';
+                }
+                return tooltipFormatter(params[0].data as T);
+              },
+            },
         dimensions: [yAxisKey, xAxisKey],
-        dataset: {
-          source: dataset,
-        },
+        dataset: grouped
+          ? dataset
+          : {
+              source: dataset,
+            },
         grid: {
           containLabel: true,
           top: 0,
@@ -60,32 +69,71 @@ export default function BarChart<T>({
           right: 50,
           height: 'auto',
         },
-        xAxis: { name: '' },
-        yAxis: { type: yAxisKey, axisLabel: { show: false }, inverse: true },
-        series: [
-          {
-            realtimeSort: true,
-            name: title,
-            label: {
-              show: true,
-              rotate: 0,
-              align: 'left',
-              verticalAlign: 'middle',
-              position: 'insideLeft',
-              distance: 15,
-              formatter: (params) => tooltipFormatter(params, true),
-              color: 'black',
+        scales: {
+          xAxes: [
+            {
+              barPercentage: 1,
+              categoryPercentage: 1,
             },
-            type: 'bar',
-            encode: {
-              x: xAxisKey,
-              y: yAxisKey,
-            },
-            color: '#00D696',
-          },
-        ],
+          ],
+        },
+        xAxis: grouped ? { type: 'category' } : { name: '' },
+        yAxis: grouped ? {} : { type: yAxisKey, axisLabel: { show: false } },
+        series: grouped
+          ? [
+              {
+                type: 'bar',
+                color: '#00D696',
+                barGap: 0,
+                barWidth: '100%',
+                barMaxWidth: '10%',
+              },
+              {
+                type: 'bar',
+                color: '#00BFCA',
+                barGap: 0,
+                barWidth: '100%',
+                barMaxWidth: '10%',
+              },
+              {
+                type: 'bar',
+                color: '#8342AF',
+                barGap: 0,
+                barWidth: '100%',
+                barMaxWidth: '10%',
+              },
+              {
+                type: 'bar',
+                color: '#FF447D',
+                barGap: 0,
+                barWidth: '100%',
+                barMaxWidth: '10%',
+              },
+            ]
+          : [
+              {
+                realtimeSort: true,
+                name: title,
+                label: {
+                  show: true,
+                  rotate: 0,
+                  align: 'left',
+                  verticalAlign: 'middle',
+                  position: 'insideLeft',
+                  distance: 15,
+                  formatter: (params) => tooltipFormatter(params, true),
+                  color: 'black',
+                },
+                type: 'bar',
+                encode: {
+                  x: xAxisKey,
+                  y: yAxisKey,
+                },
+                color: '#00D696',
+              },
+            ],
       } as EChartsOption),
-    [title, dataset, xAxisKey, yAxisKey, tooltipFormatter],
+    [title, dataset, xAxisKey, yAxisKey, tooltipFormatter, grouped, showLegend],
   );
 
   const currentPriceHeight = 0;
