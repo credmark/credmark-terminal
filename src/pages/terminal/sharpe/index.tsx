@@ -12,12 +12,15 @@ import {
   Solana,
 } from '~/utils/currency';
 
-const APE = new Token(
+const APE = new ExtendedToken(
   1,
   '0x4d224452801ACEd8B2F0aebE155379bb5D594381',
   18,
   'APE',
   'ApeCoin',
+  undefined,
+  undefined,
+  new Date(1647561600000),
 );
 const AAVE = new Token(
   1,
