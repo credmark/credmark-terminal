@@ -101,7 +101,7 @@ const GaugeChart = ({
             height: '100%',
             lineHeight: 30,
             borderRadius: 0,
-            offsetCenter: [0, '-20%'],
+            offsetCenter: [0, '-15%'],
             style: {
               transform: 'rotate(90deg)',
             },
@@ -159,7 +159,7 @@ const GaugeChart = ({
             lineHeight: 30,
             borderRadius: 0,
             marginTtop: '-30px',
-            offsetCenter: [0, '50%'],
+            offsetCenter: [0, '62%'],
             style: {
               transform: 'rotate(90deg)',
             },
