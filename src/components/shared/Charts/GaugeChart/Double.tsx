@@ -1,8 +1,19 @@
-import { Box, Flex, Grid, Text } from '@chakra-ui/react';
+import { Box, Center, chakra, Spinner, Text } from '@chakra-ui/react';
 import ReactEChartsCore, { EChartsOption } from 'echarts-for-react';
 import React, { useMemo } from 'react';
 
-import ChartHeader from './ChartHeader';
+const ChartOverlay = chakra(Center, {
+  baseStyle: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    pl: 10,
+    pr: 8,
+    pb: 16,
+  },
+});
 
 interface GaugeChart {
   datasetA?: {
@@ -18,13 +29,7 @@ interface GaugeChart {
     name: string;
   };
   loading?: boolean;
-  title?: string;
-  seriesName?: string;
-  titleImg?: string;
-  onClick?: (category: string) => void;
-  chartHeaderLabelBackgroundColor?: string;
-  chartHeaderLabelName?: string;
-  gaugeType?: 'double' | 'top' | 'bottom';
+  error?: string;
 }
 
 const sharedProperties = {
@@ -62,15 +67,11 @@ const sharedProperties = {
   },
 };
 
-const GaugeChart = ({
+const DoubleGaugeChart = ({
   datasetA,
   datasetB,
-  seriesName = 'Health summary',
-  titleImg,
-  title,
-  chartHeaderLabelBackgroundColor,
-  chartHeaderLabelName,
-  gaugeType,
+  loading,
+  error,
 }: GaugeChart) => {
   const baseValue = useMemo(
     () =>
@@ -147,25 +148,24 @@ const GaugeChart = ({
           min: 0,
           max: baseValue,
           itemStyle: {
-            color: (datasetB || datasetA)?.color || '#FF7154',
+            color: datasetB?.color || '#FF7154',
           },
 
           detail: {
             backgroundColor: 'transparent',
             borderColor: 'none',
             borderWidth: 2,
-            width: '100%',
+            width: '350px',
             height: '100%',
             lineHeight: 30,
             borderRadius: 0,
-            marginTtop: '-30px',
             offsetCenter: [0, '62%'],
             style: {
               transform: 'rotate(90deg)',
             },
             valueAnimation: true,
             formatter: function (value: number) {
-              const data = datasetB || datasetA;
+              const data = datasetB;
               if (data)
                 return `{unit|${data.name}}\n{value|` + value.toFixed(0) + '%}';
               return '';
@@ -175,7 +175,7 @@ const GaugeChart = ({
               borderColor: 'none',
               value: {
                 fontSize: 32,
-                color: (datasetB || datasetA)?.color || '#FF7154',
+                color: datasetB?.color || '#FF7154',
                 fontWeight: 'bold',
               },
               unit: {
@@ -186,101 +186,51 @@ const GaugeChart = ({
           },
           data: [
             {
-              value: (datasetB || datasetA)?.value || 0,
+              value: datasetB?.value || 0,
             },
           ],
         },
       ],
     }),
-    [datasetB, datasetA, baseValue],
+    [datasetB, baseValue],
   );
-  return (
-    <Box
-      height="400px"
-      maxWidth="382px"
-      width="100%"
-      shadow="md"
-      background="white"
-    >
-      <ChartHeader
-        logo={titleImg}
-        title={title}
-        downloadCsv={{
-          filename: `${title?.replace(/\s/g, '-')}.csv`,
-          data:
-            datasetA && datasetB
-              ? [{ value: datasetA.value }, { value: datasetB.value }]
-              : datasetA
-              ? [{ value: datasetA.value }]
-              : datasetB
-              ? [{ value: datasetB.value }]
-              : [],
 
-          headers: [seriesName],
-        }}
-        noShadow={true}
-      />
-      <Box pl="10px" pr="10px">
-        <Flex width="max-content" height="42px" alignItems="center">
-          <Text
-            backgroundImage={chartHeaderLabelBackgroundColor}
-            backgroundSize="cover"
-            backgroundRepeat="no-repeat"
-            borderRadius="16px"
-            fontSize="xs"
-            color="white"
-            pl="10px"
-            pr="10px"
-          >
-            {chartHeaderLabelName}
-          </Text>
-        </Flex>
+  if (loading && !datasetA && !datasetB) {
+    return (
+      <ChartOverlay>
+        <Spinner color="purple.500" />
+      </ChartOverlay>
+    );
+  }
 
-        <Grid
-          gridTemplateRows="repeat(2, 200px)"
-          gridTemplateColumns="1fr"
-          overflow="hidden"
+  if (error) {
+    return (
+      <ChartOverlay>
+        <Text
+          as="pre"
+          bg="red.50"
+          color="red.600"
+          p="4"
+          rounded="md"
+          fontSize="xs"
+          w="100%"
+          whiteSpace="break-spaces"
         >
-          {gaugeType === 'double' ? (
-            <>
-              <Box>
-                <ReactEChartsCore
-                  option={optionA}
-                  notMerge={true}
-                  lazyUpdate={true}
-                />
-              </Box>
-              <Box mt="-180px">
-                <ReactEChartsCore
-                  option={optionB}
-                  notMerge={true}
-                  lazyUpdate={true}
-                />
-              </Box>
-            </>
-          ) : gaugeType === 'top' ? (
-            <Box>
-              <ReactEChartsCore
-                option={optionA}
-                notMerge={true}
-                lazyUpdate={true}
-              />
-            </Box>
-          ) : gaugeType === 'bottom' ? (
-            <Box>
-              <ReactEChartsCore
-                option={optionB}
-                notMerge={true}
-                lazyUpdate={true}
-              />
-            </Box>
-          ) : (
-            <></>
-          )}
-        </Grid>
+          {error}
+        </Text>
+      </ChartOverlay>
+    );
+  }
+  return (
+    <>
+      <Box>
+        <ReactEChartsCore option={optionA} notMerge={true} lazyUpdate={true} />
       </Box>
-    </Box>
+      <Box mt="-180px">
+        <ReactEChartsCore option={optionB} notMerge={true} lazyUpdate={true} />
+      </Box>
+    </>
   );
 };
 
-export default GaugeChart;
+export default DoubleGaugeChart;
