@@ -31,11 +31,7 @@ const sharedProperties = {
   type: 'gauge',
   splitNumber: 1,
   axisLine: {
-    show: true,
-    borderColor: 'blue',
-    lineStyle: {
-      width: 19,
-    },
+    show: false,
   },
   axisTick: {
     show: false,
@@ -94,10 +90,6 @@ const GaugeChart = ({
           max: baseValue,
           itemStyle: {
             color: datasetA?.color || '#00D696',
-            shadowColor: 'rgba(0,138,255,0.45)',
-            shadowBlur: 10,
-            shadowOffsetX: 2,
-            shadowOffsetY: 2,
             borderRadius: 4,
           },
 
@@ -107,7 +99,7 @@ const GaugeChart = ({
             borderWidth: 2,
             width: '100%',
             height: '100%',
-            lineHeight: 40,
+            lineHeight: 30,
             borderRadius: 0,
             offsetCenter: [0, '-20%'],
             style: {
@@ -121,6 +113,7 @@ const GaugeChart = ({
                 );
               return '';
             },
+            align: 'center',
             rich: {
               borderColor: 'none',
               value: {
@@ -131,7 +124,6 @@ const GaugeChart = ({
               unit: {
                 fontSize: 16,
                 color: '#000000',
-                padding: [0, 0, -20, 10],
               },
             },
           },
@@ -156,11 +148,6 @@ const GaugeChart = ({
           max: baseValue,
           itemStyle: {
             color: (datasetB || datasetA)?.color || '#FF7154',
-            shadowColor: 'rgba(0,138,255,0.45)',
-            shadowBlur: 10,
-            shadowOffsetX: 2,
-            shadowOffsetY: 2,
-            borderRadius: 4,
           },
 
           detail: {
@@ -169,7 +156,7 @@ const GaugeChart = ({
             borderWidth: 2,
             width: '100%',
             height: '100%',
-            lineHeight: 40,
+            lineHeight: 30,
             borderRadius: 0,
             marginTtop: '-30px',
             offsetCenter: [0, '50%'],
@@ -183,6 +170,7 @@ const GaugeChart = ({
                 return `{unit|${data.name}}\n{value|` + value.toFixed(0) + '%}';
               return '';
             },
+            align: 'center',
             rich: {
               borderColor: 'none',
               value: {
@@ -193,7 +181,6 @@ const GaugeChart = ({
               unit: {
                 fontSize: 16,
                 color: '#000000',
-                padding: [0, 0, -20, 10],
               },
             },
           },
