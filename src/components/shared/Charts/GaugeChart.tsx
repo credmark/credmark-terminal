@@ -47,7 +47,14 @@ const sharedProperties = {
     show: false,
   },
   pointer: {
-    show: false,
+    icon: 'triangle',
+    length: '15%',
+    width: 15,
+    showAbove: true,
+    offsetCenter: [0, '-70%'],
+    itemStyle: {
+      color: '#666666',
+    },
   },
   progress: {
     show: true,
