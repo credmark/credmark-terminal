@@ -4,7 +4,7 @@ import React from 'react';
 
 import { SharpeChartBox } from '~/components/pages/Terminal';
 import SEOHeader from '~/components/shared/SEOHeader';
-import { WBTC } from '~/constants/tokens';
+import { CMK, WBTC } from '~/constants/tokens';
 import {
   Avalanche,
   ExtendedCurrency,
@@ -312,6 +312,7 @@ const tokens: ExtendedCurrency[] = [
   BNT,
   XRP,
   DPI,
+  CMK[1],
 ];
 
 export default function SharpeRatioPage() {
@@ -319,7 +320,10 @@ export default function SharpeRatioPage() {
     <>
       <SEOHeader title="Sharpe Ratio" />
       <Container p="8" maxW="container.xl">
-        <SharpeChartBox tokens={tokens} defaultTokens={[WBTC, WETH9[1]]} />
+        <SharpeChartBox
+          tokens={tokens}
+          defaultTokens={[WBTC, WETH9[1], CMK[1]]}
+        />
       </Container>
     </>
   );
