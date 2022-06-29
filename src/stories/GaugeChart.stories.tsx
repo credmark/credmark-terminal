@@ -7,9 +7,9 @@ import {
   DoubleGaugeChart,
   SingleGaugeChart,
 } from '~/components/shared/Charts/GaugeChart';
+import CurrencyLogo, { CurrenciesLogo } from '~/components/shared/CurrencyLogo';
 
 import daiUsdcUsdtLabel from '../../public/img/assets/dai-usdc-usdt-label.svg';
-import daiUsdcUsdt from '../../public/img/assets/dai-usdc-usdt.svg';
 
 export default {
   title: 'Components/Charts/GaugeChart',
@@ -19,23 +19,55 @@ export default {
   },
 };
 
-const datasetA = { value: 100, category: 'dai', name: 'Dai', color: '#00D696' };
+const datasetA = {
+  value: 100,
+  category: 'fei',
+  name: 'FEI USD',
+  color: '#00D696',
+  token: {
+    chainId: 1,
+    decimals: 18,
+    symbol: 'FEI',
+    name: 'Fei USD',
+    isNative: false,
+    isToken: true,
+    address: '0x956F47F50A910163D8BF957Cf5846D573E7f87CA',
+  },
+};
 const datasetB = {
   value: 100,
-  category: 'usdc',
-  name: 'USDC',
+  category: 'tribe',
+  name: 'TRIBE',
   color: '#FF7154',
+  token: {
+    chainId: 1,
+    decimals: 18,
+    symbol: 'TRIBE',
+    name: 'Tribe',
+    isNative: false,
+    isToken: true,
+    address: '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
+  },
 };
 const datasetC = {
   value: 100,
-  category: 'var-tvl',
-  name: 'VaR/TVL',
+  category: 'tribe',
+  name: 'TRIBE',
   color: '#5470c6',
+  token: {
+    chainId: 1,
+    decimals: 18,
+    symbol: 'TRIBE',
+    name: 'Tribe',
+    isNative: false,
+    isToken: true,
+    address: '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
+  },
 };
 
 const Template = () => {
-  const title = 'Stable Coin Health';
-  const seriesName = 'Stable Coin Health';
+  const title = 'Lorem ipsum';
+  const seriesName = 'Lorem ipsum';
   return (
     <Flex
       justifyContent="space-evenly"
@@ -50,7 +82,9 @@ const Template = () => {
         chartHeader={
           <>
             <ChartHeader
-              logo={daiUsdcUsdt}
+              logo={
+                <CurrenciesLogo currencies={[datasetA.token, datasetB.token]} />
+              }
               title={title}
               downloadCsv={{
                 filename: `${title?.replace(/\s/g, '-')}.csv`,
@@ -72,7 +106,7 @@ const Template = () => {
         chartHeader={
           <>
             <ChartHeader
-              logo={daiUsdcUsdt}
+              logo={<CurrencyLogo currency={datasetA.token} />}
               title={title}
               downloadCsv={{
                 filename: `${title?.replace(/\s/g, '-')}.csv`,
@@ -94,7 +128,7 @@ const Template = () => {
         chartHeader={
           <>
             <ChartHeader
-              logo={daiUsdcUsdt}
+              logo={<CurrencyLogo currency={datasetB.token} />}
               title={title}
               downloadCsv={{
                 filename: `${title?.replace(/\s/g, '-')}.csv`,
