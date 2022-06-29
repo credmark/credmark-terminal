@@ -386,7 +386,7 @@ export default function SharpeChartBox({
                     <Box w="4" h="4" rounded="full" bg={colors[index]} />
                   )}
                   <Box fontSize="2xl">
-                    {sharpeChart.currentStats?.[index]?.value}
+                    {sharpeChart.currentStats?.[index]?.value ?? '-'}
                   </Box>
                 </HStack>
               </Box>
