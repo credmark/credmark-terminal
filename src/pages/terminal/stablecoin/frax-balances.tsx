@@ -6,13 +6,13 @@ import SEOHeader from '~/components/shared/SEOHeader';
 export default function DashboardPage() {
   return (
     <>
-      <SEOHeader title="Compound Lending Usage" />
+      <SEOHeader title="FRAX Stats & Collateralization" />
       <AspectRatio maxW="100vw" ratio={{ base: 1, lg: 4 / 3, xl: 16 / 9 }}>
         <iframe
-          title="Compound Lending Usage"
+          title="FRAX Stats & Collateralization"
           width="600"
           height="373.5"
-          src="https://app.powerbi.com/view?r=eyJrIjoiMTJlMGQ0NDItMzA0ZS00ZGZmLThjZWItYTFiNmQwNzZkMDQxIiwidCI6ImZlMjVkZDFmLTFjODktNDBhYi04ODdiLWQzYmY2ZjA2MjI5MyIsImMiOjEwfQ%3D%3D&pageName=ReportSection4905e1a3806dde42e208"
+          src="https://app.powerbi.com/view?r=eyJrIjoiNzFmMjNmZDYtY2VjYy00NDcyLTgxOTUtNDc1ZGFiODAzOTk1IiwidCI6ImZlMjVkZDFmLTFjODktNDBhYi04ODdiLWQzYmY2ZjA2MjI5MyIsImMiOjEwfQ%3D%3D&pageName=ReportSectionfe99243aa16623f527c0"
           frameBorder="0"
           allowFullScreen
         ></iframe>
