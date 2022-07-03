@@ -107,6 +107,7 @@ interface CategoryFilterMenuProps extends ButtonProps {
   categories: string[];
   selectedCategories: string[];
   setSelectedCategories: (categories: string[]) => void;
+  setSelectedSubCategories: (subcategories: string[]) => void;
 }
 interface SubCategoryFilterMenuProps extends ButtonProps {
   subcategories: string[];
@@ -118,6 +119,7 @@ function CategoryFilterMenu({
   categories,
   selectedCategories,
   setSelectedCategories,
+  setSelectedSubCategories,
   ...buttonProps
 }: CategoryFilterMenuProps): JSX.Element {
   return (
@@ -145,6 +147,7 @@ function CategoryFilterMenu({
           type="checkbox"
           onChange={(value) => {
             setSelectedCategories(Array.isArray(value) ? value : [value]);
+            setSelectedSubCategories([]);
           }}
         >
           {categories.map((category) => (
@@ -419,6 +422,7 @@ export default function ModelsPage({ models }: ModelPageProps) {
           <CategoryFilterMenu
             categories={allCategories}
             selectedCategories={selectedCategories}
+            setSelectedSubCategories={setSelectedSubCategories}
             setSelectedCategories={setSelectedCategories}
           />
           {selectedCategories?.length > 0 && (
