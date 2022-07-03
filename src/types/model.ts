@@ -58,7 +58,7 @@ export interface ModelMetadata {
   displayName: string;
   category: string;
   description?: string;
-  subcategory?: string;
+  subcategory: string;
   developer: string;
   input: FieldTypeObject;
   output: FieldTypeObject;
