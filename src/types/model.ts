@@ -58,6 +58,7 @@ export interface ModelMetadata {
   displayName: string;
   category: string;
   description?: string;
+  subcategory?: string;
   developer: string;
   input: FieldTypeObject;
   output: FieldTypeObject;
@@ -130,6 +131,7 @@ export interface ModelInfo {
   displayName: string;
   hDisplayName?: React.ReactNode;
   category: string;
+  subcategory: string;
   description?: string;
   hDescription?: React.ReactNode;
   developer: string;

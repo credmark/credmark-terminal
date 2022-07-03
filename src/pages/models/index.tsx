@@ -64,6 +64,7 @@ function SortMenu({
   return (
     <Menu>
       <MenuButton
+        w="102px"
         as={Button}
         size="sm"
         colorScheme="gray"
@@ -77,7 +78,7 @@ function SortMenu({
         rightIcon={<Icon as={ExpandMoreIcon} />}
         {...buttonProps}
       >
-        Sort&nbsp;&nbsp;
+        Sort
       </MenuButton>
       <MenuList>
         <MenuOptionGroup
@@ -107,6 +108,11 @@ interface CategoryFilterMenuProps extends ButtonProps {
   selectedCategories: string[];
   setSelectedCategories: (categories: string[]) => void;
 }
+interface SubCategoryFilterMenuProps extends ButtonProps {
+  subcategories: string[];
+  selectedSubCategories: string[];
+  setSelectedSubCategories: (categories: string[]) => void;
+}
 
 function CategoryFilterMenu({
   categories,
@@ -117,6 +123,7 @@ function CategoryFilterMenu({
   return (
     <Menu closeOnSelect={false}>
       <MenuButton
+        w="150px"
         as={Button}
         size="sm"
         colorScheme="gray"
@@ -130,7 +137,7 @@ function CategoryFilterMenu({
         rightIcon={<Icon as={ExpandMoreIcon} />}
         {...buttonProps}
       >
-        Category&nbsp;&nbsp;&nbsp;&nbsp;
+        Category
       </MenuButton>
       <MenuList>
         <MenuOptionGroup
@@ -157,6 +164,56 @@ function CategoryFilterMenu({
   );
 }
 
+function SubCategoryFilterMenu({
+  subcategories,
+  selectedSubCategories,
+  setSelectedSubCategories,
+  ...buttonProps
+}: SubCategoryFilterMenuProps): JSX.Element {
+  return (
+    <Menu closeOnSelect={false}>
+      <MenuButton
+        w="190px"
+        as={Button}
+        size="sm"
+        colorScheme="gray"
+        bg="gray.100"
+        _hover={{
+          bg: 'gray.200',
+        }}
+        _active={{
+          bg: 'gray.300',
+        }}
+        rightIcon={<Icon as={ExpandMoreIcon} />}
+        {...buttonProps}
+      >
+        Sub Category
+      </MenuButton>
+      <MenuList>
+        <MenuOptionGroup
+          value={selectedSubCategories}
+          type="checkbox"
+          onChange={(value) => {
+            setSelectedSubCategories(Array.isArray(value) ? value : [value]);
+          }}
+        >
+          {subcategories.map((subcategory) => (
+            <MenuItemOption
+              key={subcategory}
+              value={subcategory}
+              fontWeight={
+                selectedSubCategories.includes(subcategory) ? 'bold' : undefined
+              }
+            >
+              {subcategory}
+            </MenuItemOption>
+          ))}
+        </MenuOptionGroup>
+      </MenuList>
+    </Menu>
+  );
+}
+
 interface ModelPageProps {
   models: ModelInfo[];
 }
@@ -167,6 +224,9 @@ export default function ModelsPage({ models }: ModelPageProps) {
   const [topModels, setTopModels] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>('relevance');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>(
+    [],
+  );
 
   const allCategories = useMemo(
     () =>
@@ -178,6 +238,21 @@ export default function ModelsPage({ models }: ModelPageProps) {
       ),
     [models],
   );
+  const allSubCategories = useMemo(() => {
+    const filteredCategories = models.filter(
+      (i) => selectedCategories.indexOf(i.category) !== -1,
+      selectedCategories,
+    );
+
+    const reducedSubCategories = Array.isArray(filteredCategories)
+      ? filteredCategories.reduce(
+          (cats, model) => cats.add(model.subcategory),
+          new Set<string>(),
+        )
+      : '';
+
+    return Array.from(reducedSubCategories).filter((n) => n);
+  }, [models, selectedCategories]);
 
   const fuse = useMemo(
     () =>
@@ -269,6 +344,13 @@ export default function ModelsPage({ models }: ModelPageProps) {
     if (selectedCategories.length > 0) {
       _models = _models.filter((m) => selectedCategories.includes(m.category));
     }
+    if (selectedCategories.length > 0 && selectedSubCategories.length > 0) {
+      _models = _models.filter(
+        (m) =>
+          selectedCategories.includes(m.category) &&
+          selectedSubCategories.includes(m.subcategory),
+      );
+    }
 
     switch (sortKey) {
       case 'fastest':
@@ -301,8 +383,15 @@ export default function ModelsPage({ models }: ModelPageProps) {
     }
 
     return _models;
-  }, [debouncedInput, fuse, models, selectedCategories, sortKey, topModels]);
-
+  }, [
+    debouncedInput,
+    fuse,
+    models,
+    selectedCategories,
+    selectedSubCategories,
+    sortKey,
+    topModels,
+  ]);
   return (
     <>
       <SEOHeader title="Model Overview" />
@@ -332,6 +421,13 @@ export default function ModelsPage({ models }: ModelPageProps) {
             selectedCategories={selectedCategories}
             setSelectedCategories={setSelectedCategories}
           />
+          {selectedCategories?.length > 0 && (
+            <SubCategoryFilterMenu
+              subcategories={allSubCategories}
+              selectedSubCategories={selectedSubCategories}
+              setSelectedSubCategories={setSelectedSubCategories}
+            />
+          )}
           <SortMenu sortBy={sortKey} onSort={setSortKey} />
         </HStack>
         <SimpleGrid columns={{ sm: 1, md: 2 }} spacing={4} mt="8">
@@ -378,6 +474,7 @@ export const getServerSideProps: GetServerSideProps<
           category: model.category,
           description: model.description,
           developer: model.developer,
+          subcategory: model.subcategory,
           monthlyUsage: usageRequests
             .filter(
               (r) =>
