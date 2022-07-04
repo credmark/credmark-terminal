@@ -21,11 +21,17 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SettingsIcon from '@mui/icons-material/Settings';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
+import dynamic from 'next/dynamic';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { Card } from '~/components/base';
-import BarChart from '~/components/shared/Charts/BarChart';
-import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
+const BarChart = dynamic(() => import('~/components/shared/Charts/BarChart'), {
+  ssr: false,
+});
+const HistoricalChart = dynamic(
+  () => import('~/components/shared/Charts/HistoricalChart'),
+  { ssr: false },
+);
 import SearchSelect from '~/components/shared/Form/SearchSelect';
 import SEOHeader from '~/components/shared/SEOHeader';
 import { Aggregator, BarChartData, ChartLine } from '~/types/chart';

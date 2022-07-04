@@ -20,8 +20,17 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { EChartsOption } from 'echarts';
-import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
+import { EChartsInstance, EChartsOption } from 'echarts-for-react';
+import ReactEChartsCore from 'echarts-for-react/lib/core';
+import { LineChart } from 'echarts/charts';
+import {
+  GridComponent,
+  TooltipComponent,
+  TitleComponent,
+  LegendComponent,
+} from 'echarts/components';
+import * as echarts from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { Aggregator, ChartLine } from '~/types/chart';
@@ -60,6 +69,15 @@ const ChartOverlay = chakra(Center, {
     pb: 16,
   },
 });
+
+echarts.use([
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LineChart,
+  LegendComponent,
+  CanvasRenderer,
+]);
 
 export default function HistoricalChart({
   lines,
@@ -345,6 +363,7 @@ export default function HistoricalChart({
         Array.isArray(durations) || showCurrentStats ? 'max-content ' : ''
       }${isFullScreen ? '1fr' : height + 'px'}`}
       overflow="hidden"
+      minH="335px"
       {...boxProps}
     >
       {(Array.isArray(durations) || showCurrentStats) && (
@@ -425,6 +444,7 @@ export default function HistoricalChart({
       )}
       <Box position="relative">
         <ReactEChartsCore
+          echarts={echarts}
           option={option}
           lazyUpdate={true}
           notMerge={true}
@@ -432,6 +452,7 @@ export default function HistoricalChart({
             height: isFullScreen ? '100%' : height + 'px',
           }}
           onChartReady={onChartReady}
+          theme={'theme_name'}
         />
         {loading && noData && (
           <ChartOverlay>

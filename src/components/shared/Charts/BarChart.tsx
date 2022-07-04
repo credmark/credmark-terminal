@@ -1,9 +1,27 @@
 import { Box, Center, HStack, Text } from '@chakra-ui/layout';
 import { Img, Spinner } from '@chakra-ui/react';
-import { EChartsOption } from 'echarts';
-import ReactEChartsCore from 'echarts-for-react';
+import { EChartsOption } from 'echarts-for-react';
+import ReactEChartsCore from 'echarts-for-react/lib/core';
+import { BarChart as BarChartComponent } from 'echarts/charts';
+import {
+  GridComponent,
+  TooltipComponent,
+  TitleComponent,
+  LegendComponent,
+} from 'echarts/components';
+import * as echarts from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
 import { CallbackDataParams } from 'echarts/types/src/util/types.d';
 import React, { useMemo } from 'react';
+
+echarts.use([
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LegendComponent,
+  BarChartComponent,
+  CanvasRenderer,
+]);
 
 interface BarChartProps<T> {
   dataset?: T[] | T;
@@ -152,7 +170,7 @@ export default function BarChart<T>({
   const currentPriceHeight = 0;
 
   return (
-    <Box p={padding + 'px'} marginBottom="20px">
+    <Box minH="335px" p={padding + 'px'} marginBottom="20px">
       <Box
         position="relative"
         h={height - padding * 2 + currentPriceHeight + 'px'}
@@ -183,9 +201,11 @@ export default function BarChart<T>({
           right="0px"
         >
           <ReactEChartsCore
+            echarts={echarts}
             option={option}
             notMerge={true}
             lazyUpdate={true}
+            theme={'theme_name'}
             style={{
               height: height + 'px',
               margin: padding * -1 + 'px',
