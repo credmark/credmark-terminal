@@ -330,7 +330,7 @@ export default function DexChartBox({
         externalLink={`https://etherscan.io/address/${pool}`}
       />
 
-      <Flex align="stretch">
+      <Flex align="stretch" minHeight="360px">
         {!isExpanded && (
           <Flex direction="column" w="200px">
             <Center

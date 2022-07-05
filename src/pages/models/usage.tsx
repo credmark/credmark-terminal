@@ -290,16 +290,18 @@ export default function ModelUsagePage(props: ModelPageProps) {
               isOptionSelected={(option) => slug === option.name}
             />
           </Box>
-          <HistoricalChart
-            loading={loading}
-            lines={lines.filter((line) => line.name === slug)}
-            height={335}
-            formatYLabel={(value) => shortenNumber(Number(value), 0)}
-            formatValue={(value) => new Intl.NumberFormat().format(value)}
-            durations={[30, 60, 90]}
-            defaultDuration={90}
-            aggregate
-          />
+          <Box minHeight="400px">
+            <HistoricalChart
+              loading={loading}
+              lines={lines.filter((line) => line.name === slug)}
+              height={335}
+              formatYLabel={(value) => shortenNumber(Number(value), 0)}
+              formatValue={(value) => new Intl.NumberFormat().format(value)}
+              durations={[30, 60, 90]}
+              defaultDuration={90}
+              aggregate
+            />
+          </Box>
         </Card>
 
         <Card mt="8">
@@ -386,17 +388,18 @@ export default function ModelUsagePage(props: ModelPageProps) {
               </MenuList>
             </Menu>
           </Stack>
-
-          <BarChart
-            loading={loading}
-            dataset={barChartData}
-            height={Math.max(barChartData.length * 32, 335)}
-            padding={0}
-            onClick={(slug) => setSlug(slug)}
-            yAxisKey="category"
-            xAxisKey="value"
-            tooltipFormatter={tooltipFormatter}
-          />
+          <Box minHeight="400px">
+            <BarChart
+              loading={loading}
+              dataset={barChartData}
+              height={Math.max(barChartData.length * 32, 335)}
+              padding={0}
+              onClick={(slug) => setSlug(slug)}
+              yAxisKey="category"
+              xAxisKey="value"
+              tooltipFormatter={tooltipFormatter}
+            />
+          </Box>
           <Center>
             <Button
               type="button"
@@ -446,15 +449,17 @@ export default function ModelUsagePage(props: ModelPageProps) {
               </MenuList>
             </Menu>
           </Stack>
-          <BarChart
-            loading={loading}
-            dataset={runtimeBarChartData}
-            height={Math.max(runtimeBarChartData.length * 32, 335)}
-            padding={0}
-            yAxisKey="category"
-            xAxisKey="value"
-            tooltipFormatter={tooltipFormatter}
-          />
+          <Box minHeight="400px">
+            <BarChart
+              loading={loading}
+              dataset={runtimeBarChartData}
+              height={Math.max(runtimeBarChartData.length * 32, 335)}
+              padding={0}
+              yAxisKey="category"
+              xAxisKey="value"
+              tooltipFormatter={tooltipFormatter}
+            />
+          </Box>
           <Center>
             <Button
               type="button"
@@ -477,16 +482,17 @@ export default function ModelUsagePage(props: ModelPageProps) {
           <Heading as="h2" fontSize="3xl" mb="8">
             Top Models
           </Heading>
-
-          <BarChart
-            loading={loading}
-            dataset={topModelsData}
-            height={Math.max(topModelsData.length * 32, 335)}
-            padding={0}
-            yAxisKey="category"
-            xAxisKey="value"
-            tooltipFormatter={tooltipFormatter}
-          />
+          <Box minHeight="400px">
+            <BarChart
+              loading={loading}
+              dataset={topModelsData}
+              height={Math.max(topModelsData.length * 32, 335)}
+              padding={0}
+              yAxisKey="category"
+              xAxisKey="value"
+              tooltipFormatter={tooltipFormatter}
+            />
+          </Box>
           <Center>
             <Button
               type="button"

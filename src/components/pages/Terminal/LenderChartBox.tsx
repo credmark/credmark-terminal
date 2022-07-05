@@ -21,6 +21,7 @@ interface LenderChartBoxProps {
   varData: Record<AssetKey, ReturnType<typeof useVarData>>;
   onExpand: () => void;
   isExpanded: boolean;
+  minHeight?: string;
 }
 
 export default function LenderChartBox({
@@ -30,6 +31,7 @@ export default function LenderChartBox({
   varData,
   onExpand,
   isExpanded,
+  minHeight,
 }: LenderChartBoxProps) {
   const chartRef = useRef<EChartsInstance>();
   const containerRef = useRef(null);
@@ -152,7 +154,7 @@ export default function LenderChartBox({
         tooltip={{ status: 'info', content: metric.tooltip }}
       />
 
-      <Flex bg="white" roundedBottom="md">
+      <Flex bg="white" roundedBottom="md" minHeight={minHeight}>
         {!isExpanded && (
           <Flex
             direction="column"

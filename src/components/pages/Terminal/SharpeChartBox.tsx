@@ -438,15 +438,17 @@ export default function SharpeChartBox({
           )}
         </HStack>
       </Box>
-      <HistoricalChart
-        flex="1"
-        height={600}
-        onChartReady={(chart) => (chartRef.current = chart)}
-        durations={[30, 60, 90]}
-        defaultDuration={30}
-        isFullScreen={isFullScreen}
-        {...sharpeChart}
-      />
+      <Box minH="600px">
+        <HistoricalChart
+          flex="1"
+          height={600}
+          onChartReady={(chart) => (chartRef.current = chart)}
+          durations={[30, 60, 90]}
+          defaultDuration={30}
+          isFullScreen={isFullScreen}
+          {...sharpeChart}
+        />
+      </Box>
     </BorderedCard>
   );
 }

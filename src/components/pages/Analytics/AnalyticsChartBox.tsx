@@ -73,16 +73,18 @@ export default function AnalyticsChartBox({
         isExpanded={isFullScreen}
         toggleExpand={toggleFullScreen}
       />
-      <HistoricalChart
-        durations={[30, 60, 90]}
-        defaultDuration={60}
-        isAreaChart={isArea}
-        showCurrentStats
-        onChartReady={(chart) => (chartRef.current = chart)}
-        isFullScreen={isFullScreen}
-        actions={actions}
-        {...chart}
-      />
+      <Box minHeight="400px">
+        <HistoricalChart
+          durations={[30, 60, 90]}
+          defaultDuration={60}
+          isAreaChart={isArea}
+          showCurrentStats
+          onChartReady={(chart) => (chartRef.current = chart)}
+          isFullScreen={isFullScreen}
+          actions={actions}
+          {...chart}
+        />
+      </Box>
       {footer && (
         <Box px="4" py="2">
           {footer}
