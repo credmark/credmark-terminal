@@ -1,33 +1,23 @@
 import { Box, Center, HStack, Text } from '@chakra-ui/layout';
 import { Img, Spinner } from '@chakra-ui/react';
-import { EChartsOption } from 'echarts-for-react';
+import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
-import { BarChart as BarChartComponent } from 'echarts/charts';
+import { BarChart } from 'echarts/charts';
 import {
   GridComponent,
   TooltipComponent,
   TitleComponent,
-  LegendComponent,
 } from 'echarts/components';
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { CallbackDataParams } from 'echarts/types/src/util/types.d';
 import React, { useMemo } from 'react';
 
-echarts.use([
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  LegendComponent,
-  BarChartComponent,
-  CanvasRenderer,
-]);
-
 interface BarChartProps<T> {
   dataset?: T[] | T;
   loading?: boolean;
-  xAxisKey?: keyof T;
-  yAxisKey?: keyof T;
+  xAxisKey?: string;
+  yAxisKey?: string;
   title?: string;
   titleImg?: string;
   height?: number;
@@ -40,7 +30,15 @@ interface BarChartProps<T> {
   tooltipFormatter: (data: T | CallbackDataParams, isTitle?: boolean) => string;
 }
 
-export default function BarChart<T>({
+echarts.use([
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  BarChart,
+  CanvasRenderer,
+]);
+
+export default function App<T>({
   dataset,
   loading,
   height = 300,
@@ -170,7 +168,7 @@ export default function BarChart<T>({
   const currentPriceHeight = 0;
 
   return (
-    <Box minH="335px" p={padding + 'px'} marginBottom="20px">
+    <Box p={padding + 'px'} marginBottom="20px">
       <Box
         position="relative"
         h={height - padding * 2 + currentPriceHeight + 'px'}

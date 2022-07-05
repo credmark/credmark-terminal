@@ -1,10 +1,14 @@
 import { Box, Center, Flex, HStack, Img, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { EChartsInstance } from 'echarts-for-react';
+import dynamic from 'next/dynamic';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
-import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
+const HistoricalChart = dynamic(
+  () => import('~/components/shared/Charts/HistoricalChart'),
+  { ssr: false },
+);
 import { ASSETS } from '~/constants/terminal';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
 import { ChartLine, CsvRow } from '~/types/chart';

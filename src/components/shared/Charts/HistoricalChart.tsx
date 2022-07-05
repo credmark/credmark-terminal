@@ -20,7 +20,8 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { EChartsInstance, EChartsOption } from 'echarts-for-react';
+import { EChartsOption } from 'echarts';
+import { EChartsInstance } from 'echarts-for-react';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { LineChart } from 'echarts/charts';
 import {

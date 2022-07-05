@@ -25,12 +25,15 @@ import {
 } from 'chakra-react-select';
 import _get from 'lodash.get';
 import _set from 'lodash.set';
-import * as _math from 'mathjs';
+import { create, all } from 'mathjs';
+import dynamic from 'next/dynamic';
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
-// import { JSONTree } from 'react-json-tree';
 
-import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
+const HistoricalChart = dynamic(
+  () => import('~/components/shared/Charts/HistoricalChart'),
+  { ssr: false },
+);
 import { ChartLine } from '~/types/chart';
 import {
   AnyRecord,
@@ -74,7 +77,7 @@ interface BlockSeries {
   }>;
 }
 
-const math = _math.create(_math.all, { number: 'BigNumber', precision: 64 });
+const math = create(all, { number: 'BigNumber', precision: 64 });
 
 const chakraStyles: ChakraStylesConfig<Key, false, GroupBase<Key>> = {
   dropdownIndicator: (provided) => ({

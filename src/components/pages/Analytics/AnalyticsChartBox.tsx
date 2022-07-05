@@ -1,11 +1,15 @@
 import { Box } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { EChartsInstance } from 'echarts-for-react';
+import dynamic from 'next/dynamic';
 import React, { useLayoutEffect, useRef } from 'react';
 
 import { BorderedCard } from '~/components/base';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
-import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
+const HistoricalChart = dynamic(
+  () => import('~/components/shared/Charts/HistoricalChart'),
+  { ssr: false },
+);
 import { useSingleLineChart, UseSingleLineChartProps } from '~/hooks/useChart';
 import useFullscreen from '~/hooks/useFullscreen';
 

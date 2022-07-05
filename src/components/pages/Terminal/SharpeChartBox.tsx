@@ -18,11 +18,15 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
 import { EChartsInstance } from 'echarts-for-react';
 import { DateTime, Duration } from 'luxon';
+import dynamic from 'next/dynamic';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 
 import { BorderedCard } from '~/components/base';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
-import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
+const HistoricalChart = dynamic(
+  () => import('~/components/shared/Charts/HistoricalChart'),
+  { ssr: false },
+);
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import { useLineChart } from '~/hooks/useChart';
 import { useDeepCompareEffect } from '~/hooks/useDeepCompare';
