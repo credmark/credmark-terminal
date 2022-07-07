@@ -94,8 +94,7 @@ export default function HomePage() {
                 },
               ]}
               actionButton={{
-                href: 'https://gateway.credmark.com/api',
-                isExternal: true,
+                href: '/api-keys',
                 label: 'Get Access',
                 icon: ApiOutlinedIcon,
               }}
