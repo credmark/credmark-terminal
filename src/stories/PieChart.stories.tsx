@@ -12,11 +12,8 @@ export default {
 };
 
 const dataset = [
-  { value: 100, category: 'eth', name: 'Ethereum' },
-  { value: 1500, category: 'btc', name: 'Bitcoin' },
-  { value: 830, category: 'dai', name: 'Dai' },
-  { value: 40, category: 'usdc', name: 'USDC Stable coin' },
-  { value: 33, category: 'shib', name: 'Shiba Inu' },
+  { value: 1200, name: 'Ethereum' },
+  { value: 1500, name: 'Bitcoin' },
 ];
 
 const Template = () => {

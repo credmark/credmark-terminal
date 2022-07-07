@@ -37,6 +37,7 @@ export interface ChartHeaderProps {
   info?: React.ReactNode;
   externalLink?: string;
   noShadow?: boolean;
+  hideDownloadAndExpand?: boolean;
 }
 
 const ChartHeader = ({
@@ -49,6 +50,7 @@ const ChartHeader = ({
   tooltip,
   externalLink,
   noShadow = false,
+  hideDownloadAndExpand,
 }: ChartHeaderProps) => {
   return (
     <HStack
@@ -90,38 +92,40 @@ const ChartHeader = ({
 
       <Spacer />
 
-      <Flex zIndex={99} alignItems="center" gap="16px">
-        {downloadCsv && (
-          <CSVLink
-            filename={downloadCsv.filename}
-            headers={downloadCsv.headers}
-            data={downloadCsv.data}
-            style={{ display: 'flex' }}
-            aria-label="Download"
-          >
+      {!hideDownloadAndExpand && (
+        <Flex zIndex={99} alignItems="center" gap="16px">
+          {downloadCsv && (
+            <CSVLink
+              filename={downloadCsv.filename}
+              headers={downloadCsv.headers}
+              data={downloadCsv.data}
+              style={{ display: 'flex' }}
+              aria-label="Download"
+            >
+              <Icon
+                width="15px"
+                height="15px"
+                cursor="pointer"
+                marginInlineStart={0}
+                as={FileDownloadIcon}
+                color="gray.900"
+              />
+            </CSVLink>
+          )}
+
+          {toggleExpand && (
             <Icon
+              cursor="pointer"
+              onClick={toggleExpand}
+              as={isExpanded ? FullscreenExitIcon : FullscreenIcon}
               width="15px"
               height="15px"
-              cursor="pointer"
-              marginInlineStart={0}
-              as={FileDownloadIcon}
+              marginInlineStart="0 !important"
               color="gray.900"
             />
-          </CSVLink>
-        )}
-
-        {toggleExpand && (
-          <Icon
-            cursor="pointer"
-            onClick={toggleExpand}
-            as={isExpanded ? FullscreenExitIcon : FullscreenIcon}
-            width="15px"
-            height="15px"
-            marginInlineStart="0 !important"
-            color="gray.900"
-          />
-        )}
-      </Flex>
+          )}
+        </Flex>
+      )}
     </HStack>
   );
 };

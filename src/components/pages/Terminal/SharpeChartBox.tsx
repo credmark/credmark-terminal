@@ -275,11 +275,13 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
 interface SharpeChartBoxProps {
   tokens: ExtendedCurrency[];
   defaultTokens?: ExtendedCurrency[];
+  isPortfolioOnly?: boolean;
 }
 
 export default function SharpeChartBox({
   tokens,
   defaultTokens = [],
+  isPortfolioOnly,
 }: SharpeChartBoxProps) {
   const chartRef = useRef<EChartsInstance>();
   const containerRef = useRef(null);
@@ -351,6 +353,7 @@ export default function SharpeChartBox({
         }}
         isExpanded={isFullScreen}
         toggleExpand={toggleFullScreen}
+        hideDownloadAndExpand={isPortfolioOnly}
       />
       <Box overflowX="auto" py="2">
         <HStack>

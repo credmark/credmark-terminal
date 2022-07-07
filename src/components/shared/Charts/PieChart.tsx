@@ -1,7 +1,7 @@
-import { Box, Center } from '@chakra-ui/layout';
+import { Box, Center, Text } from '@chakra-ui/layout';
 import { Spinner } from '@chakra-ui/react';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
-import { BarChart as BarChartComponent } from 'echarts/charts';
+import { PieChart } from 'echarts/charts';
 import {
   GridComponent,
   TooltipComponent,
@@ -17,13 +17,14 @@ echarts.use([
   TooltipComponent,
   GridComponent,
   LegendComponent,
-  BarChartComponent,
+  PieChart,
   CanvasRenderer,
 ]);
 
 interface PieChartsProps<T> {
   dataset?: T[];
   loading?: boolean;
+  title?: string;
   isFullScreen?: boolean;
   height?: number;
 }
@@ -33,6 +34,7 @@ const PieCharts = <T,>({
   loading,
   dataset,
   height = 224,
+  title,
 }: PieChartsProps<T>) => {
   const option = {
     tooltip: {
@@ -62,13 +64,7 @@ const PieCharts = <T,>({
         labelLine: {
           show: false,
         },
-        data: dataset || [
-          { value: 1048, name: 'Search Engine' },
-          { value: 735, name: 'Direct' },
-          { value: 580, name: 'Email' },
-          { value: 484, name: 'Union Ads' },
-          { value: 300, name: 'Video Ads' },
-        ],
+        data: dataset,
       },
     ],
   };
@@ -82,6 +78,16 @@ const PieCharts = <T,>({
   }
   return (
     <Box>
+      {title && (
+        <Text
+          paddingBottom="20px"
+          size="14px"
+          fontWeight="700"
+          textAlign="center"
+        >
+          {title}
+        </Text>
+      )}
       <ReactEChartsCore
         echarts={echarts}
         option={option}
