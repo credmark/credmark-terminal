@@ -226,13 +226,13 @@ export default function CurveDexChartBox({
           <br />
           <br />
           <Link
-            href="https://docs.credmark.com/dealing-with-risks/defi-and-crypto-specific-risks/depegging-risk"
+            href="https://docs.credmark.com/smart-money-in-defi/investment-concepts/balance-ratio"
             isExternal
             textDecoration="underline"
             pb="1"
-            aria-label="Read more about Depegging Risk in our Credmark Wiki"
+            aria-label="Read more about the Balance Ratio in our Credmark Wiki"
           >
-            Read more about Depegging Risk in our Credmark Wiki{' '}
+            Read more about the Balance Ratio in our Credmark Wiki{' '}
             <Icon color="gray.300" as={OpenInNewIcon} />
           </Link>
         </React.Fragment>
