@@ -2,13 +2,20 @@ import { Contract, ContractInterface } from '@ethersproject/contracts';
 import QuoterABI from '@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json';
 import { useMemo } from 'react';
 
+import CREDMARK_ACCESS_FACTORY_ABI from '~/abis/credmark-access-factory.json';
+import CREDMARK_ACCESS_KEY_ABI from '~/abis/credmark-access-key.json';
 import ENS_PUBLIC_RESOLVER_ABI from '~/abis/ens-public-resolver.json';
 import ENS_ABI from '~/abis/ens-registrar.json';
 import ERC20_BYTES32_ABI from '~/abis/erc20-bytes32.json';
 import ERC20_ABI from '~/abis/erc20.json';
 import REWARDS_POOL_ABI from '~/abis/rewards-pool.json';
 import STAKED_CREDMARK_ABI from '~/abis/staked-credmark.json';
-import { RewardsPool, StakedCredmark } from '~/abis/types';
+import {
+  CredmarkAccessFactory,
+  CredmarkAccessKey,
+  RewardsPool,
+  StakedCredmark,
+} from '~/abis/types';
 import { EnsPublicResolver } from '~/abis/types/EnsPublicResolver';
 import { EnsRegistrar } from '~/abis/types/EnsRegistrar';
 import { Erc20 } from '~/abis/types/Erc20';
@@ -21,6 +28,8 @@ import {
   STAKED_CMK_ADDRESSES,
   REWARDS_POOL_ADDRESSES,
   QUOTER_ADDRESSES,
+  CREDMARK_ACCESS_KEY_ADDRESSES,
+  CREDMARK_ACCESS_FACTORY_ADDRESSES,
 } from '~/constants/addresses';
 import getContract from '~/utils/getContract';
 
@@ -117,4 +126,18 @@ export function useStakedCredmarkContract(): StakedCredmark | null {
 
 export function useRewardsPoolContract(): RewardsPool | null {
   return useContract<RewardsPool>(REWARDS_POOL_ADDRESSES, REWARDS_POOL_ABI.abi);
+}
+
+export function useCredmarkAccessKeyContract(): CredmarkAccessKey | null {
+  return useContract<CredmarkAccessKey>(
+    CREDMARK_ACCESS_KEY_ADDRESSES,
+    CREDMARK_ACCESS_KEY_ABI.abi,
+  );
+}
+
+export function useCredmarkAccessFactoryContract(): CredmarkAccessFactory | null {
+  return useContract<CredmarkAccessFactory>(
+    CREDMARK_ACCESS_FACTORY_ADDRESSES,
+    CREDMARK_ACCESS_FACTORY_ABI.abi,
+  );
 }
