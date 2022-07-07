@@ -1,7 +1,7 @@
-import { Flex } from '@chakra-ui/react';
+import { Box, Flex, Grid, Text } from '@chakra-ui/react';
+import { Token } from '@uniswap/sdk-core';
 import React from 'react';
 
-import StableCoinHealth from '~/components/shared/Card/StableCoinHealth';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import {
   DoubleGaugeChart,
@@ -24,45 +24,89 @@ const datasetA = {
   category: 'fei',
   name: 'FEI USD',
   color: '#00D696',
-  token: {
-    chainId: 1,
-    decimals: 18,
-    symbol: 'FEI',
-    name: 'Fei USD',
-    isNative: false,
-    isToken: true,
-    address: '0x956F47F50A910163D8BF957Cf5846D573E7f87CA',
-  },
+  token: new Token(
+    1,
+    '0x956F47F50A910163D8BF957Cf5846D573E7f87CA',
+    18,
+    'FEI',
+    'Fei USD',
+  ),
 };
 const datasetB = {
   value: 100,
   category: 'tribe',
   name: 'TRIBE',
   color: '#FF7154',
-  token: {
-    chainId: 1,
-    decimals: 18,
-    symbol: 'TRIBE',
-    name: 'Tribe',
-    isNative: false,
-    isToken: true,
-    address: '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
-  },
+  token: new Token(
+    1,
+    '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
+    18,
+    'TRIBE',
+    'Tribe',
+  ),
 };
 const datasetC = {
   value: 100,
   category: 'tribe',
   name: 'TRIBE',
   color: '#5470c6',
-  token: {
-    chainId: 1,
-    decimals: 18,
-    symbol: 'TRIBE',
-    name: 'Tribe',
-    isNative: false,
-    isToken: true,
-    address: '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
-  },
+  token: new Token(
+    1,
+    '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
+    18,
+    'TRIBE',
+    'Tribe',
+  ),
+};
+
+interface StableCoinHealthProps {
+  children: React.ReactNode;
+  chartHeader: React.ReactNode;
+  chartHeaderLabelBackgroundColor: string;
+  chartHeaderLabelName: string;
+}
+const StableCoinHealth = (props: StableCoinHealthProps) => {
+  const {
+    children,
+    chartHeader,
+    chartHeaderLabelName,
+    chartHeaderLabelBackgroundColor,
+  } = props;
+  return (
+    <Grid
+      shadow="md"
+      background="white"
+      gridTemplateRows="40px 1fr"
+      gridTemplateColumns="1fr"
+      height="400px"
+      borderRadius="4px"
+    >
+      {chartHeader}
+      <Box pl="15px" pr="15px" overflow="hidden">
+        <Flex width="max-content" height="42px" alignItems="center">
+          <Text
+            backgroundImage={chartHeaderLabelBackgroundColor}
+            backgroundSize="cover"
+            backgroundRepeat="no-repeat"
+            borderRadius="16px"
+            fontSize="xs"
+            color="white"
+            pl="10px"
+            pr="10px"
+          >
+            {chartHeaderLabelName}
+          </Text>
+        </Flex>
+        <Grid
+          w="382px"
+          gridTemplateRows="repeat(2, 200px)"
+          gridTemplateColumns="1fr"
+        >
+          {children}
+        </Grid>
+      </Box>
+    </Grid>
+  );
 };
 
 const Template = () => {
