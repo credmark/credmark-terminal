@@ -21,7 +21,17 @@ import {
 } from '@chakra-ui/react';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { EChartsOption } from 'echarts';
-import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
+import { EChartsInstance } from 'echarts-for-react';
+import ReactEChartsCore from 'echarts-for-react/lib/core';
+import { LineChart } from 'echarts/charts';
+import {
+  GridComponent,
+  TooltipComponent,
+  TitleComponent,
+  LegendComponent,
+} from 'echarts/components';
+import * as echarts from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { Aggregator, ChartLine } from '~/types/chart';
@@ -60,6 +70,15 @@ const ChartOverlay = chakra(Center, {
     pb: 16,
   },
 });
+
+echarts.use([
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LineChart,
+  LegendComponent,
+  CanvasRenderer,
+]);
 
 export default function HistoricalChart({
   lines,
@@ -425,6 +444,7 @@ export default function HistoricalChart({
       )}
       <Box position="relative">
         <ReactEChartsCore
+          echarts={echarts}
           option={option}
           lazyUpdate={true}
           notMerge={true}

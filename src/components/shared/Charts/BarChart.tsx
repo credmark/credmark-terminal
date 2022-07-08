@@ -1,15 +1,23 @@
 import { Box, Center, HStack, Text } from '@chakra-ui/layout';
 import { Img, Spinner } from '@chakra-ui/react';
 import { EChartsOption } from 'echarts';
-import ReactEChartsCore from 'echarts-for-react';
+import ReactEChartsCore from 'echarts-for-react/lib/core';
+import { BarChart } from 'echarts/charts';
+import {
+  GridComponent,
+  TooltipComponent,
+  TitleComponent,
+} from 'echarts/components';
+import * as echarts from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
 import { CallbackDataParams } from 'echarts/types/src/util/types.d';
 import React, { useMemo } from 'react';
 
 interface BarChartProps<T> {
   dataset?: T[] | T;
   loading?: boolean;
-  xAxisKey?: keyof T;
-  yAxisKey?: keyof T;
+  xAxisKey?: string;
+  yAxisKey?: string;
   title?: string;
   titleImg?: string;
   height?: number;
@@ -22,7 +30,15 @@ interface BarChartProps<T> {
   tooltipFormatter: (data: T | CallbackDataParams, isTitle?: boolean) => string;
 }
 
-export default function BarChart<T>({
+echarts.use([
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  BarChart,
+  CanvasRenderer,
+]);
+
+export default function App<T>({
   dataset,
   loading,
   height = 300,
@@ -183,6 +199,7 @@ export default function BarChart<T>({
           right="0px"
         >
           <ReactEChartsCore
+            echarts={echarts}
             option={option}
             notMerge={true}
             lazyUpdate={true}
