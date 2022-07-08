@@ -17,7 +17,7 @@ import { Token } from '@uniswap/sdk-core';
 import { isAddress } from 'ethers/lib/utils';
 import { DateTime } from 'luxon';
 import dynamic from 'next/dynamic';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import Card from '~/components/base/Card';
 const SharpeChartBox = dynamic(
@@ -32,13 +32,6 @@ import useDebounce from '~/hooks/useDebounce';
 import { useModelRunner } from '~/hooks/useModel';
 import { ModelRunError } from '~/types/model';
 
-const dataset = [
-  { value: 100, category: 'eth', name: 'Ethereum' },
-  { value: 1500, category: 'btc', name: 'Bitcoin' },
-  { value: 830, category: 'dai', name: 'Dai' },
-  { value: 40, category: 'usdc', name: 'USDC Stable coin' },
-  { value: 33, category: 'shib', name: 'Shiba Inu' },
-];
 interface BlockNumberOutput {
   blockNumber: number;
   blockTimestamp: number;
@@ -49,12 +42,16 @@ interface TvlModelOutput {
   errorMessage?: string;
   loading?: boolean;
   output?: {
-    positions: {
+    positions?: {
       amount: number;
       asset: {
         address: string;
       };
     }[];
+    cvar?: number[];
+    total_value?: number;
+    value_list?: (string | number)[][];
+    var?: number;
   };
 }
 
@@ -101,6 +98,40 @@ const Portfolio = () => {
     suspended: !blockNumberModel.output,
     blockNumber: blockNumberModel.output?.blockNumber,
   });
+  const accountVarStats: TvlModelOutput = useModelRunner({
+    slug: 'account.var',
+    input: {
+      address: debouncedInput,
+      window: '180 days',
+      interval: '10',
+      confidence: '0.01',
+    },
+    suspended: !blockNumberModel.output,
+    blockNumber: blockNumberModel.output?.blockNumber,
+  });
+
+  console.log('accountVarStats', accountVarStats);
+
+  const accountSummary = useMemo(() => {
+    const totalPortfolioValue = accountVarStats?.output?.total_value || 0;
+    const totalValueAtRisk = accountVarStats?.output?.var || 0;
+    const componentVar =
+      accountVarStats?.output?.cvar?.map((val) => ({
+        value: val?.toFixed(4) || 0,
+      })) || [];
+    const valuePercentage = `${((totalPortfolioValue / totalValueAtRisk) * 100)
+      .toFixed(2)
+      .toLocaleString()}%`;
+
+    return {
+      totalPortfolioValue: `$${totalPortfolioValue
+        .toFixed(2)
+        .toLocaleString()}`,
+      totalValueAtRisk: `$${totalValueAtRisk.toFixed(2).toLocaleString()}`,
+      valuePercentage,
+      componentVar,
+    };
+  }, [accountVarStats]);
 
   const tvlChart = {
     data: tvlModel?.output?.positions?.map((item) => ({
@@ -161,13 +192,13 @@ const Portfolio = () => {
                       Total Portfolio Value
                     </Text>
                     <Text size="48px" fontWeight="700" textAlign="center">
-                      $6,002,548.57
+                      {accountSummary.totalPortfolioValue}
                     </Text>
                   </Box>
                   <Box width="100%" minHeight="300px">
                     <PieCharts
                       title="Portfolio Distribution"
-                      dataset={dataset}
+                      dataset={accountSummary.componentVar}
                       height={200}
                     />
                   </Box>
@@ -180,7 +211,7 @@ const Portfolio = () => {
                       Total Value at Risk
                     </Text>
                     <Text size="48px" fontWeight="700" textAlign="center">
-                      $9,609.64
+                      {accountSummary.totalValueAtRisk}
                     </Text>
                   </Card>
                   <Card shadow="md" w="100%" maxWidth="412px">
@@ -188,7 +219,7 @@ const Portfolio = () => {
                       Total Value at Risk / Total Value
                     </Text>
                     <Text size="48px" fontWeight="700" textAlign="center">
-                      0.16%
+                      {accountSummary.valuePercentage}
                     </Text>
                   </Card>
                 </Flex>
