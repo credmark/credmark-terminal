@@ -18,15 +18,11 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
 import { EChartsInstance } from 'echarts-for-react';
 import { DateTime, Duration } from 'luxon';
-import dynamic from 'next/dynamic';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 
 import { BorderedCard } from '~/components/base';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
-const HistoricalChart = dynamic(
-  () => import('~/components/shared/Charts/HistoricalChart'),
-  { ssr: false },
-);
+import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
 import { useLineChart } from '~/hooks/useChart';
 import { useDeepCompareEffect } from '~/hooks/useDeepCompare';
@@ -438,17 +434,15 @@ export default function SharpeChartBox({
           )}
         </HStack>
       </Box>
-      <Box minH="600px">
-        <HistoricalChart
-          flex="1"
-          height={600}
-          onChartReady={(chart) => (chartRef.current = chart)}
-          durations={[30, 60, 90]}
-          defaultDuration={30}
-          isFullScreen={isFullScreen}
-          {...sharpeChart}
-        />
-      </Box>
+      <HistoricalChart
+        flex="1"
+        height={600}
+        onChartReady={(chart) => (chartRef.current = chart)}
+        durations={[30, 60, 90]}
+        defaultDuration={30}
+        isFullScreen={isFullScreen}
+        {...sharpeChart}
+      />
     </BorderedCard>
   );
 }

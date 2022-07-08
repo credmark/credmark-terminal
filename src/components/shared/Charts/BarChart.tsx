@@ -203,7 +203,6 @@ export default function App<T>({
             option={option}
             notMerge={true}
             lazyUpdate={true}
-            theme={'theme_name'}
             style={{
               height: height + 'px',
               margin: padding * -1 + 'px',

@@ -223,7 +223,6 @@ export default function LendersPage() {
                 varData={varData}
                 isExpanded={expander.isExpanded(metric.key)}
                 onExpand={() => expander.onExpand(metric.key)}
-                minHeight="420px"
               />
             </GridItem>
           ))}

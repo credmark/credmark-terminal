@@ -364,7 +364,6 @@ export default function HistoricalChart({
         Array.isArray(durations) || showCurrentStats ? 'max-content ' : ''
       }${isFullScreen ? '1fr' : height + 'px'}`}
       overflow="hidden"
-      minH="335px"
       {...boxProps}
     >
       {(Array.isArray(durations) || showCurrentStats) && (
@@ -453,7 +452,6 @@ export default function HistoricalChart({
             height: isFullScreen ? '100%' : height + 'px',
           }}
           onChartReady={onChartReady}
-          theme={'theme_name'}
         />
         {loading && noData && (
           <ChartOverlay>

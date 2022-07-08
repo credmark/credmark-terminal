@@ -27,7 +27,7 @@ export interface ChartHeaderProps {
   downloadCsv?: {
     filename: string;
     headers: string[];
-    data: string | number | Record<string, unknown>[];
+    data: string | Record<string, unknown>[];
   };
   tooltip?: {
     content: React.ReactNode;

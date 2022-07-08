@@ -1,15 +1,11 @@
 import { Box } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { EChartsInstance } from 'echarts-for-react';
-import dynamic from 'next/dynamic';
 import React, { useLayoutEffect, useRef } from 'react';
 
 import { BorderedCard } from '~/components/base';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
-const HistoricalChart = dynamic(
-  () => import('~/components/shared/Charts/HistoricalChart'),
-  { ssr: false },
-);
+import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import { useSingleLineChart, UseSingleLineChartProps } from '~/hooks/useChart';
 import useFullscreen from '~/hooks/useFullscreen';
 
@@ -73,18 +69,16 @@ export default function AnalyticsChartBox({
         isExpanded={isFullScreen}
         toggleExpand={toggleFullScreen}
       />
-      <Box minHeight="400px">
-        <HistoricalChart
-          durations={[30, 60, 90]}
-          defaultDuration={60}
-          isAreaChart={isArea}
-          showCurrentStats
-          onChartReady={(chart) => (chartRef.current = chart)}
-          isFullScreen={isFullScreen}
-          actions={actions}
-          {...chart}
-        />
-      </Box>
+      <HistoricalChart
+        durations={[30, 60, 90]}
+        defaultDuration={60}
+        isAreaChart={isArea}
+        showCurrentStats
+        onChartReady={(chart) => (chartRef.current = chart)}
+        isFullScreen={isFullScreen}
+        actions={actions}
+        {...chart}
+      />
       {footer && (
         <Box px="4" py="2">
           {footer}

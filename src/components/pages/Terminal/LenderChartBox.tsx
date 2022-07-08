@@ -1,14 +1,10 @@
 import { Box, Center, Flex, HStack, Img, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { EChartsInstance } from 'echarts-for-react';
-import dynamic from 'next/dynamic';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
-const HistoricalChart = dynamic(
-  () => import('~/components/shared/Charts/HistoricalChart'),
-  { ssr: false },
-);
+import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import { ASSETS } from '~/constants/terminal';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
 import { ChartLine, CsvRow } from '~/types/chart';
@@ -21,7 +17,6 @@ interface LenderChartBoxProps {
   varData: Record<AssetKey, ReturnType<typeof useVarData>>;
   onExpand: () => void;
   isExpanded: boolean;
-  minHeight?: string;
 }
 
 export default function LenderChartBox({
@@ -31,7 +26,6 @@ export default function LenderChartBox({
   varData,
   onExpand,
   isExpanded,
-  minHeight,
 }: LenderChartBoxProps) {
   const chartRef = useRef<EChartsInstance>();
   const containerRef = useRef(null);
@@ -154,7 +148,7 @@ export default function LenderChartBox({
         tooltip={{ status: 'info', content: metric.tooltip }}
       />
 
-      <Flex bg="white" roundedBottom="md" minHeight={minHeight}>
+      <Flex bg="white" roundedBottom="md">
         {!isExpanded && (
           <Flex
             direction="column"

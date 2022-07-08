@@ -21,17 +21,11 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SettingsIcon from '@mui/icons-material/Settings';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
-import dynamic from 'next/dynamic';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { Card } from '~/components/base';
-const BarChart = dynamic(() => import('~/components/shared/Charts/BarChart'), {
-  ssr: false,
-});
-const HistoricalChart = dynamic(
-  () => import('~/components/shared/Charts/HistoricalChart'),
-  { ssr: false },
-);
+import BarChart from '~/components/shared/Charts/BarChart';
+import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import SearchSelect from '~/components/shared/Form/SearchSelect';
 import SEOHeader from '~/components/shared/SEOHeader';
 import { Aggregator, BarChartData, ChartLine } from '~/types/chart';
@@ -290,18 +284,16 @@ export default function ModelUsagePage(props: ModelPageProps) {
               isOptionSelected={(option) => slug === option.name}
             />
           </Box>
-          <Box minHeight="400px">
-            <HistoricalChart
-              loading={loading}
-              lines={lines.filter((line) => line.name === slug)}
-              height={335}
-              formatYLabel={(value) => shortenNumber(Number(value), 0)}
-              formatValue={(value) => new Intl.NumberFormat().format(value)}
-              durations={[30, 60, 90]}
-              defaultDuration={90}
-              aggregate
-            />
-          </Box>
+          <HistoricalChart
+            loading={loading}
+            lines={lines.filter((line) => line.name === slug)}
+            height={335}
+            formatYLabel={(value) => shortenNumber(Number(value), 0)}
+            formatValue={(value) => new Intl.NumberFormat().format(value)}
+            durations={[30, 60, 90]}
+            defaultDuration={90}
+            aggregate
+          />
         </Card>
 
         <Card mt="8">
@@ -388,18 +380,17 @@ export default function ModelUsagePage(props: ModelPageProps) {
               </MenuList>
             </Menu>
           </Stack>
-          <Box minHeight="400px">
-            <BarChart
-              loading={loading}
-              dataset={barChartData}
-              height={Math.max(barChartData.length * 32, 335)}
-              padding={0}
-              onClick={(slug) => setSlug(slug)}
-              yAxisKey="category"
-              xAxisKey="value"
-              tooltipFormatter={tooltipFormatter}
-            />
-          </Box>
+
+          <BarChart
+            loading={loading}
+            dataset={barChartData}
+            height={Math.max(barChartData.length * 32, 335)}
+            padding={0}
+            onClick={(slug) => setSlug(slug)}
+            yAxisKey="category"
+            xAxisKey="value"
+            tooltipFormatter={tooltipFormatter}
+          />
           <Center>
             <Button
               type="button"
@@ -449,17 +440,15 @@ export default function ModelUsagePage(props: ModelPageProps) {
               </MenuList>
             </Menu>
           </Stack>
-          <Box minHeight="400px">
-            <BarChart
-              loading={loading}
-              dataset={runtimeBarChartData}
-              height={Math.max(runtimeBarChartData.length * 32, 335)}
-              padding={0}
-              yAxisKey="category"
-              xAxisKey="value"
-              tooltipFormatter={tooltipFormatter}
-            />
-          </Box>
+          <BarChart
+            loading={loading}
+            dataset={runtimeBarChartData}
+            height={Math.max(runtimeBarChartData.length * 32, 335)}
+            padding={0}
+            yAxisKey="category"
+            xAxisKey="value"
+            tooltipFormatter={tooltipFormatter}
+          />
           <Center>
             <Button
               type="button"
@@ -482,17 +471,16 @@ export default function ModelUsagePage(props: ModelPageProps) {
           <Heading as="h2" fontSize="3xl" mb="8">
             Top Models
           </Heading>
-          <Box minHeight="400px">
-            <BarChart
-              loading={loading}
-              dataset={topModelsData}
-              height={Math.max(topModelsData.length * 32, 335)}
-              padding={0}
-              yAxisKey="category"
-              xAxisKey="value"
-              tooltipFormatter={tooltipFormatter}
-            />
-          </Box>
+
+          <BarChart
+            loading={loading}
+            dataset={topModelsData}
+            height={Math.max(topModelsData.length * 32, 335)}
+            padding={0}
+            yAxisKey="category"
+            xAxisKey="value"
+            tooltipFormatter={tooltipFormatter}
+          />
           <Center>
             <Button
               type="button"
