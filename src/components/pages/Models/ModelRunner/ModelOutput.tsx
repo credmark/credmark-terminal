@@ -41,12 +41,12 @@ import {
   FieldTypeInteger,
   FieldTypeObject,
   FieldTypeString,
-  ModelMetadata,
 } from '~/types/model';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
 interface ModelOutputProps {
-  model: ModelMetadata;
+  title: string;
+  outputSchema: FieldTypeObject;
   result: AnyRecord;
 }
 
@@ -94,7 +94,11 @@ const chakraStyles: ChakraStylesConfig<Key, false, GroupBase<Key>> = {
   }),
 };
 
-export default function ModelOutput({ model, result }: ModelOutputProps) {
+export default function ModelOutput({
+  title,
+  outputSchema,
+  result,
+}: ModelOutputProps) {
   const [valueKey, setValueKey] = useState<Key>();
   const [searchInput, setSearchInput] = useState('');
   const [transformInput, setTransformInput] = useState('');
@@ -102,7 +106,7 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
   const getUnreferencedOutput = useCallback(
     (output: FieldType): UnreferenceOutput => {
       if ('$ref' in output) {
-        const refKey = Object.keys(model.output.definitions ?? {}).find(
+        const refKey = Object.keys(outputSchema.definitions ?? {}).find(
           (def) => def === output.$ref.split('/').pop(),
         );
 
@@ -110,7 +114,7 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
           throw new Error('Invalid ref');
         }
 
-        return (model.output.definitions ?? {})[refKey] as UnreferenceOutput;
+        return (outputSchema.definitions ?? {})[refKey] as UnreferenceOutput;
       } else if ('allOf' in output) {
         return getUnreferencedOutput(output.allOf[0]);
       }
@@ -118,7 +122,7 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
       return output;
     },
 
-    [model.output.definitions],
+    [outputSchema.definitions],
   );
 
   const chartValueKeys = useMemo(() => {
@@ -189,8 +193,8 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
       }
     }
 
-    return computeKeys(model.output);
-  }, [getUnreferencedOutput, model.output, result]);
+    return computeKeys(outputSchema);
+  }, [getUnreferencedOutput, outputSchema, result]);
 
   const isTransformInputValid = useMemo(() => {
     try {
@@ -240,7 +244,7 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
 
     const line: ChartLine = {
       color: '#DE1A60',
-      name: model.displayName ?? model.slug,
+      name: title,
       data: ((result as BlockSeries).series ?? []).map((s) => {
         let value = 0;
         if (evaluate) {
@@ -271,14 +275,7 @@ export default function ModelOutput({ model, result }: ModelOutputProps) {
     };
 
     return [line];
-  }, [
-    transformInput,
-    model.displayName,
-    model.slug,
-    result,
-    valueKey,
-    chartValueKeys,
-  ]);
+  }, [transformInput, title, result, valueKey, chartValueKeys]);
 
   const customComponents = useMemo<
     SelectComponentsConfig<Key, false, GroupBase<Key>>
