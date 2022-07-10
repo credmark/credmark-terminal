@@ -26,7 +26,7 @@ export default function ModelRunner({ model }: ModelRunnerProps) {
   const [suspended, setSuspended] = useState(true);
   const [inputValues, setInputValues] = useState<AnyRecord>();
 
-  const { output, error } = useModelRunner<AnyRecord>({
+  const { output, error, loading } = useModelRunner<AnyRecord>({
     suspended,
     slug: model.slug,
     input: inputValues,
@@ -75,8 +75,14 @@ export default function ModelRunner({ model }: ModelRunnerProps) {
       </Box>
 
       <ModelRunConfig value={config} onChange={setConfig} />
-      <ModelInput modelInput={model.input} onRun={onRun} />
-      {output && <ModelOutput model={model} result={output} />}
+      <ModelInput inputSchema={model.input} onRun={onRun} isRunning={loading} />
+      {output && (
+        <ModelOutput
+          title={model.displayName ?? model.slug}
+          outputSchema={model.output}
+          result={output}
+        />
+      )}
       {error && <ModelRunErrorAlert error={error} />}
     </VStack>
   );

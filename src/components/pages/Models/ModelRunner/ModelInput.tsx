@@ -1,34 +1,34 @@
 import {
   Box,
-  VStack,
   Button,
-  Icon,
   FormControl,
   FormErrorMessage,
   FormHelperText,
   FormLabel,
+  HStack,
+  Icon,
   Input,
   Switch,
   Text,
-  HStack,
+  VStack,
 } from '@chakra-ui/react';
 import AddIcon from '@mui/icons-material/Add';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import RemoveIcon from '@mui/icons-material/Remove';
 import {
-  Formik,
-  Form,
   FastField as Field,
-  FieldProps,
-  FormikHelpers,
-  getIn,
   FieldArray,
+  FieldProps,
+  Form,
+  Formik,
+  getIn,
 } from 'formik';
 import React, { useCallback, useMemo } from 'react';
 import * as Yup from 'yup';
 
-import { PrimaryButton } from '~/components/base';
+import { Card, PrimaryButton } from '~/components/base';
 import {
+  AnyRecord,
   FieldType,
   FieldTypeArray,
   FieldTypeBoolean,
@@ -36,15 +36,19 @@ import {
   FieldTypeObject,
   FieldTypeString,
   ModelMetadata,
-  AnyRecord,
 } from '~/types/model';
 
 interface ModelInputProps {
-  modelInput: ModelMetadata['input'];
-  onRun: (input: AnyRecord) => Promise<void>;
+  inputSchema: ModelMetadata['input'];
+  onRun: (input: AnyRecord) => void;
+  isRunning: boolean;
 }
 
-export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
+export default function ModelInput({
+  inputSchema,
+  onRun,
+  isRunning,
+}: ModelInputProps) {
   const getUnreferencedInput = useCallback(
     (
       input: FieldType,
@@ -55,7 +59,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
       | FieldTypeInteger
       | FieldTypeBoolean => {
       if ('$ref' in input) {
-        const refKey = Object.keys(modelInput.definitions ?? {}).find(
+        const refKey = Object.keys(inputSchema.definitions ?? {}).find(
           (def) => def === input.$ref.split('/').pop(),
         );
 
@@ -63,7 +67,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
           throw new Error('Invalid ref');
         }
 
-        return (modelInput.definitions ?? {})[refKey] as
+        return (inputSchema.definitions ?? {})[refKey] as
           | FieldTypeObject
           | FieldTypeArray
           | FieldTypeString
@@ -75,7 +79,7 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
 
       return input;
     },
-    [modelInput.definitions],
+    [inputSchema.definitions],
   );
 
   const computeInitialValues = useCallback(
@@ -163,20 +167,12 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   );
 
   const initialValues = useMemo(() => {
-    return computeInitialValues(modelInput) as AnyRecord;
-  }, [computeInitialValues, modelInput]);
+    return computeInitialValues(inputSchema) as AnyRecord;
+  }, [computeInitialValues, inputSchema]);
 
   const validationSchema = useMemo(() => {
-    return computeValidationSchema(modelInput);
-  }, [computeValidationSchema, modelInput]);
-
-  function onSubmit(
-    inputValues: AnyRecord,
-    actions: FormikHelpers<AnyRecord>,
-  ): void {
-    actions.setSubmitting(true);
-    onRun(inputValues).finally(() => actions.setSubmitting(false));
-  }
+    return computeValidationSchema(inputSchema);
+  }, [computeValidationSchema, inputSchema]);
 
   function getInputFields(type: FieldType, keyPath = ''): React.ReactNode {
     const input = getUnreferencedInput(type);
@@ -353,42 +349,40 @@ export default function ModelInput({ modelInput, onRun }: ModelInputProps) {
   }
 
   return (
-    <Box bg="white" rounded="base" p="8" shadow="2xl">
+    <Card>
       <Formik
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={onRun}
         validationSchema={validationSchema}
       >
-        {({ isSubmitting }) => (
-          <Form>
-            {Object.keys(modelInput.properties ?? {}).length === 0 ? (
-              <Box
-                pt="4"
-                textAlign="center"
-                color="gray.200"
-                fontSize="3xl"
-                fontWeight="bold"
-              >
-                No input required
-              </Box>
-            ) : (
-              getInputFields(modelInput)
-            )}
-            <Box mt="16" textAlign="center">
-              <PrimaryButton
-                type="submit"
-                size="lg"
-                px="16"
-                rightIcon={<Icon as={PlayArrowIcon} />}
-                isLoading={isSubmitting}
-                loadingText="Running..."
-              >
-                Run
-              </PrimaryButton>
+        <Form>
+          {Object.keys(inputSchema.properties ?? {}).length === 0 ? (
+            <Box
+              pt="4"
+              textAlign="center"
+              color="gray.200"
+              fontSize="3xl"
+              fontWeight="bold"
+            >
+              No input required
             </Box>
-          </Form>
-        )}
+          ) : (
+            getInputFields(inputSchema)
+          )}
+          <Box mt="16" textAlign="center">
+            <PrimaryButton
+              type="submit"
+              size="lg"
+              px="16"
+              rightIcon={<Icon as={PlayArrowIcon} />}
+              isLoading={isRunning}
+              loadingText="Running..."
+            >
+              Run
+            </PrimaryButton>
+          </Box>
+        </Form>
       </Formik>
-    </Box>
+    </Card>
   );
 }
