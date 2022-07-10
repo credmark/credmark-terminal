@@ -85,9 +85,26 @@ export function useModelRunner<O>(props: HistoricalModelRunnerProps<O>): {
 
 export function useModelRunner<O>(props: ModelRunnerProps<O>) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<ModelRunError>();
+  const [_error, setError] = useState<ModelRunError>();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [output, setOutput] = useState<O | ModelSeriesOutput<O>>();
+
+  const error = useMemo<ModelRunError | undefined>(() => {
+    if (_error) {
+      return _error;
+    }
+
+    if (errorMessage) {
+      return {
+        message: errorMessage,
+        code: 'unknown',
+        stack: [],
+        permanent: false,
+      };
+    }
+
+    return undefined;
+  }, [_error, errorMessage]);
 
   const {
     validateRow,
