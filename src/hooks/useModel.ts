@@ -50,13 +50,16 @@ export function useModelRunnerCallback<O>() {
   );
 }
 
-interface SimpleModelRunnerProps<O> extends ModelRunnerCallbackProps {
+interface CommonModelRunnerProps extends ModelRunnerCallbackProps {
   suspended?: boolean;
+  afterRun?: () => void;
+}
+
+interface SimpleModelRunnerProps<O> extends CommonModelRunnerProps {
   validateOutput?: (output: O) => void;
 }
 
-interface HistoricalModelRunnerProps<O> extends ModelRunnerCallbackProps {
-  suspended?: boolean;
+interface HistoricalModelRunnerProps<O> extends CommonModelRunnerProps {
   window: Duration; // In days
   interval: Duration; // In days
   validateRow?: (output: O) => void;
@@ -136,6 +139,8 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
     },
   );
 
+  const afterRunMemoized = useCallbackRef(() => props.afterRun?.());
+
   // Using deep compare effect for input object equality
   useDeepCompareEffect(() => {
     if (props.suspended) {
@@ -196,12 +201,14 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
       })
       .finally(() => {
         setLoading(false);
+        afterRunMemoized();
       });
 
     return () => {
       abortController.abort();
     };
   }, [
+    afterRunMemoized,
     interval,
     isHistorical,
     props.blockNumber,
