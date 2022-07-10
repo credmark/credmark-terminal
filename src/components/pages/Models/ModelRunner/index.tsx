@@ -1,13 +1,9 @@
 import { Box, Heading, Text, useToast, VStack } from '@chakra-ui/react';
-import axios from 'axios';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Duration } from 'luxon';
+import React, { useEffect, useState } from 'react';
 
-import {
-  AnyRecord,
-  ModelMetadata,
-  ModelRunError,
-  ModelRunnerConfig,
-} from '~/types/model';
+import { useModelRunner } from '~/hooks/useModel';
+import { AnyRecord, ModelMetadata, ModelRunnerConfig } from '~/types/model';
 
 import ModelInput from './ModelInput';
 import ModelOutput from './ModelOutput';
@@ -18,7 +14,7 @@ interface ModelRunnerProps {
   model: ModelMetadata;
 }
 
-const DEFAULT_CONFIG = {
+const DEFAULT_CONFIG: ModelRunnerConfig = {
   chainId: 1,
   blockNumber: '',
   version: '',
@@ -27,36 +23,21 @@ const DEFAULT_CONFIG = {
 export default function ModelRunner({ model }: ModelRunnerProps) {
   const toast = useToast();
   const [config, setConfig] = useState<ModelRunnerConfig>(DEFAULT_CONFIG);
+  const [suspended, setSuspended] = useState(true);
+  const [inputValues, setInputValues] = useState<AnyRecord>();
 
-  const [output, setOutput] = useState<AnyRecord>();
-  const [error, setError] = useState<ModelRunError>();
-
-  const onRun = useCallback(
-    async (inputValues: AnyRecord): Promise<void> => {
-      setError(undefined);
-      setOutput(undefined);
-
-      try {
-        const resp = await axios({
-          method: 'POST',
-          url: 'https://gateway.credmark.com/v1/model/run',
-          data: {
-            slug: model.slug,
-            chainId: config.chainId || 1,
-            blockNumber: config.blockNumber || 'latest',
-            version: config.version || undefined,
-            input: inputValues,
-          },
-        });
-
-        if (resp.data.error) {
-          setError(resp.data.error);
-          console.log(resp.data.error);
-          throw new Error(resp.data.error);
-        }
-
-        setOutput(resp.data.output);
-      } catch {
+  const { output, error } = useModelRunner<AnyRecord>({
+    suspended,
+    slug: model.slug,
+    input: inputValues,
+    chainId: config.chainId || 1,
+    blockNumber: (config.blockNumber as number) || ('latest' as const),
+    version: config.version || undefined,
+    window: Duration.fromObject({ days: 30 }),
+    interval: Duration.fromObject({ days: 1 }),
+    afterRun: () => {
+      setSuspended(true);
+      if (error) {
         toast({
           position: 'top-right',
           status: 'error',
@@ -67,8 +48,12 @@ export default function ModelRunner({ model }: ModelRunnerProps) {
         });
       }
     },
-    [model.slug, toast, config],
-  );
+  });
+
+  function onRun(inputValues: AnyRecord): void {
+    setInputValues(inputValues);
+    setSuspended(false);
+  }
 
   useEffect(() => {
     setConfig(DEFAULT_CONFIG);
