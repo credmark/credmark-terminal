@@ -5,6 +5,7 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
+  Heading,
   HStack,
   Icon,
   Input,
@@ -13,174 +14,29 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import AddIcon from '@mui/icons-material/Add';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import RemoveIcon from '@mui/icons-material/Remove';
-import {
-  FastField as Field,
-  FieldArray,
-  FieldProps,
-  Form,
-  Formik,
-  getIn,
-} from 'formik';
-import React, { useCallback, useMemo } from 'react';
-import * as Yup from 'yup';
+import { FastField as Field, FieldArray, FieldProps, getIn } from 'formik';
+import React from 'react';
 
-import { Card, PrimaryButton } from '~/components/base';
+import { Card } from '~/components/base';
+import { AnyRecord, FieldType, ModelMetadata } from '~/types/model';
 import {
-  AnyRecord,
-  FieldType,
-  FieldTypeArray,
-  FieldTypeBoolean,
-  FieldTypeInteger,
-  FieldTypeObject,
-  FieldTypeString,
-  ModelMetadata,
-} from '~/types/model';
+  computeInitialValues,
+  getUnreferencedInput,
+} from '~/utils/modelSchema';
 
 interface ModelInputProps {
   inputSchema: ModelMetadata['input'];
-  onRun: (input: AnyRecord) => void;
-  isRunning: boolean;
 }
 
-export default function ModelInput({
-  inputSchema,
-  onRun,
-  isRunning,
-}: ModelInputProps) {
-  const getUnreferencedInput = useCallback(
-    (
-      input: FieldType,
-    ):
-      | FieldTypeObject
-      | FieldTypeArray
-      | FieldTypeString
-      | FieldTypeInteger
-      | FieldTypeBoolean => {
-      if ('$ref' in input) {
-        const refKey = Object.keys(inputSchema.definitions ?? {}).find(
-          (def) => def === input.$ref.split('/').pop(),
-        );
-
-        if (!refKey) {
-          throw new Error('Invalid ref');
-        }
-
-        return (inputSchema.definitions ?? {})[refKey] as
-          | FieldTypeObject
-          | FieldTypeArray
-          | FieldTypeString
-          | FieldTypeInteger
-          | FieldTypeBoolean;
-      } else if ('allOf' in input) {
-        return getUnreferencedInput(input.allOf[0]);
-      }
-
-      return input;
-    },
-    [inputSchema.definitions],
-  );
-
-  const computeInitialValues = useCallback(
-    (type: FieldType): AnyRecord | boolean | string | number | unknown[] => {
-      const input = getUnreferencedInput(type);
-      switch (input.type) {
-        case 'object':
-          return Object.entries(input.properties ?? {}).reduce<AnyRecord>(
-            (iv, [key, value]) => ({
-              ...iv,
-              [key]: computeInitialValues(value),
-            }),
-            {},
-          );
-        case 'array':
-          return [];
-        case 'boolean':
-          return input.default ?? false;
-        case 'integer':
-        case 'number':
-          return input.default ?? 0;
-        case 'string':
-        default:
-          return input.default ?? '';
-      }
-    },
-    [getUnreferencedInput],
-  );
-
-  const computeValidationSchema = useCallback(
-    (type: FieldType, required: string[] = [], key = ''): Yup.BaseSchema => {
-      const input = getUnreferencedInput(type);
-      switch (input.type) {
-        case 'object': {
-          return Yup.object().shape(
-            Object.entries(input.properties ?? {}).reduce<AnyRecord>(
-              (iv, [key, value]) => ({
-                ...iv,
-                [key]: computeValidationSchema(value, input.required, key),
-              }),
-              {},
-            ),
-          );
-        }
-        case 'array': {
-          let schema = Yup.array().of(
-            computeValidationSchema(
-              Array.isArray(input.items) ? input.items[0] : input.items,
-            ),
-          );
-          if (input.minItems) schema = schema.min(input.minItems);
-          if (input.maxItems) schema = schema.min(input.maxItems);
-          return schema;
-        }
-        case 'boolean': {
-          let schema = Yup.boolean();
-          if (required.includes(key)) schema = schema.required('Required.');
-          return schema;
-        }
-        case 'integer':
-        case 'number': {
-          let schema = Yup.number();
-          if (required.includes(key)) schema = schema.required('Required.');
-          return schema;
-        }
-        case 'string':
-        default: {
-          let schema = Yup.string().ensure();
-          if (required.includes(key)) schema = schema.required('Required.');
-          if (input.maxLength)
-            schema = schema.max(
-              input.maxLength,
-              `Cannot be more than ${input.maxLength} characters`,
-            );
-          if (input.pattern)
-            schema = schema.matches(
-              new RegExp(input.pattern),
-              `Invalid value. Not matching ${input.pattern}`,
-            );
-          return schema;
-        }
-      }
-    },
-    [getUnreferencedInput],
-  );
-
-  const initialValues = useMemo(() => {
-    return computeInitialValues(inputSchema) as AnyRecord;
-  }, [computeInitialValues, inputSchema]);
-
-  const validationSchema = useMemo(() => {
-    return computeValidationSchema(inputSchema);
-  }, [computeValidationSchema, inputSchema]);
-
+export default function ModelInput({ inputSchema }: ModelInputProps) {
   function getInputFields(type: FieldType, keyPath = ''): React.ReactNode {
-    const input = getUnreferencedInput(type);
+    const input = getUnreferencedInput(inputSchema, type);
     switch (input.type) {
       case 'object':
         return (
           <Box key={keyPath}>
-            <Text fontWeight="bold">
+            <Text fontWeight="300">
               {input.title && keyPath
                 ? `${keyPath}: ${input.title}`
                 : input.title ?? keyPath}
@@ -261,6 +117,7 @@ export default function ModelInput({
                                   arrayHelpers.insert(
                                     index,
                                     computeInitialValues(
+                                      inputSchema,
                                       Array.isArray(input.items)
                                         ? input.items[0]
                                         : input.items,
@@ -281,6 +138,7 @@ export default function ModelInput({
                           onClick={() =>
                             arrayHelpers.push(
                               computeInitialValues(
+                                inputSchema,
                                 Array.isArray(input.items)
                                   ? input.items[0]
                                   : input.items,
@@ -350,39 +208,22 @@ export default function ModelInput({
 
   return (
     <Card>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onRun}
-        validationSchema={validationSchema}
-      >
-        <Form>
-          {Object.keys(inputSchema.properties ?? {}).length === 0 ? (
-            <Box
-              pt="4"
-              textAlign="center"
-              color="gray.200"
-              fontSize="3xl"
-              fontWeight="bold"
-            >
-              No input required
-            </Box>
-          ) : (
-            getInputFields(inputSchema)
-          )}
-          <Box mt="16" textAlign="center">
-            <PrimaryButton
-              type="submit"
-              size="lg"
-              px="16"
-              rightIcon={<Icon as={PlayArrowIcon} />}
-              isLoading={isRunning}
-              loadingText="Running..."
-            >
-              Run
-            </PrimaryButton>
-          </Box>
-        </Form>
-      </Formik>
+      <Heading as="h4" fontSize="lg" mb="4" fontWeight="500">
+        Model Input
+      </Heading>
+      {Object.keys(inputSchema.properties ?? {}).length === 0 ? (
+        <Box
+          pt="4"
+          textAlign="center"
+          color="gray.200"
+          fontSize="3xl"
+          fontWeight="bold"
+        >
+          No input required
+        </Box>
+      ) : (
+        getInputFields(inputSchema)
+      )}
     </Card>
   );
 }

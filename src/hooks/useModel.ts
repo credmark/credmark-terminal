@@ -55,17 +55,17 @@ interface CommonModelRunnerProps extends ModelRunnerCallbackProps {
   afterRun?: () => void;
 }
 
-interface SimpleModelRunnerProps<O> extends CommonModelRunnerProps {
+export interface SimpleModelRunnerProps<O> extends CommonModelRunnerProps {
   validateOutput?: (output: O) => void;
 }
 
-interface HistoricalModelRunnerProps<O> extends CommonModelRunnerProps {
+export interface HistoricalModelRunnerProps<O> extends CommonModelRunnerProps {
   window: Duration; // In days
   interval: Duration; // In days
   validateRow?: (output: O) => void;
 }
 
-type ModelRunnerProps<O> =
+export type ModelRunnerProps<O> =
   | SimpleModelRunnerProps<O>
   | HistoricalModelRunnerProps<O>;
 
