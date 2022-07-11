@@ -195,19 +195,19 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
       { label: 'Protocol Analytics', isDisabled: true },
       { label: 'Sharpe Ratio', href: '/terminal/sharpe' },
 
-      { label: 'Stablecoin Health', isHeader: true },
-      {
-        label: 'FRAX Stats & Collateralization',
-        href: '/terminal/stablecoin/frax-stats',
-      },
-      {
-        label: 'FRAX Balances & Holders',
-        href: '/terminal/stablecoin/frax-balances',
-      },
-      {
-        label: 'FRAX Liquidity by Platform',
-        href: '/terminal/stablecoin/frax-liquidity',
-      },
+      // { label: 'Stablecoin Health', isHeader: true },
+      // {
+      //   label: 'FRAX Stats & Collateralization',
+      //   href: '/terminal/stablecoin/frax-stats',
+      // },
+      // {
+      //   label: 'FRAX Balances & Holders',
+      //   href: '/terminal/stablecoin/frax-balances',
+      // },
+      // {
+      //   label: 'FRAX Liquidity by Platform',
+      //   href: '/terminal/stablecoin/frax-liquidity',
+      // },
 
       { label: 'Lenders', isHeader: true },
       { label: 'Lenders', href: '/terminal/lenders' },
