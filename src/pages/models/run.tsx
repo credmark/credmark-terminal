@@ -30,16 +30,19 @@ export default function ModelsPage({ models }: ModelPageProps) {
 
   return (
     <>
-      <SEOHeader title="Model Usage" />
+      <SEOHeader title="Model Runner" />
       <Container maxW="container.lg" p="8">
         <Heading mb="8" color="purple.500">
-          Credmark Models
+          Model Runner
         </Heading>
         <SearchSelect<ModelMetadata>
           placeholder="Select a model..."
           options={models}
           filterOption={(option, filterValue) =>
-            (option.data.displayName ?? option.data.slug)
+            (option.data.displayName ?? '')
+              .toLocaleLowerCase()
+              .includes(filterValue.toLocaleLowerCase().trim()) ||
+            option.data.slug
               .toLocaleLowerCase()
               .includes(filterValue.toLocaleLowerCase().trim()) ||
             (option.data.description ?? '')
