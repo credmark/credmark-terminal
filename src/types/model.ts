@@ -1,3 +1,5 @@
+import { DurationObjectUnits } from 'luxon';
+
 export interface FieldTypeRef {
   $ref: string;
 }
@@ -101,10 +103,24 @@ export interface ModelSeriesOutput<O> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyRecord = Record<string, any>;
 
+interface ModelRunnerNoneUtil {
+  type: 'none';
+}
+
+interface ModelRunnerHistoricalUtil {
+  type: 'historical';
+  window: { value: number; unit: keyof DurationObjectUnits };
+  interval: { value: number; unit: keyof DurationObjectUnits };
+}
+
+type ModelRunnerUtil = ModelRunnerNoneUtil | ModelRunnerHistoricalUtil;
+
 export interface ModelRunnerConfig {
   version: string;
   chainId: number;
   blockNumber: number | string;
+
+  utility?: ModelRunnerUtil;
 }
 
 export interface ModelUsage {
