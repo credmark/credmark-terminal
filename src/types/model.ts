@@ -1,13 +1,5 @@
 import { DurationObjectUnits } from 'luxon';
 
-export interface FieldTypeRef {
-  $ref: string;
-}
-
-export interface FieldTypeAllOf {
-  allOf: Array<FieldType>;
-}
-
 export interface BaseFieldType {
   title?: string;
   description?: string;
@@ -18,6 +10,7 @@ export interface FieldTypeObject extends BaseFieldType {
   properties?: Record<string, FieldType>;
   required?: string[];
   definitions?: Record<string, FieldType>;
+  default?: unknown;
 }
 
 export interface FieldTypeArray extends BaseFieldType {
@@ -44,6 +37,15 @@ export interface FieldTypeInteger extends BaseFieldType {
 export interface FieldTypeBoolean extends BaseFieldType {
   type: 'boolean';
   default?: boolean;
+}
+
+export interface FieldTypeRef extends BaseFieldType {
+  $ref: string;
+  default?: unknown;
+}
+
+export interface FieldTypeAllOf {
+  allOf: Array<FieldType>;
 }
 
 export type FieldType =

@@ -211,14 +211,28 @@ export function getUnreferencedInput(
       throw new Error('Invalid ref');
     }
 
-    return (inputSchema.definitions ?? {})[refKey] as
+    const unreferencedInput = (inputSchema.definitions ?? {})[refKey] as
       | FieldTypeObject
       | FieldTypeArray
       | FieldTypeString
       | FieldTypeInteger
       | FieldTypeBoolean;
+
+    if (input.title) {
+      unreferencedInput.title = input.title;
+    }
+
+    if (input.description) {
+      unreferencedInput.description = input.description;
+    }
+
+    if (input.default) {
+      unreferencedInput.default = input.default;
+    }
+
+    return unreferencedInput;
   } else if ('allOf' in input) {
-    return getUnreferencedInput(inputSchema, input.allOf[0]);
+    return getUnreferencedInput(inputSchema, { ...input.allOf[0], ...input });
   }
 
   return input;
@@ -231,6 +245,10 @@ export function computeInitialValues(
   const input = getUnreferencedInput(inputSchema, type);
   switch (input.type) {
     case 'object':
+      if ('default' in input && input.default) {
+        return input.default as AnyRecord;
+      }
+
       return Object.entries(input.properties ?? {}).reduce<AnyRecord>(
         (iv, [key, value]) => ({
           ...iv,
