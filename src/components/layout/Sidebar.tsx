@@ -194,6 +194,7 @@ export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
       { label: 'Financial Metrics', isHeader: true },
       { label: 'Protocol Analytics', isDisabled: true },
       { label: 'Sharpe Ratio', href: '/terminal/sharpe' },
+      { label: 'Portfolio Analytics', href: '/terminal/portfolio' },
 
       // { label: 'Stablecoin Health', isHeader: true },
       // {

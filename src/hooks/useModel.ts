@@ -205,6 +205,7 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
           : (resp.output as O);
 
         validateOutputMemoized(_output);
+        console.log('_output', _output);
         setOutput(_output);
       })
       .catch((err) => {
