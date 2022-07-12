@@ -65,7 +65,7 @@ interface CurvePoolInfoOutput {
 }
 
 interface VolumeModelOutput {
-  tokenVolumes: Array<{
+  some: Array<{
     token: {
       address: string;
     };
@@ -167,7 +167,7 @@ export default function CurveDexChartBox({
               timestamp: new Date(
                 blockNumberModel.output.sampleTimestamp * 1000,
               ),
-              value: currentVolumeModel.output.tokenVolumes.reduce(
+              value: currentVolumeModel.output.some.reduce(
                 (total, tv) => total + tv.buyValue,
                 0,
               ),
@@ -198,10 +198,7 @@ export default function CurveDexChartBox({
     data: volumeModel.output
       ? volumeModel.output.series.map((item) => ({
           timestamp: new Date(item.sampleTimestamp * 1000),
-          value: item.output.tokenVolumes.reduce(
-            (total, tv) => total + tv.buyValue,
-            0,
-          ),
+          value: item.output.some.reduce((total, tv) => total + tv.buyValue, 0),
         }))
       : undefined,
     loading: volumeModel.loading || blockNumberModel.loading,
