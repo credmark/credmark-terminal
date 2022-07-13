@@ -67,6 +67,7 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
 
   const blockNumberModel = useModelRunner<BlockNumberOutput>({
     slug: 'rpc.get-blocknumber',
+    version: '1.0',
     input: { timestamp: DateTime.utc().startOf('day').toSeconds() },
   });
 
@@ -118,10 +119,12 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
           : runPriceModel(
               {
                 slug: 'historical.run-model',
+                version: '1.3',
                 input: {
                   model_slug: token.priceEns
                     ? 'chainlink.price-by-ens'
                     : 'price.quote',
+                  model_version: token.priceEns ? '1.0' : '1.7',
                   model_input: token.priceEns
                     ? { domain: token.priceEns }
                     : {
@@ -217,8 +220,10 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
         runSharpeModel(
           {
             slug: 'compose.map-inputs',
+            version: '1.0',
             input: {
               modelSlug: 'finance.sharpe-ratio-token',
+              modelVersion: '1.2',
               modelInputs,
             },
           },
