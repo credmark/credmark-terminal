@@ -1,124 +1,70 @@
 import {
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionPanel,
   Box,
+  BoxProps,
   HStack,
   Icon,
-  VStack,
-  Text,
+  Img,
   Link,
-  BoxProps,
+  Tag,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
-import { SvgIconComponent } from '@mui/icons-material';
-import ApiIcon from '@mui/icons-material/Api';
-import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import CodeIcon from '@mui/icons-material/Code';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
+import PerfectScrollbar from 'perfect-scrollbar';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { BsFillCaretRightFill } from 'react-icons/bs';
 
-import { CmkLogoIcon, CmkTerminalIcon } from '~/components/icons';
+import env from '~/env';
 
-interface NavItemProps extends BoxProps {
-  icon?: typeof Icon | SvgIconComponent;
+import Web3Status from './Web3Status';
+import 'perfect-scrollbar/css/perfect-scrollbar.css';
+
+interface NavItemProps {
   label: string;
-  isHeader?: boolean;
-  isFocused?: boolean;
   isDisabled?: boolean;
   href?: string;
   isExternal?: boolean;
-  onClick?: () => void;
-
-  backIcon?: boolean;
-  forwardIcon?: boolean;
-
-  subNav?: Array<NavItemProps>;
 }
 
 function NavItem({
-  icon,
   label,
-  isHeader = false,
-  isFocused = false,
   isDisabled = false,
   href,
   isExternal,
-  onClick,
-  backIcon,
-  forwardIcon,
-  subNav,
-
-  ...boxProps
 }: NavItemProps) {
   const router = useRouter();
-  const isActive = href && router.pathname === href;
-
-  if (isHeader) {
-    return (
-      <Text
-        pt="4"
-        pb="2"
-        color="purple.500"
-        fontSize="sm"
-        textTransform="uppercase"
-        fontWeight="bold"
-      >
-        {label}
-      </Text>
-    );
-  }
+  const isActive = !isDisabled && href && router.pathname === href;
 
   const inner = (
     <HStack
-      onClick={onClick}
       justify="flex-start"
       px="4"
       py="3"
-      rounded="md"
       bg={isActive ? 'green.500' : undefined}
-      color={isDisabled ? 'gray.300' : 'black'}
-      cursor={isActive || (subNav && subNav.length) ? undefined : 'pointer'}
+      color={isActive ? 'black' : isDisabled ? 'whiteAlpha.500' : 'white'}
+      cursor={isActive || isDisabled ? undefined : 'pointer'}
       borderColor="green.500"
-      borderWidth={isFocused ? '1px' : 0}
       transitionDuration="normal"
       transitionProperty="common"
       _hover={
-        isActive || (subNav && subNav.length)
+        isActive || isDisabled
           ? {}
           : {
-              bg: 'green.50',
+              bg: 'green.500',
+              color: 'black',
             }
       }
-      {...boxProps}
     >
-      {backIcon && <Icon as={ArrowLeftIcon} />}
-      {icon && (
-        <Icon
-          as={icon}
-          boxSize="5"
-          color={isDisabled ? 'gray.300' : 'purple.500'}
-        />
-      )}
-      <Text flex="1">{label}</Text>
-      {forwardIcon && <Icon as={ArrowRightIcon} />}
-      {subNav && subNav.length > 0 && <Icon as={KeyboardArrowDownIcon} />}
+      <Text flex="1" fontWeight={400} fontSize="md">
+        {label}
+      </Text>
     </HStack>
   );
-
-  if (subNav && subNav.length > 0) {
-    return (
-      <VStack alignItems="stretch">
-        {inner}
-        {subNav.map((child) => (
-          <Box key={child.label} pl="4">
-            <NavItem {...child} />
-          </Box>
-        ))}
-      </VStack>
-    );
-  }
 
   if (href && isExternal) {
     return (
@@ -140,177 +86,111 @@ function NavItem({
 }
 
 interface SidebarProps extends BoxProps {
+  items: Array<{ label: string; subNav: NavItemProps[] }>;
   fixedWidth: number;
 }
 
-export default function Sidebar({ fixedWidth, ...boxProps }: SidebarProps) {
+export default function Sidebar({
+  fixedWidth,
+  items,
+  ...boxProps
+}: SidebarProps) {
   const router = useRouter();
+  const accordionRef = useRef(null);
 
-  const homeItems = useMemo<NavItemProps[]>(
-    () => [
-      { icon: HomeOutlinedIcon, label: 'Home', href: '/' },
-      {
-        icon: CmkTerminalIcon,
-        label: 'Credmark Terminal',
-        isFocused: router.pathname.startsWith('/terminal'),
-        onClick: () => setShowTerminalItems(true),
-        forwardIcon: true,
-      },
-      {
-        icon: ApiIcon,
-        label: 'API Access',
-        href: 'https://gateway.credmark.com/api',
-        isExternal: true,
-      },
-      {
-        icon: CodeIcon,
-        label: 'Model Framework',
-        href: 'https://github.com/credmark/credmark-models-py',
-        isExternal: true,
-      },
-      {
-        icon: VerifiedOutlinedIcon,
-        label: 'Model Validation',
-        isDisabled: true,
-      },
-      {
-        icon: CmkLogoIcon,
-        label: 'Stake',
-        href: '/stake',
-      },
-    ],
-    [router.pathname],
-  );
-
-  const terminalItems: NavItemProps[] = useMemo(
-    () => [
-      {
-        icon: HomeOutlinedIcon,
-        label: 'Home',
-        onClick: () => setShowTerminalItems(false),
-        backIcon: true,
-      },
-
-      { label: 'Financial Metrics', isHeader: true },
-      { label: 'Protocol Analytics', isDisabled: true },
-      { label: 'Sharpe Ratio', href: '/terminal/sharpe' },
-
-      // { label: 'Stablecoin Health', isHeader: true },
-      // {
-      //   label: 'FRAX Stats & Collateralization',
-      //   href: '/terminal/stablecoin/frax-stats',
-      // },
-      // {
-      //   label: 'FRAX Balances & Holders',
-      //   href: '/terminal/stablecoin/frax-balances',
-      // },
-      // {
-      //   label: 'FRAX Liquidity by Platform',
-      //   href: '/terminal/stablecoin/frax-liquidity',
-      // },
-
-      { label: 'Lenders', isHeader: true },
-      { label: 'Lenders', href: '/terminal/lenders' },
-      { label: 'Lending Usage AAVE', href: '/terminal/lenders/aave-usage' },
-      {
-        label: 'Lending Usage Compound',
-        href: '/terminal/lenders/compound-usage',
-      },
-
-      {
-        label: 'DEXs',
-        isHeader: true,
-        isFocused: router.pathname.startsWith('/terminal/dex'),
-      },
-      { label: 'Uniswap V2', href: '/terminal/dex/uniswap-v2' },
-      { label: 'Uniswap V3', href: '/terminal/dex/uniswap-v3' },
-      { label: 'Curve', href: '/terminal/dex/curve' },
-      { label: 'Sushiswap', href: '/terminal/dex/sushi' },
-
-      { label: 'Credmark Analytics', isHeader: true },
-      { label: 'Token Analytics', href: '/info' },
-      { label: 'Model Overview', href: '/models' },
-      { label: 'Model Runner', href: '/models/run' },
-      { label: 'Model Usage', href: '/models/usage' },
-    ],
-    [router.pathname],
-  );
-
-  const terminalLinks: string[] = useMemo(() => {
-    function getLinks(items: NavItemProps[]): string[] {
-      const links: string[] = [];
-      for (const item of items) {
-        if (item.href) {
-          links.push(item.href);
-        }
-
-        if (Array.isArray(item.subNav)) {
-          links.push(...getLinks(item.subNav));
-        }
-      }
-
-      return links;
-    }
-
-    return getLinks(terminalItems);
-  }, [terminalItems]);
-
-  const [showTerminalItems, setShowTerminalItems] = useState(
-    terminalLinks.includes(router.pathname),
-  );
+  const defaultIndex = useMemo(() => {
+    return items
+      .map((item, index) => ({ ...item, index }))
+      .filter((item) =>
+        item.subNav.some(({ href }) => href && href === router.pathname),
+      )
+      .map((item) => item.index);
+  }, [items, router.pathname]);
 
   useEffect(() => {
-    if (terminalLinks.includes(router.pathname)) {
-      setShowTerminalItems(true);
-    }
-  }, [router.pathname, terminalLinks]);
+    if (accordionRef.current) new PerfectScrollbar(accordionRef.current);
+  }, []);
 
   return (
     <Box
       w={fixedWidth}
       minW={fixedWidth}
-      minH="100vh"
-      h="100%"
-      bg="white"
-      borderRight="1px"
-      borderColor="gray.200"
-      position="relative"
+      h="100vh"
+      bg="purple.800"
+      color="white"
       overflow="hidden"
+      display="flex"
+      flexDirection="column"
+      position="sticky"
+      top="0"
       {...boxProps}
     >
-      <VStack
-        align="stretch"
-        spacing="2"
-        position="absolute"
-        top="0"
-        left={showTerminalItems ? -fixedWidth : 0}
-        w="100%"
-        bottom="0"
-        pt="6"
-        px="4"
-        transitionProperty="left"
-        transitionDuration="normal"
+      <HStack px="4" py="2" mt="2">
+        <NextLink href="/" passHref>
+          <Link aria-label="www.credmark.com">
+            <Img src="/img/logo-white-full.svg" alt="Credmark" h="14" />
+          </Link>
+        </NextLink>
+        {env.isBeta && (
+          <Tag size="sm" bg="green.500" color="purple.800" py="1" fontSize="sm">
+            Beta
+          </Tag>
+        )}
+      </HStack>
+      <Accordion
+        ref={accordionRef}
+        allowMultiple
+        defaultIndex={defaultIndex}
+        position="relative"
+        flex="1"
+        overflowY="hidden"
       >
-        {homeItems.map((item, index) => (
-          <NavItem key={index} {...item} />
+        {items.map(({ label, subNav }) => (
+          <AccordionItem border="none" key={label} my="2">
+            {({ isExpanded }) => (
+              <>
+                <h2>
+                  <AccordionButton
+                    color="green.500"
+                    fontSize="sm"
+                    fontWeight={900}
+                    textTransform="uppercase"
+                  >
+                    <Box flex="1" textAlign="left">
+                      {label}
+                    </Box>
+                    <Icon
+                      as={BsFillCaretRightFill}
+                      boxSize="4"
+                      transform={isExpanded ? 'rotate(90deg)' : 'rotate(0)'}
+                      transitionProperty="transform"
+                      transitionDuration="normal"
+                    />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel pb={4}>
+                  <VStack align="stretch">
+                    {subNav.map((navItem, index) => (
+                      <NavItem key={`${label}_${index}`} {...navItem} />
+                    ))}
+                  </VStack>
+                </AccordionPanel>
+              </>
+            )}
+          </AccordionItem>
         ))}
-      </VStack>
+      </Accordion>
       <VStack
-        align="stretch"
-        spacing="1"
-        position="absolute"
-        top="0"
-        left={showTerminalItems ? 0 : fixedWidth}
-        w="100%"
-        bottom="0"
-        pt="6"
-        px="4"
-        transitionProperty="left"
-        transitionDuration="normal"
+        bg="purple.900"
+        py="6"
+        borderTop="1px"
+        borderColor="whiteAlpha.100"
+        spacing="4"
       >
-        {terminalItems.map((item, index) => (
-          <NavItem key={index} {...item} />
-        ))}
+        <Web3Status />
+        <NextLink href="/stake" passHref>
+          <Link>Stake CMK</Link>
+        </NextLink>
       </VStack>
     </Box>
   );
