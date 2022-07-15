@@ -19,7 +19,7 @@ import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 
-import AccountDetails from '~/components/layout/Navbar/AccountDetails';
+import AccountDetails from '~/components/layout/Web3Status/AccountDetails';
 import { fortmatic, injected, portis } from '~/connectors';
 import { OVERLAY_READY } from '~/connectors/Fortmatic';
 import { SUPPORTED_WALLETS } from '~/constants/wallet';
@@ -283,15 +283,7 @@ export default function WalletModal({
         )}
 
         <ModalBody>
-          <Box
-            bg="purple.50"
-            py="2"
-            px="4"
-            rounded="md"
-            color="purple.500"
-            mb="4"
-            fontSize="sm"
-          >
+          <Box color="green.500" mb="4" fontSize="sm">
             <Text>
               By connecting a wallet, you agree to Credmark&apos;s{' '}
               <Link
@@ -332,8 +324,8 @@ export default function WalletModal({
 
   return (
     <Modal isOpen={walletModalOpen} onClose={toggleWalletModal} isCentered>
-      <ModalOverlay />
-      <ModalContent rounded="base" bg="purple.500" color="white" shadow="2xl">
+      <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.300" />
+      <ModalContent rounded="base" bg="purple.800" color="white" shadow="2xl">
         {getModalContent()}
       </ModalContent>
     </Modal>

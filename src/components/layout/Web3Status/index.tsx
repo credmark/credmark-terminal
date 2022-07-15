@@ -61,7 +61,6 @@ function Web3StatusInner() {
   return (
     <Button
       onClick={toggleWalletModal}
-      rounded="full"
       colorScheme="whiteAlpha"
       color="white"
       variant="outline"

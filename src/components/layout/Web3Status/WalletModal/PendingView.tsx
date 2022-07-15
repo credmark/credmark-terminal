@@ -32,7 +32,7 @@ export default function PendingView({
 
   return (
     <>
-      <Box mt="4" mb="2">
+      <Box py="20">
         {error ? (
           <Alert status="error" rounded="md">
             <Icon as={ErrorIcon} mr="2" color="red.500"></Icon>
@@ -51,7 +51,7 @@ export default function PendingView({
             </Button>
           </Alert>
         ) : (
-          <HStack mb="4" justify="center">
+          <HStack justify="center" color="green.500">
             <Spinner />
             <Text>Initializing...</Text>
           </HStack>

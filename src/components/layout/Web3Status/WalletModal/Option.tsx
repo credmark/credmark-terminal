@@ -29,11 +29,10 @@ export default function Option({
       variant="outline"
       onClick={() => clickable && !active && onClick && onClick()}
       my="2"
-      borderColor="purple.100"
-      color="white"
+      colorScheme="green"
       _hover={{
-        bg: 'white',
-        color: 'purple.500',
+        color: 'black',
+        bg: 'green.500',
       }}
       py="8"
       w="100%"
