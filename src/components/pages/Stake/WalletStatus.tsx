@@ -28,11 +28,10 @@ export default function WalletStatus() {
   const sCmkToCmk = useSCmkToCmk(BigNumber.from('1000000000000000000')); // 1 xCMK
 
   return (
-    <Box mt="6" rounded="base" border="1px" borderColor="gray.100" px="2">
+    <Box mt="6" rounded="base" border="1px" px="2">
       <HStack>
         <Text
           py="2"
-          color="purple.500"
           textAlign="center"
           fontSize="9px"
           fontWeight="bold"
@@ -46,7 +45,7 @@ export default function WalletStatus() {
         </Text>
         <HStack flex="1" justify="center">
           <Img src="/img/cmk.svg" h="8" />
-          <Text color="purple.500">
+          <Text>
             <strong>
               {cmkBalance
                 ? formatTokenAmount(cmkBalance, 2, { shorten: true })
@@ -59,7 +58,6 @@ export default function WalletStatus() {
               CMK[chainId ?? 1]?.address
             }`}
             isExternal
-            color="purple.500"
           >
             <Icon as={MdOpenInNew} boxSize="5" />
           </Link>
@@ -67,7 +65,6 @@ export default function WalletStatus() {
         <Divider orientation="vertical" h="50px" />
         <Tooltip
           placement="bottom-end"
-          bg="purple.500"
           color="white"
           rounded="md"
           fontSize="sm"
@@ -82,7 +79,7 @@ export default function WalletStatus() {
         >
           <HStack flex="1" justify="center">
             <Img src="/img/xcmk.svg" h="8" />
-            <Text color="purple.500" lineHeight="1">
+            <Text lineHeight="1">
               <strong>
                 {sCmkBalance.loading || !sCmkBalance.value
                   ? '??'
@@ -106,12 +103,12 @@ export default function WalletStatus() {
         </Tooltip>
         <Divider orientation="vertical" h="50px" />
         <HStack flex="1" justify="center">
-          <Text textAlign="right" color="purple.500" fontWeight="700">
+          <Text textAlign="right" fontWeight="700">
             1
           </Text>
           <Img src="/img/xcmk.svg" h="6" />
           <Text>=</Text>
-          <Text color="purple.500" fontWeight="700">
+          <Text fontWeight="700">
             {!sCmkToCmk.loading ? formatTokenAmount(sCmkToCmk.value, 2) : '??'}
           </Text>
           <Img src="/img/cmk.svg" h="6" />
