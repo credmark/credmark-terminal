@@ -49,23 +49,23 @@ const sidebarItems = [
       { label: 'Sharpe Ratio', href: '/terminal/sharpe' },
     ],
   },
-  // {
-  //   label: 'Stablecoin Health',
-  //   subNav: [
-  //     {
-  //       label: 'FRAX Stats & Collateralization',
-  //       href: '/terminal/stablecoin/frax-stats',
-  //     },
-  //     {
-  //       label: 'FRAX Balances & Holders',
-  //       href: '/terminal/stablecoin/frax-balances',
-  //     },
-  //     {
-  //       label: 'FRAX Liquidity by Platform',
-  //       href: '/terminal/stablecoin/frax-liquidity',
-  //     },
-  //   ],
-  // },
+  {
+    label: 'Stablecoin Health',
+    subNav: [
+      {
+        label: 'FRAX Stats & Collateralization',
+        href: '/terminal/stablecoin/frax-stats',
+      },
+      {
+        label: 'FRAX Balances & Holders',
+        href: '/terminal/stablecoin/frax-balances',
+      },
+      {
+        label: 'FRAX Liquidity by Platform',
+        href: '/terminal/stablecoin/frax-liquidity',
+      },
+    ],
+  },
   {
     label: 'Credmark Analytics',
     subNav: [
