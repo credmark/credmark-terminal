@@ -3,13 +3,11 @@ import {
   Grid,
   GridItem,
   HStack,
-  Icon,
   Img,
   Link,
   Switch,
   Text,
 } from '@chakra-ui/react';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import React, { useState } from 'react';
 
 import { LenderChartBox } from '~/components/pages/Terminal';
@@ -40,8 +38,7 @@ const METRICS: MetricInfo[] = [
           pb="1"
           aria-label="Read more about VaR in Credmark Wiki"
         >
-          Read more about VaR in Credmark Wiki{' '}
-          <Icon color="gray.300" as={OpenInNewIcon} />
+          Read more about VaR in Credmark Wiki →
         </Link>
       </Text>
     ),
@@ -72,8 +69,7 @@ const METRICS: MetricInfo[] = [
           pb="1"
           aria-label="Read more about LCR in Credmark Wiki"
         >
-          Read more about LCR in Credmark Wiki{' '}
-          <Icon color="gray.300" as={OpenInNewIcon} />
+          Read more about LCR in Credmark Wiki →
         </Link>
       </Text>
     ),

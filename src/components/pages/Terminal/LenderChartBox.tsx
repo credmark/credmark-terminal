@@ -1,8 +1,9 @@
-import { Box, Center, Flex, HStack, Img, Text } from '@chakra-ui/react';
+import { Img, Text } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { EChartsInstance } from 'echarts-for-react';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 
+import { Card } from '~/components/base';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import { ASSETS } from '~/constants/terminal';
@@ -129,14 +130,7 @@ export default function LenderChartBox({
   }, [chartLines, metric]);
 
   return (
-    <Box
-      ref={containerRef}
-      rounded="md"
-      border="1px"
-      borderColor="#DEDEDE"
-      bg="white"
-      shadow="md"
-    >
+    <Card ref={containerRef}>
       <ChartHeader
         title={metric.label}
         toggleExpand={onExpand}
@@ -148,68 +142,26 @@ export default function LenderChartBox({
         tooltip={{ status: 'info', content: metric.tooltip }}
       />
 
-      <Flex bg="white" roundedBottom="md">
-        {!isExpanded && (
-          <Flex
-            direction="column"
-            alignSelf="stretch"
-            borderRight="2px"
-            borderColor="gray.200"
-          >
-            {ASSETS.map((asset, assetIndex) => (
-              <Center
-                textAlign="center"
-                key={asset.key}
-                flex="1"
-                p="4"
-                borderBottom={assetIndex < ASSETS.length - 1 ? '2px' : 0}
-                borderColor="gray.200"
-                flexDirection="column"
-              >
-                <HStack opacity={activeAssets.includes(asset.key) ? 1 : 0.4}>
-                  <Box w="6">
-                    <Img src={asset.logo} alt={asset.title || 'Credmark'} />
-                  </Box>
-                  <Text>{asset.title}</Text>
-                </HStack>
-                <Text
-                  fontSize="3xl"
-                  fontWeight="500"
-                  mt="1"
-                  opacity={activeAssets.includes(asset.key) ? 1 : 0.4}
-                >
-                  {currentStats[asset.key]}
-                </Text>
-              </Center>
-            ))}
-          </Flex>
-        )}
-        <HistoricalChart
-          flex="1"
-          lines={chartLines}
-          loading={loading}
-          formatValue={metric.formatValue}
-          onChartReady={(chart) => (chartRef.current = chart)}
-          isAreaChart={metric.chartType === 'area'}
-          durations={[30, 60, 90]}
-          defaultDuration={30}
-          showCurrentStats={isExpanded}
-          currentStats={ASSETS.map((asset) => ({
-            label: (
-              <HStack
-                opacity={activeAssets.includes(asset.key) ? 1 : 0.4}
-                mx="2"
-              >
-                <Box w="6">
-                  <Img src={asset.logo} alt={asset.title || 'Credmark'} />
-                </Box>
-                <Text>{asset.title}</Text>
-              </HStack>
-            ),
-            value: String(currentStats[asset.key]),
-          }))}
-        />
-      </Flex>
-    </Box>
+      <HistoricalChart
+        lines={chartLines}
+        loading={loading}
+        formatValue={metric.formatValue}
+        onChartReady={(chart) => (chartRef.current = chart)}
+        isAreaChart={metric.chartType === 'area'}
+        durations={[30, 60, 90]}
+        defaultDuration={90}
+        showCurrentStats={true}
+        highlightCurrentStats
+        currentStats={ASSETS.map((asset) => ({
+          icon: <Img src={asset.logo} alt={asset.title || 'Credmark'} />,
+          label: (
+            <Text opacity={activeAssets.includes(asset.key) ? 1 : 0.4}>
+              {asset.title}
+            </Text>
+          ),
+          value: String(currentStats[asset.key]),
+        }))}
+      />
+    </Card>
   );
 }
