@@ -52,18 +52,18 @@ export default function FeatureCard({
   );
 
   return (
-    <Card alignSelf="center" {...boxProps}>
-      <Text fontSize={'2xl'} fontWeight={'bold'}>
+    <Card alignSelf="center" px="6" py="4" {...boxProps}>
+      <Text fontSize={'2xl'} fontWeight={700}>
         {title}
       </Text>
-      <Text color="gray.700" fontSize="lg" fontWeight={300}>
+      <Text fontSize="lg" fontWeight={300}>
         {subtitle}
       </Text>
       <VStack my="8" align="stretch" spacing="3">
         {features.map((feat, index) => {
           return (
             <HStack key={index} spacing="3">
-              <Icon as={feat.icon} boxSize="6" color="purple.500" />
+              <Icon as={feat.icon} boxSize="6" color="green.500" />
               <Text fontSize="sm" lineHeight="1.1">
                 {feat.text}
               </Text>

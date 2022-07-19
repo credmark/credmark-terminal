@@ -32,6 +32,8 @@ export default function HomePage() {
               top="0"
               right="0"
               bottom="0"
+              px="6"
+              py="4"
               w="80%"
               flex="1"
               bgImg="/img/terminal-graph.svg"
