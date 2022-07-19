@@ -50,7 +50,7 @@ export default function ModelInput({ inputSchema }: ModelInputProps) {
               spacing="8"
               pl="8"
               borderLeftWidth="2px"
-              borderColor="purple.500"
+              borderColor="green.500"
               mt="2"
               align="stretch"
             >
@@ -88,7 +88,7 @@ export default function ModelInput({ inputSchema }: ModelInputProps) {
                   <Box
                     pl="8"
                     borderLeftWidth="2px"
-                    borderColor={!error ? 'purple.500' : 'red.500'}
+                    borderColor={!error ? 'green.500' : 'red.500'}
                     mt="2"
                   >
                     {items.length > 0 ? (
@@ -207,7 +207,7 @@ export default function ModelInput({ inputSchema }: ModelInputProps) {
   }
 
   return (
-    <Card>
+    <Card px="6" py="4">
       <Heading as="h4" fontSize="lg" mb="4" fontWeight="500">
         Model Input
       </Heading>

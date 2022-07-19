@@ -1,4 +1,4 @@
-import { Container, Heading } from '@chakra-ui/react';
+import { Container } from '@chakra-ui/react';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
@@ -32,9 +32,6 @@ export default function ModelsPage({ models }: ModelPageProps) {
     <>
       <SEOHeader title="Model Runner" />
       <Container maxW="container.lg" p="8">
-        <Heading mb="8" color="purple.500">
-          Model Runner
-        </Heading>
         <SearchSelect<ModelMetadata>
           placeholder="Select a model..."
           options={models}

@@ -1,4 +1,4 @@
-import { Box, Text } from '@chakra-ui/react';
+import { Box, Text, useColorMode } from '@chakra-ui/react';
 import {
   chakraComponents,
   ChakraStylesConfig,
@@ -36,6 +36,7 @@ export default function SearchSelect<T>({
   onChange,
   isOptionSelected,
 }: SearchSelectProps<T>) {
+  const { colorMode } = useColorMode();
   const [searchInput, setSearchInput] = useState('');
 
   const chakraStyles = useMemo<ChakraStylesConfig<T, false, GroupBase<T>>>(
@@ -50,13 +51,13 @@ export default function SearchSelect<T>({
       option: (provided, state) => ({
         ...provided,
         bg: state.isSelected
-          ? 'green.500'
-          : state.isFocused
-          ? 'gray.50'
+          ? colorMode === 'dark'
+            ? 'green.500'
+            : 'green.600'
           : provided.bg,
       }),
     }),
-    [],
+    [colorMode],
   );
 
   const customComponents = useMemo<
@@ -78,10 +79,7 @@ export default function SearchSelect<T>({
                 />
               </Text>
               {description && (
-                <Text
-                  fontSize="sm"
-                  color={props.isSelected ? 'whiteAlpha.800' : 'gray.600'}
-                >
+                <Text fontSize="sm">
                   <Highlighter
                     searchWords={[searchInput]}
                     autoEscape={true}

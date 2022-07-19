@@ -13,6 +13,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useColorMode,
   VStack,
 } from '@chakra-ui/react';
 import {
@@ -76,29 +77,12 @@ interface BlockSeries {
 
 const math = _math.create(_math.all, { number: 'BigNumber', precision: 64 });
 
-const chakraStyles: ChakraStylesConfig<Key, false, GroupBase<Key>> = {
-  dropdownIndicator: (provided) => ({
-    ...provided,
-    background: 'transparent',
-    p: 0,
-    w: '40px',
-    borderLeftWidth: 0,
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    bg: state.isSelected
-      ? 'green.500'
-      : state.isFocused
-      ? 'gray.50'
-      : provided.bg,
-  }),
-};
-
 export default function ModelOutput({
   title,
   outputSchema,
   result,
 }: ModelOutputProps) {
+  const { colorMode } = useColorMode();
   const [valueKey, setValueKey] = useState<Key>();
   const [searchInput, setSearchInput] = useState('');
   const [transformInput, setTransformInput] = useState('');
@@ -243,7 +227,7 @@ export default function ModelOutput({
     }
 
     const line: ChartLine = {
-      color: '#DE1A60',
+      color: '#00ECA5',
       name: title,
       data: ((result as BlockSeries).series ?? []).map((s) => {
         let value = 0;
@@ -277,6 +261,27 @@ export default function ModelOutput({
     return [line];
   }, [transformInput, title, result, valueKey, chartValueKeys]);
 
+  const chakraStyles = useMemo<ChakraStylesConfig<Key, false, GroupBase<Key>>>(
+    () => ({
+      dropdownIndicator: (provided) => ({
+        ...provided,
+        background: 'transparent',
+        p: 0,
+        w: '40px',
+        borderLeftWidth: 0,
+      }),
+      option: (provided, state) => ({
+        ...provided,
+        bg: state.isSelected
+          ? colorMode === 'dark'
+            ? 'green.500'
+            : 'green.600'
+          : provided.bg,
+      }),
+    }),
+    [colorMode],
+  );
+
   const customComponents = useMemo<
     SelectComponentsConfig<Key, false, GroupBase<Key>>
   >(() => {
@@ -292,10 +297,7 @@ export default function ModelOutput({
                 highlightTag={({ children }) => <strong>{children}</strong>}
               />
             </Text>
-            <Text
-              fontSize="sm"
-              color={props.isSelected ? 'whiteAlpha.800' : 'gray.600'}
-            >
+            <Text fontSize="sm">
               <Text as="span">
                 <Highlighter
                   searchWords={[searchInput]}

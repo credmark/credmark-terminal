@@ -36,17 +36,14 @@ export default function ModelRunConfig({
     <>
       <Accordion allowToggle>
         <AccordionItem borderColor="green.500">
-          <AccordionButton
-            _expanded={{ bg: 'white', color: 'green.500' }}
-            _hover={{ bg: 'green.50' }}
-          >
+          <AccordionButton>
             <Icon as={SettingsIcon} />
             <Box flex="1" textAlign="left" ml="2">
               Advanced Configuration
             </Box>
             <AccordionIcon />
           </AccordionButton>
-          <AccordionPanel bg="white" py="8">
+          <AccordionPanel py="8">
             <VStack spacing="8">
               <FormControl>
                 <FormLabel>Chain ID</FormLabel>
@@ -84,17 +81,14 @@ export default function ModelRunConfig({
           </AccordionPanel>
         </AccordionItem>
         <AccordionItem borderColor="green.500">
-          <AccordionButton
-            _expanded={{ bg: 'white', color: 'green.500' }}
-            _hover={{ bg: 'green.50' }}
-          >
+          <AccordionButton>
             <Icon as={SettingsIcon} />
             <Box flex="1" textAlign="left" ml="2">
               Utility
             </Box>
             <AccordionIcon />
           </AccordionButton>
-          <AccordionPanel bg="white" py="8">
+          <AccordionPanel py="8">
             <VStack spacing="8">
               <Field name="__utilType">
                 {({ field, form }: FieldProps<string, AnyRecord>) => {
