@@ -7,6 +7,7 @@ import {
   Img,
   HStack,
   Icon,
+  useColorMode,
 } from '@chakra-ui/react';
 import React from 'react';
 import { BsGithub, BsMedium, BsReddit } from 'react-icons/bs';
@@ -22,9 +23,11 @@ const ListHeader = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default function Footer() {
+  const { colorMode } = useColorMode();
+
   return (
     <Stack
-      bg="purple.900"
+      bg={colorMode === 'dark' ? '#161216' : 'purple.900'}
       color="white"
       w="100%"
       direction={{ base: 'column', md: 'row' }}

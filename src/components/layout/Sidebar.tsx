@@ -11,6 +11,7 @@ import {
   Link,
   Tag,
   Text,
+  useColorMode,
   VStack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
@@ -97,6 +98,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const router = useRouter();
   const accordionRef = useRef(null);
+  const { colorMode } = useColorMode();
 
   const defaultIndex = useMemo(() => {
     return items
@@ -116,7 +118,7 @@ export default function Sidebar({
       w={fixedWidth}
       minW={fixedWidth}
       h="100vh"
-      bg="purple.800"
+      bg={colorMode === 'dark' ? '#1C161F' : 'purple.800'}
       color="white"
       overflow="hidden"
       display="flex"
@@ -181,7 +183,7 @@ export default function Sidebar({
         ))}
       </Accordion>
       <VStack
-        bg="purple.900"
+        bg={colorMode === 'dark' ? '#161216' : 'purple.900'}
         py="6"
         borderTop="1px"
         borderColor="whiteAlpha.100"
