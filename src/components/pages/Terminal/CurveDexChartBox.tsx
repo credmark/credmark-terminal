@@ -1,4 +1,4 @@
-import { Box, Center, Flex, Icon, Link } from '@chakra-ui/react';
+import { Box, Center, Flex, HStack, Icon, Link } from '@chakra-ui/react';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
@@ -128,8 +128,8 @@ export default function CurveDexChartBox({
   });
 
   const tvlChart = useSingleLineChart({
-    name: 'TVL',
-    color: '#3B0065',
+    name: 'Total Value Locked',
+    color: '#00E09D',
     formatter: 'currency',
     fractionDigits: 2,
     data: tvlModel.output
@@ -144,7 +144,7 @@ export default function CurveDexChartBox({
 
   const volumeChartCommonProps = {
     name: 'Volume',
-    color: '#3B0065',
+    color: '#9500FF',
     formatter: 'currency' as const,
     fractionDigits: 2,
   };
@@ -184,7 +184,7 @@ export default function CurveDexChartBox({
   const volumeModel = useModelRunner<ModelSeriesOutput<VolumeModelOutput>>({
     blockNumber: blockNumberModel.output?.blockNumber,
     slug: 'dex.pool-volume-historical',
-    version: '1.7',
+    version: '1.8',
     input: {
       pool_info_model: 'curve-fi.pool-tvl',
       interval: 7200,
@@ -194,7 +194,7 @@ export default function CurveDexChartBox({
         Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
       ),
     },
-    suspended: !blockNumberModel.output || !isExpanded,
+    suspended: !blockNumberModel.output,
   });
 
   const volumeChart = useSingleLineChart({
@@ -241,7 +241,7 @@ export default function CurveDexChartBox({
       ),
       [],
     ),
-    color: '#3B0065',
+    color: '#9500FF',
     formatter: 'number' as const,
     fractionDigits: 4,
   };
@@ -277,7 +277,7 @@ export default function CurveDexChartBox({
       ),
     }),
     interval: Duration.fromObject({ days: 1 }),
-    suspended: !blockNumberModel.output || !isExpanded,
+    suspended: !blockNumberModel.output,
   });
 
   const peggingRatioChart = useSingleLineChart({
@@ -295,14 +295,7 @@ export default function CurveDexChartBox({
   }, [tvlChart.csv, peggingRatioChart.csv, volumeChart.csv]);
 
   return (
-    <Box
-      ref={containerRef}
-      rounded="md"
-      border="1px"
-      borderColor="#DEDEDE"
-      bg="white"
-      shadow="md"
-    >
+    <Box ref={containerRef} rounded="lg" bg="white" p="2">
       <ChartHeader
         logo={<CurrenciesLogo currencies={sortedTokens} />}
         title={sortedTokens
@@ -321,91 +314,62 @@ export default function CurveDexChartBox({
         externalLink={`https://etherscan.io/address/${pool}`}
       />
 
-      <Flex align="stretch">
-        {!isExpanded && (
-          <Flex direction="column" w="200px">
-            <Center
-              flex="1"
-              textAlign="center"
-              borderRight="2px"
-              borderColor="gray.100"
-              p="4"
-              flexDirection="column"
-            >
-              <Box fontSize="sm">{tvlChart.currentStats[0].label}</Box>
-              <Box fontSize="3xl" fontWeight="medium">
-                {tvlChart.currentStats[0].value}
+      <HStack spacing="4" my="2" px="4">
+        <Flex flex="1" alignItems="center">
+          {!isExpanded && (
+            <Center flexDirection="column" alignItems="flex-start" mr="2">
+              <Box fontSize="sm" fontWeight="300" as="div">
+                {currentPeggingRatioChart.currentStats[0].label}
+              </Box>
+              <Box as="span" fontSize="md" fontWeight="500">
+                {currentPeggingRatioChart.currentStats[0].value}
               </Box>
             </Center>
-            <Flex flex="1">
-              <Center
-                flex="1"
-                textAlign="center"
-                borderTop="2px"
-                borderRight="2px"
-                borderColor="gray.100"
-                p="2"
-                flexDirection="column"
-              >
-                <Box fontSize="sm">
-                  {currentPeggingRatioChart.currentStats[0].label}
-                </Box>
-                <Box fontSize="lg" fontWeight="medium">
-                  {currentPeggingRatioChart.currentStats[0].value}
-                </Box>
-              </Center>
-              <Center
-                flex="1"
-                textAlign="center"
-                borderTop="2px"
-                borderRight="2px"
-                borderColor="gray.100"
-                p="2"
-                flexDirection="column"
-              >
-                <Box fontSize="sm">
-                  {currentVolumeChart.currentStats[0].label}
-                </Box>
-                <Box fontSize="lg" fontWeight="medium">
-                  {currentVolumeChart.currentStats[0].value}
-                </Box>
-              </Center>
-            </Flex>
-          </Flex>
-        )}
-        <HistoricalChart
-          height={300}
-          flex="1"
-          onChartReady={(chart) => (chartRef.current = chart)}
-          durations={[30, 60, 90]}
-          defaultDuration={30}
-          showCurrentStats={isExpanded}
-          {...tvlChart}
-        />
-      </Flex>
-
-      {isExpanded && (
-        <Flex borderTop="2px" borderColor="gray.100">
+          )}
           <HistoricalChart
-            height={200}
+            height={isExpanded ? 200 : 40}
             flex="1"
             durations={[30, 60, 90]}
-            defaultDuration={30}
+            defaultDuration={90}
             showCurrentStats
+            minimal={!isExpanded}
             {...peggingRatioChart}
           />
+        </Flex>
+
+        <Flex flex="1" alignItems="center">
+          {!isExpanded && (
+            <Center flexDirection="column" alignItems="flex-start" mr="2">
+              <Box fontSize="sm" fontWeight="300" as="div">
+                {currentVolumeChart.currentStats[0].label}
+              </Box>
+              <Box as="span" fontSize="md" fontWeight="500">
+                {currentVolumeChart.currentStats[0].value}
+              </Box>
+            </Center>
+          )}
           <HistoricalChart
-            height={200}
+            height={isExpanded ? 200 : 40}
             flex="1"
-            borderLeft="2px"
-            borderColor="gray.100"
             durations={[30, 60, 90]}
-            defaultDuration={30}
+            defaultDuration={90}
             showCurrentStats
+            minimal={!isExpanded}
             {...volumeChart}
           />
         </Flex>
-      )}
+      </HStack>
+
+      <HistoricalChart
+        height={300}
+        flex="1"
+        onChartReady={(chart) => (chartRef.current = chart)}
+        durations={[30, 60, 90]}
+        defaultDuration={90}
+        showCurrentStats
+        highlightCurrentStats
+        {...tvlChart}
+      />
     </Box>
   );
 }

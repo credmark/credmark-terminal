@@ -39,7 +39,9 @@ function TokenRadioGroup({
           size="sm"
           rounded="full"
           colorScheme={!selectedToken ? 'green' : 'gray'}
-          color={!selectedToken ? 'purple.500' : undefined}
+          bg={!selectedToken ? 'green.500' : 'gray.100'}
+          color={!selectedToken ? 'purple.800' : undefined}
+          fontWeight={!selectedToken ? '700' : undefined}
           onClick={() => setSelectedToken(undefined)}
         >
           ALL
@@ -52,7 +54,9 @@ function TokenRadioGroup({
               rounded="full"
               key={token.isNative ? 'ETH' : token.address}
               colorScheme={selectedToken?.equals(token) ? 'green' : 'gray'}
-              color={selectedToken?.equals(token) ? 'purple.500' : undefined}
+              bg={selectedToken?.equals(token) ? 'green.500' : 'gray.100'}
+              color={selectedToken?.equals(token) ? 'purple.800' : undefined}
+              fontWeight={selectedToken?.equals(token) ? '700' : undefined}
               onClick={() => setSelectedToken(token)}
               leftIcon={<CurrencyLogo currency={token} size={20} />}
             >
@@ -109,18 +113,8 @@ export default function DexPage({ dex, pools }: DexPageProps) {
   const DexChartBox = dex === 'CURVE' ? CurveDexChartBox : UniDexChartBox;
 
   return (
-    <Container p="8" maxW="full">
+    <Container px="8" py="4" maxW="full">
       <Flex align="center">
-        {/* <Select
-          w="200px"
-          mr="4"
-          variant="filled"
-          bg="white"
-          border="1px"
-          borderColor="gray.100"
-        >
-          <option>TVL</option>
-        </Select> */}
         <TokenRadioGroup
           flex="1"
           tokens={tokens}
