@@ -1,14 +1,15 @@
-import { Box, Center, Flex, HStack, Icon, Link } from '@chakra-ui/react';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { HStack, Link } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
 import { DateTime, Duration } from 'luxon';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 
+import { Card } from '~/components/base';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import { CurrenciesLogo } from '~/components/shared/CurrencyLogo';
+import Stat from '~/components/shared/Stat';
 import { useSingleLineChart } from '~/hooks/useChart';
 import { useModelRunner } from '~/hooks/useModel';
 import { ModelSeriesOutput } from '~/types/model';
@@ -207,7 +208,7 @@ export default function DexChartBox({
   const varModelCommonProps = {
     blockNumber: blockNumberModel.output?.blockNumber,
     slug: 'finance.var-dex-lp',
-    version: '1.4',
+    version: '1.5',
     input: {
       window: `${Math.min(
         180,
@@ -241,8 +242,7 @@ export default function DexChartBox({
             pb="1"
             aria-label="Read more about VaR in Credmark Wiki"
           >
-            Read more about VaR in Credmark Wiki{' '}
-            <Icon color="gray.300" as={OpenInNewIcon} />
+            Read more about VaR in Credmark Wiki →
           </Link>
         </React.Fragment>
       ),
@@ -302,7 +302,7 @@ export default function DexChartBox({
   }, [tvlChart.csv, varChart.csv, volumeChart.csv]);
 
   return (
-    <Box ref={containerRef} rounded="lg" bg="white" p="2">
+    <Card ref={containerRef}>
       <ChartHeader
         logo={<CurrenciesLogo currencies={sortedTokens} />}
         title={sortedTokens
@@ -321,18 +321,9 @@ export default function DexChartBox({
         externalLink={`https://etherscan.io/address/${pool}`}
       />
 
-      <HStack spacing="4" my="2" px="4">
-        <Flex flex="1" alignItems="center">
-          {!isExpanded && (
-            <Center flexDirection="column" alignItems="flex-start" mr="2">
-              <Box fontSize="sm" fontWeight="300" as="div">
-                {currentVarChart.currentStats[0].label}
-              </Box>
-              <Box as="span" fontSize="md" fontWeight="500">
-                {currentVarChart.currentStats[0].value}
-              </Box>
-            </Center>
-          )}
+      <HStack spacing="4" my="2" px={isExpanded ? 0 : 2}>
+        <HStack flex="1" alignItems="center" spacing="1">
+          {!isExpanded && <Stat {...currentVarChart.currentStats[0]} />}
           <HistoricalChart
             height={isExpanded ? 200 : 40}
             flex="1"
@@ -342,19 +333,10 @@ export default function DexChartBox({
             minimal={!isExpanded}
             {...varChart}
           />
-        </Flex>
+        </HStack>
 
-        <Flex flex="1" alignItems="center">
-          {!isExpanded && (
-            <Center flexDirection="column" alignItems="flex-start" mr="2">
-              <Box fontSize="sm" fontWeight="300" as="div">
-                {currentVolumeChart.currentStats[0].label}
-              </Box>
-              <Box as="span" fontSize="md" fontWeight="500">
-                {currentVolumeChart.currentStats[0].value}
-              </Box>
-            </Center>
-          )}
+        <HStack flex="1" alignItems="center" spacing="1">
+          {!isExpanded && <Stat {...currentVolumeChart.currentStats[0]} />}
           <HistoricalChart
             height={isExpanded ? 200 : 40}
             flex="1"
@@ -364,7 +346,7 @@ export default function DexChartBox({
             minimal={!isExpanded}
             {...volumeChart}
           />
-        </Flex>
+        </HStack>
       </HStack>
 
       <HistoricalChart
@@ -377,6 +359,6 @@ export default function DexChartBox({
         highlightCurrentStats
         {...tvlChart}
       />
-    </Box>
+    </Card>
   );
 }
