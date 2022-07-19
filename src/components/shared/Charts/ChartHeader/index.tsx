@@ -9,14 +9,16 @@ import {
   Link,
   IconProps,
 } from '@chakra-ui/react';
-import FileDownloadIcon from '@mui/icons-material/FileDownloadOutlined';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import React from 'react';
 import { CSVLink } from 'react-csv';
+import {
+  BsDownload,
+  BsFullscreen,
+  BsFullscreenExit,
+  BsBoxArrowUpRight,
+} from 'react-icons/bs';
 
-import StatusPopover from '../../StatusPopover';
+import StatusPopover from '~/components/shared/StatusPopover';
 
 export interface ChartHeaderProps {
   logo?: string | React.ReactNode;
@@ -36,7 +38,6 @@ export interface ChartHeaderProps {
   };
   info?: React.ReactNode;
   externalLink?: string;
-  noShadow?: boolean;
 }
 
 const ChartHeader = ({
@@ -48,21 +49,12 @@ const ChartHeader = ({
   downloadCsv,
   tooltip,
   externalLink,
-  noShadow = false,
 }: ChartHeaderProps) => {
   return (
-    <HStack
-      minH="30px"
-      roundedTop="md"
-      px="4"
-      py="2"
-      borderBottom={noShadow ? 'none' : '2px'}
-      borderColor={noShadow ? 'none' : '#DEDEDE'}
-      bg="white"
-    >
+    <HStack minH="30px" roundedTop="md" px="4" py="2">
       {logo && typeof logo === 'string' && <Img src={logo} alt={title} h="5" />}
       {logo && typeof logo !== 'string' && <>{logo}</>}
-      <Text color="gray.900" fontSize="14px">
+      <Text fontSize="md" fontWeight={400}>
         {title}
       </Text>
       {subtitle && (
@@ -84,7 +76,7 @@ const ChartHeader = ({
       )}
       {externalLink && (
         <Link href={externalLink} isExternal display="flex" alignItems="center">
-          <Icon color="gray.300" as={OpenInNewIcon} boxSize={4} />
+          <Icon color="gray.300" as={BsBoxArrowUpRight} boxSize={4} />
         </Link>
       )}
 
@@ -99,26 +91,16 @@ const ChartHeader = ({
             style={{ display: 'flex' }}
             aria-label="Download"
           >
-            <Icon
-              width="15px"
-              height="15px"
-              cursor="pointer"
-              marginInlineStart={0}
-              as={FileDownloadIcon}
-              color="gray.900"
-            />
+            <Icon cursor="pointer" as={BsDownload} boxSize="4" />
           </CSVLink>
         )}
 
         {toggleExpand && (
           <Icon
             cursor="pointer"
+            boxSize="4"
             onClick={toggleExpand}
-            as={isExpanded ? FullscreenExitIcon : FullscreenIcon}
-            width="15px"
-            height="15px"
-            marginInlineStart="0 !important"
-            color="gray.900"
+            as={isExpanded ? BsFullscreenExit : BsFullscreen}
           />
         )}
       </Flex>

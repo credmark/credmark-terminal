@@ -136,7 +136,6 @@ const Template = () => {
 
                 headers: [seriesName],
               }}
-              noShadow={true}
             />
           </>
         }
@@ -158,7 +157,6 @@ const Template = () => {
 
                 headers: [seriesName],
               }}
-              noShadow={true}
             />
           </>
         }
@@ -180,7 +178,6 @@ const Template = () => {
 
                 headers: [seriesName],
               }}
-              noShadow={true}
             />
           </>
         }
