@@ -8,6 +8,7 @@ import {
   GridItem,
   HStack,
   Skeleton,
+  useColorMode,
 } from '@chakra-ui/react';
 import { Currency } from '@uniswap/sdk-core';
 import React, { useMemo, useState } from 'react';
@@ -31,6 +32,7 @@ function TokenRadioGroup({
   setSelectedToken,
   ...boxProps
 }: TokenRadioGroupProps) {
+  const { colorMode } = useColorMode();
   return (
     <Box overflowX="auto" py="2" {...boxProps}>
       <HStack>
@@ -39,7 +41,13 @@ function TokenRadioGroup({
           size="sm"
           rounded="full"
           colorScheme={!selectedToken ? 'green' : 'gray'}
-          bg={!selectedToken ? 'green.500' : 'gray.100'}
+          bg={
+            !selectedToken
+              ? 'green.500'
+              : colorMode === 'dark'
+              ? '#1C161F'
+              : 'gray.100'
+          }
           color={!selectedToken ? 'purple.800' : undefined}
           fontWeight={!selectedToken ? '700' : undefined}
           onClick={() => setSelectedToken(undefined)}
@@ -54,7 +62,13 @@ function TokenRadioGroup({
               rounded="full"
               key={token.isNative ? 'ETH' : token.address}
               colorScheme={selectedToken?.equals(token) ? 'green' : 'gray'}
-              bg={selectedToken?.equals(token) ? 'green.500' : 'gray.100'}
+              bg={
+                selectedToken?.equals(token)
+                  ? 'green.500'
+                  : colorMode === 'dark'
+                  ? '#1C161F'
+                  : 'gray.100'
+              }
               color={selectedToken?.equals(token) ? 'purple.800' : undefined}
               fontWeight={selectedToken?.equals(token) ? '700' : undefined}
               onClick={() => setSelectedToken(token)}
