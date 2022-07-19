@@ -1,13 +1,14 @@
 import { Box, Center, Grid, HStack, Spacer } from '@chakra-ui/layout';
-import { chakra, Img, Spinner, Text } from '@chakra-ui/react';
+import { chakra, Spinner, Text, useColorMode } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import ReactEChartsCore, { EChartsInstance } from 'echarts-for-react';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 
-import { BorderedCard } from '~/components/base';
+import { Card } from '~/components/base';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
-import { useDeepCompareMemo } from '~/hooks/useDeepCompare';
+import { useDeepCompareMemoNoCheck } from '~/hooks/useDeepCompare';
 import useFullscreen from '~/hooks/useFullscreen';
+import { darkTheme } from '~/theme/echarts';
 import {
   CmkAnalyticsDataPoint,
   StakedCmkAnalyticsDataPoint,
@@ -17,7 +18,6 @@ import { shortenNumber } from '~/utils/formatTokenAmount';
 interface PieChartProps {
   cmkData?: CmkAnalyticsDataPoint;
   xcmkData?: StakedCmkAnalyticsDataPoint;
-  titleImg: string;
   loading: boolean;
 }
 
@@ -37,10 +37,11 @@ const ChartOverlay = chakra(Center, {
 export default function CmkSupplyDistributions({
   cmkData,
   xcmkData,
-  titleImg,
   loading,
 }: PieChartProps): JSX.Element {
-  const dataToShow = useDeepCompareMemo(() => {
+  const { colorMode } = useColorMode();
+
+  const dataToShow = useDeepCompareMemoNoCheck(() => {
     if (!cmkData || !xcmkData) return undefined;
 
     return [
@@ -54,48 +55,48 @@ export default function CmkSupplyDistributions({
             Number(cmkData.supply_distribution.team_unallocated) +
             Number(cmkData.supply_distribution.vesting_unallocated) +
             Number(xcmkData.cmk_balance)),
-        itemStyle: { color: '#DB1976' },
+        itemStyle: { color: '#31B1F1' },
         name: 'Public Circulating Supply',
       },
       {
         value: xcmkData.cmk_balance,
-        itemStyle: { color: '#BC1565' },
+        itemStyle: { color: '#2C94C4' },
         name: 'CMK Staked',
       },
       {
         value: cmkData.supply_distribution.community_treasury,
-        itemStyle: { color: '#420069' },
+        itemStyle: { color: '#9A66BE' },
         name: 'Community Rewards',
       },
       {
         value: cmkData.supply_distribution.dao_treasury,
-        itemStyle: { color: '#590099' },
+        itemStyle: { color: '#80579D' },
         name: 'DAO Treasury',
       },
       {
         value: cmkData.supply_distribution.investor,
-        itemStyle: { color: '#00996B' },
+        itemStyle: { color: '#33DEAA' },
         name: 'Investors',
       },
       {
         value: cmkData.supply_distribution.team_allocated,
-        itemStyle: { color: '#00AD7A' },
+        itemStyle: { color: '#40CDA1' },
         name: 'Team & Founders',
       },
       {
         value: cmkData.supply_distribution.team_unallocated,
-        itemStyle: { color: '#00BD84' },
+        itemStyle: { color: '#3DBA93' },
         name: 'Team Unallocated',
       },
       {
         value: cmkData.supply_distribution.vesting_unallocated,
-        itemStyle: { color: '#00D696' },
+        itemStyle: { color: '#39A584' },
         name: 'Vesting Unallocated',
       },
     ];
   }, [cmkData, xcmkData]);
 
-  const option = useDeepCompareMemo(() => {
+  const option = useDeepCompareMemoNoCheck(() => {
     return {
       tooltip: {
         trigger: 'item',
@@ -122,8 +123,8 @@ export default function CmkSupplyDistributions({
           radius: ['0%', '50%'],
           label: {
             position: 'inner',
-            fontSize: 10,
-            fontWeight: 900,
+            fontSize: 12,
+            color: 'white',
           },
           labelLine: {
             show: false,
@@ -139,14 +140,14 @@ export default function CmkSupplyDistributions({
                       Number(cmkData.supply_distribution.team_allocated) +
                       Number(cmkData.supply_distribution.team_unallocated) +
                       Number(cmkData.supply_distribution.vesting_unallocated)),
-                  itemStyle: { color: '#DB1976' },
+                  itemStyle: { color: '#1BA9EF' },
                   name: 'Public',
                 },
                 {
                   value:
                     Number(cmkData.supply_distribution.community_treasury) +
                     Number(cmkData.supply_distribution.dao_treasury),
-                  itemStyle: { color: '#3B0065' },
+                  itemStyle: { color: '#8F55B6' },
                   name: 'Treasury',
                 },
                 {
@@ -155,34 +156,25 @@ export default function CmkSupplyDistributions({
                     Number(cmkData.supply_distribution.team_allocated) +
                     Number(cmkData.supply_distribution.team_unallocated) +
                     Number(cmkData.supply_distribution.vesting_unallocated),
-                  itemStyle: { color: '#00BD84' },
+                  itemStyle: { color: '#1BDAA0' },
                   name: 'Locked',
                 },
               ]
             : [],
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)',
-            },
-          },
         },
         {
           type: 'pie',
           radius: ['55%', '70%'],
-          data: dataToShow,
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)',
-            },
+          label: {
+            // position: 'inner',
+            fontSize: 12,
+            color: colorMode === 'dark' ? 'white' : undefined,
           },
+          data: dataToShow,
         },
       ],
     };
-  }, [cmkData, dataToShow]);
+  }, [cmkData, colorMode, dataToShow]);
 
   const containerRef = useRef(null);
   const chartRef = useRef<EChartsInstance>();
@@ -207,7 +199,7 @@ export default function CmkSupplyDistributions({
     };
   }, [dataToShow]);
 
-  const showCurrentStats = true;
+  const showCurrentStats = false;
   const currentStats = [
     {
       label: 'Total Supply',
@@ -217,16 +209,13 @@ export default function CmkSupplyDistributions({
     },
   ];
 
-  const height = 360;
+  const height = 420;
   const noData = !dataToShow;
 
   return (
-    <BorderedCard ref={containerRef} display="grid" gridTemplateRows="auto 1fr">
+    <Card ref={containerRef}>
       <ChartHeader
         title="CMK Supply Distribution"
-        logo={
-          <Img alt="CMK Supply Distribution" src={titleImg} height="20px" />
-        }
         downloadCsv={{
           filename: `${csv.header}.csv`,
           headers: csv.header,
@@ -258,6 +247,7 @@ export default function CmkSupplyDistributions({
         )}
         <Box position="relative">
           <ReactEChartsCore
+            theme={colorMode === 'dark' ? darkTheme : undefined}
             option={option}
             lazyUpdate={true}
             notMerge={true}
@@ -273,6 +263,6 @@ export default function CmkSupplyDistributions({
           )}
         </Box>
       </Grid>
-    </BorderedCard>
+    </Card>
   );
 }
