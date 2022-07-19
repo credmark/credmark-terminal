@@ -1,4 +1,14 @@
-import { HStack, Text } from '@chakra-ui/react';
+import {
+  HStack,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Text,
+} from '@chakra-ui/react';
 import React from 'react';
 
 import LoadingNumber from '~/components/shared/LoadingNumber';
@@ -120,11 +130,40 @@ export function getCurrentStats({
 }) {
   const label = (
     <HStack spacing={1}>
-      <Text as="span">{name}</Text>
-      {description && (
-        <StatusPopover iconProps={{ boxSize: 4, color: 'gray.300' }}>
-          {description}
-        </StatusPopover>
+      {description ? (
+        <Popover
+          placement="bottom-start"
+          offset={[-10, 8]}
+          flip={false}
+          trigger="hover"
+        >
+          <PopoverTrigger>
+            <Text as="span">{name}</Text>
+          </PopoverTrigger>
+          <PopoverContent border="none" rounded="none" shadow="2xl">
+            <PopoverArrow
+              borderLeft="1px"
+              borderTop="1px"
+              boxShadow="none !important"
+              bg="purple.800"
+              borderColor="purple.800"
+            />
+            <PopoverCloseButton top="2" color="white" rounded="full" />
+            <PopoverHeader
+              color="white"
+              bg="purple.800"
+              fontWeight={500}
+              fontSize="md"
+            >
+              {name}
+            </PopoverHeader>
+            <PopoverBody p="4" fontSize="md" fontWeight={300}>
+              {description}
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
+      ) : (
+        <Text as="span">{name}</Text>
       )}
     </HStack>
   );

@@ -18,6 +18,7 @@ import {
   Text,
   theme,
   useBreakpointValue,
+  useColorMode,
   VStack,
 } from '@chakra-ui/react';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -36,9 +37,12 @@ import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import React, { useCallback, useMemo, useState } from 'react';
 
+import { darkTheme } from '~/theme/echarts';
 import { Aggregator, ChartLine } from '~/types/chart';
 import { aggregateData, filterDataByDuration } from '~/utils/chart';
 import { shortenNumber } from '~/utils/formatTokenAmount';
+
+import Stat from '../Stat';
 
 interface HistoricalChartProps extends BoxProps {
   lines: ChartLine[];
@@ -56,7 +60,11 @@ interface HistoricalChartProps extends BoxProps {
   defaultDuration?: number;
   showCurrentStats?: boolean;
   highlightCurrentStats?: boolean;
-  currentStats?: Array<{ label: React.ReactNode; value: React.ReactNode }>;
+  currentStats?: Array<{
+    icon?: React.ReactNode;
+    label: React.ReactNode;
+    value: React.ReactNode;
+  }>;
   actions?: React.ReactNode;
   isFullScreen?: boolean;
 
@@ -113,6 +121,7 @@ export default function HistoricalChart({
   minimal = false,
   ...boxProps
 }: HistoricalChartProps): JSX.Element {
+  const { colorMode } = useColorMode();
   const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
   const [duration, setDuration] = useState(defaultDuration); // In Days
   const [aggregationInterval, setAggregationInterval] = useState(1); // In Days
@@ -157,24 +166,8 @@ export default function HistoricalChart({
         showSymbol: false,
         areaStyle: isAreaChart
           ? {
-              opacity: 0.325,
-              color: {
-                type: 'linear',
-                x: 0,
-                y: 0,
-                x2: 0,
-                y2: 1,
-                colorStops: [
-                  {
-                    offset: 0,
-                    color: line.color,
-                  },
-                  {
-                    offset: 1,
-                    color: 'white',
-                  },
-                ],
-              },
+              opacity: 0.1,
+              color: line.color,
             }
           : undefined,
         label: {
@@ -413,24 +406,18 @@ export default function HistoricalChart({
       {(Array.isArray(durations) || showCurrentStats) && !minimal && (
         <HStack align="center" p="2">
           {showCurrentStats &&
-            currentStats.map(({ label, value }, index) => (
-              <Box key={index} textAlign="left" px="2">
-                <Text fontSize="sm" fontWeight="300" as="div">
-                  {label}
-                </Text>
-                <Text
-                  as="span"
-                  fontSize="md"
-                  fontWeight="500"
-                  bg={
-                    highlightCurrentStats
-                      ? Color(lines[index].color).fade(0.5).toString()
-                      : undefined
-                  }
-                >
-                  {value}
-                </Text>
-              </Box>
+            currentStats.map(({ icon, label, value }, index) => (
+              <Stat
+                key={index}
+                icon={icon ?? lines[index]?.icon}
+                label={label}
+                value={value}
+                highlightColor={
+                  highlightCurrentStats && lines[index]?.color
+                    ? Color(lines[index].color).fade(0.5).toString()
+                    : undefined
+                }
+              />
             ))}
           <Spacer />
           {loading && !noData && <Spinner color={primaryColor} />}
@@ -499,6 +486,7 @@ export default function HistoricalChart({
       )}
       <Box position="relative">
         <ReactEChartsCore
+          theme={colorMode === 'dark' ? darkTheme : undefined}
           echarts={echarts}
           option={option}
           lazyUpdate={true}

@@ -1,5 +1,5 @@
 import { Box, Center, HStack, Text } from '@chakra-ui/layout';
-import { Img, Spinner } from '@chakra-ui/react';
+import { Img, Spinner, useColorMode } from '@chakra-ui/react';
 import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { BarChart } from 'echarts/charts';
@@ -12,6 +12,8 @@ import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { CallbackDataParams } from 'echarts/types/src/util/types.d';
 import React, { useMemo } from 'react';
+
+import { darkTheme } from '~/theme/echarts';
 
 interface BarChartProps<T> {
   dataset?: T[] | T;
@@ -54,6 +56,8 @@ export default function App<T>({
   showXaxisLabel = false,
   showYaxisLabel = false,
 }: BarChartProps<T>) {
+  const { colorMode } = useColorMode();
+
   const option: EChartsOption = useMemo(
     () =>
       ({
@@ -141,27 +145,28 @@ export default function App<T>({
                   position: 'insideLeft',
                   distance: 15,
                   formatter: (params) => tooltipFormatter(params, true),
-                  color: 'black',
+                  color: colorMode === 'dark' ? 'white' : 'black',
                 },
                 type: 'bar',
                 encode: {
                   x: xAxisKey,
                   y: yAxisKey,
                 },
-                color: '#00D696',
+                color: colorMode === 'dark' ? '#0CA277' : '#08FEB4',
               },
             ],
       } as EChartsOption),
     [
-      title,
-      dataset,
-      xAxisKey,
-      yAxisKey,
-      tooltipFormatter,
-      grouped,
       showLegend,
+      grouped,
+      yAxisKey,
+      xAxisKey,
+      dataset,
       showXaxisLabel,
       showYaxisLabel,
+      title,
+      colorMode,
+      tooltipFormatter,
     ],
   );
 
@@ -199,6 +204,7 @@ export default function App<T>({
           right="0px"
         >
           <ReactEChartsCore
+            theme={colorMode === 'dark' ? darkTheme : undefined}
             echarts={echarts}
             option={option}
             notMerge={true}

@@ -4,6 +4,7 @@ export interface ChartLine {
   name: string;
   description?: React.ReactNode;
   color: string;
+  icon?: React.ReactNode;
   data: Array<{
     timestamp: Date;
     value: number;
