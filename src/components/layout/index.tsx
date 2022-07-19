@@ -6,6 +6,7 @@ import {
   Grid,
   GridItem,
   useBreakpointValue,
+  useColorMode,
   useDisclosure,
   UseDisclosureReturn,
 } from '@chakra-ui/react';
@@ -15,7 +16,6 @@ import React, { useEffect, useMemo } from 'react';
 import usePrevious from '~/hooks/usePrevious';
 import { useSidebarVisibility } from '~/state/application/hooks';
 
-import Footer from './Footer';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
@@ -112,6 +112,7 @@ export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const mobileSidebar = useDisclosure();
   const isSidebarVisible = useSidebarVisibility();
+  const { colorMode } = useColorMode();
 
   const prevRoute = usePrevious(router.pathname);
 
@@ -145,7 +146,7 @@ export default function Layout({ children }: LayoutProps) {
       <Grid
         gap={0}
         minH="100vh"
-        bg="gray.50"
+        bg={colorMode === 'dark' ? '#231D26' : 'gray.50'}
         maxW="100vw"
         templateColumns={{
           base: '1fr',
@@ -156,13 +157,11 @@ export default function Layout({ children }: LayoutProps) {
           base: `
           "navbar"
           "content"
-          "footer"
         `,
           lg: isSidebarVisible
             ? `
           "sidebar navbar"  
           "sidebar content"
-          "sidebar footer"
         `
             : undefined,
         }}
@@ -183,10 +182,6 @@ export default function Layout({ children }: LayoutProps) {
 
         <GridItem gridArea="content" minW="0">
           {children}
-        </GridItem>
-
-        <GridItem gridArea="footer">
-          <Footer />
         </GridItem>
       </Grid>
 
