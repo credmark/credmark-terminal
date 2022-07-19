@@ -23,13 +23,32 @@ type SidebarDrawerProps = UseDisclosureReturn;
 
 const sidebarItems = [
   {
+    label: 'DEXs',
+    subNav: [
+      { label: 'Uniswap V2', href: '/terminal/dex/uniswap-v2' },
+      { label: 'Uniswap V3', href: '/terminal/dex/uniswap-v3' },
+      { label: 'Curve', href: '/terminal/dex/curve' },
+      { label: 'Sushiswap', href: '/terminal/dex/sushi' },
+    ],
+  },
+  {
+    label: 'Lenders',
+    subNav: [
+      { label: 'Lenders', href: '/terminal/lenders' },
+      { label: 'Lending Usage AAVE', href: '/terminal/lenders/aave-usage' },
+      {
+        label: 'Lending Usage Compound',
+        href: '/terminal/lenders/compound-usage',
+      },
+    ],
+  },
+  {
     label: 'Financial Metrics',
     subNav: [
       { label: 'Protocol Analytics', isDisabled: true },
       { label: 'Sharpe Ratio', href: '/terminal/sharpe' },
     ],
   },
-
   // {
   //   label: 'Stablecoin Health',
   //   subNav: [
@@ -47,29 +66,6 @@ const sidebarItems = [
   //     },
   //   ],
   // },
-
-  {
-    label: 'Lenders',
-    subNav: [
-      { label: 'Lenders', href: '/terminal/lenders' },
-      { label: 'Lending Usage AAVE', href: '/terminal/lenders/aave-usage' },
-      {
-        label: 'Lending Usage Compound',
-        href: '/terminal/lenders/compound-usage',
-      },
-    ],
-  },
-
-  {
-    label: 'DEXs',
-    subNav: [
-      { label: 'Uniswap V2', href: '/terminal/dex/uniswap-v2' },
-      { label: 'Uniswap V3', href: '/terminal/dex/uniswap-v3' },
-      { label: 'Curve', href: '/terminal/dex/curve' },
-      { label: 'Sushiswap', href: '/terminal/dex/sushi' },
-    ],
-  },
-
   {
     label: 'Credmark Analytics',
     subNav: [
