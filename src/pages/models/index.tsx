@@ -4,7 +4,6 @@ import {
   Container,
   FormControl,
   FormLabel,
-  Heading,
   HStack,
   Icon,
   Input,
@@ -67,14 +66,7 @@ function SortMenu({
         w="102px"
         as={Button}
         size="sm"
-        colorScheme="gray"
-        bg="gray.100"
-        _hover={{
-          bg: 'gray.200',
-        }}
-        _active={{
-          bg: 'gray.300',
-        }}
+        colorScheme="green"
         rightIcon={<Icon as={ExpandMoreIcon} />}
         {...buttonProps}
       >
@@ -128,14 +120,7 @@ function CategoryFilterMenu({
         w="150px"
         as={Button}
         size="sm"
-        colorScheme="gray"
-        bg="gray.100"
-        _hover={{
-          bg: 'gray.200',
-        }}
-        _active={{
-          bg: 'gray.300',
-        }}
+        colorScheme="green"
         rightIcon={<Icon as={ExpandMoreIcon} />}
         {...buttonProps}
       >
@@ -179,14 +164,7 @@ function SubCategoryFilterMenu({
         w="190px"
         as={Button}
         size="sm"
-        colorScheme="gray"
-        bg="gray.100"
-        _hover={{
-          bg: 'gray.200',
-        }}
-        _active={{
-          bg: 'gray.300',
-        }}
+        colorScheme="green"
         rightIcon={<Icon as={ExpandMoreIcon} />}
         {...buttonProps}
       >
@@ -399,9 +377,6 @@ export default function ModelsPage({ models }: ModelPageProps) {
     <>
       <SEOHeader title="Model Overview" />
       <Container maxW="container.lg" p="8">
-        <Heading mb="8" color="purple.500">
-          Credmark Models
-        </Heading>
         <Input
           value={input}
           onChange={(event) => setInput(event.target.value)}
