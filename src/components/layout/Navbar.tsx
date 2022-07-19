@@ -4,6 +4,9 @@ import {
   HStack,
   Icon,
   IconButton,
+  Spacer,
+  Switch,
+  useColorMode,
   UseDisclosureReturn,
 } from '@chakra-ui/react';
 import React from 'react';
@@ -20,6 +23,8 @@ export default function Navbar({
   subtitle,
   mobileSidebar,
 }: NavbarProps) {
+  const { colorMode, toggleColorMode } = useColorMode();
+
   return (
     <Box>
       <HStack px="6" pt="6" pb="2">
@@ -54,6 +59,12 @@ export default function Navbar({
             </Heading>
           </Box>
         )}
+        <Spacer />
+        <Switch
+          isChecked={colorMode === 'dark'}
+          onChange={toggleColorMode}
+          colorScheme={colorMode === 'dark' ? 'green' : 'purple'}
+        />
       </HStack>
     </Box>
   );
