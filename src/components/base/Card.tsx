@@ -1,21 +1,38 @@
-import { chakra, Box } from '@chakra-ui/react';
+import { Box, BoxProps, useColorMode, forwardRef } from '@chakra-ui/react';
+import React from 'react';
 
-export default chakra(Box, {
-  baseStyle: {
-    bg: 'white',
-    rounded: 'base',
-    shadow: 'xl',
-    px: 6,
-    py: 8,
-  },
+const Card = forwardRef<BoxProps, 'div'>(({ children, ...props }, ref) => {
+  const { colorMode } = useColorMode();
+  return (
+    <Box
+      ref={ref}
+      rounded="lg"
+      p="2"
+      bg={colorMode === 'dark' ? '#1C161F' : 'white'}
+      {...props}
+    >
+      {children}
+    </Box>
+  );
 });
 
-export const BorderedCard = chakra(Box, {
-  baseStyle: {
-    rounded: 'base',
-    border: '1px',
-    borderColor: '#DEDEDE',
-    bg: 'white',
-    shadow: 'md',
+const BorderedCard = forwardRef<BoxProps, 'div'>(
+  ({ children, ...props }, ref) => {
+    const { colorMode } = useColorMode();
+    return (
+      <Box
+        ref={ref}
+        rounded="lg"
+        p="2"
+        bg={colorMode === 'dark' ? '#1C161F' : 'white'}
+        border="1px"
+        {...props}
+      >
+        {children}
+      </Box>
+    );
   },
-});
+);
+
+export default Card;
+export { BorderedCard };
