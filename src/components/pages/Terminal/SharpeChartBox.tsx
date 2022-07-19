@@ -1,6 +1,5 @@
 import {
   Box,
-  CloseButton,
   HStack,
   Icon,
   IconButton,
@@ -13,17 +12,18 @@ import {
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
-import AddIcon from '@mui/icons-material/Add';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useSize from '@react-hook/size';
+import Color from 'color';
 import { EChartsInstance } from 'echarts-for-react';
 import { DateTime, Duration } from 'luxon';
 import React, { useLayoutEffect, useRef, useState } from 'react';
+import { BsXLg, BsPlusLg } from 'react-icons/bs';
 
-import { BorderedCard } from '~/components/base';
+import { Card } from '~/components/base';
 import ChartHeader from '~/components/shared/Charts/ChartHeader';
 import HistoricalChart from '~/components/shared/Charts/HistoricalChart';
 import CurrencyLogo from '~/components/shared/CurrencyLogo';
+import Stat from '~/components/shared/Stat';
 import { useLineChart } from '~/hooks/useChart';
 import { useDeepCompareEffect } from '~/hooks/useDeepCompare';
 import useFullscreen from '~/hooks/useFullscreen';
@@ -42,7 +42,7 @@ interface TokenPrice {
   src?: string | undefined;
 }
 
-const colors = ['#00d696', '#00a1ed', '#8342af', '#ff447d', '#ffa727'];
+const colors = ['#00FFB3', '#00ADFF', '#9800FF', '#FF004E', '#FF9700'];
 
 interface SharpeRatio {
   sharpe_ratio: number;
@@ -67,7 +67,6 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
 
   const blockNumberModel = useModelRunner<BlockNumberOutput>({
     slug: 'rpc.get-blocknumber',
-    version: '1.0',
     input: { timestamp: DateTime.utc().startOf('day').toSeconds() },
   });
 
@@ -119,12 +118,10 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
           : runPriceModel(
               {
                 slug: 'historical.run-model',
-                version: '1.3',
                 input: {
                   model_slug: token.priceEns
                     ? 'chainlink.price-by-ens'
                     : 'price.quote',
-                  model_version: token.priceEns ? '1.0' : '1.7',
                   model_input: token.priceEns
                     ? { domain: token.priceEns }
                     : {
@@ -220,10 +217,8 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
         runSharpeModel(
           {
             slug: 'compose.map-inputs',
-            version: '1.0',
             input: {
               modelSlug: 'finance.sharpe-ratio-token',
-              modelVersion: '1.2',
               modelInputs,
             },
           },
@@ -322,7 +317,7 @@ export default function SharpeChartBox({
   });
 
   return (
-    <BorderedCard ref={containerRef} display="flex" flexDirection="column">
+    <Card ref={containerRef} display="flex" flexDirection="column">
       <ChartHeader
         title={'Sharpe Ratio'}
         tooltip={{
@@ -344,8 +339,7 @@ export default function SharpeChartBox({
                 textDecoration="underline"
                 pb="1"
               >
-                Read more about Sharpe Ratio in Credmark Wiki{' '}
-                <Icon color="gray.300" as={OpenInNewIcon} />
+                Read more about Sharpe Ratio in Credmark Wiki →
               </Link>
             </Box>
           ),
@@ -357,85 +351,90 @@ export default function SharpeChartBox({
         isExpanded={isFullScreen}
         toggleExpand={toggleFullScreen}
       />
-      <Box overflowX="auto" py="2">
-        <HStack>
+      <Box overflowX="auto" px="2">
+        <HStack spacing="8">
           {selectedTokens.map((selectedToken, index) => {
             const token = tokens.find((token) => token.equals(selectedToken));
             if (!token) throw Error('Invalid token address');
 
             return (
-              <Box
-                textAlign="center"
-                px="4"
-                py="2"
+              <Stat
                 key={token.symbol}
-                role="group"
-              >
-                <HStack w="100%" justifyContent="center">
-                  <CurrencyLogo currency={token} /> <Text>{token.symbol}</Text>{' '}
-                  <CloseButton
-                    size="sm"
-                    opacity={0.5}
-                    _groupHover={{ opacity: 1 }}
-                    onClick={() =>
-                      setSelectedTokens(
-                        selectedTokens.filter(
-                          (selectedToken) => !token.equals(selectedToken),
-                        ),
-                      )
-                    }
-                  />
-                </HStack>
-                <HStack w="100%" justifyContent="center">
-                  {!sharpeChart.lines?.[index]?.error && (
-                    <Box w="4" h="4" rounded="full" bg={colors[index]} />
-                  )}
-                  <Box fontSize="2xl">
-                    {sharpeChart.currentStats?.[index]?.value ?? '-'}
-                  </Box>
-                </HStack>
-              </Box>
+                icon={<CurrencyLogo currency={token} size={32} />}
+                label={token.symbol}
+                value={sharpeChart.currentStats?.[index]?.value ?? '-'}
+                highlightColor={Color(colors[index]).fade(0.5).toString()}
+                _hover={{
+                  icon: (
+                    <IconButton
+                      size="sm"
+                      icon={<Icon as={BsXLg} />}
+                      aria-label="Remove"
+                      colorScheme="red"
+                      rounded="full"
+                    />
+                  ),
+                }}
+                onClick={() =>
+                  setSelectedTokens(
+                    selectedTokens.filter(
+                      (selectedToken) => !token.equals(selectedToken),
+                    ),
+                  )
+                }
+              />
             );
           })}
           {tokens.length > selectedTokens.length && selectedTokens.length < 5 && (
-            <Box textAlign="center" px="2">
-              <Text fontSize="xs" mb="2">
-                Add Token
-              </Text>
-              <Menu>
-                <MenuButton
-                  as={IconButton}
-                  rounded="full"
-                  colorScheme="gray"
-                  icon={<Icon as={AddIcon} />}
-                ></MenuButton>
-                <MenuList maxH="300px" overflowY="auto">
-                  {tokens
-                    .filter(
-                      (token) =>
-                        !selectedTokens.find((selectedToken) =>
-                          selectedToken.equals(token),
-                        ),
-                    )
-                    .sort((a, b) =>
-                      (a.symbol ?? '')?.localeCompare(b.symbol ?? ''),
-                    )
-                    .map((token) => (
-                      <MenuItem
-                        key={token.symbol}
-                        onClick={() => {
-                          setSelectedTokens([...selectedTokens, token]);
-                        }}
-                      >
-                        <HStack>
-                          <CurrencyLogo currency={token} />{' '}
-                          <Text>{token.symbol}</Text>
-                        </HStack>
-                      </MenuItem>
-                    ))}
-                </MenuList>
-              </Menu>
-            </Box>
+            <Menu>
+              <MenuButton as={HStack} role="group" cursor="pointer">
+                <HStack spacing="2">
+                  <IconButton
+                    size="sm"
+                    icon={<Icon as={BsPlusLg} />}
+                    aria-label="Add"
+                    colorScheme="gray"
+                    rounded="full"
+                    _groupHover={{ bg: 'gray.200' }}
+                  />
+                  <Text
+                    textAlign="left"
+                    fontWeight={300}
+                    lineHeight="1.2"
+                    fontSize="sm"
+                  >
+                    Add
+                    <br />
+                    Token
+                  </Text>
+                </HStack>
+              </MenuButton>
+              <MenuList maxH="300px" overflowY="auto">
+                {tokens
+                  .filter(
+                    (token) =>
+                      !selectedTokens.find((selectedToken) =>
+                        selectedToken.equals(token),
+                      ),
+                  )
+                  .sort((a, b) =>
+                    (a.symbol ?? '')?.localeCompare(b.symbol ?? ''),
+                  )
+                  .map((token) => (
+                    <MenuItem
+                      key={token.symbol}
+                      onClick={() => {
+                        setSelectedTokens([...selectedTokens, token]);
+                      }}
+                    >
+                      <HStack>
+                        <CurrencyLogo currency={token} />{' '}
+                        <Text>{token.symbol}</Text>
+                      </HStack>
+                    </MenuItem>
+                  ))}
+              </MenuList>
+            </Menu>
           )}
         </HStack>
       </Box>
@@ -444,10 +443,10 @@ export default function SharpeChartBox({
         height={600}
         onChartReady={(chart) => (chartRef.current = chart)}
         durations={[30, 60, 90]}
-        defaultDuration={30}
+        defaultDuration={90}
         isFullScreen={isFullScreen}
         {...sharpeChart}
       />
-    </BorderedCard>
+    </Card>
   );
 }
