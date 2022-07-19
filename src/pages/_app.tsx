@@ -6,7 +6,6 @@ import '@fontsource/work-sans/700.css';
 import '@fontsource/work-sans/900.css';
 import '~/theme/nprogress.css'; //styles of nprogress
 
-import { ChakraProvider } from '@chakra-ui/react';
 import { Web3ReactProvider } from '@web3-react/core';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
@@ -18,6 +17,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 import Layout from '~/components/layout';
 import SEOHeader from '~/components/shared/SEOHeader';
 import env from '~/env';
+import ChakraProvider, { getServerSideProps } from '~/providers/ChakraProvider';
 import Web3ReactManager from '~/providers/Web3ReactManager';
 import reduxStore from '~/state';
 import ApplicationUpdater from '~/state/application/updater';
@@ -81,14 +81,14 @@ const Web3ProviderNetwork = dynamic(
   { ssr: false },
 );
 
-function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+export default function App({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
       <SEOHeader
         title="Credmark Terminal - Actionable DeFi Data"
         titleTemplate=""
       />
-      <ChakraProvider resetCSS theme={theme}>
+      <ChakraProvider cookies={pageProps.cookies} resetCSS theme={theme}>
         <Web3ReactProvider getLibrary={getLibrary}>
           <Web3ProviderNetwork getLibrary={getLibrary}>
             <ReduxProvider store={reduxStore}>
@@ -106,4 +106,4 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   );
 }
 
-export default MyApp;
+export { getServerSideProps };
