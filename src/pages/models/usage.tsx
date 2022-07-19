@@ -86,7 +86,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
   const [topModels, setTopModels] = useState<TopModels[]>([]);
   const [stat, setStat] = useState<ModelRuntimeStat>('mean');
 
-  const color = '#3B0065';
+  const color = '#A200FF';
   const ALL_MODELS = 'All Models';
 
   useEffect(() => {
@@ -265,7 +265,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
     <>
       <SEOHeader title="Model Usage" />
       <Container maxW="container.lg" p="8">
-        <Card>
+        <Card px="6" py="4">
           <Heading as="h2" fontSize="3xl" mb="8">
             Historical API Calls
           </Heading>
@@ -296,7 +296,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
           />
         </Card>
 
-        <Card mt="8">
+        <Card mt="8" px="6" py="4">
           <Heading as="h2" fontSize="3xl" mb="8">
             Individual Model API Calls
           </Heading>
@@ -409,7 +409,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
             </Button>
           </Center>
         </Card>
-        <Card mt="8">
+        <Card mt="8" px="6" py="4">
           <Heading as="h2" fontSize="3xl" mb="8">
             Individual Model Runtime Stats
           </Heading>
@@ -467,7 +467,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
             </Button>
           </Center>
         </Card>
-        <Card mt="8">
+        <Card mt="8" px="6" py="4">
           <Heading as="h2" fontSize="3xl" mb="8">
             Top Models
           </Heading>
