@@ -1,10 +1,11 @@
 import { extendTheme, withDefaultColorScheme } from '@chakra-ui/react';
+import { StyleFunctionProps } from '@chakra-ui/theme-tools';
 
 const theme = extendTheme(
   {
     config: {
-      initialColorMode: 'light',
-      useSystemColorMode: false,
+      initialColorMode: 'system',
+      useSystemColorMode: true,
     },
     fonts: {
       heading:
@@ -51,7 +52,7 @@ const theme = extendTheme(
         '900': '#003324',
       },
       gray: {
-        '50': '#E5E5E5',
+        '50': '#F4F4F6',
         '100': '#DBDBDB',
         '200': '#C4C4C4',
         '300': '#ADADAD',
@@ -70,6 +71,13 @@ const theme = extendTheme(
           rounded: 'none', // Normally, it is "md"
           fontWeight: 400,
         },
+      },
+      Popover: {
+        baseStyle: (props: StyleFunctionProps) => ({
+          content: {
+            bg: props.colorMode === 'dark' ? '#1C161F' : 'white',
+          },
+        }),
       },
     },
   },
