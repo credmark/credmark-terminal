@@ -14,6 +14,7 @@ import { CurrencyAmount } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import React, { useMemo, useState } from 'react';
 
+import { PrimaryButton } from '~/components/base';
 import { STAKED_CMK_ADDRESSES } from '~/constants/addresses';
 import { CMK } from '~/constants/tokens';
 import { useStakingApyPercent } from '~/hooks/stats';
@@ -181,10 +182,8 @@ export default function StakePanel() {
   return (
     <VStack spacing="4" justify="center" w="full" pt="8">
       <HStack justify="space-between" w="full" px="2">
-        <Text fontSize="xl" color="purple.500">
-          STAKE CMK
-        </Text>
-        <Text color="purple.500">
+        <Text fontSize="xl">STAKE CMK</Text>
+        <Text>
           Staking APR{' '}
           <strong>
             {stakingApyPercent.loading || !stakingApyPercent.value
@@ -193,7 +192,7 @@ export default function StakePanel() {
           </strong>
         </Text>
       </HStack>
-      <InputGroup size="lg" bg="gray.50">
+      <InputGroup size="lg">
         <Input
           rounded="base"
           placeholder="999.99"
@@ -224,56 +223,24 @@ export default function StakePanel() {
           isValid)) && (
         <>
           {!account ? (
-            <Button
-              variant="outline"
-              bg="white"
-              border="1px"
-              borderColor="gray.100"
-              colorScheme="purple"
-              size="lg"
-              w="320px"
-              rounded="base"
-              _hover={{
-                transform: 'translateY(-2px)',
-                boxShadow: 'lg',
-              }}
-              _active={{
-                transform: 'scale(0.98)',
-                boxShadow: 'inner',
-              }}
-              onClick={toggleWalletModal}
-            >
+            <PrimaryButton size="lg" w="320px" onClick={toggleWalletModal}>
               Connect wallet
-            </Button>
+            </PrimaryButton>
           ) : (
             <>
               {(approval === ApprovalState.NOT_APPROVED ||
                 approval === ApprovalState.PENDING) &&
                 isValid &&
                 showApproval && (
-                  <Button
-                    variant="outline"
-                    bg="white"
-                    border="1px"
-                    borderColor="gray.100"
-                    colorScheme="purple"
+                  <PrimaryButton
                     size="lg"
                     w="320px"
-                    rounded="base"
-                    _hover={{
-                      transform: 'translateY(-2px)',
-                      boxShadow: 'lg',
-                    }}
-                    _active={{
-                      transform: 'scale(0.98)',
-                      boxShadow: 'inner',
-                    }}
                     onClick={approveCallback}
                     isLoading={approval === ApprovalState.PENDING}
                     loadingText={`Approving ${currency?.symbol}`}
                   >
                     Approve {currency?.symbol}
-                  </Button>
+                  </PrimaryButton>
                 )}
             </>
           )}
@@ -281,29 +248,15 @@ export default function StakePanel() {
       )}
 
       {account && (
-        <Button
-          variant="outline"
-          bg="white"
-          border="1px"
-          borderColor="gray.100"
-          colorScheme="purple"
+        <PrimaryButton
           size="lg"
           w="320px"
-          rounded="base"
-          _hover={{
-            transform: 'translateY(-2px)',
-            boxShadow: 'lg',
-          }}
-          _active={{
-            transform: 'scale(0.98)',
-            boxShadow: 'inner',
-          }}
           isLoading={attemptingTxn}
           onClick={onStake}
-          disabled={!isValid || approval !== ApprovalState.APPROVED}
+          isDisabled={!isValid || approval !== ApprovalState.APPROVED}
         >
           {errorMessage ? errorMessage : 'Stake CMK'}
-        </Button>
+        </PrimaryButton>
       )}
     </VStack>
   );

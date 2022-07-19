@@ -19,30 +19,30 @@ export default function GlobalMintInfo() {
   return (
     <Box whiteSpace="nowrap" w="100%">
       <HStack my="2">
-        <Text flex="1" textAlign="right" color="purple.500" fontWeight="300">
+        <Text flex="1" textAlign="right" fontWeight="300">
           Staking APR
         </Text>
-        <Text flex="1" color="purple.500" fontWeight="700">
+        <Text flex="1" fontWeight="700">
           {stakingApyPercent.loading || !stakingApyPercent.value
             ? '??'
             : stakingApyPercent.value.toFixed(2) + '%'}
         </Text>
       </HStack>
       <HStack my="2">
-        <Text flex="1" textAlign="right" color="purple.500" fontWeight="300">
+        <Text flex="1" textAlign="right" fontWeight="300">
           1 xCMK =
         </Text>
-        <Text flex="1" color="purple.500" fontWeight="700">
+        <Text flex="1" fontWeight="700">
           {!scmkToCmk.loading
             ? formatTokenAmount(scmkToCmk.value, 4) + ' CMK'
             : '??'}
         </Text>
       </HStack>
       <HStack my="2">
-        <Text flex="1" textAlign="right" color="purple.500" fontWeight="300">
+        <Text flex="1" textAlign="right" fontWeight="300">
           Total Value Deposited
         </Text>
-        <Text flex="1" color="purple.500" fontWeight="700">
+        <Text flex="1" fontWeight="700">
           {totalValueDeposited
             ? '$' +
               formatTokenAmount(totalValueDeposited, 2, {
@@ -52,10 +52,10 @@ export default function GlobalMintInfo() {
         </Text>
       </HStack>
       <HStack my="2">
-        <Text flex="1" textAlign="right" color="purple.500" fontWeight="300">
+        <Text flex="1" textAlign="right" fontWeight="300">
           % of CMK Staked
         </Text>
-        <Text flex="1" color="purple.500" fontWeight="700">
+        <Text flex="1" fontWeight="700">
           {percentCmkStaked.loading || !percentCmkStaked.value
             ? '??'
             : percentCmkStaked.value.toFixed(2) + '%'}

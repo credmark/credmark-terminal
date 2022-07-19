@@ -128,10 +128,8 @@ export default function UnstakePanel() {
   return (
     <VStack spacing="4" justify="center" w="full" pt="8">
       <HStack justify="space-between" w="full" px="2">
-        <Text fontSize="xl" color="purple.500">
-          UNSTAKE CMK
-        </Text>
-        <Text color="purple.500">
+        <Text fontSize="xl">UNSTAKE CMK</Text>
+        <Text>
           Staking APR{' '}
           <strong>
             {stakingApyPercent.loading || !stakingApyPercent.value
@@ -140,7 +138,7 @@ export default function UnstakePanel() {
           </strong>
         </Text>
       </HStack>
-      <InputGroup size="lg" bg="gray.50">
+      <InputGroup size="lg">
         <Input
           rounded="base"
           placeholder="999.99"
@@ -171,25 +169,7 @@ export default function UnstakePanel() {
           isValid)) && (
         <>
           {!account ? (
-            <Button
-              variant="outline"
-              bg="white"
-              border="1px"
-              borderColor="gray.100"
-              colorScheme="purple"
-              size="lg"
-              w="320px"
-              rounded="base"
-              _hover={{
-                transform: 'translateY(-2px)',
-                boxShadow: 'lg',
-              }}
-              _active={{
-                transform: 'scale(0.98)',
-                boxShadow: 'inner',
-              }}
-              onClick={toggleWalletModal}
-            >
+            <Button size="lg" w="320px" onClick={toggleWalletModal}>
               Connect wallet
             </Button>
           ) : (
@@ -199,22 +179,8 @@ export default function UnstakePanel() {
                 isValid &&
                 showApproval && (
                   <Button
-                    variant="outline"
-                    bg="white"
-                    border="1px"
-                    borderColor="gray.100"
-                    colorScheme="purple"
                     size="lg"
                     w="320px"
-                    rounded="base"
-                    _hover={{
-                      transform: 'translateY(-2px)',
-                      boxShadow: 'lg',
-                    }}
-                    _active={{
-                      transform: 'scale(0.98)',
-                      boxShadow: 'inner',
-                    }}
                     onClick={approveCallback}
                     isLoading={approval === ApprovalState.PENDING}
                     loadingText={`Approving ${currency?.symbol}`}
@@ -229,25 +195,11 @@ export default function UnstakePanel() {
 
       {account && (
         <Button
-          variant="outline"
-          bg="white"
-          border="1px"
-          borderColor="gray.100"
-          colorScheme="purple"
           size="lg"
           w="320px"
-          rounded="base"
-          _hover={{
-            transform: 'translateY(-2px)',
-            boxShadow: 'lg',
-          }}
-          _active={{
-            transform: 'scale(0.98)',
-            boxShadow: 'inner',
-          }}
           isLoading={attemptingTxn}
           onClick={onStake}
-          disabled={!isValid || approval !== ApprovalState.APPROVED}
+          isDisabled={!isValid || approval !== ApprovalState.APPROVED}
         >
           {errorMessage ? errorMessage : 'Unstake CMK'}
         </Button>
