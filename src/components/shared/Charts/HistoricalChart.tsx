@@ -16,10 +16,12 @@ import {
   Spacer,
   Spinner,
   Text,
+  theme,
   useBreakpointValue,
   VStack,
 } from '@chakra-ui/react';
 import SettingsIcon from '@mui/icons-material/Settings';
+import Color from 'color';
 import { EChartsOption } from 'echarts';
 import { EChartsInstance } from 'echarts-for-react';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
@@ -53,9 +55,12 @@ interface HistoricalChartProps extends BoxProps {
   defaultAggregator?: Aggregator;
   defaultDuration?: number;
   showCurrentStats?: boolean;
+  highlightCurrentStats?: boolean;
   currentStats?: Array<{ label: React.ReactNode; value: React.ReactNode }>;
   actions?: React.ReactNode;
   isFullScreen?: boolean;
+
+  minimal?: boolean;
 }
 
 const ChartOverlay = chakra(Center, {
@@ -98,11 +103,14 @@ export default function HistoricalChart({
   defaultAggregator = 'sum',
 
   showCurrentStats = false,
+  highlightCurrentStats = false,
   currentStats = [],
 
   actions,
 
   isFullScreen = false,
+
+  minimal = false,
   ...boxProps
 }: HistoricalChartProps): JSX.Element {
   const legendWidth = useBreakpointValue({ base: undefined, md: 100 });
@@ -174,6 +182,7 @@ export default function HistoricalChart({
         },
         lineStyle: {
           color: line.color,
+          width: 1,
         },
         itemStyle: {
           color: line.color,
@@ -186,7 +195,32 @@ export default function HistoricalChart({
     return series;
   }, [computeLineData, isAreaChart, lines]);
 
+  const primaryColor = useMemo(() => {
+    if (minimal) {
+      return '#989898';
+    }
+
+    return lines?.[0]?.color || theme.colors.green[500];
+  }, [lines, minimal]);
+
   const option = useMemo(() => {
+    if (minimal) {
+      return {
+        grid: {
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+        },
+        xAxis: { type: 'time', show: false },
+        yAxis: { type: 'value', show: false },
+        series: series.map((item) => ({
+          ...item,
+          lineStyle: { color: primaryColor, width: 0.5 },
+        })),
+      };
+    }
+
     const isMonthChanging = (() => {
       let month: number | undefined = undefined;
       for (const serie of series) {
@@ -353,7 +387,15 @@ export default function HistoricalChart({
     };
 
     return option;
-  }, [showLegend, legendWidth, series, formatYLabel, formatValue]);
+  }, [
+    minimal,
+    showLegend,
+    legendWidth,
+    series,
+    formatYLabel,
+    primaryColor,
+    formatValue,
+  ]);
 
   const noData =
     lines.reduce((dataLength, line) => dataLength + line.data.length, 0) === 0;
@@ -361,24 +403,37 @@ export default function HistoricalChart({
   return (
     <Grid
       gridTemplateRows={`${
-        Array.isArray(durations) || showCurrentStats ? 'max-content ' : ''
+        (Array.isArray(durations) || showCurrentStats) && !minimal
+          ? 'max-content '
+          : ''
       }${isFullScreen ? '1fr' : height + 'px'}`}
       overflow="hidden"
       {...boxProps}
     >
-      {(Array.isArray(durations) || showCurrentStats) && (
+      {(Array.isArray(durations) || showCurrentStats) && !minimal && (
         <HStack align="center" p="2">
           {showCurrentStats &&
             currentStats.map(({ label, value }, index) => (
               <Box key={index} textAlign="left" px="2">
-                <Text fontSize="sm">{label}</Text>
-                <Text fontSize="3xl" fontWeight="medium">
+                <Text fontSize="sm" fontWeight="300" as="div">
+                  {label}
+                </Text>
+                <Text
+                  as="span"
+                  fontSize="md"
+                  fontWeight="500"
+                  bg={
+                    highlightCurrentStats
+                      ? Color(lines[index].color).fade(0.5).toString()
+                      : undefined
+                  }
+                >
                   {value}
                 </Text>
               </Box>
             ))}
           <Spacer />
-          {loading && !noData && <Spinner color="purple.500" />}
+          {loading && !noData && <Spinner color={primaryColor} />}
           <VStack spacing="1">
             {actions}
             <HStack>
@@ -386,24 +441,24 @@ export default function HistoricalChart({
                 <Box
                   key={days}
                   p="2"
-                  fontWeight="bold"
-                  color={duration === days ? 'gray.900' : 'gray.300'}
+                  fontWeight={duration === days ? 700 : 300}
                   cursor="pointer"
                   onClick={() => setDuration(days)}
                   _hover={
                     duration === days
                       ? {}
                       : {
-                          color: 'gray.700',
+                          fontWeight: 500,
+                          letterSpacing: '-0.02em',
                         }
                   }
                 >
-                  {days}D
+                  {days} D
                 </Box>
               ))}
             </HStack>
           </VStack>
-          {aggregate && (
+          {aggregate && !minimal && (
             <Menu>
               <MenuButton
                 as={Button}
@@ -454,12 +509,12 @@ export default function HistoricalChart({
           onChartReady={onChartReady}
         />
         {loading && noData && (
-          <ChartOverlay>
-            <Spinner color="purple.500" />
+          <ChartOverlay p={minimal ? 0 : undefined}>
+            <Spinner color={primaryColor} />
           </ChartOverlay>
         )}
         {error && (
-          <ChartOverlay>
+          <ChartOverlay p={minimal ? 0 : undefined}>
             <Text
               as="pre"
               bg="red.50"
