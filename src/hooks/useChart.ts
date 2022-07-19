@@ -8,14 +8,14 @@ import { useDeepCompareEffect } from './useDeepCompare';
 
 type Formatter = 'currency' | 'number' | 'percent';
 
-interface UseLineChartProps {
+export interface UseLineChartProps {
   lines?: ChartLine[];
   formatter?: Formatter;
   formatPrefix?: string;
   formatSuffix?: string;
   fractionDigits?: number;
-  loading: boolean;
-  error: string | undefined;
+  loading?: boolean;
+  error?: string | undefined;
 }
 
 export function useLineChart({
@@ -24,8 +24,8 @@ export function useLineChart({
   formatPrefix = '',
   formatSuffix = '',
   fractionDigits = 2,
-  loading,
-  error,
+  loading = false,
+  error = undefined,
 }: UseLineChartProps) {
   const [lines, setLines] = useState<ChartLine[]>(_lines);
 

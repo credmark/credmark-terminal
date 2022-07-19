@@ -1,14 +1,5 @@
-import {
-  Container,
-  Grid,
-  Icon,
-  Link,
-  Radio,
-  RadioGroup,
-  Stack,
-} from '@chakra-ui/react';
-import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
-import React, { useState } from 'react';
+import { Container, Grid, GridItem, Img } from '@chakra-ui/react';
+import React, { useMemo } from 'react';
 
 import {
   AnalyticsChartBox,
@@ -19,54 +10,54 @@ import {
   useCmkAnalyticsData,
   useStakedCmkAnalyticsData,
 } from '~/hooks/useAnalyticsData';
+import useExpander from '~/hooks/useExpander';
 
 interface MarketInfo {
   app: 'uniswap_v3' | 'sushiswap';
   address: string;
   label: string;
-  titleImg: string;
+  icon: React.ReactNode;
+  color: string;
 }
-
-const MARKETS: MarketInfo[] = [
-  {
-    app: 'uniswap_v3',
-    address: '0xf7a716e2df2bde4d0ba7656c131b06b1af68513c',
-    label: 'Uniswap (CMK-USDC)',
-    titleImg: '/img/cmk-usd.svg',
-  },
-  {
-    app: 'uniswap_v3',
-    address: '0x59e1f901b5c33ff6fae15b61684ebf17cca7b9b3',
-    label: 'Uniswap (CMK-ETH)',
-    titleImg: '/img/cmk-eth.svg',
-  },
-  {
-    app: 'sushiswap',
-    address: '0x3349217670f9aa55c5640a2b3d806654d27d0569',
-    label: 'Sushiswap (CMK-WETH)',
-    titleImg: '/img/cmk-eth.svg',
-  },
-  {
-    app: 'sushiswap',
-    address: '0xb7b42c9145435ef2432620af3bf82b7734704c75',
-    label: 'Sushiswap (CMK-USDC)',
-    titleImg: '/img/cmk-usd.svg',
-  },
-];
 
 export default function AnalyticsPage() {
   const cmkAnalytics = useCmkAnalyticsData(90);
   const stakedCmkAnalytics = useStakedCmkAnalyticsData(90);
+  const expander = useExpander();
 
-  function getMarketLink(market: MarketInfo) {
-    if (market.app === 'sushiswap') {
-      return `https://analytics.sushi.com/pairs/${market.address}`;
-    } else if (market.app === 'uniswap_v3') {
-      return `https://info.uniswap.org/#/pools/${market.address}`;
-    }
-  }
-
-  const [stakedCmkUnit, setStakedCmkUnit] = useState<'CMK' | 'USDC'>('CMK');
+  const MARKETS: MarketInfo[] = useMemo(
+    () => [
+      {
+        app: 'uniswap_v3',
+        address: '0xf7a716e2df2bde4d0ba7656c131b06b1af68513c',
+        label: 'CMK/USDC',
+        icon: <Img src="/img/cmk-usd.svg" h="6" />,
+        color: '#A200FF',
+      },
+      {
+        app: 'uniswap_v3',
+        address: '0x59e1f901b5c33ff6fae15b61684ebf17cca7b9b3',
+        label: 'CMK/ETH',
+        icon: <Img src="/img/cmk-eth.svg" h="6" />,
+        color: '#00D89A',
+      },
+      {
+        app: 'sushiswap',
+        address: '0x3349217670f9aa55c5640a2b3d806654d27d0569',
+        label: 'CMK/WETH',
+        icon: <Img src="/img/cmk-eth.svg" h="6" />,
+        color: '#A200FF',
+      },
+      {
+        app: 'sushiswap',
+        address: '0xb7b42c9145435ef2432620af3bf82b7734704c75',
+        label: 'CMK/USDC',
+        icon: <Img src="/img/cmk-usd.svg" h="6" />,
+        color: '#00D89A',
+      },
+    ],
+    [],
+  );
 
   return (
     <>
@@ -78,192 +69,255 @@ export default function AnalyticsPage() {
           mt="6"
           mb="16"
         >
-          <AnalyticsChartBox
-            title="Price of CMK"
-            titleImg="/img/cmk.svg"
-            name="Current Price"
-            loading={cmkAnalytics.loading}
-            data={
-              cmkAnalytics.data?.map((val) => ({
-                timestamp: new Date(val.ts * 1000),
-                value: Number(val.usdc_price),
-              })) ?? []
-            }
-            color="#825F96"
-            formatter="currency"
-            fractionDigits={2}
-          />
-          <AnalyticsChartBox
-            title="Staked CMK"
-            titleImg="/img/xcmk.svg"
-            actions={
-              <RadioGroup
-                onChange={(val: 'CMK' | 'USDC') => setStakedCmkUnit(val)}
-                value={stakedCmkUnit}
-              >
-                <Stack direction="row" spacing="3">
-                  <Radio value="CMK" colorScheme="purple">
-                    CMK
-                  </Radio>
-                  <Radio value="USDC" colorScheme="green">
-                    USDC
-                  </Radio>
-                </Stack>
-              </RadioGroup>
-            }
-            name="Amount Staked"
-            loading={stakedCmkAnalytics.loading}
-            data={
-              stakedCmkAnalytics.data?.map((val) => ({
-                timestamp: new Date(val.ts * 1000),
-                value:
-                  stakedCmkUnit === 'CMK'
-                    ? Number(val.cmk_balance)
-                    : Number(val.amount_staked_usdc),
-              })) ?? []
-            }
-            color="#DB197699"
-            formatter={stakedCmkUnit === 'CMK' ? 'number' : 'currency'}
-            formatSuffix={stakedCmkUnit === 'CMK' ? ' CMK' : ''}
-            fractionDigits={2}
-            isArea
-          />
-          <AnalyticsChartBox
-            title="CMK Holders"
-            titleImg="/img/holder.svg"
-            name="Wallets"
-            loading={cmkAnalytics.loading}
-            data={
-              cmkAnalytics.data?.map((val) => ({
-                timestamp: new Date(val.ts * 1000),
-                value: Number(val.total_holders),
-              })) ?? []
-            }
-            color="#825F96"
-            formatter="number"
-            fractionDigits={0}
-            isArea
-          />
-          <AnalyticsChartBox
-            title="Staked Wallets"
-            titleImg="/img/wallet.svg"
-            name="Wallets"
-            loading={stakedCmkAnalytics.loading}
-            data={
-              stakedCmkAnalytics.data?.map((val) => ({
-                timestamp: new Date(val.ts * 1000),
-                value: Number(val.total_holders),
-              })) ?? []
-            }
-            color="#DB197699"
-            formatter="number"
-            fractionDigits={0}
-            isArea
-          />
-          <AnalyticsChartBox
-            title="CMK 24hr Trading Volume"
-            titleImg="/img/cmk.svg"
-            name="Total Volume"
-            loading={cmkAnalytics.loading}
-            data={
-              cmkAnalytics.data?.map((val) => ({
-                timestamp: new Date(val.ts * 1000),
-                value: Number(val.volume_24h) * Number(val.usdc_price),
-              })) ?? []
-            }
-            color="#825F96"
-            formatter="number"
-            fractionDigits={0}
-          />
-          <AnalyticsChartBox
-            title="Avg CMK Staked per Wallet"
-            titleImg="/img/xcmk.svg"
-            name="CMK"
-            loading={stakedCmkAnalytics.loading}
-            data={
-              stakedCmkAnalytics.data?.map((val) => ({
-                timestamp: new Date(val.ts * 1000),
-                value: Number(val.cmk_balance) / Number(val.total_holders),
-              })) ?? []
-            }
-            color="#DB197699"
-            formatter="number"
-            formatSuffix=" CMK"
-            fractionDigits={2}
-            isArea
-          />
+          <GridItem
+            minW="0"
+            colSpan={expander.isExpanded('CMK Token') ? 2 : 1}
+            ref={expander.refByKey('CMK Token')}
+          >
+            <AnalyticsChartBox
+              isExpanded={expander.isExpanded('CMK Token')}
+              onExpand={() => expander.onExpand('CMK Token')}
+              header={{
+                logo: '/img/cmk.svg',
+                title: 'CMK Token',
+              }}
+              primaryChart={{
+                loading: cmkAnalytics.loading,
+                lines: [
+                  {
+                    name: 'Current Price',
+                    color: '#9500FF',
+                    data:
+                      cmkAnalytics.data?.map((val) => ({
+                        timestamp: new Date(val.ts * 1000),
+                        value: Number(val.usdc_price),
+                      })) ?? [],
+                  },
+                ],
+                formatter: 'currency',
+                fractionDigits: 2,
+              }}
+              secondaryCharts={[
+                {
+                  loading: cmkAnalytics.loading,
+                  lines: [
+                    {
+                      name: '24hr Trading Volume',
+                      color: '#9500FF',
+                      data:
+                        cmkAnalytics.data?.map((val) => ({
+                          timestamp: new Date(val.ts * 1000),
+                          value:
+                            Number(val.volume_24h) * Number(val.usdc_price),
+                        })) ?? [],
+                    },
+                  ],
+                  formatter: 'number',
+                  fractionDigits: 0,
+                },
+                {
+                  loading: cmkAnalytics.loading,
+                  lines: [
+                    {
+                      name: 'Wallets',
+                      color: '#9500FF',
+                      data:
+                        cmkAnalytics.data?.map((val) => ({
+                          timestamp: new Date(val.ts * 1000),
+                          value: Number(val.total_holders),
+                        })) ?? [],
+                    },
+                  ],
+                  formatter: 'number',
+                  fractionDigits: 0,
+                },
+              ]}
+            />
+          </GridItem>
+          <GridItem
+            minW="0"
+            colSpan={expander.isExpanded('Staked CMK') ? 2 : 1}
+            ref={expander.refByKey('Staked CMK')}
+          >
+            <AnalyticsChartBox
+              isExpanded={expander.isExpanded('Staked CMK')}
+              onExpand={() => expander.onExpand('Staked CMK')}
+              header={{
+                logo: '/img/xcmk.svg',
+                title: 'Staked CMK',
+              }}
+              primaryChart={{
+                loading: stakedCmkAnalytics.loading,
+                lines: [
+                  {
+                    name: 'Amount Staked',
+                    color: '#FF007A',
+                    data:
+                      stakedCmkAnalytics.data?.map((val) => ({
+                        timestamp: new Date(val.ts * 1000),
+                        value: Number(val.amount_staked_usdc),
+                      })) ?? [],
+                  },
+                ],
+                formatter: 'currency',
+                fractionDigits: 2,
+              }}
+              secondaryCharts={[
+                {
+                  loading: stakedCmkAnalytics.loading,
+                  lines: [
+                    {
+                      name: 'Staked Wallets',
+                      color: '#9500FF',
+                      data:
+                        stakedCmkAnalytics.data?.map((val) => ({
+                          timestamp: new Date(val.ts * 1000),
+                          value: Number(val.total_holders),
+                        })) ?? [],
+                    },
+                  ],
+                  formatter: 'number',
+                  fractionDigits: 0,
+                },
+                {
+                  loading: stakedCmkAnalytics.loading,
+                  lines: [
+                    {
+                      name: 'CMK Staked per Wallet',
+                      color: '#9500FF',
+                      data:
+                        stakedCmkAnalytics.data?.map((val) => ({
+                          timestamp: new Date(val.ts * 1000),
+                          value:
+                            Number(val.cmk_balance) / Number(val.total_holders),
+                        })) ?? [],
+                    },
+                  ],
+                  formatter: 'number',
+                  formatSuffix: ' CMK',
+                  fractionDigits: 2,
+                },
+              ]}
+            />
+          </GridItem>
 
-          {cmkAnalytics.data && stakedCmkAnalytics.data && (
+          <GridItem
+            minW="0"
+            colSpan={expander.isExpanded('Supply Distribution') ? 2 : 1}
+            ref={expander.refByKey('Supply Distribution')}
+          >
             <CmkSupplyDistributions
-              titleImg="/img/cmk.svg"
-              cmkData={cmkAnalytics.data[cmkAnalytics.data.length - 1]}
+              cmkData={cmkAnalytics.data?.[cmkAnalytics.data.length - 1]}
               xcmkData={
-                stakedCmkAnalytics.data[stakedCmkAnalytics.data.length - 1]
+                stakedCmkAnalytics.data?.[stakedCmkAnalytics.data.length - 1]
               }
               loading={cmkAnalytics.loading || stakedCmkAnalytics.loading}
             />
-          )}
-          <AnalyticsChartBox
-            title="XCMK APR"
-            titleImg="/img/xcmk.svg"
-            name="Current APR"
-            loading={stakedCmkAnalytics.loading}
-            data={
-              stakedCmkAnalytics.data?.map((val) => ({
-                timestamp: new Date(val.ts * 1000),
-                value: Number(val.staking_apr_percent),
-              })) ?? []
-            }
-            color="#DB197699"
-            formatter="percent"
-            fractionDigits={2}
-          />
-
-          {MARKETS.map((market) => (
+          </GridItem>
+          <GridItem
+            minW="0"
+            colSpan={expander.isExpanded('Staked CMK APR') ? 2 : 1}
+            ref={expander.refByKey('Staked CMK APR')}
+          >
             <AnalyticsChartBox
-              key={market.address}
-              title={market.label}
-              titleImg={market.titleImg}
-              name="24hr Volume"
-              loading={cmkAnalytics.loading}
-              data={
-                (cmkAnalytics.data ?? []).map((val) => ({
-                  timestamp: new Date(val.ts * 1000),
-                  value:
-                    Number(
-                      val.markets.find(
-                        (vm) =>
-                          vm.address.toLowerCase() ===
-                          market.address.toLowerCase(),
-                      )?.volume_24h ?? '0',
-                    ) * Number(val.usdc_price),
-                })) ?? []
-              }
-              color="#825F96"
-              formatter="currency"
-              fractionDigits={2}
-              footer={
-                <Link
-                  isExternal
-                  display="flex"
-                  alignItems="center"
-                  fontSize="sm"
-                  color="purple.500"
-                  href={getMarketLink(market)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View on{' '}
+              isExpanded={expander.isExpanded('Staked CMK APR')}
+              onExpand={() => expander.onExpand('Staked CMK APR')}
+              header={{
+                logo: '/img/xcmk.svg',
+                title: 'Staked CMK APR',
+              }}
+              primaryChart={{
+                loading: stakedCmkAnalytics.loading,
+                lines: [
                   {
-                    { uniswap_v3: 'Uniswap', sushiswap: 'Sushiswap' }[
-                      market.app
-                    ]
-                  }
-                  <Icon cursor="pointer" as={ArrowForwardOutlinedIcon} />
-                </Link>
-              }
+                    name: 'Current APR',
+                    color: '#FF007A',
+                    data:
+                      stakedCmkAnalytics.data?.map((val) => ({
+                        timestamp: new Date(val.ts * 1000),
+                        value: Number(val.staking_apr_percent),
+                      })) ?? [],
+                  },
+                ],
+                formatter: 'percent',
+                fractionDigits: 2,
+              }}
             />
-          ))}
+          </GridItem>
+          <GridItem
+            minW="0"
+            colSpan={expander.isExpanded('Sushiswap 24Hr Volume') ? 2 : 1}
+            ref={expander.refByKey('Sushiswap 24Hr Volume')}
+          >
+            <AnalyticsChartBox
+              isExpanded={expander.isExpanded('Sushiswap 24Hr Volume')}
+              onExpand={() => expander.onExpand('Sushiswap 24Hr Volume')}
+              header={{
+                title: 'Sushiswap 24Hr Volume',
+              }}
+              primaryChart={{
+                loading: cmkAnalytics.loading,
+                lines: MARKETS.filter((m) => m.app === 'sushiswap').map(
+                  (m) => ({
+                    name: m.label,
+                    color: m.color,
+                    icon: m.icon,
+                    data:
+                      (cmkAnalytics.data ?? []).map((val) => ({
+                        timestamp: new Date(val.ts * 1000),
+                        value:
+                          Number(
+                            val.markets.find(
+                              (vm) =>
+                                vm.address.toLowerCase() ===
+                                m.address.toLowerCase(),
+                            )?.volume_24h ?? '0',
+                          ) * Number(val.usdc_price),
+                      })) ?? [],
+                  }),
+                ),
+                formatter: 'currency',
+                fractionDigits: 2,
+              }}
+            />
+          </GridItem>
+          <GridItem
+            minW="0"
+            colSpan={expander.isExpanded('Uniswap 24Hr Volume') ? 2 : 1}
+            ref={expander.refByKey('Uniswap 24Hr Volume')}
+          >
+            <AnalyticsChartBox
+              isExpanded={expander.isExpanded('Uniswap 24Hr Volume')}
+              onExpand={() => expander.onExpand('Uniswap 24Hr Volume')}
+              header={{
+                title: 'Uniswap 24Hr Volume',
+              }}
+              primaryChart={{
+                loading: cmkAnalytics.loading,
+                lines: MARKETS.filter((m) => m.app === 'uniswap_v3').map(
+                  (m) => ({
+                    name: m.label,
+                    color: m.color,
+                    icon: m.icon,
+                    data:
+                      (cmkAnalytics.data ?? []).map((val) => ({
+                        timestamp: new Date(val.ts * 1000),
+                        value:
+                          Number(
+                            val.markets.find(
+                              (vm) =>
+                                vm.address.toLowerCase() ===
+                                m.address.toLowerCase(),
+                            )?.volume_24h ?? '0',
+                          ) * Number(val.usdc_price),
+                      })) ?? [],
+                  }),
+                ),
+                formatter: 'currency',
+                fractionDigits: 2,
+              }}
+            />
+          </GridItem>
         </Grid>
       </Container>
     </>
