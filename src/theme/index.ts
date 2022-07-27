@@ -79,6 +79,26 @@ const theme = extendTheme(
           },
         }),
       },
+      Switch: {
+        variants: {
+          darkMode: {
+            track: {
+              background: 'green.500',
+            },
+            thumb: {
+              background: '#1C161F',
+            },
+          },
+          lightMode: {
+            track: {
+              background: 'white',
+            },
+            thumb: {
+              background: 'green.500',
+            },
+          },
+        },
+      },
     },
   },
   withDefaultColorScheme({ colorScheme: 'green' }),
