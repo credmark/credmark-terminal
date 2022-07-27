@@ -17,12 +17,14 @@ import {
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import PerfectScrollbar from 'perfect-scrollbar';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BsFillCaretRightFill } from 'react-icons/bs';
 
 import env from '~/env';
+import usePrevious from '~/hooks/usePrevious';
 
 import Web3Status from './Web3Status';
+
 import 'perfect-scrollbar/css/perfect-scrollbar.css';
 
 interface NavItemProps {
@@ -97,8 +99,9 @@ export default function Sidebar({
   ...boxProps
 }: SidebarProps) {
   const router = useRouter();
-  const accordionRef = useRef(null);
   const { colorMode } = useColorMode();
+  const accordionRef = useRef(null);
+  const previousPath = usePrevious(router.pathname);
 
   const defaultIndex = useMemo(() => {
     return items
@@ -108,6 +111,22 @@ export default function Sidebar({
       )
       .map((item) => item.index);
   }, [items, router.pathname]);
+  const [index, setIndex] = useState(defaultIndex);
+
+  useEffect(() => {
+    if (previousPath === router.pathname) {
+      return;
+    }
+
+    const newPathIndices = items
+      .map((item, index) => ({ ...item, index }))
+      .filter((item) =>
+        item.subNav.some(({ href }) => href && href === router.pathname),
+      )
+      .map((item) => item.index);
+
+    setIndex([...index, ...newPathIndices]);
+  }, [index, items, previousPath, router.pathname]);
 
   useEffect(() => {
     if (accordionRef.current) new PerfectScrollbar(accordionRef.current);
@@ -142,7 +161,10 @@ export default function Sidebar({
       <Accordion
         ref={accordionRef}
         allowMultiple
-        defaultIndex={defaultIndex}
+        index={index}
+        onChange={(newIndex) =>
+          setIndex(Array.isArray(newIndex) ? newIndex : [newIndex])
+        }
         position="relative"
         flex="1"
         overflowY="hidden"
