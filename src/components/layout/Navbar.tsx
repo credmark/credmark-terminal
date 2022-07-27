@@ -1,5 +1,7 @@
 import {
   Box,
+  FormControl,
+  FormLabel,
   Heading,
   HStack,
   Icon,
@@ -60,11 +62,17 @@ export default function Navbar({
           </Box>
         )}
         <Spacer />
-        <Switch
-          isChecked={colorMode === 'dark'}
-          onChange={toggleColorMode}
-          colorScheme={colorMode === 'dark' ? 'green' : 'purple'}
-        />
+        <FormControl display="flex" alignItems="center" w="unset">
+          <FormLabel htmlFor="color-mode-toggle" mb="0" fontWeight={300}>
+            Dark Mode
+          </FormLabel>
+          <Switch
+            variant={colorMode === 'dark' ? 'darkMode' : 'lightMode'}
+            id="color-mode-toggle"
+            isChecked={colorMode === 'dark'}
+            onChange={toggleColorMode}
+          />
+        </FormControl>
       </HStack>
     </Box>
   );
