@@ -14,7 +14,7 @@ export default function SEOHeader({
   url = 'https://app.credmark.com/',
   title,
   titleTemplate = '%s | Credmark Terminal - Actionable DeFi Data',
-  image = `${env.host}/img/credmark-terminal.png`,
+  image = `${env.host}/img/credmark-terminal-d.png`,
   description = "Analyze lending protocol health and assess crypto risk and reward with a variety of metrics powered by Credmark's API",
 }: SEOHeaderProps) {
   return (
