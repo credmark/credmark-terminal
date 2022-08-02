@@ -14,7 +14,6 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo } from 'react';
 
 import usePrevious from '~/hooks/usePrevious';
-import { useSidebarVisibility } from '~/state/application/hooks';
 
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -67,9 +66,8 @@ const sidebarItems = [
     ],
   },
   {
-    label: 'Credmark Analytics',
+    label: 'Model Analytics',
     subNav: [
-      { label: 'Token Analytics', href: '/info' },
       { label: 'Model Overview', href: '/models' },
       { label: 'Model Runner', href: '/models/run' },
       { label: 'Model Usage', href: '/models/usage' },
@@ -111,7 +109,6 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const mobileSidebar = useDisclosure();
-  const isSidebarVisible = useSidebarVisibility();
   const { colorMode } = useColorMode();
 
   const prevRoute = usePrevious(router.pathname);
@@ -150,7 +147,7 @@ export default function Layout({ children }: LayoutProps) {
         maxW="100vw"
         templateColumns={{
           base: '1fr',
-          lg: isSidebarVisible ? '288px 1fr' : '1fr',
+          lg: '288px 1fr',
         }}
         templateRows="min-content 1fr min-content"
         templateAreas={{
@@ -158,12 +155,10 @@ export default function Layout({ children }: LayoutProps) {
           "navbar"
           "content"
         `,
-          lg: isSidebarVisible
-            ? `
+          lg: `
           "sidebar navbar"  
           "sidebar content"
-        `
-            : undefined,
+        `,
         }}
       >
         <GridItem gridArea="navbar">
@@ -174,18 +169,16 @@ export default function Layout({ children }: LayoutProps) {
           />
         </GridItem>
 
-        {isSidebarVisible && (
-          <GridItem gridArea="sidebar" display={{ base: 'none', lg: 'block' }}>
-            <Sidebar fixedWidth={72} items={sidebarItems} />
-          </GridItem>
-        )}
+        <GridItem gridArea="sidebar" display={{ base: 'none', lg: 'block' }}>
+          <Sidebar fixedWidth={72} items={sidebarItems} />
+        </GridItem>
 
         <GridItem gridArea="content" minW="0">
           {children}
         </GridItem>
       </Grid>
 
-      {isSidebarVisible && <SidebarDrawer {...mobileSidebar} />}
+      <SidebarDrawer {...mobileSidebar} />
     </>
   );
 }

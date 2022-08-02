@@ -6,35 +6,16 @@ import '@fontsource/work-sans/700.css';
 import '@fontsource/work-sans/900.css';
 import '~/theme/nprogress.css'; //styles of nprogress
 
-import { Web3ReactProvider } from '@web3-react/core';
 import type { AppProps } from 'next/app';
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import React, { useEffect } from 'react';
-import { Provider as ReduxProvider } from 'react-redux';
 
 import Layout from '~/components/layout';
 import SEOHeader from '~/components/shared/SEOHeader';
 import env from '~/env';
 import ChakraProvider, { getServerSideProps } from '~/providers/ChakraProvider';
-import Web3ReactManager from '~/providers/Web3ReactManager';
-import reduxStore from '~/state';
-import ApplicationUpdater from '~/state/application/updater';
-import MulticallUpdater from '~/state/multicall/updater';
-import TransactionUpdater from '~/state/transactions/updater';
 import theme from '~/theme';
-import getLibrary from '~/utils/getLibrary';
-
-function ReduxUpdaters() {
-  return (
-    <>
-      <ApplicationUpdater />
-      <TransactionUpdater />
-      <MulticallUpdater />
-    </>
-  );
-}
 
 function RouteBasedProviders({
   children,
@@ -76,11 +57,6 @@ function RouteBasedProviders({
   return <Layout>{children}</Layout>;
 }
 
-const Web3ProviderNetwork = dynamic(
-  () => import('~/providers/Web3ReactProvider'),
-  { ssr: false },
-);
-
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
@@ -89,18 +65,9 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
         titleTemplate=""
       />
       <ChakraProvider cookies={pageProps.cookies} resetCSS theme={theme}>
-        <Web3ReactProvider getLibrary={getLibrary}>
-          <Web3ProviderNetwork getLibrary={getLibrary}>
-            <ReduxProvider store={reduxStore}>
-              <ReduxUpdaters />
-              <Web3ReactManager>
-                <RouteBasedProviders>
-                  <Component {...pageProps} />
-                </RouteBasedProviders>
-              </Web3ReactManager>
-            </ReduxProvider>
-          </Web3ProviderNetwork>
-        </Web3ReactProvider>
+        <RouteBasedProviders>
+          <Component {...pageProps} />
+        </RouteBasedProviders>
       </ChakraProvider>
     </>
   );

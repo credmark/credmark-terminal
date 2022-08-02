@@ -23,8 +23,6 @@ import { BsFillCaretRightFill } from 'react-icons/bs';
 import env from '~/env';
 import usePrevious from '~/hooks/usePrevious';
 
-import Web3Status from './Web3Status';
-
 import 'perfect-scrollbar/css/perfect-scrollbar.css';
 
 interface NavItemProps {
@@ -204,18 +202,6 @@ export default function Sidebar({
           </AccordionItem>
         ))}
       </Accordion>
-      <VStack
-        bg={colorMode === 'dark' ? '#161216' : 'purple.900'}
-        py="6"
-        borderTop="1px"
-        borderColor="whiteAlpha.100"
-        spacing="4"
-      >
-        <Web3Status />
-        <NextLink href="/stake" passHref>
-          <Link>Stake CMK</Link>
-        </NextLink>
-      </VStack>
     </Box>
   );
 }

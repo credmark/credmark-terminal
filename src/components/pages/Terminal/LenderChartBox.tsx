@@ -136,7 +136,7 @@ export default function LenderChartBox({
         toggleExpand={onExpand}
         isExpanded={isExpanded}
         downloadCsv={{
-          filename: `${metric.label.replaceAll(' ', '_')}[Credmark].csv`,
+          filename: `${metric.label.replace(/ /g, '_')}[Credmark].csv`,
           ...csv,
         }}
         tooltip={{ status: 'info', content: metric.tooltip }}

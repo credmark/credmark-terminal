@@ -15,7 +15,6 @@ import SEOHeader from '~/components/shared/SEOHeader';
 import { ASSETS } from '~/constants/terminal';
 import useExpander from '~/hooks/useExpander';
 import { useLcrData, useVarData } from '~/hooks/useTerminalData';
-import { useActiveWeb3React } from '~/hooks/web3';
 import { AssetKey, MetricInfo, MetricKey } from '~/types/terminal';
 import { shortenNumber } from '~/utils/formatTokenAmount';
 
@@ -149,10 +148,6 @@ const METRICS: MetricInfo[] = [
 ];
 
 export default function LendersPage() {
-  const { chainId } = useActiveWeb3React();
-
-  const onMainnet = chainId === 1;
-
   const [activeAssets, setActiveAssets] = useState<AssetKey[]>([
     'AAVEV2',
     'COMPOUND',
@@ -160,16 +155,14 @@ export default function LendersPage() {
 
   const expander = useExpander<MetricKey>();
 
-  const dummy = !onMainnet;
-
   const lcrData: Record<AssetKey, ReturnType<typeof useLcrData>> = {
-    AAVEV2: useLcrData('AAVEV2', 90, dummy),
-    COMPOUND: useLcrData('COMPOUND', 90, dummy),
+    AAVEV2: useLcrData('AAVEV2', 90),
+    COMPOUND: useLcrData('COMPOUND', 90),
   };
 
   const varData: Record<AssetKey, ReturnType<typeof useVarData>> = {
-    AAVEV2: useVarData('AAVEV2', 90, dummy),
-    COMPOUND: useVarData('COMPOUND', 90, dummy),
+    AAVEV2: useVarData('AAVEV2', 90),
+    COMPOUND: useVarData('COMPOUND', 90),
   };
 
   return (

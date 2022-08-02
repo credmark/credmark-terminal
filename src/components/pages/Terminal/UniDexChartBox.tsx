@@ -312,8 +312,8 @@ export default function DexChartBox({
         toggleExpand={onExpand}
         isExpanded={isExpanded}
         downloadCsv={{
-          filename: `${tvlChart.lines[0].name.replaceAll(
-            ' ',
+          filename: `${tvlChart.lines[0].name.replace(
+            / /g,
             '_',
           )}[Credmark].csv`,
           ...csv,
