@@ -8,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Text,
+  useColorMode,
   VStack,
 } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -15,6 +16,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { PrimaryButton } from '~/components/base';
 
 export default function XCmkFaq() {
+  const { colorMode } = useColorMode();
+
   const [isFaqOpen, setIsFaqOpen] = useState(false);
   const onFaqOpen = () => setIsFaqOpen(true);
   const onFaqClose = () => setIsFaqOpen(false);
@@ -45,20 +48,20 @@ export default function XCmkFaq() {
         <PrimaryButton ref={faqInitialFocusRef}>xCMK FAQ</PrimaryButton>
       </PopoverTrigger>
       <PopoverContent
-        rounded="3xl"
-        borderColor="purple.500"
-        shadow="2xl"
+        rounded="lg"
+        bg={colorMode === 'dark' ? '#1C161F' : 'white'}
         w="90vw"
         maxW="container.md"
+        border="1px"
       >
         <PopoverCloseButton
           top="-2"
           right="-2"
-          bg="purple.500"
-          color="white"
+          bg="green.500"
+          color="purple.800"
           rounded="full"
           _hover={{
-            bg: 'purple.500',
+            bg: 'green.600',
             transform: 'translateY(-2px)',
             shadow: 'lg',
           }}
@@ -68,10 +71,10 @@ export default function XCmkFaq() {
           }}
         />
         <PopoverBody p="8">
-          <Heading as="h2" fontSize="3xl" textAlign="center" color="purple.500">
+          <Heading as="h2" fontSize="3xl" textAlign="center">
             FAQ
           </Heading>
-          <VStack color="purple.500" align="flex-start" spacing="6" mt="4">
+          <VStack align="flex-start" spacing="6" mt="4">
             <Box>
               <Text fontWeight="bold">
                 To what contract are the CMK deployed when I stake?
