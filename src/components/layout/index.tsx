@@ -67,9 +67,8 @@ const sidebarItems = [
     ],
   },
   {
-    label: 'Credmark Analytics',
+    label: 'Model Analytics',
     subNav: [
-      { label: 'Token Analytics', href: '/info' },
       { label: 'Model Overview', href: '/models' },
       { label: 'Model Runner', href: '/models/run' },
       { label: 'Model Usage', href: '/models/usage' },
