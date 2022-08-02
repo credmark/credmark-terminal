@@ -1,9 +1,9 @@
 import { Interface } from '@ethersproject/abi';
 import { Currency, Token } from '@uniswap/sdk-core';
-import IUniswapV3PoolStateABI from '@uniswap/v3-core/artifacts/contracts/interfaces/pool/IUniswapV3PoolState.sol/IUniswapV3PoolState.json';
 import { computePoolAddress, FeeAmount, Pool } from '@uniswap/v3-sdk';
 import { useMemo } from 'react';
 
+import IUniswapV3PoolStateABI from '~/abis/i-uniswap-v3-pool-state.json';
 import { IUniswapV3PoolStateInterface } from '~/abis/types/IUniswapV3PoolState';
 import { V3_CORE_FACTORY_ADDRESSES } from '~/constants/addresses';
 import { useMultipleContractSingleData } from '~/state/multicall/hooks';
