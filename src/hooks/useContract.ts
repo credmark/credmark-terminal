@@ -1,11 +1,11 @@
 import { Contract, ContractInterface } from '@ethersproject/contracts';
-import QuoterABI from '@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json';
 import { useMemo } from 'react';
 
 import ENS_PUBLIC_RESOLVER_ABI from '~/abis/ens-public-resolver.json';
 import ENS_ABI from '~/abis/ens-registrar.json';
 import ERC20_BYTES32_ABI from '~/abis/erc20-bytes32.json';
 import ERC20_ABI from '~/abis/erc20.json';
+import QuoterABI from '~/abis/quoter.json';
 import REWARDS_POOL_ABI from '~/abis/rewards-pool.json';
 import STAKED_CREDMARK_ABI from '~/abis/staked-credmark.json';
 import { RewardsPool, StakedCredmark } from '~/abis/types';
