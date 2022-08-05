@@ -93,7 +93,7 @@ export default function Updater(): null {
                 status: txn.success ? 'success' : 'error',
                 isClosable: true,
                 duration: 10000,
-                variant: 'left-accent',
+                variant: 'solid',
                 title:
                   txn.summary ??
                   'Hash: ' +
