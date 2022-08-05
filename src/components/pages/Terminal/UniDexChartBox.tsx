@@ -1,4 +1,4 @@
-import { HStack, Link } from '@chakra-ui/react';
+import { HStack, Link, ListItem, UnorderedList } from '@chakra-ui/react';
 import useSize from '@react-hook/size';
 import { Currency } from '@uniswap/sdk-core';
 import { EChartsInstance } from 'echarts-for-react';
@@ -16,6 +16,7 @@ import { ModelSeriesOutput } from '~/types/model';
 import { mergeCsvs } from '~/utils/chart';
 
 interface DexChartBoxProps {
+  dex: 'SUSHISWAP' | 'UNISWAP_V2' | 'UNISWAP_V3';
   pool: string;
   tokens: Currency[];
   createdAt?: number;
@@ -76,6 +77,7 @@ interface BlockNumberOutput {
 }
 
 export default function DexChartBox({
+  dex,
   pool,
   tokens,
   createdAt = 0,
@@ -229,11 +231,24 @@ export default function DexChartBox({
     name: 'Value at Risk',
     description: useMemo(
       () => (
-        <React.Fragment>
+        <>
           Value at Risk in this case refers to the percentage of your LP
           position at risk in terms of a worst-case scenario for a given holding
           period.
           <br />
+          <br />
+          Settings:
+          <UnorderedList>
+            <ListItem>
+              VaR model: Historical with 90 days&apos; price at 23:59 UTC every
+              day
+            </ListItem>
+            <ListItem>Horizon: 10 days</ListItem>
+            <ListItem>Confidence: 1%</ListItem>
+            {dex === 'UNISWAP_V3' && (
+              <ListItem>LP range: +/- 1% of the latest price</ListItem>
+            )}
+          </UnorderedList>
           <br />
           <Link
             href="https://docs.credmark.com/dealing-with-risks/market-risk/value-at-risk-var"
@@ -244,9 +259,9 @@ export default function DexChartBox({
           >
             Read more about VaR in Credmark Wiki →
           </Link>
-        </React.Fragment>
+        </>
       ),
-      [],
+      [dex],
     ),
     color: '#9500FF',
     formatter: 'percent' as const,

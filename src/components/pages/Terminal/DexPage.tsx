@@ -124,8 +124,6 @@ export default function DexPage({ dex, pools }: DexPageProps) {
     return false;
   }
 
-  const DexChartBox = dex === 'CURVE' ? CurveDexChartBox : UniDexChartBox;
-
   return (
     <Container px="8" py="4" maxW="full">
       <Flex align="center">
@@ -153,15 +151,27 @@ export default function DexPage({ dex, pools }: DexPageProps) {
               ref={expander.refByKey(pool)}
             >
               <LazyLoad placeholder={<Skeleton height="400px" />}>
-                <DexChartBox
-                  pool={pool}
-                  tokens={tokens}
-                  createdAt={createdAt}
-                  fee={fee}
-                  varStartTime={varStartTime}
-                  isExpanded={expander.isExpanded(pool)}
-                  onExpand={() => expander.onExpand(pool)}
-                />
+                {dex === 'CURVE' ? (
+                  <CurveDexChartBox
+                    pool={pool}
+                    tokens={tokens}
+                    createdAt={createdAt}
+                    fee={fee}
+                    isExpanded={expander.isExpanded(pool)}
+                    onExpand={() => expander.onExpand(pool)}
+                  />
+                ) : (
+                  <UniDexChartBox
+                    dex={dex}
+                    pool={pool}
+                    tokens={tokens}
+                    createdAt={createdAt}
+                    fee={fee}
+                    varStartTime={varStartTime}
+                    isExpanded={expander.isExpanded(pool)}
+                    onExpand={() => expander.onExpand(pool)}
+                  />
+                )}
               </LazyLoad>
             </GridItem>
           ))}
