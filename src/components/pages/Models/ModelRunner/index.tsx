@@ -54,7 +54,7 @@ export default function ModelRunner({ model }: ModelRunnerProps) {
           status: 'error',
           isClosable: true,
           duration: 10000,
-          variant: 'left-accent',
+          variant: 'solid',
           title: 'Error while running model',
         });
       }
