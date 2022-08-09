@@ -173,7 +173,6 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
       isHistorical
         ? {
             slug: 'historical.run-model',
-            version: '1.3',
             input: {
               model_slug: props.slug,
               model_input: props.input,
