@@ -21,7 +21,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SettingsIcon from '@mui/icons-material/Settings';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Card } from '~/components/base';
 import BarChart from '~/components/shared/Charts/BarChart';
@@ -43,35 +43,11 @@ interface ModelPageProps {
   models: ModelMetadata[];
 }
 
-const getName = (slugRef: string, modelsFullInformation: ModelMetadata[]) => {
-  const filteredData = modelsFullInformation?.find(
-    (model) => model?.slug === slugRef,
-  );
-  return {
-    name: filteredData?.displayName || 'Credmark Model',
-  };
-};
-
-//eslint-disable-next-line @typescript-eslint/no-explicit-any
-const tooltipFormatter = (params: any, isTitle = false) => {
-  if (isTitle) {
-    return `${params?.name} ${new Intl.NumberFormat().format(
-      Number(params?.data?.value) ?? 0,
-    )}`;
-  }
-  return `
-        <div>
-          <strong><p>${params?.name}</p></strong>
-          <code>${params?.category}</code>
-          <br/>
-          <em>${new Intl.NumberFormat().format(params?.value as number)}</em>
-        </div>
-      `;
-};
-
 export default function ModelUsagePage(props: ModelPageProps) {
   const { models: modelsFullInformation } = props;
-  const [loading, setLoading] = useState(false);
+  const [usageRequestsLoading, setUsageRequestsLoading] = useState(false);
+  const [runtimeStatsLoading, setRuntimeStatsLoading] = useState(false);
+  const [topUsageLoading, setTopUsageLoading] = useState(false);
   const [lines, setLines] = useState<ChartLine[]>([]);
   const [showLessCalls, setShowLessCalls] = useState(true);
   const [showLessRuntime, setShowLessRuntime] = useState(true);
@@ -90,7 +66,9 @@ export default function ModelUsagePage(props: ModelPageProps) {
   const ALL_MODELS = 'All Models';
 
   useEffect(() => {
-    setLoading(true);
+    setUsageRequestsLoading(true);
+    setRuntimeStatsLoading(true);
+    setTopUsageLoading(true);
 
     const abortController = new AbortController();
     Promise.all([
@@ -98,73 +76,83 @@ export default function ModelUsagePage(props: ModelPageProps) {
         method: 'GET',
         signal: abortController.signal,
         url: 'https://gateway.credmark.com/v1/usage/requests',
-      }).then((resp) => {
-        const list = resp.data as ModelUsage[];
-        const slugLineMap: Record<string, ChartLine> = {};
-        const allModelsDataMap: Record<number, ChartLine['data'][0]> = {};
+      })
+        .then((resp) => {
+          const list = resp.data as ModelUsage[];
+          const slugLineMap: Record<string, ChartLine> = {};
+          const allModelsDataMap: Record<number, ChartLine['data'][0]> = {};
 
-        let minDate: Date | undefined;
-        let maxDate: Date | undefined;
+          let minDate: Date | undefined;
+          let maxDate: Date | undefined;
 
-        for (const usage of list) {
-          if (!(usage.slug in slugLineMap)) {
-            slugLineMap[usage.slug] = {
-              name: usage.slug,
+          for (const usage of list) {
+            if (!(usage.slug in slugLineMap)) {
+              slugLineMap[usage.slug] = {
+                name: usage.slug,
+                color,
+                data: [],
+              };
+            }
+
+            const timestamp = new Date(usage.ts);
+            const value = Number(usage.count);
+            slugLineMap[usage.slug].data.push({
+              timestamp,
+              value,
+            });
+
+            if (!(timestamp.valueOf() in allModelsDataMap)) {
+              allModelsDataMap[timestamp.valueOf()] = { timestamp, value: 0 };
+            }
+
+            allModelsDataMap[timestamp.valueOf()].value += value;
+
+            if (!maxDate || timestamp > maxDate) maxDate = timestamp;
+            if (!minDate || timestamp < minDate) minDate = timestamp;
+          }
+
+          if (minDate && maxDate) {
+            setBarChartDateRange([minDate, maxDate]);
+            setBarChartDate(maxDate);
+          }
+
+          setLines([
+            {
+              name: ALL_MODELS,
               color,
-              data: [],
-            };
-          }
-
-          const timestamp = new Date(usage.ts);
-          const value = Number(usage.count);
-          slugLineMap[usage.slug].data.push({
-            timestamp,
-            value,
-          });
-
-          if (!(timestamp.valueOf() in allModelsDataMap)) {
-            allModelsDataMap[timestamp.valueOf()] = { timestamp, value: 0 };
-          }
-
-          allModelsDataMap[timestamp.valueOf()].value += value;
-
-          if (!maxDate || timestamp > maxDate) maxDate = timestamp;
-          if (!minDate || timestamp < minDate) minDate = timestamp;
-        }
-
-        if (minDate && maxDate) {
-          setBarChartDateRange([minDate, maxDate]);
-          setBarChartDate(maxDate);
-        }
-
-        setLines([
-          {
-            name: ALL_MODELS,
-            color,
-            data: Object.values(allModelsDataMap),
-          },
-          ...Object.values(slugLineMap),
-        ]);
-      }),
+              data: Object.values(allModelsDataMap),
+            },
+            ...Object.values(slugLineMap),
+          ]);
+        })
+        .finally(() => {
+          setUsageRequestsLoading(false);
+        }),
 
       axios({
         method: 'GET',
         signal: abortController.signal,
         url: 'https://gateway.credmark.com/v1/model/runtime-stats',
-      }).then((resp) => {
-        setRuntimes(resp.data.runtimes);
-      }),
+      })
+        .then((resp) => {
+          setRuntimes(resp.data.runtimes);
+        })
+        .finally(() => {
+          setRuntimeStatsLoading(false);
+        }),
 
       axios({
         method: 'GET',
         signal: abortController.signal,
         url: 'https://gateway.credmark.com/v1/usage/top',
-      }).then((resp) => {
-        setTopModels(resp.data);
-      }),
-    ]).finally(() => {
-      setLoading(false);
-    });
+      })
+        .then((resp) => {
+          setTopModels(resp.data);
+        })
+        .finally(() => {
+          setTopUsageLoading(false);
+        }),
+    ]);
 
     return () => {
       abortController.abort();
@@ -195,7 +183,6 @@ export default function ModelUsagePage(props: ModelPageProps) {
 
       data.push({
         category: line.name,
-        name: getName(line.name, modelsFullInformation).name,
         value,
       });
     }
@@ -203,36 +190,28 @@ export default function ModelUsagePage(props: ModelPageProps) {
     return data
       .sort((a, b) => b.value - a.value)
       .slice(0, showLessCalls ? 10 : Infinity);
-  }, [
-    aggregationInterval,
-    aggregator,
-    barChartDate,
-    lines,
-    showLessCalls,
-    modelsFullInformation,
-  ]);
+  }, [aggregationInterval, aggregator, barChartDate, lines, showLessCalls]);
 
   const runtimeBarChartData = useMemo(() => {
-    return runtimes
-      ?.map((data) => ({
+    return [
+      ...runtimes?.map((data) => ({
         value: data[stat],
         category: data?.slug,
-        name: getName(data.slug, modelsFullInformation).name,
-      }))
+      })),
+    ]
       .sort((a, b) => b.value - a.value)
       .slice(0, showLessRuntime ? 10 : Infinity);
-  }, [runtimes, stat, showLessRuntime, modelsFullInformation]);
+  }, [runtimes, stat, showLessRuntime]);
 
   const topModelsData = useMemo(() => {
     return topModels
       ?.map((data) => ({
         value: data.count,
         category: data?.slug,
-        name: getName(data.slug, modelsFullInformation).name,
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, showLessTopModels ? 10 : Infinity);
-  }, [topModels, modelsFullInformation, showLessTopModels]);
+  }, [topModels, showLessTopModels]);
 
   const allModelsUsage = useMemo(() => {
     if (!barChartDate) {
@@ -259,6 +238,23 @@ export default function ModelUsagePage(props: ModelPageProps) {
     return 0;
   }, [aggregationInterval, aggregator, barChartDate, lines]);
 
+  const tooltipFormatter = useCallback(
+    (slug: string, value: number) => {
+      return `
+        <div>
+          <strong><p>${
+            modelsFullInformation.find((model) => model.slug === slug)
+              ?.displayName
+          }</p></strong>
+          <code>${slug}</code>
+          <br/>
+          <em>${new Intl.NumberFormat().format(value)}</em>
+        </div>
+      `;
+    },
+    [modelsFullInformation],
+  );
+
   const [slug, setSlug] = useState(ALL_MODELS);
 
   return (
@@ -271,7 +267,9 @@ export default function ModelUsagePage(props: ModelPageProps) {
           </Heading>
           <Box maxW="480px">
             <SearchSelect<ChartLine>
-              placeholder={loading ? 'Loading Models...' : 'Select a Model...'}
+              placeholder={
+                usageRequestsLoading ? 'Loading Models...' : 'Select a Model...'
+              }
               options={lines}
               filterOption={(option, filterValue) =>
                 option.data.name
@@ -285,7 +283,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
             />
           </Box>
           <HistoricalChart
-            loading={loading}
+            loading={usageRequestsLoading}
             lines={lines.filter((line) => line.name === slug)}
             height={335}
             formatYLabel={(value) => shortenNumber(Number(value), 0)}
@@ -304,7 +302,7 @@ export default function ModelUsagePage(props: ModelPageProps) {
             <Box minW="240px" maxW="480px">
               <Input
                 type="date"
-                value={barChartDate?.toISOString().slice(0, 10)}
+                value={barChartDate?.toISOString().slice(0, 10) ?? ''}
                 onChange={(event) => {
                   if (event.target.value) {
                     setBarChartDate(
@@ -382,13 +380,11 @@ export default function ModelUsagePage(props: ModelPageProps) {
           </Stack>
 
           <BarChart
-            loading={loading}
-            dataset={barChartData}
+            loading={usageRequestsLoading}
+            data={barChartData}
             height={Math.max(barChartData.length * 32, 335)}
             padding={0}
             onClick={(slug) => setSlug(slug)}
-            yAxisKey="category"
-            xAxisKey="value"
             tooltipFormatter={tooltipFormatter}
           />
           <Center>
@@ -441,12 +437,10 @@ export default function ModelUsagePage(props: ModelPageProps) {
             </Menu>
           </Stack>
           <BarChart
-            loading={loading}
-            dataset={runtimeBarChartData}
+            loading={runtimeStatsLoading}
+            data={runtimeBarChartData}
             height={Math.max(runtimeBarChartData.length * 32, 335)}
             padding={0}
-            yAxisKey="category"
-            xAxisKey="value"
             tooltipFormatter={tooltipFormatter}
           />
           <Center>
@@ -473,12 +467,10 @@ export default function ModelUsagePage(props: ModelPageProps) {
           </Heading>
 
           <BarChart
-            loading={loading}
-            dataset={topModelsData}
+            loading={topUsageLoading}
+            data={topModelsData}
             height={Math.max(topModelsData.length * 32, 335)}
             padding={0}
-            yAxisKey="category"
-            xAxisKey="value"
             tooltipFormatter={tooltipFormatter}
           />
           <Center>

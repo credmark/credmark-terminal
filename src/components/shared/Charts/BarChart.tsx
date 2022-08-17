@@ -2,7 +2,7 @@ import { Box, Center, HStack, Text } from '@chakra-ui/layout';
 import { Img, Spinner, useColorMode } from '@chakra-ui/react';
 import { EChartsOption } from 'echarts';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
-import { BarChart } from 'echarts/charts';
+import { BarChart as EChartsBarChart } from 'echarts/charts';
 import {
   GridComponent,
   TooltipComponent,
@@ -10,170 +10,107 @@ import {
 } from 'echarts/components';
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { CallbackDataParams } from 'echarts/types/src/util/types.d';
 import React, { useMemo } from 'react';
 
 import { darkTheme } from '~/theme/echarts';
 
-interface BarChartProps<T> {
-  dataset?: T[] | T;
+type ChartData = Array<{
+  category: string;
+  value: number;
+}>;
+
+interface BarChartProps {
+  data?: ChartData;
   loading?: boolean;
-  xAxisKey?: string;
-  yAxisKey?: string;
   title?: string;
   titleImg?: string;
   height?: number;
-  grouped?: boolean;
-  showLegend?: boolean;
-  showYaxisLabel?: boolean;
-  showXaxisLabel?: boolean;
   padding?: number;
   onClick?: (category: string) => void;
-  tooltipFormatter: (data: T | CallbackDataParams, isTitle?: boolean) => string;
+  tooltipFormatter: (category: string, value: number) => string;
 }
 
 echarts.use([
   TitleComponent,
   TooltipComponent,
   GridComponent,
-  BarChart,
+  EChartsBarChart,
   CanvasRenderer,
 ]);
 
-export default function App<T>({
-  dataset,
+export default function BarChart({
+  data,
   loading,
   height = 300,
   padding = 40,
   title,
   titleImg,
-  xAxisKey,
-  yAxisKey,
   onClick,
   tooltipFormatter,
-  grouped = false,
-  showLegend = false,
-  showXaxisLabel = false,
-  showYaxisLabel = false,
-}: BarChartProps<T>) {
+}: BarChartProps) {
   const { colorMode } = useColorMode();
 
   const option: EChartsOption = useMemo(
-    () =>
-      ({
-        legend: {
-          show: showLegend,
-          icon: 'circle',
-          left: 'left',
-          padding: [0, 0, 0, 20],
+    () => ({
+      grid: {
+        top: 16,
+        bottom: 48,
+        left: 16,
+        right: 16,
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow',
         },
-        tooltip: grouped
-          ? {}
-          : {
-              trigger: 'axis',
-              formatter: (params) => {
-                if (
-                  !Array.isArray(params) ||
-                  params.length === 0 ||
-                  !params[0].data
-                ) {
-                  return '';
-                }
-                return tooltipFormatter(params[0].data as T);
-              },
-            },
-        dimensions: [yAxisKey, xAxisKey],
-        dataset: grouped
-          ? dataset
-          : {
-              source: dataset,
-            },
-        grid: {
-          containLabel: true,
-          top: 40,
-          bottom: 0,
-          left: 0,
-          right: 50,
-          height: 'auto',
-          width: '100%',
-          align: 'left',
-        },
+        formatter: (params) => {
+          if (!Array.isArray(params) || params.length === 0) {
+            return '';
+          }
 
-        xAxis: {
-          type: xAxisKey,
-          name: '',
-          axisLabel: { show: showXaxisLabel },
+          return tooltipFormatter(params[0].name, params[0].value as number);
         },
-        yAxis: {
-          type: yAxisKey,
-          axisLabel: { show: showYaxisLabel },
-          inverse: !grouped,
+      },
+      legend: {},
+      xAxis: {
+        type: 'value',
+        boundaryGap: [0, 0.01],
+      },
+      yAxis: {
+        type: 'category',
+        data: data?.map((datum) => datum.category),
+        axisLabel: {
+          show: false,
         },
-        series: grouped
-          ? [
-              {
-                type: 'bar',
-                color: '#00D696',
-                barGap: 0,
-                barWidth: '100%',
-                barMaxWidth: '15%',
-              },
-              {
-                type: 'bar',
-                color: '#00BFCA',
-                barGap: 0,
-                barWidth: '100%',
-                barMaxWidth: '15%',
-              },
-              {
-                type: 'bar',
-                color: '#8342AF',
-                barGap: 0,
-                barWidth: '100%',
-                barMaxWidth: '15%',
-              },
-            ]
-          : [
-              {
-                realtimeSort: true,
-                name: title,
-                label: {
-                  show: true,
-                  rotate: 0,
-                  align: 'left',
-                  verticalAlign: 'middle',
-                  position: 'insideLeft',
-                  distance: 15,
-                  formatter: (params) => tooltipFormatter(params, true),
-                  color: colorMode === 'dark' ? 'white' : 'black',
-                },
-                type: 'bar',
-                encode: {
-                  x: xAxisKey,
-                  y: yAxisKey,
-                },
-                color: colorMode === 'dark' ? '#0CA277' : '#08FEB4',
-              },
-            ],
-      } as EChartsOption),
-    [
-      showLegend,
-      grouped,
-      yAxisKey,
-      xAxisKey,
-      dataset,
-      showXaxisLabel,
-      showYaxisLabel,
-      title,
-      colorMode,
-      tooltipFormatter,
-    ],
+        inverse: true,
+      },
+      series: [
+        {
+          realtimeSort: true,
+          name: title,
+          label: {
+            show: true,
+            rotate: 0,
+            align: 'left',
+            verticalAlign: 'middle',
+            position: 'insideLeft',
+            distance: 15,
+            formatter: '{b} {c}',
+            color: 'black',
+          },
+          type: 'bar',
+          data: data?.map((datum) => datum.value),
+          color: colorMode === 'dark' ? '#0CA277' : '#08FEB4',
+        },
+      ],
+    }),
+    [colorMode, data, title, tooltipFormatter],
   );
 
   const currentPriceHeight = 0;
 
   return (
-    <Box p={padding + 'px'} marginBottom="20px">
+    <Box p={padding + 'px'}>
       <Box
         position="relative"
         h={height - padding * 2 + currentPriceHeight + 'px'}
@@ -189,8 +126,13 @@ export default function App<T>({
               border="1px"
               borderColor="gray.100"
             >
-              <Img src={titleImg} alt={title || 'Credmark'} h="6" />
-              <Text fontSize="lg" pt="1" color="purple.500">
+              <Img src={titleImg} h="6" />
+              <Text
+                fontFamily="Credmark Regular"
+                fontSize="lg"
+                pt="1"
+                color="purple.500"
+              >
                 {title}
               </Text>
             </HStack>
@@ -233,7 +175,7 @@ export default function App<T>({
             }}
           />
         </Box>
-        {loading && (
+        {loading && (!data || data.length === 0) && (
           <Center position="absolute" top="0" left="0" right="0" bottom="0">
             <Spinner color="purple.500" />
           </Center>
