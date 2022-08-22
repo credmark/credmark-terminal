@@ -41,7 +41,7 @@ export default function ModelRunner({ model }: ModelRunnerProps) {
 
   const modelRunnerProps: UseModelRunnerProps<AnyRecord> = {
     suspended,
-    slug: model.slug,
+    slug: `modelRunner/${model.slug}`,
     input: inputValues,
     chainId: config.chainId || 1,
     blockNumber: (config.blockNumber as number) || ('latest' as const),

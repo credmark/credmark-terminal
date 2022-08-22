@@ -101,12 +101,12 @@ export default function DexChartBox({
   );
 
   const blockNumberModel = useModelRunner<BlockNumberOutput>({
-    slug: 'rpc.get-blocknumber',
+    slug: 'uni/rpc.get-blocknumber',
     input: { timestamp: DateTime.utc().startOf('day').toSeconds() },
   });
 
   const tvlModel = useModelRunner<TvlModelOutput>({
-    slug: 'uniswap-v2.pool-tvl',
+    slug: 'uni/uniswap-v2.pool-tvl',
     input: {
       address: pool,
     },
@@ -145,7 +145,7 @@ export default function DexChartBox({
 
   const currentVolumeModel = useModelRunner<VolumeModelOutput>({
     blockNumber: blockNumberModel.output?.blockNumber,
-    slug: 'dex.pool-volume',
+    slug: 'uni/dex.pool-volume',
     input: {
       pool_info_model: 'uniswap-v2.pool-tvl',
       interval: 7200,
@@ -176,7 +176,7 @@ export default function DexChartBox({
 
   const volumeModel = useModelRunner<ModelSeriesOutput<VolumeModelOutput>>({
     blockNumber: blockNumberModel.output?.blockNumber,
-    slug: 'dex.pool-volume-historical',
+    slug: 'uni/dex.pool-volume-historical',
     input: {
       pool_info_model: 'uniswap-v2.pool-tvl',
       interval: 7200,
@@ -205,7 +205,7 @@ export default function DexChartBox({
 
   const varModelCommonProps = {
     blockNumber: blockNumberModel.output?.blockNumber,
-    slug: 'finance.var-dex-lp',
+    slug: 'uni/finance.var-dex-lp',
     input: {
       window: `${Math.min(
         180,

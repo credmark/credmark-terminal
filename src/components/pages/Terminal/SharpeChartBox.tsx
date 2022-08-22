@@ -66,7 +66,7 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
   const [sharpeLoading, setSharpeLoading] = useState(false);
 
   const blockNumberModel = useModelRunner<BlockNumberOutput>({
-    slug: 'rpc.get-blocknumber',
+    slug: 'sharpe/rpc.get-blocknumber',
     input: { timestamp: DateTime.utc().startOf('day').toSeconds() },
   });
 
@@ -120,8 +120,8 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
                 slug: 'historical.run-model',
                 input: {
                   model_slug: token.priceEns
-                    ? 'chainlink.price-by-ens'
-                    : 'price.quote',
+                    ? 'sharpe/chainlink.price-by-ens'
+                    : 'sharpe/price.quote',
                   model_input: token.priceEns
                     ? { domain: token.priceEns }
                     : {
@@ -218,7 +218,7 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
           {
             slug: 'compose.map-inputs',
             input: {
-              modelSlug: 'finance.sharpe-ratio-token',
+              modelSlug: 'sharpe/finance.sharpe-ratio-token',
               modelInputs,
             },
           },
