@@ -106,12 +106,12 @@ export default function CurveDexChartBox({
   );
 
   const blockNumberModel = useModelRunner<BlockNumberOutput>({
-    slug: 'rpc.get-blocknumber',
+    slug: 'curve/rpc.get-blocknumber',
     input: { timestamp: DateTime.utc().startOf('day').toSeconds() },
   });
 
   const tvlModel = useModelRunner<TvlModelOutput>({
-    slug: 'curve-fi.pool-tvl',
+    slug: 'curve/curve-fi.pool-tvl',
     input: {
       address: pool,
     },
@@ -150,7 +150,7 @@ export default function CurveDexChartBox({
 
   const currentVolumeModel = useModelRunner<VolumeModelOutput>({
     blockNumber: blockNumberModel.output?.blockNumber,
-    slug: 'dex.pool-volume',
+    slug: 'curve/dex.pool-volume',
     input: {
       pool_info_model: 'curve-fi.pool-tvl',
       interval: 7200,
@@ -181,7 +181,7 @@ export default function CurveDexChartBox({
 
   const volumeModel = useModelRunner<ModelSeriesOutput<VolumeModelOutput>>({
     blockNumber: blockNumberModel.output?.blockNumber,
-    slug: 'dex.pool-volume-historical',
+    slug: 'curve/dex.pool-volume-historical',
     input: {
       pool_info_model: 'curve-fi.pool-tvl',
       interval: 7200,
@@ -208,7 +208,7 @@ export default function CurveDexChartBox({
 
   const poolInfoModelCommonProps = {
     blockNumber: blockNumberModel.output?.blockNumber,
-    slug: 'curve-fi.pool-info',
+    slug: 'curve/curve-fi.pool-info',
     input: {
       address: pool,
     },

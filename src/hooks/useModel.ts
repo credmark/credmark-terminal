@@ -31,11 +31,54 @@ export function useModelRunnerCallback<O>() {
       }: ModelRunnerCallbackProps,
       abortSignal?: AbortSignal,
     ) => {
+      if (slug === 'historical.run-model') {
+        const historicalModelInput = input as {
+          model_slug: string;
+          model_input: unknown;
+          model_version: string;
+          window: string;
+          interval: string;
+        };
+
+        const resp: AxiosResponse<ModelRunResponse<O>> = await axios({
+          method: 'POST',
+          url: `/api/${historicalModelInput.model_slug}`,
+          data: {
+            version: historicalModelInput.model_version,
+            chainId,
+            blockNumber,
+            input: historicalModelInput.model_input,
+            window: historicalModelInput.window,
+            interval: historicalModelInput.interval,
+          },
+          signal: abortSignal,
+        });
+
+        return resp.data;
+      } else if (slug === 'compose.map-inputs') {
+        const composeModelInput = input as {
+          modelSlug: string;
+          modelInputs: unknown;
+        };
+
+        const resp: AxiosResponse<ModelRunResponse<O>> = await axios({
+          method: 'POST',
+          url: `/api/${composeModelInput.modelSlug}`,
+          data: {
+            chainId,
+            blockNumber,
+            inputs: composeModelInput.modelInputs,
+          },
+          signal: abortSignal,
+        });
+
+        return resp.data;
+      }
+
       const resp: AxiosResponse<ModelRunResponse<O>> = await axios({
         method: 'POST',
-        url: 'https://gateway.credmark.com/v1/model/run',
+        url: `/api/${slug}`,
         data: {
-          slug,
           version,
           chainId,
           blockNumber,
