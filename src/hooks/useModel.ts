@@ -169,9 +169,7 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
     [interval, window],
   );
 
-  const runModel = useModelRunnerCallback<
-    O | { result: ModelSeriesOutput<O> }
-  >();
+  const runModel = useModelRunnerCallback<O | ModelSeriesOutput<O>>();
 
   const validateOutputMemoized = useCallbackRef(
     (output: O | ModelSeriesOutput<O>) => {
@@ -244,7 +242,7 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
         }
 
         const _output = isHistorical
-          ? (resp.output as { result: ModelSeriesOutput<O> }).result
+          ? (resp.output as ModelSeriesOutput<O>)
           : (resp.output as O);
 
         validateOutputMemoized(_output);
