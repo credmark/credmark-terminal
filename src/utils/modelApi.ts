@@ -1,10 +1,11 @@
-import axios, { AxiosResponse } from 'axios';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { RequestHandler } from 'next-connect';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { getClientIp } from 'request-ip';
 
 import { ModelRunResponse, ModelSeriesOutput } from '~/types/model';
+
+import Gateway from './gateway';
 
 interface RunModelOptions {
   slug: string;
@@ -30,19 +31,15 @@ export async function runModel<O = unknown>({
   blockNumber = 'latest',
   input,
 }: RunModelOptions) {
-  const resp: AxiosResponse<ModelRunResponse<O>> = await axios({
-    method: 'POST',
-    url: 'https://gateway.credmark.com/v1/model/run',
-    data: {
-      slug,
-      version,
-      chainId,
-      blockNumber,
-      input,
-    },
+  const resp = await Gateway.sendPostRequest('/v1/model/run', {
+    slug,
+    version,
+    chainId,
+    blockNumber,
+    input,
   });
 
-  return resp.data;
+  return resp.data as ModelRunResponse<O>;
 }
 
 export function runHistoricalModel<O = unknown>({
@@ -95,8 +92,10 @@ const extremeRateLimiter = new RateLimiterMemory({
   duration: 60,
 });
 
+type RateLimiterType = 'global' | 'extreme';
+
 export function rateLimiter(
-  type: 'global' | 'extreme' = 'global',
+  type: RateLimiterType = 'global',
 ): RequestHandler<NextApiRequest, NextApiResponse> {
   return (req, res, next) => {
     const limiter = type === 'global' ? globalRateLimiter : extremeRateLimiter;
