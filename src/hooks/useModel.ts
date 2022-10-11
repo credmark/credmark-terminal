@@ -244,7 +244,7 @@ export function useModelRunner<O>(props: ModelRunnerProps<O>) {
         }
 
         const _output = isHistorical
-          ? (resp.output as { result: ModelSeriesOutput<O> }).result
+          ? (resp.output as ModelSeriesOutput<O>)
           : (resp.output as O);
 
         validateOutputMemoized(_output);
