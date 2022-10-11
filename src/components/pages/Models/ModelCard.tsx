@@ -4,9 +4,11 @@ import {
   HStack,
   LinkBox,
   LinkOverlay,
+  Skeleton,
   Spacer,
   Tag,
   Text,
+  useColorMode,
 } from '@chakra-ui/react';
 import React from 'react';
 
@@ -36,7 +38,7 @@ export default function ModelCard({ model }: ModelCardProps) {
         <Box flex="1">
           <Heading as="h3" fontSize="xl" mt="1">
             <LinkOverlay
-              href={`https://gateway.credmark.com/model-docs?section=${model.category}#operation/model-${model.slug}`}
+              href={`https://gateway.credmark.com/model-docs?category=${model.category}#operation/model-${model.slug}`}
               isExternal
               _hover={{ textDecoration: 'underline' }}
             >
@@ -75,6 +77,41 @@ export default function ModelCard({ model }: ModelCardProps) {
           </Text>
         </HStack>
       </LinkBox>
+    </Card>
+  );
+}
+
+export function ModelCardSkeleton() {
+  const { colorMode } = useColorMode();
+
+  const startColor = colorMode === 'dark' ? 'whiteAlpha.300' : 'gray.100';
+  const endColor = colorMode === 'dark' ? 'whiteAlpha.500' : 'gray.300';
+  return (
+    <Card>
+      <Box p="4">
+        <Box pb="4">
+          <Skeleton height="14px" startColor={startColor} endColor={endColor} />
+        </Box>
+        <Box flex="1">
+          <Heading as="h3" fontSize="xl" mt="1">
+            <Skeleton
+              height="24px"
+              startColor={startColor}
+              endColor={endColor}
+            />
+          </Heading>
+          <Text mt="2" fontSize="sm">
+            <Skeleton
+              height="12px"
+              startColor={startColor}
+              endColor={endColor}
+            />
+          </Text>
+        </Box>
+        <Box mt="4">
+          <Skeleton height="12px" startColor={startColor} endColor={endColor} />
+        </Box>
+      </Box>
     </Card>
   );
 }

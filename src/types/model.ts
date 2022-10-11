@@ -138,7 +138,7 @@ export interface ModelRuntime extends Record<ModelRuntimeStat, number> {
   slug: string;
   version: string;
 }
-export interface TopModels {
+export interface TopModel {
   slug: string;
   count: number;
 }

@@ -42,7 +42,7 @@ export default function ModelInput({ inputSchema }: ModelInputProps) {
                 : input.title ?? keyPath}
             </Text>
             {input.description && (
-              <Text fontSize="sm" color="gray.500">
+              <Text fontSize="sm" color="gray.500" whiteSpace="pre-wrap" pb="2">
                 {input.description}
               </Text>
             )}
@@ -81,7 +81,12 @@ export default function ModelInput({ inputSchema }: ModelInputProps) {
                       : input.title ?? keyPath}
                   </Text>
                   {input.description && (
-                    <Text fontSize="sm" color="gray.500">
+                    <Text
+                      fontSize="sm"
+                      color="gray.500"
+                      whiteSpace="pre-wrap"
+                      pb="2"
+                    >
                       {input.description}
                     </Text>
                   )}

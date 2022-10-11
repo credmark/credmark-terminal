@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   ButtonProps,
   Container,
@@ -13,17 +14,19 @@ import {
   MenuList,
   MenuOptionGroup,
   SimpleGrid,
+  Spinner,
   Switch,
+  useToast,
 } from '@chakra-ui/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios';
 import Fuse from 'fuse.js';
 import { DateTime } from 'luxon';
-import { GetServerSideProps } from 'next';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 
 import { ModelCard } from '~/components/pages/Models';
+import { ModelCardSkeleton } from '~/components/pages/Models/ModelCard';
 import SEOHeader from '~/components/shared/SEOHeader';
 import useDebounce from '~/hooks/useDebounce';
 import { useDeepCompareMemo } from '~/hooks/useDeepCompare';
@@ -32,7 +35,7 @@ import {
   ModelMetadata,
   ModelRuntime,
   ModelUsage,
-  TopModels,
+  TopModel,
 } from '~/types/model';
 
 type SortKey =
@@ -195,19 +198,120 @@ function SubCategoryFilterMenu({
   );
 }
 
-interface ModelPageProps {
-  models: ModelInfo[];
-}
+export default function ModelsPage() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [modelsMetadata, setModelsMetadata] = useState<ModelMetadata[]>([]);
+  const [modelsUsage, setModelsUsage] = useState<ModelUsage[]>([]);
+  const [modelsRuntime, setModelsRuntime] = useState<ModelRuntime[]>([]);
+  const [topModels, setTopModels] = useState<TopModel[]>([]);
 
-export default function ModelsPage({ models }: ModelPageProps) {
+  const toast = useToast();
+
   const [input, setInput] = useState('');
   const debouncedInput = useDebounce(input, 100);
-  const [topModels, setTopModels] = useState(false);
+
+  const [showTopModels, setShowTopModels] = useState(false);
+
   const [sortKey, setSortKey] = useState<SortKey>('relevance');
+
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>(
     [],
   );
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    setError('');
+    setLoading(true);
+    axios({
+      method: 'GET',
+      url: '/api/models',
+      signal: abortController.signal,
+    })
+      .then((resp) => {
+        setModelsMetadata(resp.data);
+      })
+      .catch(() => {
+        if (!abortController.signal.aborted) {
+          setError('Unable to load models. Please try again later.');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    axios({
+      method: 'GET',
+      url: '/api/models/usage',
+      signal: abortController.signal,
+    })
+      .then((resp) => {
+        setModelsUsage(resp.data);
+      })
+      .catch(() => {
+        if (!abortController.signal.aborted) {
+          toast({ status: 'error', title: 'Unable to load model usage.' });
+        }
+      });
+
+    axios({
+      method: 'GET',
+      url: '/api/models/runtime',
+      signal: abortController.signal,
+    })
+      .then((resp) => {
+        setModelsRuntime(resp.data.runtimes);
+      })
+      .catch(() => {
+        if (!abortController.signal.aborted) {
+          toast({ status: 'error', title: 'Unable to load model runtime.' });
+        }
+      });
+
+    axios({
+      method: 'GET',
+      url: '/api/models/top',
+      signal: abortController.signal,
+    })
+      .then((resp) => {
+        setTopModels(resp.data);
+      })
+      .catch(() => {
+        if (!abortController.signal.aborted) {
+          toast({ status: 'error', title: 'Unable to load top models.' });
+        }
+      });
+
+    return () => {
+      abortController.abort();
+    };
+  }, [toast]);
+
+  const models = useMemo<ModelInfo[]>(() => {
+    const usageEndTime = DateTime.utc().startOf('day');
+    const usageStartTime = usageEndTime.minus({ days: 30 });
+
+    return modelsMetadata.map((model) => ({
+      slug: model.slug,
+      displayName: model.displayName,
+      category: model.category,
+      description: model.description,
+      developer: model.developer,
+      subcategory: model.subcategory,
+      monthlyUsage: modelsUsage
+        .filter(
+          (r) =>
+            r.slug === model.slug &&
+            new Date(r.ts) > usageStartTime.toJSDate() &&
+            new Date(r.ts) <= usageEndTime.toJSDate(),
+        )
+        .reduce((prev, curr) => prev + Number(curr.count), 0),
+      runtime: modelsRuntime.find((rs) => rs.slug === model.slug) ?? null,
+      allTimeUsageRank: topModels.findIndex((tm) => tm.slug === model.slug) + 1,
+    }));
+  }, [modelsMetadata, modelsRuntime, modelsUsage, topModels]);
 
   const allCategories = useMemo(
     () =>
@@ -219,6 +323,7 @@ export default function ModelsPage({ models }: ModelPageProps) {
       ),
     [models],
   );
+
   const allSubCategories = useMemo(() => {
     const filteredCategories = models.filter(
       (i) => selectedCategories.indexOf(i.category) !== -1,
@@ -247,7 +352,7 @@ export default function ModelsPage({ models }: ModelPageProps) {
     [models],
   );
 
-  const searchedModels = useDeepCompareMemo(() => {
+  const filteredModels = useDeepCompareMemo(() => {
     let _models = !debouncedInput
       ? models
       : fuse.search(debouncedInput).map<ModelInfo>((r) => ({
@@ -318,7 +423,7 @@ export default function ModelsPage({ models }: ModelPageProps) {
           ),
         }));
 
-    if (topModels) {
+    if (showTopModels) {
       _models = _models.filter((m) => !!m.allTimeUsageRank);
     }
 
@@ -371,30 +476,45 @@ export default function ModelsPage({ models }: ModelPageProps) {
     selectedCategories,
     selectedSubCategories,
     sortKey,
-    topModels,
+    showTopModels,
   ]);
+
   return (
     <>
       <SEOHeader title="Model Overview" />
       <Container maxW="container.lg" p="8">
         <Input
+          isDisabled={loading || !!error}
           value={input}
           onChange={(event) => setInput(event.target.value)}
           shadow="xl"
           placeholder="Search..."
         />
         <HStack mt="4" px="2">
-          <FormControl display="flex" alignItems="center">
+          <FormControl
+            display="flex"
+            alignItems="center"
+            isDisabled={loading || !!error || topModels.length === 0}
+          >
             <FormLabel htmlFor="top-models" mb="0">
               Top Models
             </FormLabel>
             <Switch
               id="top-models"
-              isChecked={topModels}
-              onChange={(event) => setTopModels(event.target.checked)}
+              isChecked={showTopModels}
+              onChange={(event) => setShowTopModels(event.target.checked)}
             />
+            {!loading && topModels.length === 0 && (
+              <Spinner
+                size="sm"
+                ml="4"
+                color="green.500"
+                aria-label="Loading top models"
+              />
+            )}
           </FormControl>
           <CategoryFilterMenu
+            isDisabled={loading || !!error}
             categories={allCategories}
             selectedCategories={selectedCategories}
             setSelectedSubCategories={setSelectedSubCategories}
@@ -402,75 +522,45 @@ export default function ModelsPage({ models }: ModelPageProps) {
           />
           {selectedCategories?.length > 0 && (
             <SubCategoryFilterMenu
+              isDisabled={loading || !!error}
               subcategories={allSubCategories}
               selectedSubCategories={selectedSubCategories}
               setSelectedSubCategories={setSelectedSubCategories}
             />
           )}
-          <SortMenu sortBy={sortKey} onSort={setSortKey} />
+          <SortMenu
+            sortBy={sortKey}
+            onSort={setSortKey}
+            isDisabled={loading || !!error}
+          />
         </HStack>
-        <SimpleGrid columns={{ sm: 1, md: 2 }} spacing={4} mt="8">
-          {searchedModels.map((model) => (
-            <ModelCard model={model} key={model.slug} />
-          ))}
-        </SimpleGrid>
+        {error && (
+          <Box
+            bg="red.50"
+            borderWidth="1px"
+            borderColor="red.500"
+            rounded="base"
+            p="8"
+            color="red.500"
+            textAlign="center"
+          >
+            {error}
+          </Box>
+        )}
+        {loading ? (
+          <SimpleGrid columns={{ sm: 1, md: 2 }} spacing={4} mt="8">
+            {new Array(12).fill(0).map((_, index) => (
+              <ModelCardSkeleton key={index} />
+            ))}
+          </SimpleGrid>
+        ) : (
+          <SimpleGrid columns={{ sm: 1, md: 2 }} spacing={4} mt="8">
+            {filteredModels.map((model) => (
+              <ModelCard model={model} key={model.slug} />
+            ))}
+          </SimpleGrid>
+        )}
       </Container>
     </>
   );
 }
-
-export const getServerSideProps: GetServerSideProps<
-  ModelPageProps
-> = async () => {
-  try {
-    const [models, usageRequests, runtimeStats, topModels] = await Promise.all([
-      axios({
-        method: 'GET',
-        url: 'https://gateway.credmark.com/v1/models',
-      }).then((resp) => resp.data as ModelMetadata[]),
-      axios({
-        method: 'GET',
-        url: 'https://gateway.credmark.com/v1/usage/requests',
-      }).then((resp) => resp.data as ModelUsage[]),
-      axios({
-        method: 'GET',
-        url: 'https://gateway.credmark.com/v1/model/runtime-stats',
-      }).then((resp) => resp.data.runtimes as ModelRuntime[]),
-      axios({
-        method: 'GET',
-        url: 'https://gateway.credmark.com/v1/usage/top',
-      }).then((resp) => resp.data as TopModels[]),
-    ]);
-
-    const usageEndTime = DateTime.utc().startOf('day');
-    const usageStartTime = usageEndTime.minus({ days: 30 });
-
-    return {
-      props: {
-        models: models.map((model) => ({
-          slug: model.slug,
-          displayName: model.displayName,
-          category: model.category,
-          description: model.description,
-          developer: model.developer,
-          subcategory: model.subcategory,
-          monthlyUsage: usageRequests
-            .filter(
-              (r) =>
-                r.slug === model.slug &&
-                new Date(r.ts) > usageStartTime.toJSDate() &&
-                new Date(r.ts) <= usageEndTime.toJSDate(),
-            )
-            .reduce((prev, curr) => prev + Number(curr.count), 0),
-          runtime: runtimeStats.find((rs) => rs.slug === model.slug) ?? null,
-          allTimeUsageRank:
-            topModels.findIndex((tm) => tm.slug === model.slug) + 1,
-        })),
-      },
-    };
-  } catch (err) {
-    return {
-      notFound: true,
-    };
-  }
-};
