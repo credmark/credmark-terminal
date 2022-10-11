@@ -23,6 +23,7 @@ interface SearchSelectProps<T> {
   value?: T | null;
   onChange: (value: T | null) => void;
   isOptionSelected: (option: T) => boolean;
+  noOptionsMessage?: (inputValue: string) => React.ReactNode;
 }
 
 export default function SearchSelect<T>({
@@ -35,6 +36,7 @@ export default function SearchSelect<T>({
   value,
   onChange,
   isOptionSelected,
+  noOptionsMessage,
 }: SearchSelectProps<T>) {
   const { colorMode } = useColorMode();
   const [searchInput, setSearchInput] = useState('');
@@ -111,6 +113,11 @@ export default function SearchSelect<T>({
       inputValue={searchInput}
       onInputChange={(input) => setSearchInput(input)}
       defaultValue={defaultValue}
+      noOptionsMessage={
+        noOptionsMessage
+          ? ({ inputValue }) => noOptionsMessage(inputValue)
+          : undefined
+      }
     />
   );
 }

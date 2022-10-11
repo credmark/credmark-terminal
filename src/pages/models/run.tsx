@@ -1,19 +1,45 @@
-import { Container } from '@chakra-ui/react';
+import { Box, Container, HStack, Spinner, Text } from '@chakra-ui/react';
 import axios from 'axios';
-import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { ModelRunner } from '~/components/pages/Models';
 import SearchSelect from '~/components/shared/Form/SearchSelect';
 import SEOHeader from '~/components/shared/SEOHeader';
 import { ModelMetadata } from '~/types/model';
 
-interface ModelPageProps {
-  models: ModelMetadata[];
-}
+export default function ModelRunnerPage() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [models, setModels] = useState<ModelMetadata[]>([]);
 
-export default function ModelsPage({ models }: ModelPageProps) {
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    setError('');
+    setLoading(true);
+    axios({
+      method: 'GET',
+      url: '/api/models',
+      signal: abortController.signal,
+    })
+      .then((resp) => {
+        setModels(resp.data);
+      })
+      .catch(() => {
+        if (!abortController.signal.aborted) {
+          setError('Unable to load models. Please try again later.');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    return () => {
+      abortController.abort();
+    };
+  }, []);
+
   const router = useRouter();
   const slug = router.query.slug;
   const setSlug = (newSlug: string | undefined) => {
@@ -55,30 +81,32 @@ export default function ModelsPage({ models }: ModelPageProps) {
           onChange={(val) => setSlug(val?.slug ?? '')}
           isOptionSelected={(option) => slug === option.slug}
           defaultValue={model}
+          noOptionsMessage={
+            loading
+              ? () => (
+                  <HStack justify="center">
+                    <Spinner color="green.500" />
+                    <Text>Loading models...</Text>
+                  </HStack>
+                )
+              : undefined
+          }
         />
         {model && <ModelRunner model={model} key={model.slug} />}
+        {error && (
+          <Box
+            bg="red.50"
+            borderWidth="1px"
+            borderColor="red.500"
+            rounded="base"
+            p="8"
+            color="red.500"
+            textAlign="center"
+          >
+            {error}
+          </Box>
+        )}
       </Container>
     </>
   );
 }
-
-export const getServerSideProps: GetServerSideProps<
-  ModelPageProps
-> = async () => {
-  try {
-    const resp = await axios({
-      method: 'GET',
-      url: 'https://gateway.credmark.com/v1/models',
-    });
-
-    return {
-      props: {
-        models: resp.data,
-      },
-    };
-  } catch (err) {
-    return {
-      notFound: true,
-    };
-  }
-};
