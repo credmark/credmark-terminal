@@ -3,156 +3,47 @@ import {
   Grid,
   GridItem,
   HStack,
-  Img,
   Link,
   Switch,
   Text,
 } from '@chakra-ui/react';
+import { DateTime, Duration } from 'luxon';
 import React, { useState } from 'react';
 
-import { LenderChartBox } from '~/components/pages/Terminal';
+import LenderChartBox from '~/components/pages/Terminal/LenderChartBox';
 import SEOHeader from '~/components/shared/SEOHeader';
 import { ASSETS } from '~/constants/terminal';
+import { useLineChart } from '~/hooks/useChart';
 import useExpander from '~/hooks/useExpander';
-import { useLcrData, useVarData } from '~/hooks/useTerminalData';
-import { useActiveWeb3React } from '~/hooks/web3';
-import { AssetKey, MetricInfo, MetricKey } from '~/types/terminal';
-import { shortenNumber } from '~/utils/formatTokenAmount';
+import { useModelRunner } from '~/hooks/useModel';
+import { AssetKey, MetricKey } from '~/types/terminal';
 
-const METRICS: MetricInfo[] = [
-  {
-    key: 'VAR',
-    label: 'Value at Risk (VaR)',
-    tooltip: (
-      <Text>
-        VaR is a numerical measure of market risk for a given portfolio; our
-        model&apos;s numerical output represents a worst-case loss for a given
-        portfolio over a given holding period. We apply VaR to a platform by
-        using total borrows minus total deposits in each token as the portfolio.{' '}
-        <br />
-        <br />
-        <Link
-          href="https://docs.credmark.com/dealing-with-risks/market-risk/value-at-risk-var"
-          isExternal
-          textDecoration="underline"
-          pb="1"
-          aria-label="Read more about VaR in Credmark Wiki"
-        >
-          Read more about VaR in Credmark Wiki →
-        </Link>
-      </Text>
-    ),
-    chartLine: (_, varDataPoints) =>
-      varDataPoints
-        .map((dp) => ({
-          timestamp: new Date((dp.ts - (dp.ts % 86400)) * 1000),
-          value: Number(dp['10_day_99p']) * -1e9,
-        }))
-        .reverse(),
-    currentValue: (_, dp) => Number(dp['10_day_99p']) * -1e9,
-    formatValue: (val) => '$' + shortenNumber(val, 1),
-  },
-  {
-    key: 'LCR',
-    label: 'Liquidity Coverage Ratio (LCR)',
-    tooltip: (
-      <Text>
-        LCR measures liquidity risk, defined as the proportion of highly liquid
-        assets held by an organization to ensure that they maintain an ongoing
-        ability to meet their short-term obligations (cash outflows for 30 days)
-        in a stress situation. <br />
-        <br />
-        <Link
-          href="https://docs.credmark.com/dealing-with-risks/liquidity-risk/liquidity-coverage-ratio-lcr"
-          isExternal
-          textDecoration="underline"
-          pb="1"
-          aria-label="Read more about LCR in Credmark Wiki"
-        >
-          Read more about LCR in Credmark Wiki →
-        </Link>
-      </Text>
-    ),
-    chartLine: (lcrDataPoints) =>
-      lcrDataPoints
-        .map((dp) => ({
-          timestamp: new Date((dp.ts - (dp.ts % 86400)) * 1000),
-          value: dp.lcr * 100,
-        }))
-        .reverse(),
-    currentValue: (dp) => dp.lcr * 100,
-    formatValue: (val) => val.toFixed(1) + '%',
-  },
-  {
-    key: 'VTL',
-    label: 'VaR/TL',
-    tooltip:
-      'VaR / Total Liabilities (TL) expresses the value at risk as a percentage of the total dollar value of deposits into the protocol.',
-    chartLine: (_, varDataPoints) =>
-      varDataPoints
-        .map((dp) => ({
-          timestamp: new Date((dp.ts - (dp.ts % 86400)) * 1000),
-          value:
-            ((Number(dp['10_day_99p']) * -1e9) / dp['total_liabilities']) * 100,
-        }))
-        .reverse(),
-    currentValue: (_, dp) =>
-      ((Number(dp['10_day_99p']) * -1e9) / dp['total_liabilities']) * 100,
-    formatValue: (val) => val.toFixed(1) + '%',
-  },
+interface BlockNumberOutput {
+  blockNumber: number;
+  blockTimestamp: number;
+  sampleTimestamp: number;
+}
 
-  {
-    key: 'TL',
-    label: 'Total Liabilities (TL)',
-    tooltip: 'Total Dollar value of tokens deposited into the protocol.',
-    chartLine: (_, varDataPoints) =>
-      varDataPoints
-        .map((dp) => ({
-          timestamp: new Date((dp.ts - (dp.ts % 86400)) * 1000),
-          value: Number(dp['total_liabilities']),
-        }))
-        .reverse(),
-    currentValue: (_, dp) => Number(dp['total_liabilities']),
-    formatValue: (val) => `$${shortenNumber(val, 1)}`,
-    chartType: 'area',
-  },
-  {
-    key: 'TA',
-    label: 'Total Assets (TA)',
-    tooltip: 'Total Dollar value of tokens borrowed from the protocol.',
-    chartLine: (_, varDataPoints) =>
-      varDataPoints
-        .map((dp) => ({
-          timestamp: new Date((dp.ts - (dp.ts % 86400)) * 1000),
-          value: Number(dp['total_assets']),
-        }))
-        .reverse(),
-    currentValue: (_, dp) => Number(dp['total_assets']),
-    formatValue: (val) => `$${shortenNumber(val, 1)}`,
-    chartType: 'area',
-  },
-  {
-    key: 'MC',
-    label: 'Market Cap (MC)',
-    tooltip: "Current market capitalization of the protocol's native token.",
-    chartLine: (lcrDataPoints) =>
-      lcrDataPoints
-        .map((dp) => ({
-          timestamp: new Date((dp.ts - (dp.ts % 86400)) * 1000),
-          value: Number(dp['market_cap']),
-        }))
-        .reverse(),
-    currentValue: (dp) => Number(dp['market_cap']),
-    formatValue: (val) => `$${shortenNumber(val, 1)}`,
-    chartType: 'area',
-  },
-];
+interface VarOutput {
+  cvar: number[];
+  var: number;
+  total_value: number;
+  value_list: Array<{
+    token: { address: string };
+    amount: number;
+    price: number;
+    value: number;
+  }>;
+}
+
+interface PortfolioOutput {
+  tvl: number;
+  net_value: number;
+  debt_value: number;
+  supply_value: number;
+}
 
 export default function LendersPage() {
-  const { chainId } = useActiveWeb3React();
-
-  const onMainnet = chainId === 1;
-
   const [activeAssets, setActiveAssets] = useState<AssetKey[]>([
     'AAVEV2',
     'COMPOUND',
@@ -160,17 +51,261 @@ export default function LendersPage() {
 
   const expander = useExpander<MetricKey>();
 
-  const dummy = !onMainnet;
+  const blockNumberModel = useModelRunner<BlockNumberOutput>({
+    slug: 'uni/rpc.get-blocknumber',
+    input: { timestamp: DateTime.utc().startOf('day').toSeconds() },
+  });
 
-  const lcrData: Record<AssetKey, ReturnType<typeof useLcrData>> = {
-    AAVEV2: useLcrData('AAVEV2', 90, dummy),
-    COMPOUND: useLcrData('COMPOUND', 90, dummy),
+  const varModel = {
+    AAVEV2: useModelRunner<VarOutput>({
+      slug: 'lenders/finance.var-aave',
+      input: {},
+      window: Duration.fromObject({ days: 90 }),
+      interval: Duration.fromObject({ days: 1 }),
+      suspended: !blockNumberModel.output,
+      blockNumber: blockNumberModel.output?.blockNumber,
+    }),
+    COMPOUND: useModelRunner<VarOutput>({
+      slug: 'lenders/finance.var-compound',
+      input: {},
+      window: Duration.fromObject({ days: 90 }),
+      interval: Duration.fromObject({ days: 1 }),
+      suspended: !blockNumberModel.output,
+      blockNumber: blockNumberModel.output?.blockNumber,
+    }),
   };
 
-  const varData: Record<AssetKey, ReturnType<typeof useVarData>> = {
-    AAVEV2: useVarData('AAVEV2', 90, dummy),
-    COMPOUND: useVarData('COMPOUND', 90, dummy),
+  const portfolioModel = {
+    AAVEV2: useModelRunner<PortfolioOutput>({
+      slug: 'lenders/aave-v2.lending-pool-assets-portfolio',
+      input: {},
+      window: Duration.fromObject({ days: 90 }),
+      interval: Duration.fromObject({ days: 1 }),
+      suspended: !blockNumberModel.output,
+      blockNumber: blockNumberModel.output?.blockNumber,
+    }),
+    COMPOUND: useModelRunner<PortfolioOutput>({
+      slug: 'lenders/compound-v2.all-pools-portfolio',
+      input: {},
+      window: Duration.fromObject({ days: 90 }),
+      interval: Duration.fromObject({ days: 1 }),
+      suspended: !blockNumberModel.output,
+      blockNumber: blockNumberModel.output?.blockNumber,
+    }),
   };
+
+  const charts: Array<{
+    key: MetricKey;
+    label: string;
+    tooltip: React.ReactNode;
+    chartData: ReturnType<typeof useLineChart>;
+    isAreaChart?: boolean;
+  }> = [
+    {
+      key: 'VAR',
+      label: 'Value at Risk (VaR)',
+      tooltip: (
+        <Text>
+          VaR is a numerical measure of market risk for a given portfolio; our
+          model&apos;s numerical output represents a worst-case loss for a given
+          portfolio over a given holding period. We apply VaR to a platform by
+          using total borrows minus total deposits in each token as the
+          portfolio. <br />
+          <br />
+          <Link
+            href="https://docs.credmark.com/dealing-with-risks/market-risk/value-at-risk-var"
+            isExternal
+            textDecoration="underline"
+            pb="1"
+            aria-label="Read more about VaR in Credmark Wiki"
+          >
+            Read more about VaR in Credmark Wiki →
+          </Link>
+        </Text>
+      ),
+      chartData: useLineChart({
+        loading:
+          blockNumberModel.loading ||
+          varModel['AAVEV2'].loading ||
+          varModel['COMPOUND'].loading,
+        lines: ASSETS.filter((asset) => activeAssets.includes(asset.key)).map(
+          (asset) => ({
+            name: `${asset.title} - VaR`,
+            icon: asset.logo,
+            color: asset.color.toString(),
+            data:
+              varModel[asset.key].output?.series.map((item) => ({
+                timestamp: new Date(item.sampleTimestamp * 1000),
+                value: item.output.var * -1,
+              })) ?? [],
+          }),
+        ),
+        formatter: 'currency',
+        fractionDigits: 2,
+        error:
+          varModel['AAVEV2'].errorMessage ?? varModel['COMPOUND'].errorMessage,
+      }),
+    },
+    // {
+    //   key: 'LCR',
+    //   label: 'Liquidity Coverage Ratio (LCR)',
+    //   tooltip: (
+    //     <Text>
+    //       LCR measures liquidity risk, defined as the proportion of highly
+    //       liquid assets held by an organization to ensure that they maintain an
+    //       ongoing ability to meet their short-term obligations (cash outflows
+    //       for 30 days) in a stress situation. <br />
+    //       <br />
+    //       <Link
+    //         href="https://docs.credmark.com/dealing-with-risks/liquidity-risk/liquidity-coverage-ratio-lcr"
+    //         isExternal
+    //         textDecoration="underline"
+    //         pb="1"
+    //         aria-label="Read more about LCR in Credmark Wiki"
+    //       >
+    //         Read more about LCR in Credmark Wiki →
+    //       </Link>
+    //     </Text>
+    //   ),
+    // },
+    {
+      key: 'VTL',
+      label: 'VaR/TL',
+      tooltip:
+        'VaR / Total Liabilities (TL) expresses the value at risk as a percentage of the total dollar value of deposits into the protocol.',
+      chartData: useLineChart({
+        loading:
+          blockNumberModel.loading ||
+          varModel['AAVEV2'].loading ||
+          varModel['COMPOUND'].loading ||
+          portfolioModel['AAVEV2'].loading ||
+          portfolioModel['COMPOUND'].loading,
+        lines: ASSETS.filter((asset) => activeAssets.includes(asset.key)).map(
+          (asset) => ({
+            name: `${asset.title} - VaR/TL`,
+            icon: asset.logo,
+            color: asset.color.toString(),
+            data:
+              portfolioModel[asset.key].output && varModel[asset.key].output
+                ? portfolioModel[asset.key].output?.series.map(
+                    (portfolioItem) => {
+                      const varItem = varModel[asset.key].output?.series.find(
+                        (item) =>
+                          item.sampleTimestamp ===
+                          portfolioItem.sampleTimestamp,
+                      )?.output;
+
+                      return {
+                        timestamp: new Date(
+                          portfolioItem.sampleTimestamp * 1000,
+                        ),
+                        value:
+                          !varItem || !portfolioItem.output.tvl
+                            ? 0
+                            : (-varItem.var * 100) / portfolioItem.output.tvl,
+                      };
+                    },
+                  ) ?? []
+                : [],
+          }),
+        ),
+        formatter: 'percent',
+        fractionDigits: 2,
+        error:
+          varModel['AAVEV2'].errorMessage ??
+          varModel['COMPOUND'].errorMessage ??
+          portfolioModel['AAVEV2'].errorMessage ??
+          portfolioModel['COMPOUND'].errorMessage,
+      }),
+    },
+    {
+      key: 'TL',
+      label: 'Total Liabilities (TL)',
+      tooltip: 'Total Dollar value of tokens deposited into the protocol.',
+      isAreaChart: true,
+      chartData: useLineChart({
+        loading:
+          blockNumberModel.loading ||
+          portfolioModel['AAVEV2'].loading ||
+          portfolioModel['COMPOUND'].loading,
+        lines: ASSETS.filter((asset) => activeAssets.includes(asset.key)).map(
+          (asset) => ({
+            name: `${asset.title} - TL`,
+            icon: asset.logo,
+            color: asset.color.toString(),
+            data:
+              portfolioModel[asset.key].output?.series.map((item) => ({
+                timestamp: new Date(item.sampleTimestamp * 1000),
+                value: item.output.tvl,
+              })) ?? [],
+          }),
+        ),
+        formatter: 'currency',
+        fractionDigits: 2,
+        error:
+          portfolioModel['AAVEV2'].errorMessage ??
+          portfolioModel['COMPOUND'].errorMessage,
+      }),
+    },
+    {
+      key: 'TA',
+      label: 'Total Assets (TA)',
+      tooltip: 'Total Dollar value of tokens borrowed from the protocol.',
+      isAreaChart: true,
+      chartData: useLineChart({
+        loading:
+          blockNumberModel.loading ||
+          portfolioModel['AAVEV2'].loading ||
+          portfolioModel['COMPOUND'].loading,
+        lines: ASSETS.filter((asset) => activeAssets.includes(asset.key)).map(
+          (asset) => ({
+            name: `${asset.title} - TL`,
+            icon: asset.logo,
+            color: asset.color.toString(),
+            data:
+              portfolioModel[asset.key].output?.series.map((item) => ({
+                timestamp: new Date(item.sampleTimestamp * 1000),
+                value: item.output.debt_value,
+              })) ?? [],
+          }),
+        ),
+        formatter: 'currency',
+        fractionDigits: 2,
+        error:
+          portfolioModel['AAVEV2'].errorMessage ??
+          portfolioModel['COMPOUND'].errorMessage,
+      }),
+    },
+    {
+      key: 'MC',
+      label: 'Market Cap (MC)',
+      tooltip: "Current market capitalization of the protocol's native token.",
+      isAreaChart: true,
+      chartData: useLineChart({
+        loading:
+          blockNumberModel.loading ||
+          portfolioModel['AAVEV2'].loading ||
+          portfolioModel['COMPOUND'].loading,
+        lines: ASSETS.filter((asset) => activeAssets.includes(asset.key)).map(
+          (asset) => ({
+            name: `${asset.title} - TL`,
+            icon: asset.logo,
+            color: asset.color.toString(),
+            data:
+              portfolioModel[asset.key].output?.series.map((item) => ({
+                timestamp: new Date(item.sampleTimestamp * 1000),
+                value: item.output.supply_value,
+              })) ?? [],
+          }),
+        ),
+        formatter: 'currency',
+        fractionDigits: 2,
+        error:
+          portfolioModel['AAVEV2'].errorMessage ??
+          portfolioModel['COMPOUND'].errorMessage,
+      }),
+    },
+  ];
 
   return (
     <>
@@ -179,9 +314,7 @@ export default function LendersPage() {
         <HStack spacing="8">
           {ASSETS.map((asset) => (
             <HStack key={asset.key}>
-              <Box w="6">
-                <Img src={asset.logo} alt={asset.title || 'Credmark'} />
-              </Box>
+              <Box w="6">{asset.logo}</Box>
               <Text>{asset.title}</Text>
               <Switch
                 colorScheme="green"
@@ -205,20 +338,19 @@ export default function LendersPage() {
           mt="6"
           mb="16"
         >
-          {METRICS.map((metric) => (
+          {charts.map((chart) => (
             <GridItem
-              key={metric.key}
-              ref={expander.refByKey(metric.key)}
+              key={chart.key}
+              ref={expander.refByKey(chart.key)}
               minW="0"
-              colSpan={expander.isExpanded(metric.key) ? 2 : 1}
+              colSpan={expander.isExpanded(chart.key) ? 2 : 1}
             >
               <LenderChartBox
-                metric={metric}
-                activeAssets={activeAssets}
-                lcrData={lcrData}
-                varData={varData}
-                isExpanded={expander.isExpanded(metric.key)}
-                onExpand={() => expander.onExpand(metric.key)}
+                label={chart.label}
+                tooltip={chart.tooltip}
+                chartData={chart.chartData}
+                isExpanded={expander.isExpanded(chart.key)}
+                onExpand={() => expander.onExpand(chart.key)}
               />
             </GridItem>
           ))}
