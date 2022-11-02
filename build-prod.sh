@@ -3,4 +3,4 @@
 rm -rf .next
 npm run build:production
 now=`date +"%Y%m%d%H%M%S"`
-zip awsebs-$now.zip -r env/.env.production -r .next -r public package.json package-lock.json Procfile
+zip awsebs-$now.zip -r .platform -r env/.env.production -r .next -r public package.json package-lock.json Procfile
