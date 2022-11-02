@@ -1,3 +1,4 @@
+import axios from 'axios';
 import cors from 'cors';
 import helmet from 'helmet';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -10,14 +11,23 @@ export default nc<NextApiRequest, NextApiResponse>()
   .use(cors())
   .use(helmet())
   .post(async (req: NextApiRequest, res: NextApiResponse) => {
-    const options = {
-      slug: 'rpc.get-blocknumber',
-      input: {
-        timestamp: req.body.input.timestamp,
-      },
-      version: req.body.version,
-    };
+    try {
+      const options = {
+        slug: 'rpc.get-blocknumber',
+        input: {
+          timestamp: req.body.input.timestamp,
+        },
+        version: req.body.version,
+      };
 
-    const result = await runModel(options);
-    res.json(result);
+      const result = await runModel(options);
+      res.json(result);
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        res.status(err.response.status ?? 500);
+        res.json(err.response.data);
+      } else {
+        res.status(500).json({ message: 'Unexpected error has occurred' });
+      }
+    }
   });
