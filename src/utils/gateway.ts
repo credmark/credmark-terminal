@@ -12,7 +12,7 @@ function sendGetRequest(
   return axios({
     method: 'GET',
     headers,
-    baseURL: process.env.GATEWAY_BASE_URL,
+    baseURL: process.env.GATEWAY_BASE_URL ?? 'https://gateway.credmark.com/',
     url: path,
     params: query,
   });
@@ -27,7 +27,7 @@ function sendPostRequest<D>(path: string, data?: D) {
   return axios({
     headers,
     method: 'POST',
-    baseURL: process.env.GATEWAY_BASE_URL,
+    baseURL: process.env.GATEWAY_BASE_URL ?? 'https://gateway.credmark.com/',
     url: path,
     data,
   });
