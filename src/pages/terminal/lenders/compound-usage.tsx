@@ -12,7 +12,7 @@ export default function DashboardPage() {
           title="Compound Lending Usage"
           width="600"
           height="373.5"
-          src="https://app.powerbi.com/view?r=eyJrIjoiMTJlMGQ0NDItMzA0ZS00ZGZmLThjZWItYTFiNmQwNzZkMDQxIiwidCI6ImZlMjVkZDFmLTFjODktNDBhYi04ODdiLWQzYmY2ZjA2MjI5MyIsImMiOjEwfQ%3D%3D&pageName=ReportSection4905e1a3806dde42e208"
+          src="https://app.powerbi.com/view?r=eyJrIjoiYmE2ZDA0MzktNTA4Zi00ZjhiLTg5YTMtNjAyMjVjODQwNWNhIiwidCI6ImZlMjVkZDFmLTFjODktNDBhYi04ODdiLWQzYmY2ZjA2MjI5MyIsImMiOjEwfQ%3D%3D"
           frameBorder="0"
           allowFullScreen
         ></iframe>

@@ -12,7 +12,7 @@ export default function DashboardPage() {
           title="AAVE Lending Usage"
           width="600"
           height="373.5"
-          src="https://app.powerbi.com/view?r=eyJrIjoiNmYyMTk0NTctYjAzMC00ZTlmLWFhN2EtNDc5N2UwYTJjYWRjIiwidCI6ImZlMjVkZDFmLTFjODktNDBhYi04ODdiLWQzYmY2ZjA2MjI5MyIsImMiOjEwfQ%3D%3D&pageName=ReportSection4905e1a3806dde42e208"
+          src="https://app.powerbi.com/view?r=eyJrIjoiNjY3ZTZlNDEtYjczNi00YWFlLWE0ZTItMDhjZDY5NDcxMTE1IiwidCI6ImZlMjVkZDFmLTFjODktNDBhYi04ODdiLWQzYmY2ZjA2MjI5MyIsImMiOjEwfQ%3D%3D"
           frameBorder="0"
           allowFullScreen
         ></iframe>

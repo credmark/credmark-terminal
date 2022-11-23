@@ -12,7 +12,7 @@ export default function DashboardPage() {
           title="FRAX Stats & Collateralization"
           width="600"
           height="373.5"
-          src="https://app.powerbi.com/view?r=eyJrIjoiNzFmMjNmZDYtY2VjYy00NDcyLTgxOTUtNDc1ZGFiODAzOTk1IiwidCI6ImZlMjVkZDFmLTFjODktNDBhYi04ODdiLWQzYmY2ZjA2MjI5MyIsImMiOjEwfQ%3D%3D&pageName=ReportSection132b47907799738c6ae5"
+          src="https://app.powerbi.com/view?r=eyJrIjoiM2U0Zjg5YWEtZGYyNS00OTUzLTkyODAtZGIxZWRmZWM4NzE1IiwidCI6ImZlMjVkZDFmLTFjODktNDBhYi04ODdiLWQzYmY2ZjA2MjI5MyIsImMiOjEwfQ%3D%3D&pageName=ReportSection132b47907799738c6ae5"
           frameBorder="0"
           allowFullScreen
         ></iframe>
