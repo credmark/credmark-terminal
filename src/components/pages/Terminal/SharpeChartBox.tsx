@@ -72,9 +72,7 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
 
   const blockNumber = blockNumberModel.output?.blockNumber;
 
-  const runPriceModel = useModelRunnerCallback<{
-    result: ModelSeriesOutput<TokenPrice>;
-  }>();
+  const runPriceModel = useModelRunnerCallback<ModelSeriesOutput<TokenPrice>>();
   const runSharpeModel = useModelRunnerCallback<{
     results: Array<{ output: SharpeRatio }>;
   }>();
@@ -136,11 +134,11 @@ function useSharpeRatioModel(tokens: ExtendedCurrency[]) {
               },
               abortController.signal,
             ).then((result) => {
-              if (!abortController.signal.aborted && result?.output?.result) {
-                PRICE_CACHE[tokenKey(token)] = result.output.result;
+              if (!abortController.signal.aborted && result?.output) {
+                PRICE_CACHE[tokenKey(token)] = result.output;
               }
 
-              return result.output.result;
+              return result.output;
             }),
       ),
     )
