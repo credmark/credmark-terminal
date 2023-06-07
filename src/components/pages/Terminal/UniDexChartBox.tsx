@@ -12,7 +12,7 @@ import { CurrenciesLogo } from '~/components/shared/CurrencyLogo';
 import Stat from '~/components/shared/Stat';
 import { useSingleLineChart } from '~/hooks/useChart';
 import { useModelRunner } from '~/hooks/useModel';
-import { ModelSeriesOutput } from '~/types/model';
+// import { ModelSeriesOutput } from '~/types/model';
 import { mergeCsvs } from '~/utils/chart';
 
 interface DexChartBoxProps {
@@ -58,17 +58,17 @@ interface VarModelOutput {
   };
 }
 
-interface VolumeModelOutput {
-  some: Array<{
-    token: {
-      address: string;
-    };
-    sellAmount: number;
-    buyAmount: number;
-    sellValue: number;
-    buyValue: number;
-  }>;
-}
+// interface VolumeModelOutput {
+//   some: Array<{
+//     token: {
+//       address: string;
+//     };
+//     sellAmount: number;
+//     buyAmount: number;
+//     sellValue: number;
+//     buyValue: number;
+//   }>;
+// }
 
 interface BlockNumberOutput {
   blockNumber: number;
@@ -136,70 +136,70 @@ export default function DexChartBox({
     error: tvlModel.errorMessage,
   });
 
-  const volumeChartCommonProps = {
-    name: 'Volume',
-    color: '#9500FF',
-    formatter: 'currency' as const,
-    fractionDigits: 2,
-  };
+  // const volumeChartCommonProps = {
+  //   name: 'Volume',
+  //   color: '#9500FF',
+  //   formatter: 'currency' as const,
+  //   fractionDigits: 2,
+  // };
 
-  const currentVolumeModel = useModelRunner<VolumeModelOutput>({
-    blockNumber: blockNumberModel.output?.blockNumber,
-    slug: 'uni/dex.pool-volume',
-    input: {
-      pool_info_model: 'uniswap-v2.pool-tvl',
-      interval: 7200,
-      address: pool,
-    },
-    suspended: !blockNumberModel.output,
-  });
+  // const currentVolumeModel = useModelRunner<VolumeModelOutput>({
+  //   blockNumber: blockNumberModel.output?.blockNumber,
+  //   slug: 'uni/dex.pool-volume',
+  //   input: {
+  //     pool_info_model: 'uniswap-v2.pool-tvl',
+  //     interval: 7200,
+  //     address: pool,
+  //   },
+  //   suspended: !blockNumberModel.output,
+  // });
 
-  const currentVolumeChart = useSingleLineChart({
-    ...volumeChartCommonProps,
-    data:
-      currentVolumeModel.output && blockNumberModel.output
-        ? [
-            {
-              timestamp: new Date(
-                blockNumberModel.output.sampleTimestamp * 1000,
-              ),
-              value: currentVolumeModel.output.some.reduce(
-                (total, tv) => total + tv.buyValue,
-                0,
-              ),
-            },
-          ]
-        : [],
-    loading: currentVolumeModel.loading || blockNumberModel.loading,
-    error: currentVolumeModel.errorMessage,
-  });
+  // const currentVolumeChart = useSingleLineChart({
+  //   ...volumeChartCommonProps,
+  //   data:
+  //     currentVolumeModel.output && blockNumberModel.output
+  //       ? [
+  //           {
+  //             timestamp: new Date(
+  //               blockNumberModel.output.sampleTimestamp * 1000,
+  //             ),
+  //             value: currentVolumeModel.output.some.reduce(
+  //               (total, tv) => total + tv.buyValue,
+  //               0,
+  //             ),
+  //           },
+  //         ]
+  //       : [],
+  //   loading: currentVolumeModel.loading || blockNumberModel.loading,
+  //   error: currentVolumeModel.errorMessage,
+  // });
 
-  const volumeModel = useModelRunner<ModelSeriesOutput<VolumeModelOutput>>({
-    blockNumber: blockNumberModel.output?.blockNumber,
-    slug: 'uni/dex.pool-volume-historical',
-    input: {
-      pool_info_model: 'uniswap-v2.pool-tvl',
-      interval: 7200,
-      address: pool,
-      count: Math.min(
-        90,
-        Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
-      ),
-    },
-    suspended: !blockNumberModel.output,
-  });
+  // const volumeModel = useModelRunner<ModelSeriesOutput<VolumeModelOutput>>({
+  //   blockNumber: blockNumberModel.output?.blockNumber,
+  //   slug: 'uni/dex.pool-volume-historical',
+  //   input: {
+  //     pool_info_model: 'uniswap-v2.pool-tvl',
+  //     interval: 7200,
+  //     address: pool,
+  //     count: Math.min(
+  //       90,
+  //       Math.floor((Date.now().valueOf() - createdAt) / (24 * 3600 * 1000)),
+  //     ),
+  //   },
+  //   suspended: !blockNumberModel.output,
+  // });
 
-  const volumeChart = useSingleLineChart({
-    ...volumeChartCommonProps,
-    data: volumeModel.output
-      ? volumeModel.output.series.map((item) => ({
-          timestamp: new Date(item.sampleTimestamp * 1000),
-          value: item.output.some.reduce((total, tv) => total + tv.buyValue, 0),
-        }))
-      : undefined,
-    loading: volumeModel.loading || blockNumberModel.loading,
-    error: volumeModel.errorMessage,
-  });
+  // const volumeChart = useSingleLineChart({
+  //   ...volumeChartCommonProps,
+  //   data: volumeModel.output
+  //     ? volumeModel.output.series.map((item) => ({
+  //         timestamp: new Date(item.sampleTimestamp * 1000),
+  //         value: item.output.some.reduce((total, tv) => total + tv.buyValue, 0),
+  //       }))
+  //     : undefined,
+  //   loading: volumeModel.loading || blockNumberModel.loading,
+  //   error: volumeModel.errorMessage,
+  // });
 
   const WINDOW_DAYS = 90;
 
@@ -308,8 +308,8 @@ export default function DexChartBox({
   });
 
   const csv = useMemo(() => {
-    return mergeCsvs(tvlChart.csv, varChart.csv, volumeChart.csv);
-  }, [tvlChart.csv, varChart.csv, volumeChart.csv]);
+    return mergeCsvs(tvlChart.csv, varChart.csv /*volumeChart.csv*/);
+  }, [tvlChart.csv, varChart.csv /*volumeChart.csv*/]);
 
   return (
     <Card ref={containerRef}>
@@ -345,7 +345,7 @@ export default function DexChartBox({
           />
         </HStack>
 
-        <HStack flex="1" alignItems="center" spacing="1">
+        {/* <HStack flex="1" alignItems="center" spacing="1">
           {!isExpanded && <Stat {...currentVolumeChart.currentStats[0]} />}
           <HistoricalChart
             height={isExpanded ? 200 : 40}
@@ -356,7 +356,7 @@ export default function DexChartBox({
             minimal={!isExpanded}
             {...volumeChart}
           />
-        </HStack>
+        </HStack> */}
       </HStack>
 
       <HistoricalChart
