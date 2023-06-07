@@ -6,7 +6,7 @@ const env: Env = {
   formaticKey: process.env.NEXT_PUBLIC_FORMATIC_KEY ?? '',
   portisId: process.env.NEXT_PUBLIC_PORTIS_ID ?? '',
   coinbaseLink: process.env.NEXT_PUBLIC_COINBASE_LINK ?? '',
-  gaTrackingId: process.env.NEXT_PUBLIC_GA_TRACKING_ID ?? '',
+  gtmTrackingId: process.env.NEXT_PUBLIC_GTM_TRACKING_ID ?? '',
   hotjarId: process.env.NEXT_PUBLIC_HOTJAR_ID ?? '',
   isBeta: (process.env.NEXT_PUBLIC_BETA ?? '') === 'true',
 };

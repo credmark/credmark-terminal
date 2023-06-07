@@ -10,6 +10,7 @@ import { Web3ReactProvider } from '@web3-react/core';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
+import Script from 'next/script';
 import NProgress from 'nprogress';
 import React, { useEffect } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -25,6 +26,8 @@ import MulticallUpdater from '~/state/multicall/updater';
 import TransactionUpdater from '~/state/transactions/updater';
 import theme from '~/theme';
 import getLibrary from '~/utils/getLibrary';
+
+declare const window: Window & { dataLayer: Record<string, unknown>[] };
 
 function ReduxUpdaters() {
   return (
@@ -54,9 +57,10 @@ function RouteBasedProviders({
 
     const onComplete = (url: string) => {
       NProgress.done();
-      if (window.gtag && env.gaTrackingId) {
-        window.gtag('config', env.gaTrackingId, {
-          page_path: url,
+      if (window.dataLayer && env.gtmTrackingId) {
+        window.dataLayer.push({
+          event: 'pageview',
+          page: url,
         });
       }
     };
@@ -84,6 +88,39 @@ const Web3ProviderNetwork = dynamic(
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
+      {env.gtmTrackingId && (
+        <Script
+          id="gtm-base"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer', '${env.gtmTrackingId}');
+          `,
+          }}
+        />
+      )}
+      {env.hotjarId && (
+        <Script
+          id="hotjar-base"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+            (function(h,o,t,j,a,r){
+              h.hj=h.hj || function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+              h._hjSettings={hjid:${env.hotjarId},hjsv:6};
+              a=o.getElementsByTagName('head')[0];
+              r=o.createElement('script');r.async=1;
+              r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+              a.appendChild(r);
+            })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+            `,
+          }}
+        />
+      )}
       <SEOHeader
         title="Credmark Terminal - Actionable DeFi Data"
         titleTemplate=""

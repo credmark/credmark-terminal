@@ -41,46 +41,19 @@ class MyDocument extends Document {
           />
           <link rel="manifest" href="/site.webmanifest" />
           <meta name="theme-color" content="#ffffff" />
-
-          {/* Google analytics integration */}
-          {env.gaTrackingId && (
-            <>
-              <script
-                async
-                src={`https://www.googletagmanager.com/gtag/js?id=${env.gaTrackingId}`}
-              />
-              <script
-                dangerouslySetInnerHTML={{
-                  __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${env.gaTrackingId}', { page_path: window.location.pathname });
-                `,
-                }}
-              />
-            </>
-          )}
-
-          {/* Hotjar tracking code */}
-          {env.hotjarId && (
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                (function(h,o,t,j,a,r){
-                  h.hj=h.hj || function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-                  h._hjSettings={hjid:${env.hotjarId},hjsv:6};
-                  a=o.getElementsByTagName('head')[0];
-                  r=o.createElement('script');r.async=1;
-                  r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-                  a.appendChild(r);
-                })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-                `,
-              }}
-            />
-          )}
         </Head>
         <body>
+          {env.gtmTrackingId && (
+            <noscript>
+              <iframe
+                title="gtm-noscript"
+                src={`https://www.googletagmanager.com/ns.html?id=${env.gtmTrackingId}`}
+                height="0"
+                width="0"
+                style={{ display: 'none', visibility: 'hidden' }}
+              />
+            </noscript>
+          )}
           <Main />
           <NextScript />
         </body>

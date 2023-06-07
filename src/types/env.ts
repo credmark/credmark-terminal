@@ -7,7 +7,7 @@ export interface Env {
   walletconnectBridgeUrl?: string;
   coinbaseLink: string;
 
-  gaTrackingId?: string;
+  gtmTrackingId?: string;
   hotjarId?: string;
 
   isBeta: boolean;

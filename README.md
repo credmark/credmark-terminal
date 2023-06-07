@@ -33,7 +33,7 @@ Filename: `next-sitemap.config.js` within your root directory.
 
 Create a env file at `env/.env.production` or `env/.env.staging` with the same required params as development. Along with the following optional params:
 
-- NEXT_PUBLIC_GA_TRACKING_ID (Google analytics ID)
+- NEXT_PUBLIC_GTM_TRACKING_ID (Google tag manager ID)
 - NEXT_PUBLIC_HOTJAR_ID (Hotjar ID)
 
 Run `npm run build:production` or `npm run build:staging` to compile and `npm run staging` or `npm run production` to start UI in production mode.
