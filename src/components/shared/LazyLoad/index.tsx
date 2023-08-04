@@ -1,5 +1,5 @@
 import { Box, Skeleton } from '@chakra-ui/react';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import useIntersectionObserver from '~/hooks/useIntersectionObserver';
 
@@ -13,7 +13,17 @@ export default function LazyLoad({
   children,
 }: LazyLoadProps) {
   const ref = useRef(null);
-  const [show] = useIntersectionObserver(ref, { freezeOnceVisible: true });
+  const [show, setShow] = useState(false);
+  const [isEntryIntersecting] = useIntersectionObserver(ref, {
+    freezeOnceVisible: true,
+  });
+
+  useEffect(() => {
+    if (isEntryIntersecting && !show) {
+      setShow(true);
+    }
+  }, [isEntryIntersecting, show]);
+
   if (show) {
     return <>{children}</>;
   }
