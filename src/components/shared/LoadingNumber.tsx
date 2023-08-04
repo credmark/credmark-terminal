@@ -1,14 +1,37 @@
-import { useInterval } from '@chakra-ui/react';
+import { useInterval, Text } from '@chakra-ui/react';
 import React, { useState } from 'react';
 
-export default function LoadingNumber() {
-  const [number, setNumber] = useState<number>(
-    Math.floor(Math.random() * 90) + 10,
-  );
+interface LoadingNumberProps {
+  fractionDigits?: number;
+}
+
+export default function LoadingNumber({
+  fractionDigits = 0,
+}: LoadingNumberProps) {
+  const multiplier = Math.pow(10, fractionDigits);
+
+  function generateRandomNumber() {
+    return (
+      (Math.floor(Math.random() * 90 * multiplier) + 10 * multiplier) /
+      multiplier
+    ).toFixed(fractionDigits);
+  }
+
+  const [number, setNumber] = useState<number | string>(generateRandomNumber());
 
   useInterval(() => {
-    setNumber(Math.floor(Math.random() * 90) + 10);
+    setNumber(generateRandomNumber());
   }, 17);
 
-  return <>{number}</>;
+  return (
+    <Text
+      as="span"
+      sx={{
+        'font-feature-settings': 'tnum',
+        'font-variant-numeric': 'tabular-nums',
+      }}
+    >
+      {number}
+    </Text>
+  );
 }
