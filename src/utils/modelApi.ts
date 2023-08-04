@@ -7,7 +7,7 @@ import { ModelRunResponse, ModelSeriesOutput } from '~/types/model';
 
 import Gateway from './gateway';
 
-interface RunModelOptions {
+export interface RunModelOptions {
   slug: string;
   version?: string;
   chainId?: number;
