@@ -53,6 +53,16 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
+    label: 'Ichi',
+    subNav: [
+      {
+        logo: '/img/ichi-yield-iq.svg',
+        label: 'Yield IQ',
+        href: '/terminal/ichi/yield-iq',
+      },
+    ],
+  },
+  {
     label: 'Financial Metrics',
     subNav: [
       { label: 'Protocol Analytics', isDisabled: true },
