@@ -6,6 +6,7 @@ import {
   HStack,
   Icon,
   IconButton,
+  Img,
   Spacer,
   Switch,
   useColorMode,
@@ -15,12 +16,14 @@ import React from 'react';
 import { BsList } from 'react-icons/bs';
 
 interface NavbarProps {
+  logo?: string;
   title?: string;
   subtitle?: string;
   mobileSidebar: UseDisclosureReturn;
 }
 
 export default function Navbar({
+  logo,
   title,
   subtitle,
   mobileSidebar,
@@ -46,6 +49,11 @@ export default function Navbar({
             boxShadow: 'inner',
           }}
         />
+        {logo && (
+          <Box pr="2">
+            <Img src={logo} bg="gray.800" />
+          </Box>
+        )}
         {title && (
           <Box>
             <Heading

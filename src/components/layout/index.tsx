@@ -21,7 +21,17 @@ import Sidebar from './Sidebar';
 
 type SidebarDrawerProps = UseDisclosureReturn;
 
-const sidebarItems = [
+interface SidebarItem {
+  label: string;
+  subNav: Array<{
+    label: string;
+    logo?: string;
+    href?: string;
+    isDisabled?: boolean;
+  }>;
+}
+
+const sidebarItems: SidebarItem[] = [
   {
     label: 'DEXs',
     subNav: [
@@ -132,12 +142,12 @@ export default function Layout({ children }: LayoutProps) {
       item.subNav.some(({ href }) => href && href === router.pathname),
     )?.label;
 
-    const title = sidebarItems
+    const activeSubNav = sidebarItems
       .map((item) => item.subNav)
       .flat()
-      .find(({ href }) => href && href === router.pathname)?.label;
+      .find(({ href }) => href && href === router.pathname);
 
-    return { title, subtitle };
+    return { logo: activeSubNav?.logo, title: activeSubNav?.label, subtitle };
   }, [router.pathname]);
 
   return (
@@ -168,6 +178,7 @@ export default function Layout({ children }: LayoutProps) {
         <GridItem gridArea="navbar">
           <Navbar
             mobileSidebar={mobileSidebar}
+            logo={activeItem.logo}
             title={activeItem.title}
             subtitle={activeItem.subtitle}
           />
