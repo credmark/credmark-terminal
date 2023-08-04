@@ -97,7 +97,6 @@ export default function UnstakePanel() {
       .getSigner()
       .estimateGas(txn)
       .then((estimate) => {
-        console.log(estimate.toString());
         const newTxn = {
           ...txn,
           gasLimit: calculateGasMargin(chainId, estimate),
