@@ -17,6 +17,7 @@ import {
   Spacer,
   // Spinner,
   // Switch,
+  Text,
   useToast,
 } from '@chakra-ui/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -492,6 +493,11 @@ export default function ModelsPage() {
           placeholder="Search..."
         />
         <HStack mt="4" px="2">
+          {!loading && (
+            <Text color="green.500" fontSize="lg">
+              Found {filteredModels.length} models
+            </Text>
+          )}
           {/* {!loading && topModels.length === 0 && (
             <Spinner
               size="sm"
