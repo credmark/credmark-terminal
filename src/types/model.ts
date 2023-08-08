@@ -155,6 +155,6 @@ export interface ModelInfo {
   developer: string;
   hDeveloper?: React.ReactNode;
   monthlyUsage: number;
-  runtime: Record<ModelRuntimeStat, number> | null;
-  allTimeUsageRank: number;
+  // runtime: Record<ModelRuntimeStat, number> | null;
+  // allTimeUsageRank: number;
 }

@@ -3,8 +3,8 @@ import {
   Button,
   ButtonProps,
   Container,
-  FormControl,
-  FormLabel,
+  // FormControl,
+  // FormLabel,
   HStack,
   Icon,
   Input,
@@ -14,8 +14,9 @@ import {
   MenuList,
   MenuOptionGroup,
   SimpleGrid,
-  Spinner,
-  Switch,
+  Spacer,
+  // Spinner,
+  // Switch,
   useToast,
 } from '@chakra-ui/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -33,23 +34,23 @@ import { useDeepCompareMemo } from '~/hooks/useDeepCompare';
 import {
   ModelInfo,
   ModelMetadata,
-  ModelRuntime,
+  // ModelRuntime,
   ModelUsage,
-  TopModel,
+  // TopModel,
 } from '~/types/model';
 
 type SortKey =
   | 'relevance'
-  | 'slowest'
-  | 'fastest'
-  | 'topModel'
+  // | 'slowest'
+  // | 'fastest'
+  // | 'topModel'
   | 'monthlyUsage';
 
 const sorters: Record<SortKey, string> = {
   relevance: 'Relevance',
-  fastest: 'Fastest runtime',
-  slowest: 'Slowest runtime',
-  topModel: 'All time usage',
+  // fastest: 'Fastest runtime',
+  // slowest: 'Slowest runtime',
+  // topModel: 'All time usage',
   monthlyUsage: 'Requests in 30d',
 };
 
@@ -203,15 +204,15 @@ export default function ModelsPage() {
   const [error, setError] = useState('');
   const [modelsMetadata, setModelsMetadata] = useState<ModelMetadata[]>([]);
   const [modelsUsage, setModelsUsage] = useState<ModelUsage[]>([]);
-  const [modelsRuntime, setModelsRuntime] = useState<ModelRuntime[]>([]);
-  const [topModels, setTopModels] = useState<TopModel[]>([]);
+  // const [modelsRuntime, setModelsRuntime] = useState<ModelRuntime[]>([]);
+  // const [topModels, setTopModels] = useState<TopModel[]>([]);
 
   const toast = useToast();
 
   const [input, setInput] = useState('');
   const debouncedInput = useDebounce(input, 100);
 
-  const [showTopModels, setShowTopModels] = useState(false);
+  // const [showTopModels, setShowTopModels] = useState(false);
 
   const [sortKey, setSortKey] = useState<SortKey>('relevance');
 
@@ -256,33 +257,33 @@ export default function ModelsPage() {
         }
       });
 
-    axios({
-      method: 'GET',
-      url: '/api/models/runtime',
-      signal: abortController.signal,
-    })
-      .then((resp) => {
-        setModelsRuntime(resp.data.runtimes);
-      })
-      .catch(() => {
-        if (!abortController.signal.aborted) {
-          toast({ status: 'error', title: 'Unable to load model runtime.' });
-        }
-      });
+    // axios({
+    //   method: 'GET',
+    //   url: '/api/models/runtime',
+    //   signal: abortController.signal,
+    // })
+    //   .then((resp) => {
+    //     setModelsRuntime(resp.data.runtimes);
+    //   })
+    //   .catch(() => {
+    //     if (!abortController.signal.aborted) {
+    //       toast({ status: 'error', title: 'Unable to load model runtime.' });
+    //     }
+    //   });
 
-    axios({
-      method: 'GET',
-      url: '/api/models/top',
-      signal: abortController.signal,
-    })
-      .then((resp) => {
-        setTopModels(resp.data);
-      })
-      .catch(() => {
-        if (!abortController.signal.aborted) {
-          toast({ status: 'error', title: 'Unable to load top models.' });
-        }
-      });
+    // axios({
+    //   method: 'GET',
+    //   url: '/api/models/top',
+    //   signal: abortController.signal,
+    // })
+    //   .then((resp) => {
+    //     setTopModels(resp.data);
+    //   })
+    //   .catch(() => {
+    //     if (!abortController.signal.aborted) {
+    //       toast({ status: 'error', title: 'Unable to load top models.' });
+    //     }
+    //   });
 
     return () => {
       abortController.abort();
@@ -308,10 +309,10 @@ export default function ModelsPage() {
             new Date(r.ts) <= usageEndTime.toJSDate(),
         )
         .reduce((prev, curr) => prev + Number(curr.count), 0),
-      runtime: modelsRuntime.find((rs) => rs.slug === model.slug) ?? null,
-      allTimeUsageRank: topModels.findIndex((tm) => tm.slug === model.slug) + 1,
+      // runtime: modelsRuntime.find((rs) => rs.slug === model.slug) ?? null,
+      // allTimeUsageRank: topModels.findIndex((tm) => tm.slug === model.slug) + 1,
     }));
-  }, [modelsMetadata, modelsRuntime, modelsUsage, topModels]);
+  }, [modelsMetadata, modelsUsage]);
 
   const allCategories = useMemo(
     () =>
@@ -423,9 +424,9 @@ export default function ModelsPage() {
           ),
         }));
 
-    if (showTopModels) {
-      _models = _models.filter((m) => !!m.allTimeUsageRank);
-    }
+    // if (showTopModels) {
+    //   _models = _models.filter((m) => !!m.allTimeUsageRank);
+    // }
 
     if (selectedCategories.length > 0) {
       _models = _models.filter((m) => selectedCategories.includes(m.category));
@@ -439,25 +440,25 @@ export default function ModelsPage() {
     }
 
     switch (sortKey) {
-      case 'fastest':
-        _models = [..._models].sort(
-          (a, b) =>
-            (a.runtime?.mean ?? Infinity) - (b.runtime?.mean ?? Infinity),
-        );
-        break;
-      case 'slowest':
-        _models = [..._models].sort(
-          (a, b) =>
-            (b.runtime?.mean ?? -Infinity) - (a.runtime?.mean ?? -Infinity),
-        );
-        break;
-      case 'topModel':
-        _models = [..._models].sort(
-          (a, b) =>
-            (a.allTimeUsageRank > 0 ? a.allTimeUsageRank : Infinity) -
-            (b.allTimeUsageRank > 0 ? b.allTimeUsageRank : Infinity),
-        );
-        break;
+      // case 'fastest':
+      //   _models = [..._models].sort(
+      //     (a, b) =>
+      //       (a.runtime?.mean ?? Infinity) - (b.runtime?.mean ?? Infinity),
+      //   );
+      //   break;
+      // case 'slowest':
+      //   _models = [..._models].sort(
+      //     (a, b) =>
+      //       (b.runtime?.mean ?? -Infinity) - (a.runtime?.mean ?? -Infinity),
+      //   );
+      //   break;
+      // case 'topModel':
+      //   _models = [..._models].sort(
+      //     (a, b) =>
+      //       (a.allTimeUsageRank > 0 ? a.allTimeUsageRank : Infinity) -
+      //       (b.allTimeUsageRank > 0 ? b.allTimeUsageRank : Infinity),
+      //   );
+      //   break;
       case 'monthlyUsage':
         _models = [..._models].sort(
           (a, b) => (b.monthlyUsage ?? 0) - (a.monthlyUsage - 0),
@@ -476,7 +477,7 @@ export default function ModelsPage() {
     selectedCategories,
     selectedSubCategories,
     sortKey,
-    showTopModels,
+    // showTopModels,
   ]);
 
   return (
@@ -491,7 +492,17 @@ export default function ModelsPage() {
           placeholder="Search..."
         />
         <HStack mt="4" px="2">
-          <FormControl
+          {/* {!loading && topModels.length === 0 && (
+            <Spinner
+              size="sm"
+              ml="4"
+              color="green.500"
+              aria-label="Loading top models"
+            />
+          )} */}
+          <Spacer />
+          {/* <FormControl
+            w="auto"
             display="flex"
             alignItems="center"
             isDisabled={loading || !!error || topModels.length === 0}
@@ -504,15 +515,7 @@ export default function ModelsPage() {
               isChecked={showTopModels}
               onChange={(event) => setShowTopModels(event.target.checked)}
             />
-            {!loading && topModels.length === 0 && (
-              <Spinner
-                size="sm"
-                ml="4"
-                color="green.500"
-                aria-label="Loading top models"
-              />
-            )}
-          </FormControl>
+          </FormControl> */}
           <CategoryFilterMenu
             isDisabled={loading || !!error}
             categories={allCategories}

@@ -29,11 +29,11 @@ export default function ModelCard({ model }: ModelCardProps) {
 
           <Spacer />
 
-          {!!model.allTimeUsageRank && (
+          {/* {!!model.allTimeUsageRank && (
             <Tag bg="purple.800" variant="solid">
               Top #{model.allTimeUsageRank}
             </Tag>
-          )}
+          )} */}
         </HStack>
         <Box flex="1">
           <Heading as="h3" fontSize="xl" mt="1">
@@ -65,7 +65,7 @@ export default function ModelCard({ model }: ModelCardProps) {
               reqs in 30d
             </Text>
           </Text>
-          <Text fontSize="sm" px="1">
+          {/* <Text fontSize="sm" px="1">
             <Text as="span" fontWeight="bold">
               {model.runtime
                 ? `${(model.runtime.mean / 1000).toFixed(2)}s`
@@ -74,7 +74,7 @@ export default function ModelCard({ model }: ModelCardProps) {
             <Text as="span" fontWeight="thin">
               runtime
             </Text>
-          </Text>
+          </Text> */}
         </HStack>
       </LinkBox>
     </Card>
