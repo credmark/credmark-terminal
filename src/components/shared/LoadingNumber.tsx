@@ -27,8 +27,8 @@ export default function LoadingNumber({
     <Text
       as="span"
       sx={{
-        'font-feature-settings': 'tnum',
-        'font-variant-numeric': 'tabular-nums',
+        fontFeatureSettings: 'tnum',
+        fontVariantNumeric: 'tabular-nums',
       }}
     >
       {number}

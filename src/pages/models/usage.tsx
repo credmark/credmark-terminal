@@ -7,6 +7,7 @@ import ModelsUsageCard from '~/components/pages/Models/ModelUsage/ModelsUsageCar
 import ModelUsageCard from '~/components/pages/Models/ModelUsage/ModelUsageCard';
 import TopModelsCard from '~/components/pages/Models/ModelUsage/TopModelsCard';
 import SEOHeader from '~/components/shared/SEOHeader';
+import env from '~/env';
 import {
   ModelMetadata,
   ModelRuntime,
@@ -38,7 +39,8 @@ export default function ModelUsagePage() {
     setModelsMetadataLoading(true);
     axios({
       method: 'GET',
-      url: '/api/models',
+      baseURL: env.apiHost,
+      url: 'models',
       signal: abortController.signal,
     })
       .then((resp) => {
@@ -59,7 +61,8 @@ export default function ModelUsagePage() {
     setModelsUsageLoading(true);
     axios({
       method: 'GET',
-      url: '/api/models/usage',
+      baseURL: env.apiHost,
+      url: 'models/usage',
       signal: abortController.signal,
     })
       .then((resp) => {
@@ -80,7 +83,8 @@ export default function ModelUsagePage() {
     setModelsRuntimeLoading(true);
     axios({
       method: 'GET',
-      url: '/api/models/runtime',
+      baseURL: env.apiHost,
+      url: 'models/runtime',
       signal: abortController.signal,
     })
       .then((resp) => {
@@ -101,7 +105,8 @@ export default function ModelUsagePage() {
     setTopModelsLoading(true);
     axios({
       method: 'GET',
-      url: '/api/models/top',
+      baseURL: env.apiHost,
+      url: 'models/top',
       signal: abortController.signal,
     })
       .then((resp) => {

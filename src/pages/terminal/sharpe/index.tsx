@@ -320,10 +320,7 @@ export default function SharpeRatioPage() {
     <>
       <SEOHeader title="Sharpe Ratio" />
       <Container p="8" maxW="container.xl">
-        <SharpeChartBox
-          tokens={tokens}
-          defaultTokens={[WBTC, WETH9[1], CMK[1]]}
-        />
+        <SharpeChartBox tokens={tokens} defaultTokens={[WBTC, WETH9[1]]} />
       </Container>
     </>
   );

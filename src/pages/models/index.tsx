@@ -30,6 +30,7 @@ import Highlighter from 'react-highlight-words';
 import { ModelCard } from '~/components/pages/Models';
 import { ModelCardSkeleton } from '~/components/pages/Models/ModelCard';
 import SEOHeader from '~/components/shared/SEOHeader';
+import env from '~/env';
 import useDebounce from '~/hooks/useDebounce';
 import { useDeepCompareMemo } from '~/hooks/useDeepCompare';
 import {
@@ -229,7 +230,8 @@ export default function ModelsPage() {
     setLoading(true);
     axios({
       method: 'GET',
-      url: '/api/models',
+      baseURL: env.apiHost,
+      url: 'models',
       signal: abortController.signal,
     })
       .then((resp) => {
@@ -246,7 +248,8 @@ export default function ModelsPage() {
 
     axios({
       method: 'GET',
-      url: '/api/models/usage',
+      baseURL: env.apiHost,
+      url: 'models/usage',
       signal: abortController.signal,
     })
       .then((resp) => {
@@ -260,7 +263,8 @@ export default function ModelsPage() {
 
     // axios({
     //   method: 'GET',
-    //   url: '/api/models/runtime',
+    //   baseURL: env.apiHost,
+    //   url: 'models/runtime',
     //   signal: abortController.signal,
     // })
     //   .then((resp) => {
@@ -274,7 +278,8 @@ export default function ModelsPage() {
 
     // axios({
     //   method: 'GET',
-    //   url: '/api/models/top',
+    //   baseURL: env.apiHost,
+    //   url: 'models/top',
     //   signal: abortController.signal,
     // })
     //   .then((resp) => {
