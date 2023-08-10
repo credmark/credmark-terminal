@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Duration } from 'luxon';
 import { useCallback, useMemo, useState } from 'react';
 
+import env from '~/env';
 import {
   ModelRunError,
   ModelRunResponse,
@@ -42,7 +43,8 @@ export function useModelRunnerCallback<O>() {
 
         const resp: AxiosResponse<ModelRunResponse<O>> = await axios({
           method: 'POST',
-          url: `/api/${historicalModelInput.model_slug}`,
+          baseURL: env.apiHost,
+          url: historicalModelInput.model_slug,
           data: {
             version: historicalModelInput.model_version,
             chainId,
@@ -63,7 +65,8 @@ export function useModelRunnerCallback<O>() {
 
         const resp: AxiosResponse<ModelRunResponse<O>> = await axios({
           method: 'POST',
-          url: `/api/${composeModelInput.modelSlug}`,
+          baseURL: env.apiHost,
+          url: composeModelInput.modelSlug,
           data: {
             chainId,
             blockNumber,
@@ -77,7 +80,8 @@ export function useModelRunnerCallback<O>() {
 
       const resp: AxiosResponse<ModelRunResponse<O>> = await axios({
         method: 'POST',
-        url: `/api/${slug}`,
+        baseURL: env.apiHost,
+        url: slug,
         data: {
           version,
           chainId,

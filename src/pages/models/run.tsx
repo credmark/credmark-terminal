@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ModelRunner } from '~/components/pages/Models';
 import SearchSelect from '~/components/shared/Form/SearchSelect';
 import SEOHeader from '~/components/shared/SEOHeader';
+import env from '~/env';
 import { ModelMetadata } from '~/types/model';
 
 export default function ModelRunnerPage() {
@@ -20,7 +21,8 @@ export default function ModelRunnerPage() {
     setLoading(true);
     axios({
       method: 'GET',
-      url: '/api/models',
+      baseURL: env.apiHost,
+      url: 'models',
       signal: abortController.signal,
     })
       .then((resp) => {

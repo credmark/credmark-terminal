@@ -1,5 +1,6 @@
 export interface Env {
   host: string;
+  apiHost: string;
 
   infuraKey: string;
   formaticKey: string;
