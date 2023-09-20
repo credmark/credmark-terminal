@@ -127,12 +127,7 @@ export default function BarChart({
               borderColor="gray.100"
             >
               <Img src={titleImg} h="6" />
-              <Text
-                fontFamily="Credmark Regular"
-                fontSize="lg"
-                pt="1"
-                color="purple.500"
-              >
+              <Text fontSize="lg" pt="1" color="purple.500">
                 {title}
               </Text>
             </HStack>

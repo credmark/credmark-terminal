@@ -45,7 +45,7 @@ function TokenRadioGroup({
             !selectedToken
               ? 'green.500'
               : colorMode === 'dark'
-              ? '#1C161F'
+              ? '#18131b'
               : 'gray.100'
           }
           color={!selectedToken ? 'purple.800' : undefined}
@@ -66,7 +66,7 @@ function TokenRadioGroup({
                 selectedToken?.equals(token)
                   ? 'green.500'
                   : colorMode === 'dark'
-                  ? '#1C161F'
+                  ? '#18131b'
                   : 'gray.100'
               }
               color={selectedToken?.equals(token) ? 'purple.800' : undefined}

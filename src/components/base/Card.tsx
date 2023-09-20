@@ -8,7 +8,7 @@ const Card = forwardRef<BoxProps, 'div'>(({ children, ...props }, ref) => {
       ref={ref}
       rounded="lg"
       p="2"
-      bg={colorMode === 'dark' ? '#1C161F' : 'white'}
+      bg={colorMode === 'dark' ? '#18131b' : 'white'}
       {...props}
     >
       {children}
@@ -24,7 +24,7 @@ const BorderedCard = forwardRef<BoxProps, 'div'>(
         ref={ref}
         rounded="lg"
         p="2"
-        bg={colorMode === 'dark' ? '#1C161F' : 'white'}
+        bg={colorMode === 'dark' ? '#18131b' : 'white'}
         border="1px"
         {...props}
       >

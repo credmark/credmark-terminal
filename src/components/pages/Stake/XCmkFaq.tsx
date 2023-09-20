@@ -49,7 +49,7 @@ export default function XCmkFaq() {
       </PopoverTrigger>
       <PopoverContent
         rounded="lg"
-        bg={colorMode === 'dark' ? '#1C161F' : 'white'}
+        bg={colorMode === 'dark' ? '#18131b' : 'white'}
         w="90vw"
         maxW="container.md"
         border="1px"

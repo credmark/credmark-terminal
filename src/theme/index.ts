@@ -75,7 +75,7 @@ const theme = extendTheme(
       Popover: {
         baseStyle: (props: StyleFunctionProps) => ({
           content: {
-            bg: props.colorMode === 'dark' ? '#1C161F' : 'white',
+            bg: props.colorMode === 'dark' ? '#18131b' : 'white',
           },
         }),
       },
@@ -86,7 +86,7 @@ const theme = extendTheme(
               background: 'green.500',
             },
             thumb: {
-              background: '#1C161F',
+              background: '#18131b',
             },
           },
           lightMode: {

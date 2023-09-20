@@ -137,7 +137,7 @@ export default function Sidebar({
       w={fixedWidth}
       minW={fixedWidth}
       h="100vh"
-      bg={colorMode === 'dark' ? '#1C161F' : 'purple.800'}
+      bg={colorMode === 'dark' ? '#18131b' : 'purple.800'}
       color="white"
       overflow="hidden"
       display="flex"
