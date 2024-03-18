@@ -8,7 +8,6 @@ import '~/theme/nprogress.css'; //styles of nprogress
 
 import { Web3ReactProvider } from '@web3-react/core';
 import type { AppProps } from 'next/app';
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import Script from 'next/script';
 import NProgress from 'nprogress';
@@ -17,15 +16,14 @@ import { Provider as ReduxProvider } from 'react-redux';
 
 import Layout from '~/components/layout';
 import SEOHeader from '~/components/shared/SEOHeader';
+import { connectors } from '~/connectors';
 import env from '~/env';
 import ChakraProvider, { getServerSideProps } from '~/providers/ChakraProvider';
-import Web3ReactManager from '~/providers/Web3ReactManager';
 import reduxStore from '~/state';
 import ApplicationUpdater from '~/state/application/updater';
 import MulticallUpdater from '~/state/multicall/updater';
 import TransactionUpdater from '~/state/transactions/updater';
 import theme from '~/theme';
-import getLibrary from '~/utils/getLibrary';
 
 declare const window: Window & { dataLayer: Record<string, unknown>[] };
 
@@ -80,11 +78,6 @@ function RouteBasedProviders({
   return <Layout>{children}</Layout>;
 }
 
-const Web3ProviderNetwork = dynamic(
-  () => import('~/providers/Web3ReactProvider'),
-  { ssr: false },
-);
-
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
@@ -126,17 +119,13 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
         titleTemplate=""
       />
       <ChakraProvider cookies={pageProps.cookies} resetCSS theme={theme}>
-        <Web3ReactProvider getLibrary={getLibrary}>
-          <Web3ProviderNetwork getLibrary={getLibrary}>
-            <ReduxProvider store={reduxStore}>
-              <ReduxUpdaters />
-              <Web3ReactManager>
-                <RouteBasedProviders>
-                  <Component {...pageProps} />
-                </RouteBasedProviders>
-              </Web3ReactManager>
-            </ReduxProvider>
-          </Web3ProviderNetwork>
+        <Web3ReactProvider connectors={connectors}>
+          <ReduxProvider store={reduxStore}>
+            <ReduxUpdaters />
+            <RouteBasedProviders>
+              <Component {...pageProps} />
+            </RouteBasedProviders>
+          </ReduxProvider>
         </Web3ReactProvider>
       </ChakraProvider>
     </>

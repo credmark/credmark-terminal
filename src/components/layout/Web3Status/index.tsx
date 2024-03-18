@@ -1,8 +1,7 @@
 import { Button, Spinner, Text } from '@chakra-ui/react';
-import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
+import { useWeb3React } from '@web3-react/core';
 import React, { useMemo } from 'react';
 
-import { NetworkContextName } from '~/constants/misc';
 import useENSName from '~/hooks/useENSName';
 import { useWalletModalToggle } from '~/state/application/hooks';
 import {
@@ -20,7 +19,7 @@ function newTransactionsFirst(a: TransactionDetails, b: TransactionDetails) {
 }
 
 function Web3StatusInner() {
-  const { account, error } = useWeb3React();
+  const { account } = useWeb3React();
 
   const { ENSName } = useENSName(account ?? undefined);
 
@@ -47,16 +46,10 @@ function Web3StatusInner() {
       ) : (
         <Text>{ENSName || shortenAddress(account)}</Text>
       );
-    } else if (error) {
-      return (
-        <Text>
-          {error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}
-        </Text>
-      );
     } else {
       return 'Connect Wallet';
     }
-  }, [ENSName, account, error, pending?.length]);
+  }, [ENSName, account, pending?.length]);
 
   return (
     <Button
@@ -73,8 +66,7 @@ function Web3StatusInner() {
 }
 
 export default function Web3Status(): JSX.Element {
-  const { active, account } = useWeb3React();
-  const contextNetwork = useWeb3React(NetworkContextName);
+  const { account } = useWeb3React();
 
   const { ENSName } = useENSName(account ?? undefined);
 
@@ -91,10 +83,6 @@ export default function Web3Status(): JSX.Element {
   const confirmed = sortedRecentTransactions
     .filter((tx) => tx.receipt)
     .map((tx) => tx.hash);
-
-  if (!contextNetwork.active && !active) {
-    return <></>;
-  }
 
   return (
     <>

@@ -11,7 +11,6 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 
-import { injected, walletlink } from '~/connectors';
 import { SUPPORTED_WALLETS } from '~/constants/wallet';
 import { useActiveWeb3React } from '~/hooks/web3';
 import { useETHBalances } from '~/state/wallet/hooks';
@@ -45,14 +44,8 @@ export default function AccountDetails({
   ];
 
   function formatConnectorName() {
-    const { ethereum } = window;
-    const isMetaMask = !!(ethereum && ethereum.isMetaMask);
     const name = Object.keys(SUPPORTED_WALLETS)
-      .filter(
-        (k) =>
-          SUPPORTED_WALLETS[k].connector === connector &&
-          (connector !== injected || isMetaMask === (k === 'METAMASK')),
-      )
+      .filter((k) => SUPPORTED_WALLETS[k].connector === connector)
       .map((k) => SUPPORTED_WALLETS[k].name)[0];
     return <Text color="white">Connected with {name}</Text>;
   }
@@ -63,17 +56,18 @@ export default function AccountDetails({
         <Text flex="1" color="gray.500">
           {formatConnectorName()}
         </Text>
-        {connector !== injected && connector !== walletlink && (
-          <Button
-            size="xs"
-            onClick={() => {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (connector as any).close();
-            }}
-          >
-            Disconnect
-          </Button>
-        )}
+        <Button
+          size="xs"
+          onClick={() => {
+            if (connector?.deactivate) {
+              void connector.deactivate();
+            } else {
+              void connector.resetState();
+            }
+          }}
+        >
+          Disconnect
+        </Button>
         <Button
           colorScheme="green"
           size="xs"

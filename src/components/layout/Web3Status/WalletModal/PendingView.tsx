@@ -9,11 +9,9 @@ import {
   Text,
 } from '@chakra-ui/react';
 import ErrorIcon from '@mui/icons-material/Error';
-import { AbstractConnector } from '@web3-react/abstract-connector';
 import React from 'react';
 
-import { injected } from '~/connectors';
-import { SUPPORTED_WALLETS } from '~/constants/wallet';
+import { Connector, SUPPORTED_WALLETS } from '~/constants/wallet';
 
 import Option from './Option';
 
@@ -23,13 +21,11 @@ export default function PendingView({
   setPendingError,
   tryActivation,
 }: {
-  connector?: AbstractConnector;
+  connector?: Connector;
   error?: boolean;
   setPendingError: (error: boolean) => void;
-  tryActivation: (connector: AbstractConnector) => void;
+  tryActivation: (connector: Connector) => void;
 }): JSX.Element {
-  const isMetamask = window?.ethereum?.isMetaMask;
-
   return (
     <>
       <Box py="20">
@@ -60,14 +56,6 @@ export default function PendingView({
       {Object.keys(SUPPORTED_WALLETS).map((key) => {
         const option = SUPPORTED_WALLETS[key];
         if (option.connector === connector) {
-          if (option.connector === injected) {
-            if (isMetamask && option.name !== 'MetaMask') {
-              return null;
-            }
-            if (!isMetamask && option.name === 'MetaMask') {
-              return null;
-            }
-          }
           return (
             <Option
               id={`connect-${key}`}
