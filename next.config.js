@@ -7,7 +7,7 @@ const withTM = require('next-transpile-modules')(['echarts', 'zrender']);
 
 module.exports = withTM(
   withBundleAnalyzer({
-    swcMinify: true,
+    swcMinify: false,
     webpack: (config) => {
       // Suppressing abi JSON import warnings in @uniswap/v3-sdk/dist/v3-sdk.esm.js
       // https://webpack.js.org/migrate/5/#using-named-exports-from-json-modules
