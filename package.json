@@ -33,7 +33,7 @@
     "@web3-react/core": "^8.2.3",
     "@web3-react/metamask": "^8.2.4",
     "@web3-react/walletconnect-v2": "^8.5.1",
-    "axios": "^0.30.2",
+    "axios": "^1.13.5",
     "chakra-react-select": "^4.0.0",
     "color": "^4.1.0",
     "cross-env": "^7.0.3",
