@@ -79,7 +79,7 @@
     "@storybook/addon-links": "^6.5.4",
     "@storybook/builder-webpack5": "^6.5.4",
     "@storybook/manager-webpack5": "^6.5.4",
-    "@storybook/react": "^6.5.4",
+    "@storybook/react": "^10.2.10",
     "@storybook/testing-library": "^0.0.11",
     "@typechain/ethers-v5": "^8.0.2",
     "@types/color": "^3.0.2",
