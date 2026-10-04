@@ -99,7 +99,7 @@ export default function UnstakePanel() {
       .then((estimate) => {
         const newTxn = {
           ...txn,
-          gasLimit: calculateGasMargin(chainId, estimate),
+          gasLimit: calculateGasMargin(chainId, estimate as any),
         };
 
         return library

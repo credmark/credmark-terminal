@@ -32,7 +32,7 @@ async function fetchChunk(
 ): Promise<{ success: boolean; returnData: string }[]> {
   console.debug('Fetching chunk', chunk, blockNumber);
   try {
-    const { returnData } = await multicall.callStatic.multicall(
+    const { returnData } = await (multicall as any).callStatic.multicall(
       chunk.map((obj) => ({
         target: obj.address,
         callData: obj.callData,
@@ -42,7 +42,7 @@ async function fetchChunk(
     );
 
     if (process.env.NODE_ENV === 'development') {
-      returnData.forEach(({ gasUsed, returnData, success }, i) => {
+      returnData.forEach(({ gasUsed, returnData, success }: any, i: number) => {
         if (
           !success &&
           returnData.length === 2 &&

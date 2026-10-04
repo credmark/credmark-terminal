@@ -230,7 +230,8 @@ export default function HistoricalChart({
       return false;
     })();
 
-    const option: EChartsOption = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const option: any = {
       legend: {
         show: showLegend,
         width: legendWidth ? series.length * legendWidth : undefined,
@@ -246,7 +247,7 @@ export default function HistoricalChart({
         axisPointer: {
           type: 'cross',
         },
-        formatter: (params) => {
+        formatter: (params: any) => {
           if (
             !Array.isArray(params) ||
             params.length === 0 ||
@@ -256,7 +257,7 @@ export default function HistoricalChart({
             return '';
           }
 
-          const date = new Date(params[0].data[0]).toLocaleDateString(
+          const date = new Date((params as any)[0].data[0]).toLocaleDateString(
             undefined,
             {
               day: '2-digit',

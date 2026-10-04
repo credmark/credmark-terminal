@@ -59,7 +59,7 @@ export function useCmkCirculatingSupply() {
   const { loading: totalSupplyLoading, result: totalSupplyResult } =
     useSingleCallResult(cmkContract, 'totalSupply');
 
-  const totalSupply = totalSupplyResult?.[0] as BigNumber | undefined;
+  const totalSupply = totalSupplyResult?.[0] as any;
 
   const lockedAddresses =
     (chainId ? CMK_LOCKED_ADDRESSES[chainId] : undefined) ?? [];
@@ -100,12 +100,12 @@ export function useSCmkTotalSupply() {
     'totalSupply',
   );
 
-  const totalSupply = totalSupplyResult?.[0] as BigNumber | undefined;
+  const totalSupply = totalSupplyResult?.[0] as any;
 
   return { loading, value: totalSupply };
 }
 
-export function useCmkToSCmk(cmkAmount: BigNumber) {
+export function useCmkToSCmk(cmkAmount: any) {
   const { chainId } = useActiveWeb3React();
   const sCmkContract = useStakedCredmarkContract();
 
@@ -115,7 +115,7 @@ export function useCmkToSCmk(cmkAmount: BigNumber) {
     [cmkAmount],
   );
 
-  const sCmkShares = cmkToSharesResult?.[0] as BigNumber | undefined;
+  const sCmkShares = cmkToSharesResult?.[0] as any;
 
   const sCMK = chainId ? SCMK[chainId] : undefined;
 
@@ -128,7 +128,7 @@ export function useCmkToSCmk(cmkAmount: BigNumber) {
   };
 }
 
-export function useSCmkToCmk(sCmkAmount: BigNumber) {
+export function useSCmkToCmk(sCmkAmount: any) {
   const { chainId } = useActiveWeb3React();
   const sCmkContract = useStakedCredmarkContract();
 
@@ -138,7 +138,7 @@ export function useSCmkToCmk(sCmkAmount: BigNumber) {
     [sCmkAmount],
   );
 
-  const cmkAmount = cmkToSharesResult?.[0] as BigNumber | undefined;
+  const cmkAmount = cmkToSharesResult?.[0] as any;
 
   const cmk = chainId ? CMK[chainId] : undefined;
 
@@ -161,7 +161,7 @@ export function useSCmkBalance(account: string | null | undefined) {
     [account ?? undefined],
   );
 
-  const balance = balanceResult?.[0] as BigNumber | undefined;
+  const balance = balanceResult?.[0] as any;
 
   const sCMK = chainId ? SCMK[chainId] : undefined;
 
@@ -193,7 +193,7 @@ export function usePercentCmkStaked() {
       chainId ? STAKED_CMK_ADDRESSES[chainId] : undefined,
     ]);
 
-  const sCmkBalance = sCmkBalanceResult?.[0] as BigNumber | undefined;
+  const sCmkBalance = sCmkBalanceResult?.[0] as any;
   return {
     loading: cmkCirculatingSupplyLoading || cmkBalanceLoading,
     value:
@@ -214,7 +214,7 @@ export function useUnissuedRewards() {
     'unissuedRewards',
   );
 
-  const unissuedRewards = unissuedRewardsResult?.[0] as BigNumber | undefined;
+  const unissuedRewards = unissuedRewardsResult?.[0] as any;
 
   return { loading, value: unissuedRewards };
 }

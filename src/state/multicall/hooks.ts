@@ -1,6 +1,5 @@
-import { FunctionFragment, Interface } from '@ethersproject/abi';
-import { BigNumber } from '@ethersproject/bignumber';
-import { Contract } from '@ethersproject/contracts';
+import { FunctionFragment, Interface } from 'ethers';
+import { Contract, type BaseContract } from 'ethers';
 import { useEffect, useMemo } from 'react';
 
 import { useActiveWeb3React } from '~/hooks/web3';
@@ -20,7 +19,7 @@ export interface Result extends ReadonlyArray<any> {
   readonly [key: string]: any;
 }
 
-type MethodArg = string | number | BigNumber;
+type MethodArg = string | number | bigint;
 type MethodArgs = Array<MethodArg | MethodArg[]>;
 
 type OptionalMethodInputs =
@@ -29,7 +28,7 @@ type OptionalMethodInputs =
 
 function isMethodArg(x: unknown): x is MethodArg {
   return (
-    BigNumber.isBigNumber(x) || ['string', 'number'].indexOf(typeof x) !== -1
+    typeof x === 'bigint' || ['string', 'number'].indexOf(typeof x) !== -1
   );
 }
 
@@ -188,7 +187,7 @@ function toCallState(
 
 // formats many calls to a single function on a single contract, with the function name and inputs specified
 export function useSingleContractMultipleData(
-  contract: Contract | null | undefined,
+  contract: BaseContract | Contract | null | undefined,
   methodName: string,
   callInputs: OptionalMethodInputs[],
   options: Partial<ListenerOptions> & { gasRequired?: number } = {},
@@ -221,7 +220,7 @@ export function useSingleContractMultipleData(
         ? callDatas.map<Call | undefined>((callData) =>
             callData
               ? {
-                  address: contract.address,
+                  address: (contract as any).address,
                   callData,
                   gasRequired,
                 }
@@ -240,7 +239,7 @@ export function useSingleContractMultipleData(
 
   return useMemo(() => {
     return results.map((result) =>
-      toCallState(result, contract?.interface, fragment, latestBlockNumber),
+      toCallState(result, (contract as any)?.interface, fragment as any, latestBlockNumber),
     );
   }, [results, contract, fragment, latestBlockNumber]);
 }
@@ -261,7 +260,7 @@ export function useMultipleContractSingleData(
   const callData: string | undefined = useMemo(
     () =>
       isValidMethodArgs(callInputs)
-        ? contractInterface.encodeFunctionData(fragment, callInputs)
+        ? contractInterface.encodeFunctionData(fragment as any, callInputs)
         : undefined,
     [callInputs, contractInterface, fragment],
   );
@@ -295,13 +294,13 @@ export function useMultipleContractSingleData(
 
   return useMemo(() => {
     return results.map((result) =>
-      toCallState(result, contractInterface, fragment, latestBlockNumber),
+      toCallState(result, contractInterface, fragment as any, latestBlockNumber),
     );
   }, [fragment, results, contractInterface, latestBlockNumber]);
 }
 
 export function useSingleCallResult(
-  contract: Contract | null | undefined,
+  contract: BaseContract | Contract | null | undefined,
   methodName: string,
   inputs?: OptionalMethodInputs,
   options: Partial<ListenerOptions> & { gasRequired?: number } = {},
@@ -314,7 +313,7 @@ export function useSingleCallResult(
 
 // formats many calls to any number of functions on a single contract, with only the calldata specified
 export function useSingleContractWithCallData(
-  contract: Contract | null | undefined,
+  contract: BaseContract | Contract | null | undefined,
   callDatas: string[],
   options: Partial<ListenerOptions> & { gasRequired?: number } = {},
 ): CallState[] {
@@ -327,7 +326,7 @@ export function useSingleContractWithCallData(
       contract
         ? callDatas.map<Call>((callData) => {
             return {
-              address: contract.address,
+              address: (contract as any).address,
               callData,
               gasRequired,
             };
@@ -347,8 +346,8 @@ export function useSingleContractWithCallData(
     return results.map((result, i) =>
       toCallState(
         result,
-        contract?.interface,
-        contract?.interface?.getFunction(callDatas[i].substring(0, 10)),
+        (contract as any)?.interface,
+        (contract as any)?.interface?.getFunction(callDatas[i].substring(0, 10)) as any,
         latestBlockNumber,
       ),
     );

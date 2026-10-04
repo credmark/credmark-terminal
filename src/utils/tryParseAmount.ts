@@ -1,5 +1,5 @@
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
-import { parseUnits } from 'ethers/lib/utils';
+import { parseUnits } from 'ethers';
 import JSBI from 'jsbi';
 
 export function tryParseAmount<T extends Currency>(

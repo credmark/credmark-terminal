@@ -12,7 +12,7 @@ import { useActiveWeb3React } from './web3';
 
 const POOL_STATE_INTERFACE = new Interface(
   IUniswapV3PoolStateABI.abi,
-) as IUniswapV3PoolStateInterface;
+) as unknown as IUniswapV3PoolStateInterface;
 
 export enum PoolState {
   LOADING,

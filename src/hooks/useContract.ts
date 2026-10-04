@@ -1,4 +1,4 @@
-import { Contract, ContractInterface } from '@ethersproject/contracts';
+import { Contract, type BaseContract, type ContractInterface } from 'ethers';
 import { useMemo } from 'react';
 
 import ENS_PUBLIC_RESOLVER_ABI from '~/abis/ens-public-resolver.json';
@@ -27,9 +27,9 @@ import getContract from '~/utils/getContract';
 import { useActiveWeb3React } from './web3';
 
 // returns null on errors
-export function useContract<T extends Contract = Contract>(
+export function useContract<T extends BaseContract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
-  ABI: ContractInterface,
+  ABI: any,
   withSignerIfPossible = true,
 ): T | null {
   const { library, account, chainId } = useActiveWeb3React();
@@ -41,12 +41,7 @@ export function useContract<T extends Contract = Contract>(
     else address = addressOrAddressMap[chainId];
     if (!address) return null;
     try {
-      return getContract(
-        address,
-        ABI,
-        library,
-        withSignerIfPossible && account ? account : undefined,
-      );
+      return getContract(address, ABI, library as any);
     } catch (error) {
       console.error('Failed to get contract', error);
       return null;
@@ -58,7 +53,7 @@ export function useContract<T extends Contract = Contract>(
     chainId,
     withSignerIfPossible,
     account,
-  ]) as T;
+  ]) as unknown as T;
 }
 
 export function useBytes32TokenContract(

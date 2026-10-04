@@ -148,7 +148,9 @@ export default function DexPage({ dex, pools }: DexPageProps) {
               minW="0"
               colSpan={expander.isExpanded(pool) ? 2 : 1}
               key={pool}
-              ref={expander.refByKey(pool)}
+              ref={(el) => {
+                expander.refByKey(pool)(el);
+              }}
             >
               <LazyLoad placeholder={<Skeleton height="400px" />}>
                 {dex === 'CURVE' ? (
