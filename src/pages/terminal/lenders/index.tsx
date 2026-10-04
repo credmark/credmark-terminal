@@ -341,7 +341,9 @@ export default function LendersPage() {
           {charts.map((chart) => (
             <GridItem
               key={chart.key}
-              ref={expander.refByKey(chart.key)}
+              ref={(el) => {
+                expander.refByKey(chart.key)(el);
+              }}
               minW="0"
               colSpan={expander.isExpanded(chart.key) ? 2 : 1}
             >

@@ -2,7 +2,6 @@ import { Img } from '@chakra-ui/image';
 import { Box, Divider, HStack, Link, Text } from '@chakra-ui/layout';
 import { Icon, Tooltip } from '@chakra-ui/react';
 import MdOpenInNew from '@mui/icons-material/OpenInNew';
-import { BigNumber } from 'ethers';
 import React from 'react';
 
 import { CMK } from '~/constants/tokens';
@@ -22,10 +21,10 @@ export default function WalletStatus() {
   const sCmkBalance = useSCmkBalance(account);
 
   const sCmkToCmkBalance = useSCmkToCmk(
-    BigNumber.from(sCmkBalance.value?.quotient?.toString() ?? '0'),
+    BigInt(sCmkBalance.value?.quotient?.toString() ?? '0') as any,
   );
 
-  const sCmkToCmk = useSCmkToCmk(BigNumber.from('1000000000000000000')); // 1 xCMK
+  const sCmkToCmk = useSCmkToCmk(BigInt('1000000000000000000') as any); // 1 xCMK
 
   return (
     <Box mt="6" rounded="base" border="1px" px="2">

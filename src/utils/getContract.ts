@@ -1,35 +1,34 @@
-import { AddressZero } from '@ethersproject/constants';
-import { Contract, ContractInterface } from '@ethersproject/contracts';
-import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
+const AddressZero = '0x0000000000000000000000000000000000000000';
+import { Contract, type ContractInterface, type BrowserProvider, type JsonRpcSigner } from 'ethers';
 
 import isAddress from './isAddress';
 
 // account is not optional
-export function getSigner(
-  library: Web3Provider,
+export async function getSigner(
+  library: BrowserProvider,
   account: string,
-): JsonRpcSigner {
-  return library.getSigner(account).connectUnchecked();
+): Promise<JsonRpcSigner> {
+  return library.getSigner(account);
 }
 
 // account is optional
-export function getProviderOrSigner(
-  library: Web3Provider,
+export async function getProviderOrSigner(
+  library: BrowserProvider,
   account?: string,
-): Web3Provider | JsonRpcSigner {
+): Promise<BrowserProvider | JsonRpcSigner> {
   return account ? getSigner(library, account) : library;
 }
 
 // account is optional
 export default function getContract(
   address: string,
-  ABI: ContractInterface,
-  library: Web3Provider,
+  ABI: any,
+  library: BrowserProvider,
   account?: string,
 ): Contract {
   if (!isAddress(address) || address === AddressZero) {
     throw Error(`Invalid 'address' parameter '${address}'.`);
   }
 
-  return new Contract(address, ABI, getProviderOrSigner(library, account));
+  return new Contract(address, ABI, library);
 }

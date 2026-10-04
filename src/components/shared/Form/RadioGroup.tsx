@@ -14,18 +14,15 @@ function RadioCard(props: UseRadioProps & { children: React.ReactNode }) {
 
   const {
     getInputProps,
-    getCheckboxProps,
     state: { isChecked },
   } = useRadio(props);
 
   const input = getInputProps();
-  const checkbox = getCheckboxProps();
 
   return (
     <Box as="label">
       <input {...input} />
       <Box
-        {...checkbox}
         cursor="pointer"
         borderWidth="0"
         borderRadius="md"

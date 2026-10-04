@@ -1,5 +1,5 @@
 import { Token } from '@uniswap/sdk-core';
-import { arrayify, parseBytes32String } from 'ethers/lib/utils';
+import { getBytes, decodeBytes32String } from 'ethers';
 import { useMemo } from 'react';
 
 import { useSingleCallResult, NEVER_RELOAD } from '~/state/multicall/hooks';
@@ -19,8 +19,8 @@ function parseStringOrBytes32(
   return str && str.length > 0
     ? str
     : // need to check for proper bytes string and valid terminator
-    bytes32 && BYTES32_REGEX.test(bytes32) && arrayify(bytes32)[31] === 0
-    ? parseBytes32String(bytes32)
+    bytes32 && BYTES32_REGEX.test(bytes32) && getBytes(bytes32)[31] === 0
+    ? decodeBytes32String(bytes32)
     : defaultValue;
 }
 

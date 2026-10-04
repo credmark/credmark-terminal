@@ -1,4 +1,4 @@
-import { MaxUint256 } from '@ethersproject/constants';
+const MaxUint256 = 2n ** 256n - 1n;
 import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { useCallback, useMemo } from 'react';
@@ -87,12 +87,12 @@ export function useApproveCallback(
     }
 
     let useExact = false;
-    const estimatedGas = await tokenContract.estimateGas
-      .approve(spender, MaxUint256)
+    const estimatedGas = await tokenContract.approve
+      .estimateGas(spender, MaxUint256)
       .catch(() => {
         // general fallback for tokens who restrict approval amounts
         useExact = true;
-        return tokenContract.estimateGas.approve(
+        return tokenContract.approve.estimateGas(
           spender,
           amountToApprove.quotient.toString(),
         );
@@ -101,12 +101,12 @@ export function useApproveCallback(
     return tokenContract
       .approve(
         spender,
-        useExact ? amountToApprove.quotient.toString() : MaxUint256,
+        (useExact ? amountToApprove.quotient.toString() : MaxUint256) as any,
         {
-          gasLimit: calculateGasMargin(chainId, estimatedGas),
-        },
+          gasLimit: calculateGasMargin(chainId, estimatedGas) as any,
+        } as any,
       )
-      .then((response: TransactionResponse) => {
+      .then((response: any) => {
         addTransaction(response, {
           summary: 'Approve ' + amountToApprove.currency.symbol,
           approval: { tokenAddress: token.address, spender: spender },

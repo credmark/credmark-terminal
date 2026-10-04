@@ -19,6 +19,9 @@
     "generate-sitemap": "npm run build:production && next-sitemap --config next-sitemap.config.js"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^1.1.5",
+    "@chakra-ui/image": "^1.1.1",
+    "@chakra-ui/layout": "^1.7.0",
     "@chakra-ui/react": "^2.1.0",
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
@@ -68,32 +71,24 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
-    "@chakra-ui/storybook-addon": "^3.0.0",
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^16.2.1",
     "@next/bundle-analyzer": "^12.1.6",
     "@next/eslint-plugin-next": "^12.1.6",
-    "@storybook/addon-actions": "^6.5.4",
-    "@storybook/addon-essentials": "^8.6.14",
-    "@storybook/addon-interactions": "^8.6.14",
-    "@storybook/addon-links": "^6.5.4",
-    "@storybook/builder-webpack5": "^10.6.1",
-    "@storybook/manager-webpack5": "^6.5.4",
-    "@storybook/react": "^10.2.10",
-    "@storybook/testing-library": "^0.0.11",
-    "@typechain/ethers-v5": "^8.0.2",
+    "@typechain/ethers-v6": "^0.5.1",
     "@types/color": "^3.0.2",
     "@types/lodash.flatmap": "^4.5.6",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.set": "^4.3.6",
     "@types/luxon": "^2.3.2",
+    "@types/node": "^20.0.0",
     "@types/nprogress": "^0.2.0",
     "@types/react": "^18.0.9",
     "@types/react-csv": "^1.1.2",
     "@types/react-dom": "^18.0.4",
     "@types/react-highlight-words": "^0.16.4",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
-    "@typescript-eslint/parser": "^8.71.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "@web3-react/types": "^8.2.3",
     "babel-loader": "^8.2.5",
     "core-js": "^3.22.5",
@@ -105,14 +100,13 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "eslint-plugin-storybook": "^0.5.11",
     "husky": "^7.0.4",
     "lint-staged": "^17.6.0",
     "next-sitemap": "^2.5.25",
     "next-transpile-modules": "^9.0.0",
     "prettier": "^2.4.1",
-    "typechain": "^6.0.2",
-    "typescript": "4.4.4",
+    "typechain": "^8.3.2",
+    "typescript": "^5.5.0",
     "webpack": "^5.72.1"
   },
   "overrides": {
@@ -125,6 +119,11 @@
     },
     "react-inspector": {
       "react": "$react"
+    }
+  },
+  "tsconfig": {
+    "compilerOptions": {
+      "target": "es2020"
     }
   }
 }

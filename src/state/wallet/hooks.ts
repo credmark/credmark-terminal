@@ -77,7 +77,7 @@ export function useTokenBalancesWithLoadingIndicator(
     () => validatedTokens.map((vt) => vt.address),
     [validatedTokens],
   );
-  const ERC20Interface = new Interface(ERC20ABI) as Erc20Interface;
+  const ERC20Interface = new Interface(ERC20ABI) as unknown as Erc20Interface;
   const balances = useMultipleContractSingleData(
     validatedTokenAddresses,
     ERC20Interface,
